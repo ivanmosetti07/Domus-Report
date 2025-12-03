@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modello Agenzia
+model Agency {
+  id            String   @id @default(cuid())
+  nome          String
+  email         String   @unique
+  password      String
+  citta         String
+  widgetId      String   @unique @map("widget_id")
+  piano         String   @default("free") // free, basic, premium
+  attiva        Boolean  @default(true)
+  dataCreazione DateTime @default(now()) @map("data_creazione")
+
+  // Relazioni
+  leads         Lead[]
+
+  @@map("agencies")
+}
+
+// Modello Lead
+model Lead {
+  id            String   @id @default(cuid())
+  agenziaId     String   @map("agenzia_id")
+  nome          String
+  cognome       String
+  email         String
+  telefono      String?
+  dataRichiesta DateTime @default(now()) @map("data_richiesta")
+
+  // Relazioni
+  agenzia       Agency       @relation(fields: [agenziaId], references: [id], onDelete: Cascade)
+  property      Property?
+  conversation  Conversation?
+
+  @@index([agenziaId])
+  @@index([dataRichiesta])
+  @@map("leads")
+}
+
+// Modello Immobile
+model Property {
+  id           String  @id @default(cuid())
+  leadId       String  @unique @map("lead_id")
+  indirizzo    String
+  citta        String
+  cap          String?
+  latitudine   Float?
+  longitudine  Float?
+  tipo         String  // Appartamento, Villa, Ufficio, Altro
+  superficieMq Int     @map("superficie_mq")
+  piano        Int?
+  ascensore    Boolean?
+  stato        String  // Nuovo, Ottimo, Buono, Da ristrutturare
+
+  // Relazioni
+  lead         Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  valuation    Valuation?
+
+  @@index([leadId])
+  @@map("properties")
+}
+
+// Modello Valutazione
+model Valuation {
+  id                     String   @id @default(cuid())
+  immobileId             String   @unique @map("immobile_id")
+  prezzoMinimo           Int      @map("prezzo_minimo")
+  prezzoMassimo          Int      @map("prezzo_massimo")
+  prezzoStimato          Int      @map("prezzo_stimato")
+  valoreOmiBase          Int      @map("valore_omi_base")
+  coefficientePiano      Float    @map("coefficiente_piano")
+  coefficienteStato      Float    @map("coefficiente_stato")
+  spiegazione            String   @db.Text
+  dataCalcolo            DateTime @default(now()) @map("data_calcolo")
+
+  // Relazioni
+  property               Property @relation(fields: [immobileId], references: [id], onDelete: Cascade)
+
+  @@index([immobileId])
+  @@map("valuations")
+}
+
+// Modello Conversazione
+model Conversation {
+  id        String   @id @default(cuid())
+  leadId    String   @unique @map("lead_id")
+  messaggi  Json     // Array di messaggi: [{id, role, text, timestamp, quickReplies}]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relazioni
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@map("conversations")
+}
