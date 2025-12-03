@@ -3,6 +3,12 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "regions": ["fra1"],
+  "crons": [
+    {
+      "path": "/api/analytics/aggregate",
+      "schedule": "0 2 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/widget-embed.js",
