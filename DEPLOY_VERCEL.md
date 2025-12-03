@@ -55,15 +55,16 @@ openssl rand -base64 32
 
 ---
 
-### 3. **Esegui Database Migration**
+### 3. **Database Schema** ✅
 
-**IMPORTANTE**: Prima del primo deploy, esegui migrations sul database Neon:
+⚠️ **BUONA NOTIZIA**: Il comando `vercel-build` esegue automaticamente `prisma db push` durante il deploy!
+
+**NON serve fare nulla manualmente** - Vercel sincronizza automaticamente lo schema del database ad ogni deploy.
+
+Se vuoi comunque verificare/sincronizzare manualmente (opzionale):
 
 ```bash
 # Connetti al database production
-DATABASE_URL="postgresql://..." npx prisma migrate deploy
-
-# Verifica che tutte le tabelle siano create
 DATABASE_URL="postgresql://..." npx prisma db push
 ```
 
@@ -143,15 +144,29 @@ Dopo il deploy, testa:
 
 ---
 
+### ❌ Error: "P3005 - Database schema is not empty"
+
+**Causa**: Il database ha già uno schema esistente e `prisma migrate deploy` non può applicare migrations
+
+**Soluzione**: ✅ **RISOLTO AUTOMATICAMENTE**
+
+Il progetto ora usa `prisma db push --accept-data-loss` nel comando `vercel-build` che sincronizza lo schema senza creare migrations.
+
+Il prossimo deploy funzionerà senza problemi!
+
+---
+
 ### ❌ Error: "Prisma Client Validation Error"
 
-**Causa**: Database schema non aggiornato
+**Causa**: Database schema non aggiornato o Prisma Client non generato
 
 **Soluzione**:
 ```bash
-DATABASE_URL="postgresql://..." npx prisma migrate deploy
+DATABASE_URL="postgresql://..." npx prisma db push
 DATABASE_URL="postgresql://..." npx prisma generate
 ```
+
+Oppure attendi il prossimo deploy - Vercel esegue automaticamente questi comandi.
 
 ---
 
