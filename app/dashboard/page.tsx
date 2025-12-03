@@ -1,39 +1,61 @@
-"use client"
-
-import * as React from "react"
 import Link from "next/link"
 import { PageHeader } from "@/components/ui/page-header"
 import { StatCard } from "@/components/ui/stat-card"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Users, TrendingUp, FileCheck, Target, Copy, Check, Code, BookOpen, Eye } from "lucide-react"
+import { Users, TrendingUp, FileCheck, Target, Code, BookOpen, Eye } from "lucide-react"
+import { getAuthAgency } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
+import { WidgetCodeCard } from "@/components/dashboard/widget-code-card"
 
-export default function DashboardPage() {
-  const [copied, setCopied] = React.useState(false)
+export default async function DashboardPage() {
+  // Get authenticated agency
+  const agency = await getAuthAgency()
 
-  // TODO: Fetch real data from API
-  const widgetId = "wgt_1234567890abcdef"
-  const stats = {
-    totalLeads: 0,
-    leadsLast7Days: 0,
-    totalValuations: 0,
-    conversionRate: "N/A"
+  if (!agency) {
+    return null // Middleware should prevent this
   }
 
-  const widgetCode = `<script src="https://cdn.domusreport.mainstream.agency/widget.js"
-        data-widget-id="${widgetId}"
-        async></script>`
+  // Fetch stats from database
+  const [totalLeads, leadsLast7Days, totalValuations] = await Promise.all([
+    // Total leads count
+    prisma.lead.count({
+      where: { agenziaId: agency.agencyId },
+    }),
 
-  const handleCopyCode = async () => {
-    await navigator.clipboard.writeText(widgetCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    // Leads in last 7 days
+    prisma.lead.count({
+      where: {
+        agenziaId: agency.agencyId,
+        dataRichiesta: {
+          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        },
+      },
+    }),
+
+    // Total valuations (count properties with valuations)
+    prisma.valuation.count({
+      where: {
+        property: {
+          lead: {
+            agenziaId: agency.agencyId,
+          },
+        },
+      },
+    }),
+  ])
+
+  const stats = {
+    totalLeads,
+    leadsLast7Days,
+    totalValuations,
+    conversionRate: "N/A", // Feature futura
   }
 
   return (
     <div>
       <PageHeader
-        title="Benvenuto!"
+        title={`Benvenuto, ${agency.nome}!`}
         subtitle="Ecco una panoramica della tua agenzia"
       />
 
@@ -63,101 +85,7 @@ export default function DashboardPage() {
 
       {/* Widget Code */}
       <div className="mb-8">
-        <Card className="border-2 border-primary/20">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Code className="w-5 h-5 text-primary" />
-                  Il tuo Widget
-                </CardTitle>
-                <CardDescription className="mt-1">
-                  Copia questo codice e incollalo nel tuo sito. Il widget si attiverà automaticamente.
-                </CardDescription>
-              </div>
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Code className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Code Box */}
-            <div className="relative">
-              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-                <code>{widgetCode}</code>
-              </pre>
-              <Button
-                size="sm"
-                variant="outline"
-                className="absolute top-2 right-2 bg-white"
-                onClick={handleCopyCode}
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4 mr-2 text-green-600" />
-                    Copiato!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copia Codice
-                  </>
-                )}
-              </Button>
-            </div>
-
-            {/* Instructions */}
-            <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <BookOpen className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-blue-900 mb-1">
-                  Come installare il widget?
-                </p>
-                <p className="text-sm text-blue-700 mb-2">
-                  Segui le nostre guide passo-passo per installare il widget sul tuo sito
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Link href="/docs/wordpress">
-                    <Button variant="outline" size="sm" className="bg-white">
-                      📖 Guida WordPress
-                    </Button>
-                  </Link>
-                  <Link href="/docs/webflow">
-                    <Button variant="outline" size="sm" className="bg-white">
-                      📖 Guida Webflow
-                    </Button>
-                  </Link>
-                  <Link href="/docs/html">
-                    <Button variant="outline" size="sm" className="bg-white">
-                      📖 Guida HTML
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Widget ID Info */}
-            <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    Il tuo Widget ID
-                  </p>
-                  <p className="text-sm font-mono text-gray-900 mt-1">
-                    {widgetId}
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => navigator.clipboard.writeText(widgetId)}
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <WidgetCodeCard widgetId={agency.widgetId} />
       </div>
 
       {/* Quick Actions */}
@@ -182,19 +110,21 @@ export default function DashboardPage() {
             </Card>
           </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full border-2 border-dashed border-gray-300">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-lg">
-                <Eye className="w-6 h-6 text-gray-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Testa il widget</h3>
-                <p className="text-sm text-gray-600">
-                  Prova il widget in modalità demo
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <Link href="/test-embed.html" target="_blank">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full border-2 border-dashed border-gray-300">
+              <CardContent className="flex items-center gap-4 p-6">
+                <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-lg">
+                  <Eye className="w-6 h-6 text-gray-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Testa il widget</h3>
+                  <p className="text-sm text-gray-600">
+                    Prova il widget in modalità demo
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
 

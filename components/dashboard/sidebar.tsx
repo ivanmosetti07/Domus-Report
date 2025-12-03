@@ -32,10 +32,17 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
-  const handleLogout = () => {
-    // TODO: API call to logout
-    console.log("Logout")
-    router.push("/login")
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      })
+    } catch (error) {
+      console.error("Logout error:", error)
+    } finally {
+      // Redirect to login regardless of API success
+      router.push("/login")
+    }
   }
 
   const SidebarContent = () => (

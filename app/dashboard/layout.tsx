@@ -1,16 +1,24 @@
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { getAuthAgency } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // TODO: Get agency name from session/auth
-  const agencyName = "Immobiliare Roma Centro"
+  // Get authenticated agency
+  const agency = await getAuthAgency()
+
+  // This should never happen because middleware protects this route
+  // But we add it as a safety measure
+  if (!agency) {
+    redirect("/login")
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar agencyName={agencyName} />
+      <Sidebar agencyName={agency.nome} />
 
       {/* Main Content */}
       <div className="lg:pl-64">
