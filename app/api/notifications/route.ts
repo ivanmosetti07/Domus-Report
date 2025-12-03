@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyToken } from '@/lib/auth'
+import { verifyAuth } from '@/lib/auth'
 
 // GET /api/notifications - Ottieni notifiche agenzia
 export async function GET(request: Request) {
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const onlyUnread = searchParams.get('onlyUnread') === 'true'
 
     // Query notifiche
-    const whereClause: any = { agencyId: agency.id }
+    const whereClause: any = { agencyId: agency.agencyId }
     if (onlyUnread) {
       whereClause.isRead = false
     }
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     // Count non lette
     const unreadCount = await prisma.notification.count({
       where: {
-        agencyId: agency.id,
+        agencyId: agency.agencyId,
         isRead: false,
       },
     })
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     // Crea notifica
     const notification = await prisma.notification.create({
       data: {
-        agencyId: agency.id,
+        agencyId: agency.agencyId,
         type,
         leadId: leadId || null,
         title,
@@ -101,7 +101,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
@@ -113,7 +113,7 @@ export async function PUT(request: Request) {
       // Marca tutte come lette
       await prisma.notification.updateMany({
         where: {
-          agencyId: agency.id,
+          agencyId: agency.agencyId,
           isRead: false,
         },
         data: {
@@ -133,7 +133,7 @@ export async function PUT(request: Request) {
     const notification = await prisma.notification.findFirst({
       where: {
         id: notificationId,
-        agencyId: agency.id,
+        agencyId: agency.agencyId,
       },
     })
 
@@ -165,7 +165,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
@@ -181,7 +181,7 @@ export async function DELETE(request: Request) {
     const notification = await prisma.notification.findFirst({
       where: {
         id: notificationId,
-        agencyId: agency.id,
+        agencyId: agency.agencyId,
       },
     })
 

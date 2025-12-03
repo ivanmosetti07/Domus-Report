@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyToken } from '@/lib/auth'
+import { verifyAuth } from '@/lib/auth'
 
 // GET /api/subscription - Ottieni subscription agenzia
 export async function GET(request: Request) {
@@ -10,21 +10,21 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
 
     // Ottieni subscription
     const subscription = await prisma.subscription.findUnique({
-      where: { agencyId: agency.id },
+      where: { agencyId: agency.agencyId },
     })
 
     // Se non esiste, crea subscription free di default
     if (!subscription) {
       const newSubscription = await prisma.subscription.create({
         data: {
-          agencyId: agency.id,
+          agencyId: agency.agencyId,
           planType: 'free',
           status: 'active',
         },
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
 
     // Verifica se esiste già una subscription
     const existingSubscription = await prisma.subscription.findUnique({
-      where: { agencyId: agency.id },
+      where: { agencyId: agency.agencyId },
     })
 
     let subscription
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     if (existingSubscription) {
       // Aggiorna subscription esistente
       subscription = await prisma.subscription.update({
-        where: { agencyId: agency.id },
+        where: { agencyId: agency.agencyId },
         data: {
           planType: planType || existingSubscription.planType,
           status: status || existingSubscription.status,
@@ -92,14 +92,14 @@ export async function POST(request: Request) {
 
       // Aggiorna anche il campo piano su Agency per consistenza
       await prisma.agency.update({
-        where: { id: agency.id },
+        where: { id: agency.agencyId },
         data: { piano: planType || existingSubscription.planType },
       })
     } else {
       // Crea nuova subscription
       subscription = await prisma.subscription.create({
         data: {
-          agencyId: agency.id,
+          agencyId: agency.agencyId,
           planType: planType || 'free',
           status: status || 'active',
           trialEndsAt: trialEndsAt || null,
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
 
       // Aggiorna piano su Agency
       await prisma.agency.update({
-        where: { id: agency.id },
+        where: { id: agency.agencyId },
         data: { piano: planType || 'free' },
       })
     }
@@ -132,14 +132,14 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
 
     // Aggiorna subscription a cancelled
     const subscription = await prisma.subscription.update({
-      where: { agencyId: agency.id },
+      where: { agencyId: agency.agencyId },
       data: {
         status: 'cancelled',
         cancelledAt: new Date(),
@@ -150,7 +150,7 @@ export async function DELETE(request: Request) {
 
     // Aggiorna piano su Agency
     await prisma.agency.update({
-      where: { id: agency.id },
+      where: { id: agency.agencyId },
       data: { piano: 'free' },
     })
 

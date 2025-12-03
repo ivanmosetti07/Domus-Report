@@ -16,6 +16,7 @@ import { getAuthAgency } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { ContactCardClient } from "@/components/dashboard/contact-card-client"
 import { ConversationView } from "@/components/dashboard/conversation-view"
+import { LeadStatusWrapper } from "@/components/dashboard/lead-status-wrapper"
 
 interface LeadDetailPageProps {
   params: Promise<{
@@ -43,6 +44,9 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         },
       },
       conversation: true,
+      statuses: {
+        orderBy: { createdAt: 'desc' },
+      },
     },
   })
 
@@ -229,6 +233,21 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             </CardContent>
           </Card>
         )}
+      </div>
+
+      {/* Status Manager Section */}
+      <div className="mb-8">
+        <LeadStatusWrapper
+          leadId={lead.id}
+          currentStatus={lead.statuses?.[0]?.status || 'NEW'}
+          statuses={lead.statuses.map(s => ({
+            id: s.id,
+            status: s.status,
+            note: s.note,
+            createdAt: s.createdAt.toISOString(),
+            createdByAgencyId: s.createdByAgencyId,
+          }))}
+        />
       </div>
 
       {/* Conversation Section */}

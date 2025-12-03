@@ -279,30 +279,35 @@ export async function GET(request: NextRequest) {
     // Find agency
     const agency = await prisma.agency.findUnique({
       where: { widgetId },
-      include: {
-        leads: {
-          include: {
-            property: {
-              include: {
-                valuation: true,
-              },
-            },
-            conversation: true,
-          },
-          orderBy: {
-            dataRichiesta: "desc",
-          },
-        },
-      },
     })
 
     if (!agency) {
       return NextResponse.json({ error: "Widget non trovato" }, { status: 404 })
     }
 
+    // Fetch leads with statuses
+    const leads = await prisma.lead.findMany({
+      where: { agenziaId: agency.id },
+      include: {
+        property: {
+          include: {
+            valuation: true,
+          },
+        },
+        conversation: true,
+        statuses: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+      orderBy: {
+        dataRichiesta: "desc",
+      },
+    })
+
     return NextResponse.json({
       success: true,
-      leads: agency.leads,
+      leads: leads,
     })
   } catch (error) {
     console.error("Error fetching leads:", error)

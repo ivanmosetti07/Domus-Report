@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyToken } from '@/lib/auth'
+import { verifyAuth } from '@/lib/auth'
 
 // GET /api/lead-status?leadId=xxx - Ottieni status lead
 export async function GET(request: Request) {
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     const lead = await prisma.lead.findFirst({
       where: {
         id: leadId,
-        agenziaId: agency.id,
+        agenziaId: agency.agencyId,
       },
     })
 
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     const lead = await prisma.lead.findFirst({
       where: {
         id: leadId,
-        agenziaId: agency.id,
+        agenziaId: agency.agencyId,
       },
     })
 
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
         leadId,
         status,
         note: note || null,
-        createdByAgencyId: agency.id,
+        createdByAgencyId: agency.agencyId,
       },
     })
 
@@ -110,7 +110,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    const agency = await verifyToken(token)
+    const agency = await verifyAuth(token)
     if (!agency) {
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
@@ -126,7 +126,7 @@ export async function PUT(request: Request) {
     const existingStatus = await prisma.leadStatus.findFirst({
       where: {
         id: statusId,
-        createdByAgencyId: agency.id,
+        createdByAgencyId: agency.agencyId,
       },
     })
 

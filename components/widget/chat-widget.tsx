@@ -62,10 +62,79 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
+  // Tracking: Event batching queue
+  const eventQueueRef = React.useRef<Array<{
+    widgetId: string
+    eventType: string
+    leadId?: string
+    metadata?: Record<string, any>
+  }>>([])
+  const batchTimerRef = React.useRef<NodeJS.Timeout | null>(null)
+  const leadIdRef = React.useRef<string | null>(null)
+
   // Scroll to bottom when new messages arrive
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isTyping])
+
+  // Tracking: Funzione per accodare evento (batching)
+  const trackEvent = React.useCallback((
+    eventType: string,
+    metadata?: Record<string, any>
+  ) => {
+    // Skip tracking per demo widget
+    if (isDemo) return
+
+    // Aggiungi evento alla coda
+    eventQueueRef.current.push({
+      widgetId,
+      eventType,
+      leadId: leadIdRef.current || undefined,
+      metadata,
+    })
+
+    // Resetta timer batch
+    if (batchTimerRef.current) {
+      clearTimeout(batchTimerRef.current)
+    }
+
+    // Invia batch dopo 10 secondi
+    batchTimerRef.current = setTimeout(() => {
+      sendEventBatch()
+    }, 10000)
+  }, [widgetId, isDemo])
+
+  // Tracking: Invia batch di eventi
+  const sendEventBatch = React.useCallback(async () => {
+    if (eventQueueRef.current.length === 0) return
+
+    const eventsToSend = [...eventQueueRef.current]
+    eventQueueRef.current = [] // Svuota la coda
+
+    try {
+      await fetch("/api/widget-events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ events: eventsToSend }),
+      })
+    } catch (error) {
+      console.error("Error sending widget events:", error)
+      // Non bloccare l'esperienza utente se il tracking fallisce
+    }
+  }, [])
+
+  // Tracking: OPEN - quando widget viene montato
+  React.useEffect(() => {
+    trackEvent("OPEN")
+
+    // Cleanup: invia eventi rimanenti quando componente viene smontato
+    return () => {
+      if (batchTimerRef.current) {
+        clearTimeout(batchTimerRef.current)
+      }
+      sendEventBatch()
+    }
+  }, [trackEvent, sendEventBatch])
 
   // Initialize conversation
   React.useEffect(() => {
@@ -111,6 +180,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!inputValue.trim()) return
+
+    // Track MESSAGE event
+    trackEvent("MESSAGE", { messageCount: messages.length + 1 })
 
     addUserMessage(inputValue)
     processInput(inputValue)
@@ -302,6 +374,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
   }
 
   const showValuation = (result: ValuationResult) => {
+    // Track VALUATION_VIEW event
+    trackEvent("VALUATION_VIEW", {
+      estimatedPrice: result.estimatedPrice,
+      minPrice: result.minPrice,
+      maxPrice: result.maxPrice,
+    })
+
     // Add valuation as special message
     const valuationMessage: MessageType = {
       id: `msg_${Date.now()}`,
@@ -312,6 +391,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
     setMessages(prev => [...prev, valuationMessage])
 
     setTimeout(() => {
+      // Track CONTACT_FORM_START event
+      trackEvent("CONTACT_FORM_START")
+
       addBotMessage(
         "Per ricevere il report dettagliato, lasciami i tuoi contatti. Come ti chiami?",
         "valuation"
@@ -397,6 +479,19 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
 
         throw new Error(errorData.error || "Errore nel salvataggio del lead")
       }
+
+      // Salva leadId dal response per tracking futuro
+      const responseData = await response.json()
+      if (responseData.lead?.id) {
+        leadIdRef.current = responseData.lead.id
+      }
+
+      // Track CONTACT_FORM_SUBMIT event
+      trackEvent("CONTACT_FORM_SUBMIT", {
+        hasPhone: !!collectedData.phone,
+        propertyType: collectedData.type,
+        estimatedPrice: valuation?.estimatedPrice,
+      })
 
       // Messaggio diverso per demo vs reale
       const successMessage = isDemo
@@ -484,7 +579,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
         </div>
         {mode === 'bubble' && onClose && (
           <button
-            onClick={onClose}
+            onClick={() => {
+              // Track CLOSE event
+              trackEvent("CLOSE", { step: currentStep })
+              // Invia subito gli eventi rimanenti
+              sendEventBatch()
+              // Chiudi widget
+              onClose()
+            }}
             className="text-white hover:text-white/80 transition-colors p-2 sm:p-1 -mr-2 sm:-mr-1"
             aria-label="Chiudi chat"
           >

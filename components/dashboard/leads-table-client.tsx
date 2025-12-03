@@ -8,6 +8,13 @@ import { Badge } from "@/components/ui/badge"
 import { Phone, Mail, Copy, ExternalLink } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 
+interface LeadStatus {
+  id: string
+  status: string
+  note: string | null
+  createdAt: Date
+}
+
 interface Lead {
   id: string
   nome: string
@@ -20,6 +27,7 @@ interface Lead {
     citta: string
     tipo: string
   } | null
+  statuses?: LeadStatus[]
 }
 
 interface LeadsTableClientProps {
@@ -28,6 +36,7 @@ interface LeadsTableClientProps {
 
 export function LeadsTableClient({ leads }: LeadsTableClientProps) {
   const [copiedId, setCopiedId] = React.useState<string | null>(null)
+  const [filterStatus, setFilterStatus] = React.useState<string | null>(null)
 
   const handleCopy = async (text: string, id: string) => {
     await navigator.clipboard.writeText(text)
@@ -35,8 +44,100 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
     setTimeout(() => setCopiedId(null), 2000)
   }
 
+  // Helper per ottenere status badge
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      NEW: { label: 'Nuovo', variant: 'default' as const, color: 'bg-blue-100 text-blue-800 border-blue-200' },
+      CONTACTED: { label: 'Contattato', variant: 'secondary' as const, color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+      INTERESTED: { label: 'Interessato', variant: 'default' as const, color: 'bg-green-100 text-green-800 border-green-200' },
+      CONVERTED: { label: 'Convertito', variant: 'default' as const, color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+      LOST: { label: 'Perso', variant: 'destructive' as const, color: 'bg-red-100 text-red-800 border-red-200' },
+    }
+    return statusConfig[status as keyof typeof statusConfig] || { label: status, variant: 'outline' as const, color: 'bg-gray-100 text-gray-800' }
+  }
+
+  // Filtra lead in base al status
+  const filteredLeads = React.useMemo(() => {
+    if (!filterStatus) return leads
+    return leads.filter(lead => {
+      const latestStatus = lead.statuses?.[0]?.status
+      return latestStatus === filterStatus
+    })
+  }, [leads, filterStatus])
+
+  // Calcola count per ogni status
+  const statusCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {
+      NEW: 0,
+      CONTACTED: 0,
+      INTERESTED: 0,
+      CONVERTED: 0,
+      LOST: 0,
+    }
+    leads.forEach(lead => {
+      const latestStatus = lead.statuses?.[0]?.status || 'NEW'
+      if (counts[latestStatus] !== undefined) {
+        counts[latestStatus]++
+      }
+    })
+    return counts
+  }, [leads])
+
   return (
     <>
+      {/* Filtri Status */}
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={filterStatus === null ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterStatus(null)}
+          >
+            Tutti ({leads.length})
+          </Button>
+          <Button
+            variant={filterStatus === 'NEW' ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterStatus('NEW')}
+            className={filterStatus === 'NEW' ? 'bg-blue-600' : ''}
+          >
+            Nuovo ({statusCounts.NEW})
+          </Button>
+          <Button
+            variant={filterStatus === 'CONTACTED' ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterStatus('CONTACTED')}
+            className={filterStatus === 'CONTACTED' ? 'bg-yellow-600' : ''}
+          >
+            Contattato ({statusCounts.CONTACTED})
+          </Button>
+          <Button
+            variant={filterStatus === 'INTERESTED' ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterStatus('INTERESTED')}
+            className={filterStatus === 'INTERESTED' ? 'bg-green-600' : ''}
+          >
+            Interessato ({statusCounts.INTERESTED})
+          </Button>
+          <Button
+            variant={filterStatus === 'CONVERTED' ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterStatus('CONVERTED')}
+            className={filterStatus === 'CONVERTED' ? 'bg-emerald-600' : ''}
+          >
+            Convertito ({statusCounts.CONVERTED})
+          </Button>
+          <Button
+            variant={filterStatus === 'LOST' ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilterStatus('LOST')}
+            className={filterStatus === 'LOST' ? 'bg-red-600' : ''}
+          >
+            Perso ({statusCounts.LOST})
+          </Button>
+        </div>
+      </div>
+
       {/* Desktop Table */}
       <div className="hidden md:block">
         <Card>
@@ -59,13 +160,19 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Data
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Azioni
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {leads.map((lead) => (
+                {filteredLeads.map((lead) => {
+                  const latestStatus = lead.statuses?.[0]?.status || 'NEW'
+                  const statusInfo = getStatusBadge(latestStatus)
+                  return (
                   <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="font-medium text-gray-900">
@@ -119,6 +226,11 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                         {formatDate(lead.dataRichiesta)}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Badge className={statusInfo.color + ' border'}>
+                        {statusInfo.label}
+                      </Badge>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <Link href={`/dashboard/leads/${lead.id}`}>
                         <Button variant="outline" size="sm">
@@ -127,7 +239,8 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                       </Link>
                     </td>
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -136,7 +249,10 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
-        {leads.map((lead) => (
+        {filteredLeads.map((lead) => {
+          const latestStatus = lead.statuses?.[0]?.status || 'NEW'
+          const statusInfo = getStatusBadge(latestStatus)
+          return (
           <Card key={lead.id} className="p-4">
             <div className="space-y-3">
               <div className="flex items-start justify-between">
@@ -181,9 +297,14 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
               </div>
 
               <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                <span className="text-sm text-gray-500">
-                  {formatDate(lead.dataRichiesta)}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">
+                    {formatDate(lead.dataRichiesta)}
+                  </span>
+                  <Badge className={statusInfo.color + ' border text-xs'}>
+                    {statusInfo.label}
+                  </Badge>
+                </div>
                 <Link href={`/dashboard/leads/${lead.id}`}>
                   <Button variant="outline" size="sm">
                     <ExternalLink className="w-4 h-4 mr-2" />
@@ -193,7 +314,8 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
               </div>
             </div>
           </Card>
-        ))}
+          )
+        })}
       </div>
     </>
   )
