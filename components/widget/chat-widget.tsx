@@ -199,6 +199,12 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
       case "contacts":
         // Check if it looks like an email
         if (input.includes("@")) {
+          // Validate email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          if (!emailRegex.test(input)) {
+            addBotMessage("L'email non sembra valida. Puoi inserirla di nuovo?")
+            return
+          }
           setCollectedData(prev => ({ ...prev, email: input }))
           addBotMessage("Ottimo! Vuoi lasciare anche un numero di telefono? (Opzionale - scrivi 'no' per saltare)")
         } else {
@@ -231,54 +237,53 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
     )
   }
 
-  const calculateValuation = () => {
-    addBotMessage("Perfetto! Sto calcolando la valutazione...", "calculating")
+  const calculateValuation = async () => {
+    addBotMessage("Perfetto! Sto calcolando la valutazione... ⏳", "calculating")
 
-    // TODO: Call n8n webhook for real calculation
-    // Simulate calculation
-    setTimeout(() => {
-      const basePrice = 3500 // €/m² base (OMI mock)
-      const surface = collectedData.surfaceSqm || 100
+    try {
+      // Call valuation API
+      const response = await fetch("/api/valuation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address: collectedData.address || "",
+          city: collectedData.city || "Milano",
+          propertyType: collectedData.type || PropertyType.APARTMENT,
+          surfaceSqm: collectedData.surfaceSqm || 100,
+          floor: collectedData.floor,
+          hasElevator: collectedData.hasElevator,
+          condition: collectedData.condition || PropertyCondition.GOOD,
+        }),
+      })
 
-      let floorCoeff = 1.0
-      if (collectedData.floor !== undefined) {
-        if (collectedData.floor <= 1) floorCoeff = 0.95
-        else if (collectedData.floor >= 3) floorCoeff = 1.05
-        if (collectedData.hasElevator) floorCoeff += 0.03
+      if (!response.ok) {
+        throw new Error("Errore nel calcolo della valutazione")
       }
 
-      let conditionCoeff = 1.0
-      switch (collectedData.condition) {
-        case PropertyCondition.NEW:
-          conditionCoeff = 1.2
-          break
-        case PropertyCondition.EXCELLENT:
-          conditionCoeff = 1.1
-          break
-        case PropertyCondition.GOOD:
-          conditionCoeff = 1.0
-          break
-        case PropertyCondition.TO_RENOVATE:
-          conditionCoeff = 0.85
-          break
-      }
+      const data = await response.json()
 
-      const estimatedPrice = Math.round(basePrice * surface * floorCoeff * conditionCoeff)
-      const minPrice = Math.round(estimatedPrice * 0.93)
-      const maxPrice = Math.round(estimatedPrice * 1.07)
+      if (!data.success || !data.valuation) {
+        throw new Error("Dati di valutazione non validi")
+      }
 
       const result: ValuationResult = {
-        minPrice,
-        maxPrice,
-        estimatedPrice,
-        explanation: `Valutazione basata su dati OMI zona ${collectedData.city || 'Milano'}. ${
-          floorCoeff !== 1.0 ? `Piano ${collectedData.floor} ${collectedData.hasElevator ? 'con' : 'senza'} ascensore.` : ''
-        } Condizioni: ${collectedData.condition}.`
+        minPrice: data.valuation.minPrice,
+        maxPrice: data.valuation.maxPrice,
+        estimatedPrice: data.valuation.estimatedPrice,
+        explanation: data.valuation.explanation,
       }
 
       setValuation(result)
       showValuation(result)
-    }, 2500)
+    } catch (error) {
+      console.error("Valuation error:", error)
+      addBotMessage(
+        "Mi dispiace, si è verificato un errore nel calcolo. Riprova tra qualche minuto.",
+        "welcome"
+      )
+    }
   }
 
   const showValuation = (result: ValuationResult) => {
@@ -299,21 +304,76 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
     }, 1500)
   }
 
-  const completeConversation = () => {
+  const completeConversation = async () => {
     const firstName = collectedData.firstName || "Amico"
-    addBotMessage(
-      `Grazie ${firstName}! 🎉 Sarai ricontattato a breve da un nostro consulente.`,
-      "completed"
-    )
 
-    // TODO: Save lead to database via API
-    console.log("Lead data:", { ...collectedData, valuation, widgetId })
+    try {
+      // Save lead to database
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          widgetId,
+          // Lead data
+          firstName: collectedData.firstName,
+          lastName: collectedData.lastName,
+          email: collectedData.email,
+          phone: collectedData.phone,
+          // Property data
+          address: collectedData.address,
+          city: collectedData.city,
+          type: collectedData.type,
+          surfaceSqm: collectedData.surfaceSqm,
+          floor: collectedData.floor,
+          hasElevator: collectedData.hasElevator,
+          condition: collectedData.condition,
+          // Valuation data
+          minPrice: valuation?.minPrice || 0,
+          maxPrice: valuation?.maxPrice || 0,
+          estimatedPrice: valuation?.estimatedPrice || 0,
+          baseOMIValue: 0, // Will be calculated by API
+          floorCoefficient: 1.0,
+          conditionCoefficient: 1.0,
+          explanation: valuation?.explanation || "",
+          // Conversation
+          messages: messages.map((msg) => ({
+            role: msg.role,
+            text: msg.text,
+            timestamp: msg.timestamp,
+          })),
+        }),
+      })
 
-    // Close widget after 3 seconds
-    if (mode === 'bubble' && onClose) {
-      setTimeout(() => {
-        onClose()
-      }, 3000)
+      if (!response.ok) {
+        throw new Error("Errore nel salvataggio del lead")
+      }
+
+      addBotMessage(
+        `Grazie ${firstName}! 🎉 Sarai ricontattato a breve da un nostro consulente.`,
+        "completed"
+      )
+
+      // Close widget after 3 seconds
+      if (mode === 'bubble' && onClose) {
+        setTimeout(() => {
+          onClose()
+        }, 3000)
+      }
+    } catch (error) {
+      console.error("Error saving lead:", error)
+      addBotMessage(
+        `Grazie ${firstName}! Abbiamo ricevuto i tuoi dati e ti ricontatteremo presto.`,
+        "completed"
+      )
+
+      // Close widget anyway
+      if (mode === 'bubble' && onClose) {
+        setTimeout(() => {
+          onClose()
+        }, 3000)
+      }
     }
   }
 
@@ -349,7 +409,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
       className={cn(
         "flex flex-col bg-white rounded-lg shadow-2xl overflow-hidden",
         mode === 'bubble'
-          ? "fixed bottom-4 right-4 w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-2rem)] md:w-[400px] md:h-[600px] z-50 animate-slide-up"
+          ? "fixed bottom-4 right-4 w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-2rem)] md:w-[400px] md:h-[600px] z-50 animate-fade-in"
           : "w-full h-[600px]"
       )}
     >
