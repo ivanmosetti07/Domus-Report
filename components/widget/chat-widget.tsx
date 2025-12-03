@@ -307,6 +307,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
   const completeConversation = async () => {
     const firstName = collectedData.firstName || "Amico"
 
+    // Show loading message
+    addBotMessage("Sto salvando i tuoi dati... ⏳", "completed")
+
     try {
       // Save lead to database
       const response = await fetch("/api/leads", {

@@ -36,10 +36,43 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as CreateLeadRequest
 
-    // Validate required fields
-    if (!body.widgetId || !body.email || !body.firstName) {
+    // Validate required fields - Lead data
+    if (!body.widgetId || !body.email || !body.firstName || !body.lastName) {
       return NextResponse.json(
-        { error: "Widget ID, email e nome sono obbligatori" },
+        { error: "Widget ID, email, nome e cognome sono obbligatori" },
+        { status: 400 }
+      )
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(body.email)) {
+      return NextResponse.json(
+        { error: "Formato email non valido" },
+        { status: 400 }
+      )
+    }
+
+    // Validate required fields - Property data
+    if (!body.address || !body.city || !body.type || !body.surfaceSqm || !body.condition) {
+      return NextResponse.json(
+        { error: "Dati immobile obbligatori: indirizzo, città, tipo, superficie, stato" },
+        { status: 400 }
+      )
+    }
+
+    // Validate surface range
+    if (body.surfaceSqm < 10 || body.surfaceSqm > 2000) {
+      return NextResponse.json(
+        { error: "Superficie deve essere tra 10 e 2000 m²" },
+        { status: 400 }
+      )
+    }
+
+    // Validate valuation data
+    if (!body.minPrice || !body.maxPrice || !body.estimatedPrice) {
+      return NextResponse.json(
+        { error: "Dati valutazione obbligatori: prezzi min/max/stimato" },
         { status: 400 }
       )
     }
@@ -64,6 +97,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Create lead with related data in a transaction
+    // Prisma nested create operations are automatically wrapped in a transaction
+    // If any operation fails, all changes are rolled back
     const lead = await prisma.lead.create({
       data: {
         agenziaId: agency.id,
