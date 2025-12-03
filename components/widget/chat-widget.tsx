@@ -241,7 +241,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
     addBotMessage("Perfetto! Sto calcolando la valutazione... ⏳", "calculating")
 
     try {
-      // Call valuation API
+      // Call valuation API with timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
       const response = await fetch("/api/valuation", {
         method: "POST",
         headers: {
@@ -256,10 +259,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
           hasElevator: collectedData.hasElevator,
           condition: collectedData.condition || PropertyCondition.GOOD,
         }),
+        signal: controller.signal,
       })
 
+      clearTimeout(timeoutId)
+
       if (!response.ok) {
-        throw new Error("Errore nel calcolo della valutazione")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || "Errore nel calcolo della valutazione")
       }
 
       const data = await response.json()
@@ -279,10 +286,18 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
       showValuation(result)
     } catch (error) {
       console.error("Valuation error:", error)
-      addBotMessage(
-        "Mi dispiace, si è verificato un errore nel calcolo. Riprova tra qualche minuto.",
-        "welcome"
-      )
+
+      if (error instanceof Error && error.name === 'AbortError') {
+        addBotMessage(
+          "Mi dispiace, il calcolo sta richiedendo più tempo del previsto. Riprova tra un momento.",
+          "condition"
+        )
+      } else {
+        addBotMessage(
+          "Mi dispiace, si è verificato un errore nel calcolo. Riprova tra qualche minuto.",
+          "condition"
+        )
+      }
     }
   }
 
@@ -311,52 +326,84 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
     addBotMessage("Sto salvando i tuoi dati... ⏳", "completed")
 
     try {
-      // Save lead to database
-      const response = await fetch("/api/leads", {
+      // Determina l'endpoint in base a se è demo o no
+      const endpoint = isDemo ? "/api/demo-leads" : "/api/leads"
+
+      // Prepara il payload base
+      const basePayload = {
+        // Lead data
+        firstName: collectedData.firstName,
+        lastName: collectedData.lastName,
+        email: collectedData.email,
+        phone: collectedData.phone,
+        // Property data
+        address: collectedData.address,
+        city: collectedData.city,
+        type: collectedData.type,
+        surfaceSqm: collectedData.surfaceSqm,
+        floor: collectedData.floor,
+        hasElevator: collectedData.hasElevator,
+        condition: collectedData.condition,
+        // Valuation data
+        minPrice: valuation?.minPrice || 0,
+        maxPrice: valuation?.maxPrice || 0,
+        estimatedPrice: valuation?.estimatedPrice || 0,
+        // Conversation
+        messages: messages.map((msg) => ({
+          role: msg.role,
+          text: msg.text,
+          timestamp: msg.timestamp,
+        })),
+      }
+
+      // Aggiungi widgetId e dati extra solo per lead reali
+      const payload = isDemo
+        ? basePayload
+        : {
+            ...basePayload,
+            widgetId,
+            baseOMIValue: 0, // Will be calculated by API
+            floorCoefficient: 1.0,
+            conditionCoefficient: 1.0,
+            explanation: valuation?.explanation || "",
+          }
+
+      // Save lead to database with timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          widgetId,
-          // Lead data
-          firstName: collectedData.firstName,
-          lastName: collectedData.lastName,
-          email: collectedData.email,
-          phone: collectedData.phone,
-          // Property data
-          address: collectedData.address,
-          city: collectedData.city,
-          type: collectedData.type,
-          surfaceSqm: collectedData.surfaceSqm,
-          floor: collectedData.floor,
-          hasElevator: collectedData.hasElevator,
-          condition: collectedData.condition,
-          // Valuation data
-          minPrice: valuation?.minPrice || 0,
-          maxPrice: valuation?.maxPrice || 0,
-          estimatedPrice: valuation?.estimatedPrice || 0,
-          baseOMIValue: 0, // Will be calculated by API
-          floorCoefficient: 1.0,
-          conditionCoefficient: 1.0,
-          explanation: valuation?.explanation || "",
-          // Conversation
-          messages: messages.map((msg) => ({
-            role: msg.role,
-            text: msg.text,
-            timestamp: msg.timestamp,
-          })),
-        }),
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       })
 
+      clearTimeout(timeoutId)
+
       if (!response.ok) {
-        throw new Error("Errore nel salvataggio del lead")
+        const errorData = await response.json().catch(() => ({}))
+
+        // Handle rate limit
+        if (response.status === 429) {
+          addBotMessage(
+            `Mi dispiace ${firstName}, hai raggiunto il limite di richieste giornaliere. Riprova domani.`,
+            "completed"
+          )
+          return
+        }
+
+        throw new Error(errorData.error || "Errore nel salvataggio del lead")
       }
 
-      addBotMessage(
-        `Grazie ${firstName}! 🎉 Sarai ricontattato a breve da un nostro consulente.`,
-        "completed"
-      )
+      // Messaggio diverso per demo vs reale
+      const successMessage = isDemo
+        ? `Grazie ${firstName}! 🎉 Questa è una demo. Per ricevere lead reali, registrati gratuitamente!`
+        : `Grazie ${firstName}! 🎉 Sarai ricontattato a breve da un nostro consulente.`
+
+      addBotMessage(successMessage, "completed")
 
       // Close widget after 3 seconds
       if (mode === 'bubble' && onClose) {
@@ -366,10 +413,18 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
       }
     } catch (error) {
       console.error("Error saving lead:", error)
-      addBotMessage(
-        `Grazie ${firstName}! Abbiamo ricevuto i tuoi dati e ti ricontatteremo presto.`,
-        "completed"
-      )
+
+      if (error instanceof Error && error.name === 'AbortError') {
+        addBotMessage(
+          `Mi dispiace ${firstName}, il salvataggio sta richiedendo più tempo del previsto. I tuoi dati sono stati ricevuti.`,
+          "completed"
+        )
+      } else {
+        addBotMessage(
+          `Grazie ${firstName}! Abbiamo ricevuto i tuoi dati e ti ricontatteremo presto.`,
+          "completed"
+        )
+      }
 
       // Close widget anyway
       if (mode === 'bubble' && onClose) {
@@ -410,29 +465,30 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
   return (
     <div
       className={cn(
-        "flex flex-col bg-white rounded-lg shadow-2xl overflow-hidden",
+        "flex flex-col bg-white overflow-hidden",
         mode === 'bubble'
-          ? "fixed bottom-4 right-4 w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-2rem)] md:w-[400px] md:h-[600px] z-50 animate-fade-in"
-          : "w-full h-[600px]"
+          ? "fixed inset-0 sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[400px] sm:h-[600px] sm:rounded-lg sm:shadow-2xl sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-2rem)] z-50 animate-fade-in"
+          : "w-full h-[600px] rounded-lg shadow-2xl"
       )}
     >
       {/* Header */}
-      <div className="bg-primary px-4 py-4 flex items-center justify-between">
+      <div className="bg-primary px-4 py-4 sm:py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-primary" />
+          <div className="w-10 h-10 sm:w-9 sm:h-9 bg-white rounded-full flex items-center justify-center">
+            <Building2 className="w-5 h-5 sm:w-4 sm:h-4 text-primary" />
           </div>
           <div>
-            <h3 className="text-white font-semibold">Valuta la tua casa</h3>
+            <h3 className="text-white font-semibold text-base sm:text-sm">Valuta la tua casa</h3>
             <p className="text-xs text-white/70">Ti rispondo in pochi secondi</p>
           </div>
         </div>
         {mode === 'bubble' && onClose && (
           <button
             onClick={onClose}
-            className="text-white hover:text-white/80 transition-colors"
+            className="text-white hover:text-white/80 transition-colors p-2 sm:p-1 -mr-2 sm:-mr-1"
+            aria-label="Chiudi chat"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6 sm:w-5 sm:h-5" />
           </button>
         )}
       </div>
@@ -469,15 +525,17 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={getPlaceholder()}
               disabled={isInputDisabled}
-              className="flex-1"
+              className="flex-1 h-11 sm:h-10"
               type="email"
             />
             <Button
               type="submit"
               size="icon"
               disabled={isInputDisabled || !inputValue.trim()}
+              className="h-11 w-11 sm:h-10 sm:w-10"
+              aria-label="Invia messaggio"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5 sm:w-4 sm:h-4" />
             </Button>
           </form>
         ) : (
@@ -488,14 +546,16 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={getPlaceholder()}
               disabled={isInputDisabled}
-              className="flex-1"
+              className="flex-1 h-11 sm:h-10"
             />
             <Button
               type="submit"
               size="icon"
               disabled={isInputDisabled || !inputValue.trim()}
+              className="h-11 w-11 sm:h-10 sm:w-10"
+              aria-label="Invia messaggio"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5 sm:w-4 sm:h-4" />
             </Button>
           </form>
         )}

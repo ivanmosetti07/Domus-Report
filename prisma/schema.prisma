@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -104,4 +105,29 @@ model Conversation {
 
   @@index([leadId])
   @@map("conversations")
+}
+
+// Modello Demo Lead - Per widget demo landing page
+model DemoLead {
+  id            String   @id @default(cuid())
+  nome          String
+  cognome       String
+  email         String
+  telefono      String?
+  indirizzo     String
+  citta         String
+  tipo          String
+  superficieMq  Int      @map("superficie_mq")
+  piano         Int?
+  ascensore     Boolean?
+  stato         String
+  prezzoMinimo  Int      @map("prezzo_minimo")
+  prezzoMassimo Int      @map("prezzo_massimo")
+  prezzoStimato Int      @map("prezzo_stimato")
+  messaggi      Json     // Conversazione completa
+  dataRichiesta DateTime @default(now()) @map("data_richiesta")
+
+  @@index([dataRichiesta])
+  @@index([email])
+  @@map("demo_leads")
 }

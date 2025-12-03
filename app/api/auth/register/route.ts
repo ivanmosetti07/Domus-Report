@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 import { nanoid } from "nanoid"
+import { validateEmail, validatePassword, validateCity, sanitizeString } from "@/lib/validation"
 
 export interface RegisterRequest {
   nome: string
@@ -22,26 +23,52 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(body.email)) {
+    // Sanitize and validate agency name
+    const nome = sanitizeString(body.nome)
+    if (!nome || nome.length < 2) {
       return NextResponse.json(
-        { error: "Formato email non valido" },
+        { error: "Nome agenzia deve essere almeno 2 caratteri" },
         { status: 400 }
       )
     }
 
-    // Validate password length
-    if (body.password.length < 8) {
+    if (nome.length > 100) {
       return NextResponse.json(
-        { error: "La password deve essere di almeno 8 caratteri" },
+        { error: "Nome agenzia troppo lungo" },
+        { status: 400 }
+      )
+    }
+
+    // Validate email
+    const emailValidation = validateEmail(body.email)
+    if (!emailValidation.valid) {
+      return NextResponse.json(
+        { error: emailValidation.error },
+        { status: 400 }
+      )
+    }
+
+    // Validate password
+    const passwordValidation = validatePassword(body.password)
+    if (!passwordValidation.valid) {
+      return NextResponse.json(
+        { error: passwordValidation.error },
+        { status: 400 }
+      )
+    }
+
+    // Validate city
+    const cityValidation = validateCity(body.citta)
+    if (!cityValidation.valid) {
+      return NextResponse.json(
+        { error: cityValidation.error },
         { status: 400 }
       )
     }
 
     // Check if email already exists
     const existingAgency = await prisma.agency.findUnique({
-      where: { email: body.email.toLowerCase() },
+      where: { email: emailValidation.sanitized },
     })
 
     if (existingAgency) {
@@ -60,10 +87,10 @@ export async function POST(request: NextRequest) {
     // Create agency
     const agency = await prisma.agency.create({
       data: {
-        nome: body.nome,
-        email: body.email.toLowerCase(),
+        nome,
+        email: emailValidation.sanitized,
         password: hashedPassword,
-        citta: body.citta,
+        citta: cityValidation.sanitized,
         widgetId,
         piano: "free",
         attiva: true,

@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { PropertyType, PropertyCondition } from "@/types"
+import {
+  validateEmail,
+  validatePhone,
+  validateName,
+  validateAddress,
+  validateCity,
+  validateSurface,
+  validateFloor,
+  checkRateLimit,
+  getClientIP,
+  sanitizeString,
+} from "@/lib/validation"
 
 export interface CreateLeadRequest {
   widgetId: string
@@ -34,37 +46,110 @@ export interface CreateLeadRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting check
+    const clientIP = getClientIP(request)
+    const rateLimitResult = checkRateLimit(clientIP, 100, 24 * 60 * 60 * 1000) // 100 per day
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: "Limite di richieste giornaliere raggiunto. Riprova domani.",
+          resetAt: rateLimitResult.resetAt,
+        },
+        { status: 429 }
+      )
+    }
+
     const body = (await request.json()) as CreateLeadRequest
 
-    // Validate required fields - Lead data
-    if (!body.widgetId || !body.email || !body.firstName || !body.lastName) {
+    // Validate required fields - Widget ID
+    if (!body.widgetId || typeof body.widgetId !== "string") {
       return NextResponse.json(
-        { error: "Widget ID, email, nome e cognome sono obbligatori" },
+        { error: "Widget ID è obbligatorio" },
         { status: 400 }
       )
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(body.email)) {
+    // Sanitize and validate lead data
+    const emailValidation = validateEmail(body.email || "")
+    if (!emailValidation.valid) {
       return NextResponse.json(
-        { error: "Formato email non valido" },
+        { error: emailValidation.error },
         { status: 400 }
       )
     }
 
-    // Validate required fields - Property data
-    if (!body.address || !body.city || !body.type || !body.surfaceSqm || !body.condition) {
+    const firstNameValidation = validateName(body.firstName || "", "Nome")
+    if (!firstNameValidation.valid) {
       return NextResponse.json(
-        { error: "Dati immobile obbligatori: indirizzo, città, tipo, superficie, stato" },
+        { error: firstNameValidation.error },
         { status: 400 }
       )
     }
 
-    // Validate surface range
-    if (body.surfaceSqm < 10 || body.surfaceSqm > 2000) {
+    const lastNameValidation = validateName(body.lastName || "", "Cognome")
+    if (!lastNameValidation.valid) {
       return NextResponse.json(
-        { error: "Superficie deve essere tra 10 e 2000 m²" },
+        { error: lastNameValidation.error },
+        { status: 400 }
+      )
+    }
+
+    const phoneValidation = validatePhone(body.phone || "")
+    if (!phoneValidation.valid) {
+      return NextResponse.json(
+        { error: phoneValidation.error },
+        { status: 400 }
+      )
+    }
+
+    // Sanitize and validate property data
+    const addressValidation = validateAddress(body.address || "")
+    if (!addressValidation.valid) {
+      return NextResponse.json(
+        { error: addressValidation.error },
+        { status: 400 }
+      )
+    }
+
+    const cityValidation = validateCity(body.city || "")
+    if (!cityValidation.valid) {
+      return NextResponse.json(
+        { error: cityValidation.error },
+        { status: 400 }
+      )
+    }
+
+    const surfaceValidation = validateSurface(body.surfaceSqm || 0)
+    if (!surfaceValidation.valid) {
+      return NextResponse.json(
+        { error: surfaceValidation.error },
+        { status: 400 }
+      )
+    }
+
+    // Validate floor if provided
+    if (body.floor !== undefined && body.floor !== null) {
+      const floorValidation = validateFloor(body.floor)
+      if (!floorValidation.valid) {
+        return NextResponse.json(
+          { error: floorValidation.error },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Validate property type and condition
+    if (!Object.values(PropertyType).includes(body.type)) {
+      return NextResponse.json(
+        { error: "Tipo immobile non valido" },
+        { status: 400 }
+      )
+    }
+
+    if (!Object.values(PropertyCondition).includes(body.condition)) {
+      return NextResponse.json(
+        { error: "Stato immobile non valido" },
         { status: 400 }
       )
     }
@@ -73,6 +158,20 @@ export async function POST(request: NextRequest) {
     if (!body.minPrice || !body.maxPrice || !body.estimatedPrice) {
       return NextResponse.json(
         { error: "Dati valutazione obbligatori: prezzi min/max/stimato" },
+        { status: 400 }
+      )
+    }
+
+    if (body.minPrice < 0 || body.maxPrice < 0 || body.estimatedPrice < 0) {
+      return NextResponse.json(
+        { error: "Prezzi devono essere positivi" },
+        { status: 400 }
+      )
+    }
+
+    if (body.minPrice > body.maxPrice) {
+      return NextResponse.json(
+        { error: "Prezzo minimo non può essere maggiore del massimo" },
         { status: 400 }
       )
     }
@@ -102,19 +201,19 @@ export async function POST(request: NextRequest) {
     const lead = await prisma.lead.create({
       data: {
         agenziaId: agency.id,
-        nome: body.firstName,
-        cognome: body.lastName,
-        email: body.email,
-        telefono: body.phone,
+        nome: firstNameValidation.sanitized,
+        cognome: lastNameValidation.sanitized,
+        email: emailValidation.sanitized,
+        telefono: phoneValidation.sanitized || undefined,
         property: {
           create: {
-            indirizzo: body.address,
-            citta: body.city,
-            cap: body.postalCode,
+            indirizzo: addressValidation.sanitized,
+            citta: cityValidation.sanitized,
+            cap: body.postalCode ? sanitizeString(body.postalCode) : undefined,
             latitudine: body.latitude,
             longitudine: body.longitude,
             tipo: body.type,
-            superficieMq: body.surfaceSqm,
+            superficieMq: surfaceValidation.value,
             piano: body.floor,
             ascensore: body.hasElevator,
             stato: body.condition,

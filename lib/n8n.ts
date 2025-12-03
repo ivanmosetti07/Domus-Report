@@ -6,6 +6,63 @@
 import { PropertyType, PropertyCondition } from "@/types"
 import { getOMIValue } from "./omi"
 
+// In-memory cache for valuation results (15 minutes TTL)
+interface CacheEntry {
+  result: ValuationResult
+  timestamp: number
+}
+
+const valuationCache = new Map<string, CacheEntry>()
+const CACHE_TTL = 15 * 60 * 1000 // 15 minutes
+
+/**
+ * Generates a cache key from valuation input
+ */
+function getCacheKey(input: ValuationInput): string {
+  return `${input.city}-${input.propertyType}-${input.surfaceSqm}-${input.floor || 0}-${input.hasElevator || false}-${input.condition}`
+}
+
+/**
+ * Gets cached valuation if available and not expired
+ */
+function getCachedValuation(input: ValuationInput): ValuationResult | null {
+  const key = getCacheKey(input)
+  const cached = valuationCache.get(key)
+
+  if (!cached) {
+    return null
+  }
+
+  // Check if cache expired
+  if (Date.now() - cached.timestamp > CACHE_TTL) {
+    valuationCache.delete(key)
+    return null
+  }
+
+  return cached.result
+}
+
+/**
+ * Saves valuation to cache
+ */
+function setCachedValuation(input: ValuationInput, result: ValuationResult): void {
+  const key = getCacheKey(input)
+  valuationCache.set(key, {
+    result,
+    timestamp: Date.now(),
+  })
+
+  // Clean up old entries periodically (when cache size > 1000)
+  if (valuationCache.size > 1000) {
+    const now = Date.now()
+    for (const [cacheKey, entry] of valuationCache.entries()) {
+      if (now - entry.timestamp > CACHE_TTL) {
+        valuationCache.delete(cacheKey)
+      }
+    }
+  }
+}
+
 export interface ValuationInput {
   address: string
   city: string
@@ -172,16 +229,26 @@ export function calculateValuationLocal(
 /**
  * Calls n8n webhook for property valuation
  * Falls back to local calculation if n8n is unavailable
+ * Uses in-memory cache to improve performance
  */
 export async function calculateValuation(
   input: ValuationInput
 ): Promise<ValuationResult> {
+  // Check cache first
+  const cached = getCachedValuation(input)
+  if (cached) {
+    console.log("Returning cached valuation")
+    return cached
+  }
+
   const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL
 
   // If n8n is not configured, use local calculation
   if (!n8nWebhookUrl) {
     console.warn("N8N_WEBHOOK_URL not configured, using local calculation")
-    return calculateValuationLocal(input)
+    const result = calculateValuationLocal(input)
+    setCachedValuation(input, result)
+    return result
   }
 
   try {
@@ -192,8 +259,8 @@ export async function calculateValuation(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(input),
-      // Timeout after 10 seconds
-      signal: AbortSignal.timeout(10000),
+      // Timeout after 30 seconds
+      signal: AbortSignal.timeout(30000),
     })
 
     if (!response.ok) {
@@ -212,7 +279,7 @@ export async function calculateValuation(
       throw new Error("Invalid response from n8n webhook")
     }
 
-    return {
+    const result = {
       minPrice: data.minPrice,
       maxPrice: data.maxPrice,
       estimatedPrice: data.estimatedPrice,
@@ -221,9 +288,16 @@ export async function calculateValuation(
       conditionCoefficient: data.conditionCoefficient || 1.0,
       explanation: data.explanation || generateValuationExplanation(input, data),
     }
+
+    // Cache the result
+    setCachedValuation(input, result)
+    return result
   } catch (error) {
     console.error("n8n webhook error, falling back to local calculation:", error)
     // Fallback to local calculation
-    return calculateValuationLocal(input)
+    const result = calculateValuationLocal(input)
+    // Cache the fallback result too
+    setCachedValuation(input, result)
+    return result
   }
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 import { SignJWT } from "jose"
+import { validateEmail } from "@/lib/validation"
 
 export interface LoginRequest {
   email: string
@@ -25,9 +26,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate email format
+    const emailValidation = validateEmail(body.email)
+    if (!emailValidation.valid) {
+      return NextResponse.json(
+        { error: "Formato email non valido" },
+        { status: 400 }
+      )
+    }
+
     // Find agency by email
     const agency = await prisma.agency.findUnique({
-      where: { email: body.email.toLowerCase() },
+      where: { email: emailValidation.sanitized },
     })
 
     if (!agency) {

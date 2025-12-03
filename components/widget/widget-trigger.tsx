@@ -1,9 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { MessageSquare, X } from "lucide-react"
+import { MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ChatWidget } from "./chat-widget"
+
+// Lazy load chat widget for better performance
+const ChatWidget = React.lazy(() =>
+  import("./chat-widget").then((mod) => ({ default: mod.ChatWidget }))
+)
 
 interface WidgetTriggerProps {
   widgetId: string
@@ -47,14 +51,25 @@ export function WidgetTrigger({ widgetId, isDemo = false }: WidgetTriggerProps) 
         <span className="absolute inset-0 rounded-full bg-primary animate-ping opacity-20" />
       </button>
 
-      {/* Chat Widget */}
+      {/* Chat Widget - Lazy loaded */}
       {isOpen && (
-        <ChatWidget
-          widgetId={widgetId}
-          mode="bubble"
-          isDemo={isDemo}
-          onClose={handleClose}
-        />
+        <React.Suspense
+          fallback={
+            <div className="fixed inset-0 sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[400px] sm:h-[600px] sm:rounded-lg sm:shadow-2xl z-50 bg-white flex items-center justify-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-gray-600">Caricamento...</p>
+              </div>
+            </div>
+          }
+        >
+          <ChatWidget
+            widgetId={widgetId}
+            mode="bubble"
+            isDemo={isDemo}
+            onClose={handleClose}
+          />
+        </React.Suspense>
       )}
     </>
   )

@@ -29,7 +29,10 @@ export async function geocodeAddress(
     const encodedAddress = encodeURIComponent(address)
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&region=it&language=it&key=${apiKey}`
 
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      // Timeout after 10 seconds
+      signal: AbortSignal.timeout(10000),
+    })
 
     if (!response.ok) {
       throw new Error(`Geocoding API error: ${response.statusText}`)
