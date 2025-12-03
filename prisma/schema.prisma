@@ -24,7 +24,15 @@ model Agency {
   dataCreazione DateTime @default(now()) @map("data_creazione")
 
   // Relazioni
-  leads         Lead[]
+  leads          Lead[]
+  sessions       AgencySession[]
+  leadStatuses   LeadStatus[]
+  subscription   Subscription?
+  auditLogs      AuditLog[]
+  settings       AgencySetting?
+  notifications  Notification[]
+  analytics      AnalyticsDaily[]
+  emailTemplates EmailTemplate[]
 
   @@map("agencies")
 }
@@ -40,9 +48,11 @@ model Lead {
   dataRichiesta DateTime @default(now()) @map("data_richiesta")
 
   // Relazioni
-  agenzia       Agency       @relation(fields: [agenziaId], references: [id], onDelete: Cascade)
+  agenzia       Agency         @relation(fields: [agenziaId], references: [id], onDelete: Cascade)
   property      Property?
   conversation  Conversation?
+  statuses      LeadStatus[]
+  notifications Notification[]
 
   @@index([agenziaId])
   @@index([dataRichiesta])
@@ -65,8 +75,9 @@ model Property {
   stato        String  // Nuovo, Ottimo, Buono, Da ristrutturare
 
   // Relazioni
-  lead         Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  lead         Lead                 @relation(fields: [leadId], references: [id], onDelete: Cascade)
   valuation    Valuation?
+  attachments  PropertyAttachment[]
 
   @@index([leadId])
   @@map("properties")
@@ -130,4 +141,215 @@ model DemoLead {
   @@index([dataRichiesta])
   @@index([email])
   @@map("demo_leads")
+}
+
+// ============================================================================
+// NUOVI MODELLI - PRIORITÀ ALTA
+// ============================================================================
+
+// Modello Sessione Agenzia - Gestione JWT e logout
+model AgencySession {
+  id              String    @id @default(cuid())
+  agencyId        String    @map("agency_id")
+  tokenHash       String    @map("token_hash")
+  ipAddress       String?   @map("ip_address")
+  userAgent       String?   @map("user_agent")
+  loginAt         DateTime  @default(now()) @map("login_at")
+  expiresAt       DateTime  @map("expires_at")
+  lastActivityAt  DateTime  @default(now()) @map("last_activity_at")
+  revokedAt       DateTime? @map("revoked_at")
+
+  // Relazioni
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("agency_sessions")
+}
+
+// Modello Status Lead - CRM tracking
+model LeadStatus {
+  id                String   @id @default(cuid())
+  leadId            String   @map("lead_id")
+  status            String   @default("NEW") // NEW, CONTACTED, INTERESTED, CONVERTED, LOST
+  note              String?
+  createdByAgencyId String   @map("created_by_agency_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relazioni
+  lead      Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdBy Agency @relation(fields: [createdByAgencyId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([status])
+  @@map("lead_statuses")
+}
+
+// Modello Subscription - Piano e Billing
+model Subscription {
+  id                String    @id @default(cuid())
+  agencyId          String    @unique @map("agency_id")
+  planType          String    @default("free") @map("plan_type") // free, basic, premium
+  status            String    @default("active") // active, cancelled, expired, trial
+  trialEndsAt       DateTime? @map("trial_ends_at")
+  nextBillingDate   DateTime? @map("next_billing_date")
+  cancelledAt       DateTime? @map("cancelled_at")
+  paymentMethodId   String?   @map("payment_method_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relazioni
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([nextBillingDate])
+  @@map("subscriptions")
+}
+
+// ============================================================================
+// NUOVI MODELLI - PRIORITÀ MEDIA
+// ============================================================================
+
+// Modello Audit Log - GDPR e tracking azioni
+model AuditLog {
+  id         String   @id @default(cuid())
+  agencyId   String?  @map("agency_id")
+  action     String // LOGIN, LOGOUT, CREATE_LEAD, UPDATE_LEAD, DELETE_LEAD, etc.
+  entityType String   @map("entity_type") // Lead, Property, Agency, etc.
+  entityId   String?  @map("entity_id")
+  oldValue   Json?    @map("old_value")
+  newValue   Json?    @map("new_value")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relazioni
+  agency Agency? @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+
+  @@index([agencyId])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// Modello Settings Agenzia - Configurazione personalizzata
+model AgencySetting {
+  id                 String   @id @default(cuid())
+  agencyId           String   @unique @map("agency_id")
+  notificationsEmail Boolean  @default(true) @map("notifications_email")
+  emailOnNewLead     Boolean  @default(true) @map("email_on_new_lead")
+  timeZone           String   @default("Europe/Rome") @map("time_zone")
+  language           String   @default("it")
+  widgetTheme        String   @default("default") @map("widget_theme")
+  customCss          String?  @map("custom_css")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relazioni
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@map("agency_settings")
+}
+
+// Modello Allegati Property - Upload file
+model PropertyAttachment {
+  id         String   @id @default(cuid())
+  propertyId String   @map("property_id")
+  fileName   String   @map("file_name")
+  fileUrl    String   @map("file_url")
+  fileType   String   @map("file_type") // image/jpeg, application/pdf, etc.
+  fileSize   Int      @map("file_size")
+  purpose    String // PROPERTY_PHOTO, DOCUMENT, PLANIMETRIA, etc.
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  // Relazioni
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_attachments")
+}
+
+// ============================================================================
+// NUOVI MODELLI - PRIORITÀ BASSA
+// ============================================================================
+
+// Modello Notifiche - Sistema notifiche in-app
+model Notification {
+  id        String    @id @default(cuid())
+  agencyId  String    @map("agency_id")
+  type      String // NEW_LEAD, VALUATION_ERROR, SUBSCRIPTION_EXPIRING, etc.
+  leadId    String?   @map("lead_id")
+  title     String
+  message   String
+  isRead    Boolean   @default(false) @map("is_read")
+  createdAt DateTime  @default(now()) @map("created_at")
+  readAt    DateTime? @map("read_at")
+
+  // Relazioni
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  lead   Lead?  @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([agencyId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+// Modello Analytics - Metriche giornaliere
+model AnalyticsDaily {
+  id                   String   @id @default(cuid())
+  agencyId             String   @map("agency_id")
+  date                 DateTime @db.Date
+  widgetImpressions    Int      @default(0) @map("widget_impressions")
+  widgetClicks         Int      @default(0) @map("widget_clicks")
+  leadsGenerated       Int      @default(0) @map("leads_generated")
+  valuationsCompleted  Int      @default(0) @map("valuations_completed")
+  conversionRate       Float    @default(0) @map("conversion_rate")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  // Relazioni
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyId, date])
+  @@index([date])
+  @@map("analytics_daily")
+}
+
+// Modello Widget Events - Tracking eventi widget
+model WidgetEvent {
+  id        String   @id @default(cuid())
+  widgetId  String   @map("widget_id")
+  leadId    String?  @map("lead_id")
+  eventType String   @map("event_type") // OPEN, CLOSE, MESSAGE, VALUATION_VIEW, etc.
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([widgetId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("widget_events")
+}
+
+// Modello Email Templates - Template email automazione
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  agencyId  String?  @map("agency_id")
+  name      String
+  subject   String
+  htmlBody  String   @map("html_body") @db.Text
+  textBody  String   @map("text_body") @db.Text
+  variables Json? // Array di variabili disponibili nel template
+  type      String // NEW_LEAD, WELCOME, RESET_PASSWORD, etc.
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relazioni
+  agency Agency? @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId])
+  @@index([type])
+  @@map("email_templates")
 }
