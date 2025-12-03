@@ -82,13 +82,51 @@ export default function RegisterPage() {
 
     setLoading(true)
 
-    // TODO: API call to /api/auth/register
-    // Simulazione registrazione
-    setTimeout(() => {
-      console.log("Registrazione:", formData)
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: formData.agencyName,
+          email: formData.email,
+          password: formData.password,
+          citta: formData.city,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setErrors({ general: data.error || "Errore durante la registrazione" })
+        setLoading(false)
+        return
+      }
+
+      // Success - now login automatically
+      const loginResponse = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      if (loginResponse.ok) {
+        router.push("/dashboard")
+      } else {
+        // Registration succeeded but login failed - redirect to login page
+        router.push("/login?message=Registrazione completata. Effettua il login.")
+      }
+    } catch (error) {
+      console.error("Registration error:", error)
+      setErrors({ general: "Errore di connessione. Riprova." })
       setLoading(false)
-      router.push("/dashboard")
-    }, 1500)
+    }
   }
 
   const getPasswordStrengthColor = () => {
@@ -115,6 +153,11 @@ export default function RegisterPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {errors.general && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-600">{errors.general}</p>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="agencyName">Nome Agenzia</Label>
                 <Input

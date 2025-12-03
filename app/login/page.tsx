@@ -44,13 +44,33 @@ export default function LoginPage() {
 
     setLoading(true)
 
-    // TODO: API call to /api/auth/login
-    // Simulazione login
-    setTimeout(() => {
-      console.log("Login:", formData)
-      setLoading(false)
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setErrors({ general: data.error || "Email o password errati" })
+        setLoading(false)
+        return
+      }
+
+      // Success - redirect to dashboard
       router.push("/dashboard")
-    }, 1500)
+    } catch (error) {
+      console.error("Login error:", error)
+      setErrors({ general: "Errore di connessione. Riprova." })
+      setLoading(false)
+    }
   }
 
   return (
@@ -70,6 +90,11 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {errors.general && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-600">{errors.general}</p>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
