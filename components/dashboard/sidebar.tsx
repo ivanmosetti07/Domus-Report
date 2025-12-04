@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils"
 import {
   Home,
   Users,
-  Code,
   User,
   LogOut,
   Building2,
@@ -26,7 +25,6 @@ const navigation = [
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { name: "Report", href: "/dashboard/reports", icon: FileText },
   { name: "Widget", href: "/dashboard/widgets", icon: MessageSquare },
-  { name: "Codice Embed", href: "/dashboard/widget", icon: Code },
   { name: "Abbonamento", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Profilo", href: "/dashboard/profile", icon: User },
 ]
