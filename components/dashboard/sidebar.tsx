@@ -15,7 +15,8 @@ import {
   X,
   BarChart3,
   FileText,
-  MessageSquare
+  MessageSquare,
+  CreditCard
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -26,6 +27,7 @@ const navigation = [
   { name: "Report", href: "/dashboard/reports", icon: FileText },
   { name: "Widget", href: "/dashboard/widgets", icon: MessageSquare },
   { name: "Codice Embed", href: "/dashboard/widget", icon: Code },
+  { name: "Abbonamento", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Profilo", href: "/dashboard/profile", icon: User },
 ]
 

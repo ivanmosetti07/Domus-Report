@@ -190,23 +190,44 @@ model LeadStatus {
 
 // Modello Subscription - Piano e Billing
 model Subscription {
-  id                String    @id @default(cuid())
-  agencyId          String    @unique @map("agency_id")
-  planType          String    @default("free") @map("plan_type") // free, basic, premium
-  status            String    @default("active") // active, cancelled, expired, trial
-  trialEndsAt       DateTime? @map("trial_ends_at")
-  nextBillingDate   DateTime? @map("next_billing_date")
-  cancelledAt       DateTime? @map("cancelled_at")
-  paymentMethodId   String?   @map("payment_method_id")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  id                   String    @id @default(cuid())
+  agencyId             String    @unique @map("agency_id")
+  planType             String    @default("free") @map("plan_type") // free, basic, premium
+  status               String    @default("active") // active, cancelled, expired, trial, past_due
+  trialEndsAt          DateTime? @map("trial_ends_at")
+  nextBillingDate      DateTime? @map("next_billing_date")
+  cancelledAt          DateTime? @map("cancelled_at")
+  paymentMethodId      String?   @map("payment_method_id")
+  stripeCustomerId     String?   @unique @map("stripe_customer_id")
+  stripeSubscriptionId String?   @unique @map("stripe_subscription_id")
+  stripePriceId        String?   @map("stripe_price_id")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
 
   // Relazioni
   agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([nextBillingDate])
+  @@index([stripeCustomerId])
   @@map("subscriptions")
+}
+
+// Modello Promo Code - Codici promozionali
+model PromoCode {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  discountPercent Int       @map("discount_percent")
+  maxUses         Int?      @map("max_uses")
+  usedCount       Int       @default(0) @map("used_count")
+  stripeCouponId  String?   @map("stripe_coupon_id")
+  expiresAt       DateTime? @map("expires_at")
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([code])
+  @@index([isActive])
+  @@map("promo_codes")
 }
 
 // ============================================================================

@@ -15,7 +15,7 @@ export interface PlanLimits {
 export const planLimits: Record<string, PlanLimits> = {
   free: {
     maxWidgets: 1,
-    maxLeadsPerMonth: 10,
+    maxLeadsPerMonth: 50,
     customBranding: false,
     customCss: false,
     emailNotifications: true,
@@ -31,7 +31,7 @@ export const planLimits: Record<string, PlanLimits> = {
     emailNotifications: true,
     analytics: true,
     apiAccess: false,
-    prioritySupport: false,
+    prioritySupport: true,
   },
   premium: {
     maxWidgets: 10,
