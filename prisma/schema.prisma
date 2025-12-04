@@ -33,6 +33,7 @@ model Agency {
   notifications  Notification[]
   analytics      AnalyticsDaily[]
   emailTemplates EmailTemplate[]
+  widgetConfigs  WidgetConfig[]
 
   @@map("agencies")
 }
@@ -352,4 +353,61 @@ model EmailTemplate {
   @@index([agencyId])
   @@index([type])
   @@map("email_templates")
+}
+
+// ============================================================================
+// WIDGET CONFIGURATION - Multi-widget per agenzia
+// ============================================================================
+
+// Modello Widget Config - Configurazioni widget per agenzia
+model WidgetConfig {
+  id              String   @id @default(cuid())
+  agencyId        String   @map("agency_id")
+  widgetId        String   @unique @map("widget_id") // ID pubblico univoco per embed
+  name            String   // "Widget Homepage", "Widget Listini", etc.
+  mode            String   @default("bubble") // bubble, inline
+  isActive        Boolean  @default(true) @map("is_active")
+  isDefault       Boolean  @default(false) @map("is_default") // Widget principale
+
+  // Theme settings
+  themeName       String   @default("default") @map("theme_name") // default, minimal, modern, custom
+  primaryColor    String   @default("#2563eb") @map("primary_color")
+  secondaryColor  String?  @map("secondary_color")
+  backgroundColor String   @default("#ffffff") @map("background_color")
+  textColor       String   @default("#1f2937") @map("text_color")
+  fontFamily      String   @default("system-ui") @map("font_family")
+  borderRadius    String   @default("8px") @map("border_radius")
+  buttonStyle     String   @default("rounded") @map("button_style") // flat, rounded, pill
+
+  // Bubble-specific settings
+  bubblePosition  String   @default("bottom-right") @map("bubble_position") // bottom-right, bottom-left, bottom-center
+  bubbleIcon      String?  @map("bubble_icon") // URL to custom icon
+  showBadge       Boolean  @default(true) @map("show_badge")
+  bubbleAnimation String   @default("pulse") @map("bubble_animation") // pulse, bounce, none
+
+  // Inline-specific settings
+  inlineHeight    String   @default("600px") @map("inline_height")
+  showHeader      Boolean  @default(true) @map("show_header")
+  showBorder      Boolean  @default(true) @map("show_border")
+
+  // Custom CSS
+  customCss       String?  @map("custom_css") @db.Text
+
+  // Logo
+  logoUrl         String?  @map("logo_url")
+
+  // Analytics
+  impressions     Int      @default(0)
+  leadsGenerated  Int      @default(0) @map("leads_generated")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relazioni
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId])
+  @@index([widgetId])
+  @@index([isActive])
+  @@map("widget_configs")
 }

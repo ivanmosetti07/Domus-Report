@@ -1,7 +1,7 @@
 "use client"
 
-import { WidgetTrigger, WidgetThemeConfig } from "@/components/widget/widget-trigger"
-import { useParams, useSearchParams } from "next/navigation"
+import { ChatWidget, WidgetThemeConfig } from "@/components/widget/chat-widget"
+import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
 interface WidgetConfigData {
@@ -30,15 +30,13 @@ interface WidgetConfigData {
 }
 
 /**
- * Embedded Widget Page
- * This page is loaded in an iframe when the widget is embedded on external sites
- * It provides an isolated environment for the widget with minimal styling
+ * Inline Widget Page
+ * This page is loaded in an iframe for inline widget embeds
+ * It displays the chat widget directly without the bubble trigger
  */
-export default function WidgetEmbedPage() {
+export default function WidgetInlinePage() {
   const params = useParams()
-  const searchParams = useSearchParams()
   const widgetId = params.widgetId as string
-  const embedMode = searchParams.get('embed')
 
   const [config, setConfig] = useState<WidgetConfigData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -73,6 +71,7 @@ export default function WidgetEmbedPage() {
           {
             type: "DOMUS_WIDGET_LOADED",
             widgetId,
+            mode: 'inline',
           },
           "*"
         )
@@ -103,7 +102,7 @@ export default function WidgetEmbedPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-transparent">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
           <span className="text-gray-600 text-sm">Caricamento widget...</span>
@@ -114,7 +113,7 @@ export default function WidgetEmbedPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen bg-transparent">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center text-red-600">
           <p className="font-medium">{error}</p>
           <p className="text-sm text-gray-500 mt-1">Verifica l'ID del widget</p>
@@ -136,16 +135,20 @@ export default function WidgetEmbedPage() {
     fontFamily: config.fontFamily,
     borderRadius: config.borderRadius,
     buttonStyle: config.buttonStyle,
-    bubblePosition: config.bubblePosition as 'bottom-right' | 'bottom-left' | 'bottom-center',
-    bubbleIcon: config.bubbleIcon,
-    showBadge: config.showBadge,
-    bubbleAnimation: config.bubbleAnimation as 'pulse' | 'bounce' | 'none',
+    showHeader: config.showHeader,
+    showBorder: config.showBorder,
+    inlineHeight: '100vh', // Full height for iframe embed
     logoUrl: config.logoUrl,
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-transparent">
-      <WidgetTrigger widgetId={widgetId} isDemo={false} theme={theme} />
+    <div className="min-h-screen">
+      <ChatWidget
+        widgetId={widgetId}
+        mode="inline"
+        isDemo={false}
+        theme={theme}
+      />
     </div>
   )
 }

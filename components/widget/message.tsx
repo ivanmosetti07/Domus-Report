@@ -7,9 +7,10 @@ import { Message as MessageType } from "@/types"
 interface MessageProps {
   message: MessageType
   onQuickReply?: (value: string, label: string) => void
+  primaryColor?: string
 }
 
-export function Message({ message, onQuickReply }: MessageProps) {
+export function Message({ message, onQuickReply, primaryColor = '#2563eb' }: MessageProps) {
   const isBot = message.role === "bot"
 
   return (
@@ -24,12 +25,16 @@ export function Message({ message, onQuickReply }: MessageProps) {
           "max-w-[80%] rounded-lg p-3",
           isBot
             ? "bg-gray-100 text-gray-900"
-            : "bg-blue-100 text-gray-900"
+            : "text-white"
         )}
+        style={!isBot ? { backgroundColor: primaryColor } : undefined}
       >
         {isBot && (
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+            <div
+              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: primaryColor }}
+            >
               <span className="text-xs text-white">🤖</span>
             </div>
             <span className="text-xs font-medium text-gray-600">
@@ -48,7 +53,8 @@ export function Message({ message, onQuickReply }: MessageProps) {
               <button
                 key={idx}
                 onClick={() => onQuickReply?.(reply.value, reply.label)}
-                className="text-xs px-3 py-2 border border-primary/30 rounded-lg text-center bg-white text-gray-900 hover:bg-primary/5 hover:border-primary transition-colors font-medium"
+                className="text-xs px-3 py-2 border rounded-lg text-center bg-white text-gray-900 hover:opacity-80 transition-colors font-medium"
+                style={{ borderColor: `${primaryColor}40` }}
               >
                 {reply.label}
               </button>
@@ -56,7 +62,7 @@ export function Message({ message, onQuickReply }: MessageProps) {
           </div>
         )}
 
-        <p className="text-xs text-gray-500 mt-2">
+        <p className={cn("text-xs mt-2", isBot ? "text-gray-500" : "text-white/70")}>
           {new Date(message.timestamp).toLocaleTimeString("it-IT", {
             hour: "2-digit",
             minute: "2-digit"

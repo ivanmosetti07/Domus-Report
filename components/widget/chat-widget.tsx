@@ -11,11 +11,30 @@ import { X, Send, Building2, Loader2 } from "lucide-react"
 import { Message as MessageType, PropertyType, PropertyCondition } from "@/types"
 import { formatCurrency } from "@/lib/utils"
 
+export interface WidgetThemeConfig {
+  primaryColor?: string
+  secondaryColor?: string
+  backgroundColor?: string
+  textColor?: string
+  fontFamily?: string
+  borderRadius?: string
+  buttonStyle?: string
+  bubblePosition?: 'bottom-right' | 'bottom-left' | 'bottom-center'
+  bubbleIcon?: string
+  showBadge?: boolean
+  bubbleAnimation?: 'pulse' | 'bounce' | 'none'
+  logoUrl?: string
+  showHeader?: boolean
+  showBorder?: boolean
+  inlineHeight?: string
+}
+
 interface ChatWidgetProps {
   widgetId: string
   mode?: 'bubble' | 'inline'
   isDemo?: boolean
   onClose?: () => void
+  theme?: WidgetThemeConfig
 }
 
 type ConversationStep =
@@ -52,7 +71,32 @@ interface ValuationResult {
   explanation: string
 }
 
-export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose }: ChatWidgetProps) {
+export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose, theme = {} }: ChatWidgetProps) {
+  // Theme configuration with defaults
+  const {
+    primaryColor = '#2563eb',
+    secondaryColor,
+    backgroundColor = '#ffffff',
+    textColor = '#1f2937',
+    fontFamily = 'system-ui, -apple-system, sans-serif',
+    borderRadius = '8px',
+    logoUrl,
+    showHeader = true,
+    showBorder = true,
+    inlineHeight = '600px',
+    bubblePosition = 'bottom-right',
+  } = theme
+
+  // CSS variables for theming
+  const themeStyles: React.CSSProperties = {
+    '--widget-primary': primaryColor,
+    '--widget-secondary': secondaryColor || primaryColor,
+    '--widget-bg': backgroundColor,
+    '--widget-text': textColor,
+    '--widget-font': fontFamily,
+    '--widget-radius': borderRadius,
+  } as React.CSSProperties
+
   const [messages, setMessages] = React.useState<MessageType[]>([])
   const [inputValue, setInputValue] = React.useState("")
   const [isTyping, setIsTyping] = React.useState(false)
@@ -557,51 +601,83 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
 
   const isInputDisabled = currentStep === "calculating" || currentStep === "completed" || isTyping
 
+  // Position class for bubble mode
+  const bubblePositionClass = bubblePosition === 'bottom-left' ? 'sm:left-4' : 'sm:right-4'
+
+  // Gradient background for header
+  const headerGradient = secondaryColor
+    ? `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
+    : `linear-gradient(135deg, ${primaryColor}, ${primaryColor}dd)`
+
   return (
     <div
       className={cn(
-        "flex flex-col bg-white overflow-hidden",
+        "flex flex-col overflow-hidden",
         mode === 'bubble'
-          ? "fixed inset-0 sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[400px] sm:h-[600px] sm:rounded-lg sm:shadow-2xl sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-2rem)] z-50 animate-fade-in"
-          : "w-full h-[600px] rounded-lg shadow-2xl"
+          ? `fixed inset-0 sm:inset-auto sm:bottom-4 ${bubblePositionClass} sm:w-[400px] sm:h-[600px] sm:rounded-lg sm:shadow-2xl sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-2rem)] z-50 animate-fade-in`
+          : `w-full rounded-lg ${showBorder ? 'shadow-2xl border border-gray-200' : ''}`
       )}
+      style={{
+        ...themeStyles,
+        backgroundColor,
+        fontFamily,
+        height: mode === 'inline' ? inlineHeight : undefined,
+      }}
     >
       {/* Header */}
-      <div className="bg-primary px-4 py-4 sm:py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 sm:w-9 sm:h-9 bg-white rounded-full flex items-center justify-center">
-            <Building2 className="w-5 h-5 sm:w-4 sm:h-4 text-primary" />
+      {(mode === 'bubble' || showHeader) && (
+        <div
+          className="px-4 py-4 sm:py-3 flex items-center justify-between"
+          style={{ background: headerGradient }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 sm:w-9 sm:h-9 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: backgroundColor }}
+            >
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="w-6 h-6 sm:w-5 sm:h-5 object-contain" />
+              ) : (
+                <Building2 className="w-5 h-5 sm:w-4 sm:h-4" style={{ color: primaryColor }} />
+              )}
+            </div>
+            <div>
+              <h3 className="text-white font-semibold text-base sm:text-sm">Valuta la tua casa</h3>
+              <p className="text-xs text-white/70">Ti rispondo in pochi secondi</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-white font-semibold text-base sm:text-sm">Valuta la tua casa</h3>
-            <p className="text-xs text-white/70">Ti rispondo in pochi secondi</p>
-          </div>
+          {mode === 'bubble' && onClose && (
+            <button
+              onClick={() => {
+                // Track CLOSE event
+                trackEvent("CLOSE", { step: currentStep })
+                // Invia subito gli eventi rimanenti
+                sendEventBatch()
+                // Chiudi widget
+                onClose()
+              }}
+              className="text-white hover:text-white/80 transition-colors p-2 sm:p-1 -mr-2 sm:-mr-1"
+              aria-label="Chiudi chat"
+            >
+              <X className="w-6 h-6 sm:w-5 sm:h-5" />
+            </button>
+          )}
         </div>
-        {mode === 'bubble' && onClose && (
-          <button
-            onClick={() => {
-              // Track CLOSE event
-              trackEvent("CLOSE", { step: currentStep })
-              // Invia subito gli eventi rimanenti
-              sendEventBatch()
-              // Chiudi widget
-              onClose()
-            }}
-            className="text-white hover:text-white/80 transition-colors p-2 sm:p-1 -mr-2 sm:-mr-1"
-            aria-label="Chiudi chat"
-          >
-            <X className="w-6 h-6 sm:w-5 sm:h-5" />
-          </button>
-        )}
-      </div>
+      )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+      <div
+        className="flex-1 overflow-y-auto p-4"
+        style={{
+          backgroundColor: backgroundColor === '#ffffff' ? '#f9fafb' : `${backgroundColor}f5`,
+        }}
+      >
         {messages.map((message) => (
           <Message
             key={message.id}
             message={message}
             onQuickReply={handleQuickReply}
+            primaryColor={primaryColor}
           />
         ))}
 
@@ -618,7 +694,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-200 p-4 bg-white">
+      <div
+        className="border-t border-gray-200 p-4"
+        style={{ backgroundColor }}
+      >
         {currentStep === "contacts" && !collectedData.email ? (
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
@@ -629,12 +708,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
               disabled={isInputDisabled}
               className="flex-1 h-11 sm:h-10"
               type="email"
+              style={{ borderColor: primaryColor }}
             />
             <Button
               type="submit"
               size="icon"
               disabled={isInputDisabled || !inputValue.trim()}
               className="h-11 w-11 sm:h-10 sm:w-10"
+              style={{ backgroundColor: primaryColor }}
               aria-label="Invia messaggio"
             >
               <Send className="w-5 h-5 sm:w-4 sm:h-4" />
@@ -649,12 +730,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose 
               placeholder={getPlaceholder()}
               disabled={isInputDisabled}
               className="flex-1 h-11 sm:h-10"
+              style={{ borderColor: `${primaryColor}40` }}
             />
             <Button
               type="submit"
               size="icon"
               disabled={isInputDisabled || !inputValue.trim()}
               className="h-11 w-11 sm:h-10 sm:w-10"
+              style={{ backgroundColor: primaryColor }}
               aria-label="Invia messaggio"
             >
               <Send className="w-5 h-5 sm:w-4 sm:h-4" />

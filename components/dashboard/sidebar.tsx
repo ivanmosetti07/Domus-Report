@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   BarChart3,
-  FileText
+  FileText,
+  MessageSquare
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -23,7 +24,8 @@ const navigation = [
   { name: "Lead", href: "/dashboard/leads", icon: Users },
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { name: "Report", href: "/dashboard/reports", icon: FileText },
-  { name: "Il tuo Widget", href: "/dashboard/widget", icon: Code },
+  { name: "Widget", href: "/dashboard/widgets", icon: MessageSquare },
+  { name: "Codice Embed", href: "/dashboard/widget", icon: Code },
   { name: "Profilo", href: "/dashboard/profile", icon: User },
 ]
 
