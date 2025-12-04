@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyAuth } from '@/lib/auth'
+import { getAuthAgency } from '@/lib/auth'
 import { canCreateWidget, canUseCustomCss, canUseCustomBranding } from '@/lib/plan-limits'
 import { isValidHexColor, sanitizeCSS } from '@/lib/widget-themes'
 import { nanoid } from 'nanoid'
@@ -8,14 +8,9 @@ import { nanoid } from 'nanoid'
 // GET /api/widget-config - Ottieni tutti i widget dell'agenzia
 export async function GET(request: Request) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    if (!token) {
-      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
-    }
-
-    const agency = await verifyAuth(token)
+    const agency = await getAuthAgency()
     if (!agency) {
-      return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
+      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
     // Fetch widget configs per l'agenzia
@@ -47,14 +42,9 @@ export async function GET(request: Request) {
 // POST /api/widget-config - Crea nuovo widget
 export async function POST(request: Request) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    if (!token) {
-      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
-    }
-
-    const agency = await verifyAuth(token)
+    const agency = await getAuthAgency()
     if (!agency) {
-      return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
+      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
     // Ottieni piano agenzia
@@ -174,14 +164,9 @@ export async function POST(request: Request) {
 // PUT /api/widget-config - Aggiorna widget esistente
 export async function PUT(request: Request) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    if (!token) {
-      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
-    }
-
-    const agency = await verifyAuth(token)
+    const agency = await getAuthAgency()
     if (!agency) {
-      return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
+      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -262,14 +247,9 @@ export async function PUT(request: Request) {
 // DELETE /api/widget-config - Elimina widget (soft delete)
 export async function DELETE(request: Request) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '')
-    if (!token) {
-      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
-    }
-
-    const agency = await verifyAuth(token)
+    const agency = await getAuthAgency()
     if (!agency) {
-      return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
+      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
