@@ -177,9 +177,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Find agency by widgetId
-    const agency = await prisma.agency.findUnique({
+    // Prima cerca nel nuovo sistema multi-widget (WidgetConfig)
+    const widgetConfig = await prisma.widgetConfig.findUnique({
       where: { widgetId: body.widgetId },
+      include: { agency: true },
     })
+
+    let agency = widgetConfig?.agency || null
+
+    // Fallback: cerca nel vecchio sistema (campo widgetId diretto in Agency)
+    if (!agency) {
+      const legacyAgency = await prisma.agency.findUnique({
+        where: { widgetId: body.widgetId },
+      })
+      agency = legacyAgency
+    }
 
     if (!agency) {
       return NextResponse.json(
@@ -191,6 +203,14 @@ export async function POST(request: NextRequest) {
     if (!agency.attiva) {
       return NextResponse.json(
         { error: "Agenzia non attiva" },
+        { status: 403 }
+      )
+    }
+
+    // Verifica che il widget sia attivo (solo per nuovi widget)
+    if (widgetConfig && !widgetConfig.isActive) {
+      return NextResponse.json(
+        { error: "Widget non attivo" },
         { status: 403 }
       )
     }
@@ -249,6 +269,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       leadId: lead.id,
+      lead: lead, // Include full lead object for widget tracking
       message: "Lead creato con successo",
     })
   } catch (error) {
@@ -277,9 +298,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Find agency
-    const agency = await prisma.agency.findUnique({
+    // Prima cerca nel nuovo sistema multi-widget (WidgetConfig)
+    const widgetConfig = await prisma.widgetConfig.findUnique({
       where: { widgetId },
+      include: { agency: true },
     })
+
+    let agency = widgetConfig?.agency || null
+
+    // Fallback: cerca nel vecchio sistema (campo widgetId diretto in Agency)
+    if (!agency) {
+      const legacyAgency = await prisma.agency.findUnique({
+        where: { widgetId },
+      })
+      agency = legacyAgency
+    }
 
     if (!agency) {
       return NextResponse.json({ error: "Widget non trovato" }, { status: 404 })
