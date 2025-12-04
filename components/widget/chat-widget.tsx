@@ -322,13 +322,21 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             return
           }
           setCollectedData(prev => ({ ...prev, email: input }))
+
+          // Salva il lead subito dopo aver raccolto l'email
+          // (il telefono sarà raccolto in seguito se l'utente lo fornisce)
+          saveLeadWithEmail(input)
+
           addBotMessage("Ottimo! Vuoi lasciare anche un numero di telefono? (Opzionale - scrivi 'no' per saltare)")
         } else {
           // It's a phone number or "no"
           if (input.toLowerCase() !== "no") {
             setCollectedData(prev => ({ ...prev, phone: input }))
+            // Aggiorna il lead con il telefono
+            updateLeadWithPhone(input)
           }
-          completeConversation()
+          // Mostra messaggio finale
+          showCompletionMessage()
         }
         break
     }
@@ -443,6 +451,137 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         "valuation"
       )
     }, 1500)
+  }
+
+  const saveLeadWithEmail = async (email: string) => {
+    try {
+      // Determina l'endpoint in base a se è demo o no
+      const endpoint = isDemo ? "/api/demo-leads" : "/api/leads"
+
+      // Prepara il payload base
+      const basePayload = {
+        // Lead data
+        firstName: collectedData.firstName,
+        lastName: collectedData.lastName,
+        email: email,
+        phone: undefined, // Ancora non raccolto
+        // Property data
+        address: collectedData.address,
+        city: collectedData.city,
+        type: collectedData.type,
+        surfaceSqm: collectedData.surfaceSqm,
+        floor: collectedData.floor,
+        hasElevator: collectedData.hasElevator,
+        condition: collectedData.condition,
+        // Valuation data
+        minPrice: valuation?.minPrice || 0,
+        maxPrice: valuation?.maxPrice || 0,
+        estimatedPrice: valuation?.estimatedPrice || 0,
+        // Conversation
+        messages: messages.map((msg) => ({
+          role: msg.role,
+          text: msg.text,
+          timestamp: msg.timestamp,
+        })),
+      }
+
+      // Aggiungi widgetId e dati extra solo per lead reali
+      const payload = isDemo
+        ? basePayload
+        : {
+            ...basePayload,
+            widgetId,
+            baseOMIValue: 0, // Will be calculated by API
+            floorCoefficient: 1.0,
+            conditionCoefficient: 1.0,
+            explanation: valuation?.explanation || "",
+          }
+
+      // Save lead to database with timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+
+      if (response.ok) {
+        // Salva leadId dal response per tracking futuro e aggiornamenti
+        const responseData = await response.json()
+        if (responseData.lead?.id) {
+          leadIdRef.current = responseData.lead.id
+        }
+
+        // Track CONTACT_FORM_SUBMIT event
+        trackEvent("CONTACT_FORM_SUBMIT", {
+          hasPhone: false,
+          propertyType: collectedData.type,
+          estimatedPrice: valuation?.estimatedPrice,
+        })
+      } else {
+        // In caso di errore, non blocchiamo il flusso ma logghiamo
+        console.error("Error saving lead with email:", await response.text())
+      }
+    } catch (error) {
+      // In caso di errore, non blocchiamo il flusso
+      console.error("Error saving lead with email:", error)
+    }
+  }
+
+  const updateLeadWithPhone = async (phone: string) => {
+    // Se non abbiamo un leadId salvato, non possiamo aggiornare
+    if (!leadIdRef.current) {
+      console.error("No lead ID available to update")
+      return
+    }
+
+    try {
+      const endpoint = isDemo ? "/api/demo-leads" : "/api/leads"
+
+      const response = await fetch(`${endpoint}/${leadIdRef.current}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phone }),
+      })
+
+      if (response.ok) {
+        // Track phone update
+        trackEvent("PHONE_ADDED", {
+          leadId: leadIdRef.current,
+        })
+      } else {
+        console.error("Error updating lead with phone:", await response.text())
+      }
+    } catch (error) {
+      console.error("Error updating lead with phone:", error)
+    }
+  }
+
+  const showCompletionMessage = () => {
+    const firstName = collectedData.firstName || "Amico"
+
+    // Messaggio diverso per demo vs reale
+    const successMessage = isDemo
+      ? `Grazie ${firstName}! 🎉 Questa è una demo. Per ricevere lead reali, registrati gratuitamente!`
+      : `Grazie ${firstName}! 🎉 Sarai ricontattato a breve da un nostro consulente.`
+
+    addBotMessage(successMessage, "completed")
+
+    // Close widget after 3 seconds
+    if (mode === 'bubble' && onClose) {
+      setTimeout(() => {
+        onClose()
+      }, 3000)
+    }
   }
 
   const completeConversation = async () => {
