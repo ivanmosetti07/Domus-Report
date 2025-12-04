@@ -38,6 +38,16 @@ export function WidgetTrigger({
   const [isOpen, setIsOpen] = React.useState(false)
   const [hasNotification, setHasNotification] = React.useState(true)
 
+  // Notify parent when widget loads
+  React.useEffect(() => {
+    if (window.parent !== window) {
+      window.parent.postMessage({
+        type: 'DOMUS_WIDGET_LOADED',
+        widgetId
+      }, '*')
+    }
+  }, [widgetId])
+
   // Theme defaults
   const {
     primaryColor = '#2563eb',
@@ -51,10 +61,26 @@ export function WidgetTrigger({
   const handleOpen = () => {
     setIsOpen(true)
     setHasNotification(false)
+
+    // Notify parent window that widget is open
+    if (window.parent !== window) {
+      window.parent.postMessage({
+        type: 'DOMUS_WIDGET_OPEN',
+        widgetId
+      }, '*')
+    }
   }
 
   const handleClose = () => {
     setIsOpen(false)
+
+    // Notify parent window that widget is closed
+    if (window.parent !== window) {
+      window.parent.postMessage({
+        type: 'DOMUS_WIDGET_CLOSE',
+        widgetId
+      }, '*')
+    }
   }
 
   // Position classes based on bubblePosition
@@ -127,7 +153,7 @@ export function WidgetTrigger({
           fallback={
             <div
               className={cn(
-                "fixed inset-0 sm:inset-auto sm:bottom-4 sm:w-[400px] sm:h-[600px] sm:rounded-lg sm:shadow-2xl z-50 bg-white flex items-center justify-center",
+                "fixed inset-0 sm:inset-auto sm:bottom-4 sm:w-[400px] sm:h-[600px] sm:rounded-lg sm:shadow-2xl z-50 bg-white/95 backdrop-blur-sm flex items-center justify-center pointer-events-auto",
                 bubblePosition === 'bottom-left' ? 'sm:left-4' : 'sm:right-4'
               )}
             >

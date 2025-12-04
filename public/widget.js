@@ -49,7 +49,7 @@
     'height: 100vh',
     'border: none',
     'z-index: 9999',
-    'pointer-events: auto',
+    'pointer-events: none',
     'background: transparent'
   ].join(';');
 
@@ -123,6 +123,9 @@
     if (data.type === 'DOMUS_WIDGET_CLOSE') {
       console.log('[DomusReport] Widget closed');
 
+      // Disable pointer events when widget is closed
+      iframe.style.pointerEvents = 'none';
+
       var closeEvent = new CustomEvent('domusreport:close', {
         detail: { widgetId: widgetId }
       });
@@ -132,6 +135,9 @@
     // Handle widget open event
     if (data.type === 'DOMUS_WIDGET_OPEN') {
       console.log('[DomusReport] Widget opened');
+
+      // Enable pointer events when widget is open
+      iframe.style.pointerEvents = 'auto';
 
       var openEvent = new CustomEvent('domusreport:open', {
         detail: { widgetId: widgetId }
