@@ -104,10 +104,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Colore primario non valido' }, { status: 400 })
     }
 
-    // Verifica permessi branding custom
-    if ((logoUrl || primaryColor) && !canUseCustomBranding(plan)) {
+    // Verifica permessi branding custom (solo logo)
+    // I colori sono permessi a tutti i piani tramite selezione tema
+    if (logoUrl && !canUseCustomBranding(plan)) {
       return NextResponse.json(
-        { error: 'Personalizzazione branding non disponibile nel tuo piano' },
+        { error: 'Upload logo non disponibile nel tuo piano' },
         { status: 403 }
       )
     }
@@ -195,10 +196,10 @@ export async function PUT(request: Request) {
     })
     const plan = agencyData?.piano || 'free'
 
-    // Verifica permessi
-    if ((updates.logoUrl || updates.primaryColor) && !canUseCustomBranding(plan)) {
+    // Verifica permessi branding custom (solo logo)
+    if (updates.logoUrl && !canUseCustomBranding(plan)) {
       return NextResponse.json(
-        { error: 'Personalizzazione branding non disponibile nel tuo piano' },
+        { error: 'Upload logo non disponibile nel tuo piano' },
         { status: 403 }
       )
     }
