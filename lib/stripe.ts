@@ -24,21 +24,20 @@ export const stripe = new Proxy({} as Stripe, {
   }
 })
 
-// Piani e prezzi - Questi ID devono essere creati in Stripe Dashboard
+// Piani e prezzi - Gestiti via API senza prodotti Stripe
 export const STRIPE_PLANS = {
   free: {
     name: 'Free',
-    priceMonthly: 0,
+    priceMonthly: 0, // Gratuito
     priceId: null, // Nessun pagamento richiesto
     features: [
       '1 widget',
-      '50 lead/mese',
-      'Analytics base',
+      '5 valutazioni/mese',
       'Supporto email'
     ],
     limits: {
       widgets: 1,
-      leadsPerMonth: 50,
+      valuationsPerMonth: 5,
       analytics: false,
       whiteLabel: false,
       prioritySupport: false
@@ -46,18 +45,18 @@ export const STRIPE_PLANS = {
   },
   basic: {
     name: 'Basic',
-    priceMonthly: 29,
+    priceMonthly: 50, // €50/mese
     priceId: process.env.STRIPE_PRICE_BASIC_MONTHLY,
     features: [
       '3 widget',
-      '100 lead/mese',
+      '50 valutazioni/mese',
       'Analytics completo',
       'Supporto prioritario',
-      'Export PDF/Excel'
+      'Custom branding'
     ],
     limits: {
       widgets: 3,
-      leadsPerMonth: 100,
+      valuationsPerMonth: 50,
       analytics: true,
       whiteLabel: false,
       prioritySupport: true
@@ -65,26 +64,29 @@ export const STRIPE_PLANS = {
   },
   premium: {
     name: 'Premium',
-    priceMonthly: 99,
+    priceMonthly: 100, // €100/mese
     priceId: process.env.STRIPE_PRICE_PREMIUM_MONTHLY,
     features: [
       '10 widget',
-      'Lead illimitati',
+      '150 valutazioni/mese',
       'Analytics avanzato',
       'White-label',
       'Supporto dedicato',
       'API access',
-      'Custom branding'
+      'Custom CSS'
     ],
     limits: {
       widgets: 10,
-      leadsPerMonth: -1, // Illimitati
+      valuationsPerMonth: 150,
       analytics: true,
       whiteLabel: true,
       prioritySupport: true
     }
   }
 } as const
+
+// Prezzo valutazioni extra
+export const EXTRA_VALUATION_PRICE = 150 // €1.50 in centesimi
 
 export type PlanType = keyof typeof STRIPE_PLANS
 

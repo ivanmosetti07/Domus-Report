@@ -18,7 +18,10 @@ import {
   FileText,
   Download,
   AlertCircle,
-  Gift
+  Gift,
+  ShoppingCart,
+  Plus,
+  Minus
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -30,6 +33,8 @@ interface Subscription {
   nextBillingDate: string | null
   cancelledAt: string | null
   stripeCustomerId: string | null
+  valuationsUsedThisMonth?: number
+  extraValuationsPurchased?: number
 }
 
 interface Invoice {
@@ -44,6 +49,20 @@ interface Invoice {
   hostedUrl: string | null
 }
 
+interface UsageData {
+  valuations: {
+    current: number
+    limit: number
+    extra: number
+    percentage: number
+  }
+  widgets: {
+    current: number
+    limit: number
+    percentage: number
+  }
+}
+
 const PLANS = {
   free: {
     name: 'Free',
@@ -53,59 +72,66 @@ const PLANS = {
     popular: false,
     features: [
       { text: '1 widget', included: true },
-      { text: '50 lead/mese', included: true },
+      { text: '5 valutazioni/mese', included: true },
       { text: 'Analytics base', included: false },
       { text: 'Supporto email', included: true },
-      { text: 'White-label', included: false },
+      { text: 'Custom branding', included: false },
       { text: 'API access', included: false },
     ]
   },
   basic: {
     name: 'Basic',
-    price: 29,
+    price: 50,
     description: 'Per agenzie in crescita',
     icon: Zap,
     popular: true,
     features: [
       { text: '3 widget', included: true },
-      { text: '100 lead/mese', included: true },
+      { text: '50 valutazioni/mese', included: true },
       { text: 'Analytics completo', included: true },
       { text: 'Supporto prioritario', included: true },
-      { text: 'White-label', included: false },
+      { text: 'Custom branding', included: true },
       { text: 'API access', included: false },
     ]
   },
   premium: {
     name: 'Premium',
-    price: 99,
+    price: 100,
     description: 'Per agenzie professionali',
     icon: Crown,
     popular: false,
     features: [
       { text: '10 widget', included: true },
-      { text: 'Lead illimitati', included: true },
+      { text: '150 valutazioni/mese', included: true },
       { text: 'Analytics avanzato', included: true },
       { text: 'Supporto dedicato', included: true },
-      { text: 'White-label', included: true },
+      { text: 'White-label + CSS', included: true },
       { text: 'API access', included: true },
     ]
   }
 }
 
+// Prezzo valutazioni extra
+const EXTRA_VALUATION_PRICE = 1.50
+
 export default function SubscriptionPage() {
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [usage, setUsage] = useState<UsageData | null>(null)
   const [loading, setLoading] = useState(true)
   const [upgrading, setUpgrading] = useState<string | null>(null)
   const [cancelling, setCancelling] = useState(false)
   const [promoCode, setPromoCode] = useState('')
   const [promoValid, setPromoValid] = useState<boolean | null>(null)
   const [promoDiscount, setPromoDiscount] = useState<number>(0)
+  const [extraQuantity, setExtraQuantity] = useState(10)
+  const [buyingExtra, setBuyingExtra] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
     fetchSubscription()
     fetchInvoices()
+    fetchUsage()
   }, [])
 
   const fetchSubscription = async () => {
@@ -137,6 +163,74 @@ export default function SubscriptionPage() {
       }
     } catch (error) {
       console.error('Errore fetch invoices:', error)
+    }
+  }
+
+  const fetchUsage = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch('/api/subscription/usage', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setUsage(data)
+      }
+    } catch (error) {
+      console.error('Errore fetch usage:', error)
+    }
+  }
+
+  const handleBuyExtraValuations = async () => {
+    if (extraQuantity < 1 || extraQuantity > 100) {
+      toast({
+        title: 'Errore',
+        description: 'Quantità non valida (min: 1, max: 100)',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    setBuyingExtra(true)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch('/api/subscription/buy-valuations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ quantity: extraQuantity })
+      })
+
+      const data = await res.json()
+
+      if (res.ok && data.clientSecret) {
+        // Redirect to Stripe Checkout or handle with Stripe Elements
+        // For simplicity, we'll use a redirect approach
+        toast({
+          title: 'Pagamento avviato',
+          description: `Acquisto di ${extraQuantity} valutazioni extra per €${(data.amount / 100).toFixed(2)}`
+        })
+        // In production, you'd integrate with Stripe Elements here
+        // For now, we'll show a success message
+        fetchUsage()
+        fetchSubscription()
+      } else {
+        toast({
+          title: 'Errore',
+          description: data.error || 'Impossibile avviare il pagamento',
+          variant: 'destructive'
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Errore',
+        description: 'Errore di connessione',
+        variant: 'destructive'
+      })
+    } finally {
+      setBuyingExtra(false)
     }
   }
 
@@ -387,6 +481,116 @@ export default function SubscriptionPage() {
                 Cancella abbonamento
               </Button>
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Usage Stats */}
+      {usage && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Utilizzo Mensile</CardTitle>
+            <CardDescription>Valutazioni usate questo mese</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Valutazioni</span>
+                <span className="font-medium">
+                  {usage.valuations.current} / {usage.valuations.limit + usage.valuations.extra}
+                  {usage.valuations.extra > 0 && (
+                    <span className="text-green-600 ml-1">(+{usage.valuations.extra} extra)</span>
+                  )}
+                </span>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all ${
+                    usage.valuations.percentage >= 90 ? 'bg-red-500' :
+                    usage.valuations.percentage >= 70 ? 'bg-yellow-500' : 'bg-green-500'
+                  }`}
+                  style={{ width: `${Math.min(100, usage.valuations.percentage)}%` }}
+                />
+              </div>
+              {usage.valuations.percentage >= 80 && (
+                <p className="text-sm text-yellow-600">
+                  Stai per raggiungere il limite. Considera l'acquisto di valutazioni extra.
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Widget</span>
+                <span className="font-medium">{usage.widgets.current} / {usage.widgets.limit}</span>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all ${
+                    usage.widgets.percentage >= 100 ? 'bg-red-500' : 'bg-blue-500'
+                  }`}
+                  style={{ width: `${Math.min(100, usage.widgets.percentage)}%` }}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Buy Extra Valuations */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShoppingCart className="h-5 w-5" />
+            Acquista Valutazioni Extra
+          </CardTitle>
+          <CardDescription>
+            €{EXTRA_VALUATION_PRICE.toFixed(2)} per valutazione
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setExtraQuantity(Math.max(1, extraQuantity - 5))}
+                disabled={extraQuantity <= 1}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Input
+                type="number"
+                value={extraQuantity}
+                onChange={(e) => setExtraQuantity(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+                className="w-20 text-center"
+                min={1}
+                max={100}
+              />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setExtraQuantity(Math.min(100, extraQuantity + 5))}
+                disabled={extraQuantity >= 100}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex-1">
+              <p className="text-lg font-bold">
+                €{(extraQuantity * EXTRA_VALUATION_PRICE).toFixed(2)}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {extraQuantity} valutazioni
+              </p>
+            </div>
+            <Button
+              onClick={handleBuyExtraValuations}
+              disabled={buyingExtra}
+            >
+              {buyingExtra ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Acquista
+            </Button>
           </div>
         </CardContent>
       </Card>

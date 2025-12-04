@@ -201,6 +201,12 @@ model Subscription {
   stripeCustomerId     String?   @unique @map("stripe_customer_id")
   stripeSubscriptionId String?   @unique @map("stripe_subscription_id")
   stripePriceId        String?   @map("stripe_price_id")
+
+  // Tracking valutazioni mensili
+  valuationsUsedThisMonth   Int       @default(0) @map("valuations_used_this_month")
+  extraValuationsPurchased  Int       @default(0) @map("extra_valuations_purchased")
+  valuationsResetDate       DateTime? @map("valuations_reset_date") // Data ultimo reset contatore
+
   createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt            DateTime  @updatedAt @map("updated_at")
 

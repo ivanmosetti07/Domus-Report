@@ -78,6 +78,10 @@ export async function POST(request: Request) {
         await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice)
         break
 
+      case 'payment_intent.succeeded':
+        await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent)
+        break
+
       default:
         console.log(`Evento non gestito: ${event.type}`)
     }
@@ -425,6 +429,68 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
       type: 'PAYMENT_FAILED',
       title: 'Pagamento fallito',
       message: 'Il pagamento per il tuo abbonamento non è andato a buon fine. Aggiorna il metodo di pagamento.'
+    }
+  })
+}
+
+// Handler: payment_intent.succeeded - Per acquisti one-time (valutazioni extra)
+async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  console.log('Payment Intent riuscito:', paymentIntent.id)
+
+  const { agencyId, type, quantity } = paymentIntent.metadata || {}
+
+  // Gestisci solo acquisti di valutazioni extra
+  if (type !== 'extra_valuations' || !agencyId || !quantity) {
+    return
+  }
+
+  const quantityNum = parseInt(quantity, 10)
+  if (isNaN(quantityNum) || quantityNum < 1) return
+
+  // Aggiungi valutazioni extra all'agenzia
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+  await prisma.subscription.upsert({
+    where: { agencyId },
+    create: {
+      agencyId,
+      planType: 'free',
+      status: 'active',
+      extraValuationsPurchased: quantityNum,
+      valuationsResetDate: startOfMonth
+    },
+    update: {
+      extraValuationsPurchased: { increment: quantityNum }
+    }
+  })
+
+  // Invia email conferma
+  const agency = await prisma.agency.findUnique({
+    where: { id: agencyId }
+  })
+
+  if (agency) {
+    const amount = (paymentIntent.amount / 100).toFixed(2)
+    await sendEmail(
+      agency.email,
+      `Acquisto confermato - ${quantityNum} valutazioni extra`,
+      `
+        <h1>Acquisto completato!</h1>
+        <p>Hai acquistato <strong>${quantityNum} valutazioni extra</strong> per €${amount}.</p>
+        <p>Le valutazioni sono già disponibili nel tuo account.</p>
+        <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">Vai alla Dashboard</a></p>
+      `
+    )
+  }
+
+  // Crea notifica
+  await prisma.notification.create({
+    data: {
+      agencyId,
+      type: 'VALUATIONS_PURCHASED',
+      title: 'Valutazioni acquistate',
+      message: `Hai acquistato ${quantityNum} valutazioni extra.`
     }
   })
 }

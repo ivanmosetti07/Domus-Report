@@ -3,7 +3,7 @@
 
 export interface PlanLimits {
   maxWidgets: number
-  maxLeadsPerMonth: number
+  maxValutationsPerMonth: number // Valutazioni mensili incluse nel piano
   customBranding: boolean
   customCss: boolean
   emailNotifications: boolean
@@ -12,10 +12,20 @@ export interface PlanLimits {
   prioritySupport: boolean
 }
 
+// Prezzi piani (in centesimi EUR)
+export const PLAN_PRICES = {
+  free: 0,
+  basic: 5000, // €50/mese
+  premium: 10000, // €100/mese
+} as const
+
+// Prezzo per valutazione extra (in centesimi EUR)
+export const EXTRA_VALUATION_PRICE = 150 // €1.50
+
 export const planLimits: Record<string, PlanLimits> = {
   free: {
     maxWidgets: 1,
-    maxLeadsPerMonth: 50,
+    maxValutationsPerMonth: 5,
     customBranding: false,
     customCss: false,
     emailNotifications: true,
@@ -25,7 +35,7 @@ export const planLimits: Record<string, PlanLimits> = {
   },
   basic: {
     maxWidgets: 3,
-    maxLeadsPerMonth: 100,
+    maxValutationsPerMonth: 50,
     customBranding: true,
     customCss: false,
     emailNotifications: true,
@@ -35,7 +45,7 @@ export const planLimits: Record<string, PlanLimits> = {
   },
   premium: {
     maxWidgets: 10,
-    maxLeadsPerMonth: -1, // illimitati
+    maxValutationsPerMonth: 150,
     customBranding: true,
     customCss: true,
     emailNotifications: true,
@@ -47,6 +57,10 @@ export const planLimits: Record<string, PlanLimits> = {
 
 export function getPlanLimits(planType: string): PlanLimits {
   return planLimits[planType] || planLimits.free
+}
+
+export function getPlanPrice(planType: string): number {
+  return PLAN_PRICES[planType as keyof typeof PLAN_PRICES] || 0
 }
 
 export function canCreateWidget(planType: string, currentWidgetCount: number): boolean {
@@ -62,6 +76,6 @@ export function canUseCustomCss(planType: string): boolean {
   return getPlanLimits(planType).customCss
 }
 
-export function getMaxLeadsPerMonth(planType: string): number {
-  return getPlanLimits(planType).maxLeadsPerMonth
+export function getMaxValutationsPerMonth(planType: string): number {
+  return getPlanLimits(planType).maxValutationsPerMonth
 }

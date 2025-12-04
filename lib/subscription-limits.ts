@@ -1,11 +1,11 @@
 import { prisma } from '@/lib/prisma'
-import { getPlanLimits as getBasePlanLimits } from '@/lib/plan-limits'
+import { getPlanLimits as getBasePlanLimits, EXTRA_VALUATION_PRICE } from '@/lib/plan-limits'
 
 export type PlanType = 'free' | 'basic' | 'premium'
 
 export interface SubscriptionLimits {
   widgets: number
-  leadsPerMonth: number
+  valuationsPerMonth: number
   analytics: boolean
   whiteLabel: boolean
   prioritySupport: boolean
@@ -16,12 +16,15 @@ export function getPlanLimits(planType: PlanType): SubscriptionLimits {
   const baseLimits = getBasePlanLimits(planType)
   return {
     widgets: baseLimits.maxWidgets,
-    leadsPerMonth: baseLimits.maxLeadsPerMonth,
+    valuationsPerMonth: baseLimits.maxValutationsPerMonth,
     analytics: baseLimits.analytics,
     whiteLabel: baseLimits.customCss, // white-label include CSS custom
     prioritySupport: baseLimits.prioritySupport
   }
 }
+
+// Prezzo valutazione extra in centesimi
+export { EXTRA_VALUATION_PRICE }
 
 // Verifica se un'agenzia ha raggiunto il limite widget
 export async function checkWidgetLimit(agencyId: string): Promise<{
@@ -62,11 +65,12 @@ export async function checkWidgetLimit(agencyId: string): Promise<{
   }
 }
 
-// Verifica se un'agenzia ha raggiunto il limite lead mensili
-export async function checkLeadLimit(agencyId: string): Promise<{
+// Verifica se un'agenzia ha raggiunto il limite valutazioni mensili
+export async function checkValuationLimit(agencyId: string): Promise<{
   allowed: boolean
   current: number
   limit: number
+  extra: number
   message?: string
 }> {
   const agency = await prisma.agency.findUnique({
@@ -75,43 +79,106 @@ export async function checkLeadLimit(agencyId: string): Promise<{
   })
 
   if (!agency) {
-    return { allowed: false, current: 0, limit: 0, message: 'Agenzia non trovata' }
+    return { allowed: false, current: 0, limit: 0, extra: 0, message: 'Agenzia non trovata' }
   }
 
   const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
   const limits = getPlanLimits(planType)
+  const subscription = agency.subscription
 
-  // -1 significa illimitati
-  if (limits.leadsPerMonth === -1) {
-    return { allowed: true, current: 0, limit: -1 }
+  // Reset mensile se necessario
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+  let valuationsUsed = subscription?.valuationsUsedThisMonth || 0
+  let extraValuations = subscription?.extraValuationsPurchased || 0
+
+  // Se il reset date è di un mese precedente, resetta il contatore
+  if (subscription?.valuationsResetDate && subscription.valuationsResetDate < startOfMonth) {
+    valuationsUsed = 0
+    extraValuations = 0
+    // Aggiorna il database
+    await prisma.subscription.update({
+      where: { agencyId },
+      data: {
+        valuationsUsedThisMonth: 0,
+        extraValuationsPurchased: 0,
+        valuationsResetDate: startOfMonth
+      }
+    })
   }
 
-  // Conta lead del mese corrente
-  const startOfMonth = new Date()
-  startOfMonth.setDate(1)
-  startOfMonth.setHours(0, 0, 0, 0)
+  // Limite totale = limite piano + valutazioni extra acquistate
+  const totalLimit = limits.valuationsPerMonth + extraValuations
 
-  const currentLeads = await prisma.lead.count({
-    where: {
-      agenziaId: agencyId,
-      dataRichiesta: { gte: startOfMonth }
-    }
-  })
-
-  if (currentLeads >= limits.leadsPerMonth) {
+  if (valuationsUsed >= totalLimit) {
     return {
       allowed: false,
-      current: currentLeads,
-      limit: limits.leadsPerMonth,
-      message: `Limite lead mensili raggiunto (${currentLeads}/${limits.leadsPerMonth}). Passa a un piano superiore per ricevere più lead.`
+      current: valuationsUsed,
+      limit: limits.valuationsPerMonth,
+      extra: extraValuations,
+      message: `Limite valutazioni mensili raggiunto (${valuationsUsed}/${totalLimit}). Acquista valutazioni extra o passa a un piano superiore.`
     }
   }
 
   return {
     allowed: true,
-    current: currentLeads,
-    limit: limits.leadsPerMonth
+    current: valuationsUsed,
+    limit: limits.valuationsPerMonth,
+    extra: extraValuations
   }
+}
+
+// Incrementa il contatore valutazioni usate
+export async function incrementValuationCount(agencyId: string): Promise<void> {
+  const subscription = await prisma.subscription.findUnique({
+    where: { agencyId }
+  })
+
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+  if (subscription) {
+    // Se reset date è di un mese precedente, resetta prima
+    if (!subscription.valuationsResetDate || subscription.valuationsResetDate < startOfMonth) {
+      await prisma.subscription.update({
+        where: { agencyId },
+        data: {
+          valuationsUsedThisMonth: 1,
+          extraValuationsPurchased: 0,
+          valuationsResetDate: startOfMonth
+        }
+      })
+    } else {
+      await prisma.subscription.update({
+        where: { agencyId },
+        data: {
+          valuationsUsedThisMonth: { increment: 1 }
+        }
+      })
+    }
+  } else {
+    // Crea subscription se non esiste
+    await prisma.subscription.create({
+      data: {
+        agencyId,
+        planType: 'free',
+        status: 'active',
+        valuationsUsedThisMonth: 1,
+        valuationsResetDate: startOfMonth
+      }
+    })
+  }
+}
+
+// Aggiungi valutazioni extra acquistate
+export async function addExtraValuations(agencyId: string, quantity: number): Promise<void> {
+  await prisma.subscription.update({
+    where: { agencyId },
+    data: {
+      extraValuationsPurchased: { increment: quantity }
+    }
+  })
 }
 
 // Verifica se un'agenzia ha accesso alle analytics
@@ -145,7 +212,7 @@ export async function checkWhiteLabelAccess(agencyId: string): Promise<boolean> 
 // Ottieni utilizzo corrente dell'agenzia
 export async function getAgencyUsage(agencyId: string): Promise<{
   widgets: { current: number; limit: number; percentage: number }
-  leads: { current: number; limit: number; percentage: number }
+  valuations: { current: number; limit: number; extra: number; percentage: number }
   planType: PlanType
   hasAnalytics: boolean
   hasWhiteLabel: boolean
@@ -164,28 +231,32 @@ export async function getAgencyUsage(agencyId: string): Promise<{
 
   const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
   const limits = getPlanLimits(planType)
+  const subscription = agency.subscription
 
   // Conta widget attivi
   const currentWidgets = agency.widgetConfigs.length
 
-  // Conta lead del mese
-  const startOfMonth = new Date()
-  startOfMonth.setDate(1)
-  startOfMonth.setHours(0, 0, 0, 0)
+  // Valutazioni usate questo mese
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const currentLeads = await prisma.lead.count({
-    where: {
-      agenziaId: agencyId,
-      dataRichiesta: { gte: startOfMonth }
-    }
-  })
+  let valuationsUsed = subscription?.valuationsUsedThisMonth || 0
+  let extraValuations = subscription?.extraValuationsPurchased || 0
+
+  // Reset mensile se necessario
+  if (subscription?.valuationsResetDate && subscription.valuationsResetDate < startOfMonth) {
+    valuationsUsed = 0
+    extraValuations = 0
+  }
+
+  const totalLimit = limits.valuationsPerMonth + extraValuations
 
   const widgetPercentage = limits.widgets > 0
     ? Math.min(100, (currentWidgets / limits.widgets) * 100)
     : 0
 
-  const leadPercentage = limits.leadsPerMonth > 0
-    ? Math.min(100, (currentLeads / limits.leadsPerMonth) * 100)
+  const valuationPercentage = totalLimit > 0
+    ? Math.min(100, (valuationsUsed / totalLimit) * 100)
     : 0
 
   return {
@@ -194,10 +265,11 @@ export async function getAgencyUsage(agencyId: string): Promise<{
       limit: limits.widgets,
       percentage: widgetPercentage
     },
-    leads: {
-      current: currentLeads,
-      limit: limits.leadsPerMonth,
-      percentage: leadPercentage
+    valuations: {
+      current: valuationsUsed,
+      limit: limits.valuationsPerMonth,
+      extra: extraValuations,
+      percentage: valuationPercentage
     },
     planType,
     hasAnalytics: limits.analytics,
