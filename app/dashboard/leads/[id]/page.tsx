@@ -17,6 +17,8 @@ import { prisma } from "@/lib/prisma"
 import { ContactCardClient } from "@/components/dashboard/contact-card-client"
 import { ConversationView } from "@/components/dashboard/conversation-view"
 import { LeadStatusWrapper } from "@/components/dashboard/lead-status-wrapper"
+import { DownloadPDFButton } from "@/components/dashboard/download-pdf-button"
+import { SendEmailButton } from "@/components/dashboard/send-email-button"
 
 interface LeadDetailPageProps {
   params: Promise<{
@@ -79,6 +81,19 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <p className="text-sm text-gray-600 mt-1">
               Lead ricevuto il {formatDate(lead.dataRichiesta)}
             </p>
+          </div>
+          <div className="flex gap-3">
+            <DownloadPDFButton
+              leadId={lead.id}
+              leadName={`${lead.nome} ${lead.cognome}`}
+            />
+            {lead.property && (
+              <SendEmailButton
+                leadId={lead.id}
+                defaultEmail={lead.email}
+                propertyAddress={lead.property.citta}
+              />
+            )}
           </div>
         </div>
       </div>

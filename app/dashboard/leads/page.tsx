@@ -9,6 +9,7 @@ import { formatDate } from "@/lib/utils"
 import { getAuthAgency } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { LeadsTableClient } from "@/components/dashboard/leads-table-client"
+import { ExportLeadsButtons } from "@/components/dashboard/export-leads-buttons"
 
 export default async function LeadsPage() {
   // Get authenticated agency
@@ -49,12 +50,44 @@ export default async function LeadsPage() {
     )
   }
 
+  // Fetch agency data for export
+  const agencyData = await prisma.agency.findUnique({
+    where: { id: agency.agencyId },
+  })
+
+  // Fetch leads with statuses for export
+  const leadsWithStatuses = await prisma.lead.findMany({
+    where: {
+      agenziaId: agency.agencyId,
+    },
+    include: {
+      property: {
+        include: {
+          valuation: true,
+        },
+      },
+      statuses: {
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+      },
+    },
+    orderBy: {
+      dataRichiesta: "desc",
+    },
+  })
+
   return (
     <div>
-      <PageHeader
-        title="I tuoi Lead"
-        subtitle={`${leads.length} lead ${leads.length === 1 ? "trovato" : "trovati"}`}
-      />
+      <div className="flex items-center justify-between mb-6">
+        <PageHeader
+          title="I tuoi Lead"
+          subtitle={`${leads.length} lead ${leads.length === 1 ? "trovato" : "trovati"}`}
+        />
+        <ExportLeadsButtons
+          leads={leadsWithStatuses}
+          agencyName={agencyData?.nome || 'Agenzia'}
+        />
+      </div>
 
       {/* Use client component for interactive features */}
       <LeadsTableClient leads={leads} />

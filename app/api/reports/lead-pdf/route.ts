@@ -1,0 +1,128 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { getAuthAgency } from '@/lib/auth'
+import { generateLeadPDF } from '@/lib/pdf-generator'
+
+export async function POST(request: NextRequest) {
+  try {
+    // Get authenticated agency
+    const agency = await getAuthAgency()
+
+    if (!agency) {
+      return NextResponse.json(
+        { error: 'Non autenticato' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { leadId } = body
+
+    if (!leadId) {
+      return NextResponse.json(
+        { error: 'leadId è obbligatorio' },
+        { status: 400 }
+      )
+    }
+
+    // Fetch lead with all related data
+    const lead = await prisma.lead.findUnique({
+      where: { id: leadId },
+      include: {
+        property: {
+          include: {
+            valuation: true,
+          },
+        },
+        conversation: true,
+        agenzia: true,
+      },
+    })
+
+    if (!lead) {
+      return NextResponse.json(
+        { error: 'Lead non trovato' },
+        { status: 404 }
+      )
+    }
+
+    // Security check: verify lead belongs to authenticated agency
+    if (lead.agenziaId !== agency.agencyId) {
+      return NextResponse.json(
+        { error: 'Non autorizzato' },
+        { status: 403 }
+      )
+    }
+
+    // Validate required data
+    if (!lead.property || !lead.property.valuation) {
+      return NextResponse.json(
+        { error: 'Lead non ha dati completi per generare il PDF' },
+        { status: 400 }
+      )
+    }
+
+    // Generate PDF
+    const pdf = generateLeadPDF({
+      lead: {
+        nome: lead.nome,
+        cognome: lead.cognome,
+        email: lead.email,
+        telefono: lead.telefono,
+        dataRichiesta: lead.dataRichiesta,
+      },
+      property: {
+        indirizzo: lead.property.indirizzo,
+        citta: lead.property.citta,
+        cap: lead.property.cap,
+        tipo: lead.property.tipo,
+        superficieMq: lead.property.superficieMq,
+        piano: lead.property.piano,
+        ascensore: lead.property.ascensore,
+        stato: lead.property.stato,
+      },
+      valuation: {
+        prezzoMinimo: lead.property.valuation.prezzoMinimo,
+        prezzoMassimo: lead.property.valuation.prezzoMassimo,
+        prezzoStimato: lead.property.valuation.prezzoStimato,
+        valoreOmiBase: lead.property.valuation.valoreOmiBase,
+        coefficientePiano: lead.property.valuation.coefficientePiano,
+        coefficienteStato: lead.property.valuation.coefficienteStato,
+        spiegazione: lead.property.valuation.spiegazione,
+        dataCalcolo: lead.property.valuation.dataCalcolo,
+      },
+      conversation: lead.conversation ? {
+        messaggi: lead.conversation.messaggi as any[]
+      } : undefined,
+      agency: {
+        nome: lead.agenzia.nome,
+        email: lead.agenzia.email,
+        citta: lead.agenzia.citta,
+      },
+    })
+
+    // Convert PDF to buffer
+    const pdfBuffer = Buffer.from(pdf.output('arraybuffer'))
+
+    // Generate filename
+    const filename = `report-${lead.cognome.toLowerCase()}-${lead.nome.toLowerCase()}-${Date.now()}.pdf`
+
+    // Return PDF as response
+    return new NextResponse(pdfBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+      },
+    })
+  } catch (error) {
+    console.error('Error generating PDF:', error)
+
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : 'Errore nella generazione del PDF',
+      },
+      { status: 500 }
+    )
+  }
+}
