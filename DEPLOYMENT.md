@@ -110,21 +110,33 @@ Dopo il redeploy, verifica che funzioni correttamente:
 
 ---
 
-## 📦 File non committati
+## 📦 Gestione Environment Variables
 
-Questi file contengono secrets e **NON** devono essere committati:
+**IMPORTANTE:** Tutte le variabili d'ambiente sono gestite su **Vercel Dashboard**.
 
-- `.env.local` (sviluppo locale)
-- `.env.production` (produzione - usa Vercel Environment Variables invece)
-- `.env` (generico)
+### ✅ Cosa fare:
+- Usa `.env.example` come riferimento per le variabili necessarie
+- Configura TUTTE le variabili su Vercel Dashboard → Settings → Environment Variables
+- Vercel gestisce automaticamente dev/preview/production
 
-Usa sempre `.env.example` come riferimento per le variabili necessarie.
+### ❌ Cosa NON fare:
+- **NON** creare file `.env.local` o `.env.production` (sono ignorati da git)
+- **NON** committare secrets o chiavi API
+- **NON** usare file `.env` locali per produzione
 
-## 🔄 Workflow consigliato
+### 🔄 Workflow:
 
-1. **Sviluppo locale:** Usa `.env.local` con `localhost:3000`
-2. **Staging/Preview:** Configura variabili su Vercel per branch preview
-3. **Produzione:** Configura variabili su Vercel per branch `main`
+1. **Sviluppo locale:**
+   - Crea `.env.local` solo se necessario (già in `.gitignore`)
+   - Usa variabili di test/development
+
+2. **Staging/Preview:**
+   - Configura variabili su Vercel per environment "Preview"
+   - Usa Stripe TEST keys
+
+3. **Produzione:**
+   - Configura variabili su Vercel per environment "Production"
+   - Usa Stripe LIVE keys
 
 ## 📚 Riferimenti
 
