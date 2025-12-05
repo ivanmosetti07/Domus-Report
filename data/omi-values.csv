@@ -1,0 +1,82 @@
+citta,zona,cap,tipoImmobile,categoria,valoreMinMq,valoreMaxMq,valoreMedioMq,semestre,anno,fonte
+Milano,Centro Storico,20121,residenziale,abitazioni civili,4500,6500,5500,2,2024,OMI
+Milano,Centro Storico,20121,residenziale,abitazioni signorili,6000,9000,7500,2,2024,OMI
+Milano,Porta Romana,20136,residenziale,abitazioni civili,3500,5000,4250,2,2024,OMI
+Milano,Città Studi,20131,residenziale,abitazioni civili,3000,4500,3750,2,2024,OMI
+Milano,Navigli,20144,residenziale,abitazioni civili,3800,5500,4650,2,2024,OMI
+Milano,Loreto,20131,residenziale,abitazioni civili,3200,4600,3900,2,2024,OMI
+Milano,Brera,20121,residenziale,abitazioni signorili,5500,8500,7000,2,2024,OMI
+Milano,Isola,20124,residenziale,abitazioni civili,4000,5800,4900,2,2024,OMI
+Roma,Centro Storico,00186,residenziale,abitazioni civili,4000,6000,5000,2,2024,OMI
+Roma,Centro Storico,00186,residenziale,abitazioni signorili,5500,8000,6750,2,2024,OMI
+Roma,Parioli,00197,residenziale,abitazioni civili,4200,6200,5200,2,2024,OMI
+Roma,Trastevere,00153,residenziale,abitazioni civili,3800,5500,4650,2,2024,OMI
+Roma,Prati,00192,residenziale,abitazioni civili,3500,5200,4350,2,2024,OMI
+Roma,Testaccio,00153,residenziale,abitazioni civili,3200,4800,4000,2,2024,OMI
+Roma,Monti,00184,residenziale,abitazioni civili,3600,5400,4500,2,2024,OMI
+Roma,EUR,00144,residenziale,abitazioni civili,3000,4500,3750,2,2024,OMI
+Torino,Centro,10121,residenziale,abitazioni civili,2500,3800,3150,2,2024,OMI
+Torino,Centro,10121,residenziale,abitazioni signorili,3500,5000,4250,2,2024,OMI
+Torino,Crocetta,10138,residenziale,abitazioni civili,2300,3500,2900,2,2024,OMI
+Torino,San Salvario,10125,residenziale,abitazioni civili,2000,3200,2600,2,2024,OMI
+Torino,Vanchiglia,10124,residenziale,abitazioni civili,2100,3300,2700,2,2024,OMI
+Firenze,Centro Storico,50122,residenziale,abitazioni civili,3800,5800,4800,2,2024,OMI
+Firenze,Centro Storico,50122,residenziale,abitazioni signorili,5000,7500,6250,2,2024,OMI
+Firenze,Oltrarno,50125,residenziale,abitazioni civili,3200,5000,4100,2,2024,OMI
+Firenze,Campo di Marte,50136,residenziale,abitazioni civili,2800,4200,3500,2,2024,OMI
+Napoli,Centro Storico,80138,residenziale,abitazioni civili,2500,4000,3250,2,2024,OMI
+Napoli,Vomero,80127,residenziale,abitazioni civili,2800,4200,3500,2,2024,OMI
+Napoli,Posillipo,80123,residenziale,abitazioni signorili,3500,5500,4500,2,2024,OMI
+Napoli,Chiaia,80121,residenziale,abitazioni civili,3000,4500,3750,2,2024,OMI
+Bologna,Centro Storico,40126,residenziale,abitazioni civili,3000,4500,3750,2,2024,OMI
+Bologna,Centro Storico,40126,residenziale,abitazioni signorili,4000,6000,5000,2,2024,OMI
+Bologna,Saragozza,40123,residenziale,abitazioni civili,2800,4000,3400,2,2024,OMI
+Bologna,Irnerio,40126,residenziale,abitazioni civili,2600,3800,3200,2,2024,OMI
+Genova,Centro Storico,16123,residenziale,abitazioni civili,2000,3500,2750,2,2024,OMI
+Genova,Albaro,16146,residenziale,abitazioni civili,2500,4000,3250,2,2024,OMI
+Genova,Carignano,16123,residenziale,abitazioni signorili,3000,5000,4000,2,2024,OMI
+Verona,Centro Storico,37121,residenziale,abitazioni civili,2500,4000,3250,2,2024,OMI
+Verona,Borgo Trento,37126,residenziale,abitazioni civili,2200,3500,2850,2,2024,OMI
+Venezia,Centro Storico,30124,residenziale,abitazioni civili,3500,6000,4750,2,2024,OMI
+Venezia,Cannaregio,30121,residenziale,abitazioni civili,3000,5000,4000,2,2024,OMI
+Padova,Centro,35122,residenziale,abitazioni civili,2200,3500,2850,2,2024,OMI
+Padova,Arcella,35129,residenziale,abitazioni civili,1800,2800,2300,2,2024,OMI
+Brescia,Centro,25121,residenziale,abitazioni civili,2000,3200,2600,2,2024,OMI
+Brescia,Zona Nord,25125,residenziale,abitazioni civili,1700,2700,2200,2,2024,OMI
+Parma,Centro,43121,residenziale,abitazioni civili,2200,3400,2800,2,2024,OMI
+Modena,Centro,41121,residenziale,abitazioni civili,2300,3500,2900,2,2024,OMI
+Bari,Centro,70122,residenziale,abitazioni civili,1800,3000,2400,2,2024,OMI
+Bari,Murat,70122,residenziale,abitazioni civili,2000,3300,2650,2,2024,OMI
+Catania,Centro,95124,residenziale,abitazioni civili,1500,2500,2000,2,2024,OMI
+Palermo,Centro,90133,residenziale,abitazioni civili,1600,2800,2200,2,2024,OMI
+Milano,Centro Storico,20121,residenziale,abitazioni civili,4300,6200,5250,1,2024,OMI
+Milano,Porta Romana,20136,residenziale,abitazioni civili,3400,4900,4150,1,2024,OMI
+Roma,Centro Storico,00186,residenziale,abitazioni civili,3900,5900,4900,1,2024,OMI
+Roma,Parioli,00197,residenziale,abitazioni civili,4100,6100,5100,1,2024,OMI
+Torino,Centro,10121,residenziale,abitazioni civili,2400,3700,3050,1,2024,OMI
+Firenze,Centro Storico,50122,residenziale,abitazioni civili,3700,5700,4700,1,2024,OMI
+Milano,Centro Storico,20121,residenziale,abitazioni civili,4200,6000,5100,2,2023,OMI
+Milano,Porta Romana,20136,residenziale,abitazioni civili,3300,4800,4050,2,2023,OMI
+Roma,Centro Storico,00186,residenziale,abitazioni civili,3800,5800,4800,2,2023,OMI
+Roma,Parioli,00197,residenziale,abitazioni civili,4000,6000,5000,2,2023,OMI
+Torino,Centro,10121,residenziale,abitazioni civili,2350,3650,3000,2,2023,OMI
+Firenze,Centro Storico,50122,residenziale,abitazioni civili,3600,5600,4600,2,2023,OMI
+Milano,Centro Storico,20121,residenziale,abitazioni civili,4100,5900,5000,1,2023,OMI
+Milano,Porta Romana,20136,residenziale,abitazioni civili,3200,4700,3950,1,2023,OMI
+Roma,Centro Storico,00186,residenziale,abitazioni civili,3700,5700,4700,1,2023,OMI
+Roma,Parioli,00197,residenziale,abitazioni civili,3900,5900,4900,1,2023,OMI
+Torino,Centro,10121,residenziale,abitazioni civili,2300,3600,2950,1,2023,OMI
+Firenze,Centro Storico,50122,residenziale,abitazioni civili,3500,5500,4500,1,2023,OMI
+Milano,Centro Storico,20121,residenziale,abitazioni civili,4000,5800,4900,2,2022,OMI
+Milano,Porta Romana,20136,residenziale,abitazioni civili,3100,4600,3850,2,2022,OMI
+Roma,Centro Storico,00186,residenziale,abitazioni civili,3600,5600,4600,2,2022,OMI
+Roma,Parioli,00197,residenziale,abitazioni civili,3800,5800,4800,2,2022,OMI
+Torino,Centro,10121,residenziale,abitazioni civili,2250,3550,2900,2,2022,OMI
+Firenze,Centro Storico,50122,residenziale,abitazioni civili,3400,5400,4400,2,2022,OMI
+Milano,Centro Storico,20121,commerciale,negozi,5000,8000,6500,2,2024,OMI
+Milano,Porta Romana,20136,commerciale,negozi,3500,6000,4750,2,2024,OMI
+Roma,Centro Storico,00186,commerciale,negozi,4500,7500,6000,2,2024,OMI
+Torino,Centro,10121,commerciale,negozi,2800,5000,3900,2,2024,OMI
+Firenze,Centro Storico,50122,commerciale,negozi,4000,7000,5500,2,2024,OMI
+Milano,Centro Storico,20121,uffici,uffici,4000,6000,5000,2,2024,OMI
+Roma,Centro Storico,00186,uffici,uffici,3500,5500,4500,2,2024,OMI

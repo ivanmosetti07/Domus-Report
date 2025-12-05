@@ -1,6 +1,7 @@
 /**
  * n8n Integration for Property Valuation
  * This module handles communication with the n8n workflow for calculating property valuations
+ * FASE 8: Integrato con sistema OMI avanzato per valutazioni più precise
  */
 
 import { PropertyType, PropertyCondition } from "@/types"

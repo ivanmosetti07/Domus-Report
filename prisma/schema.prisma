@@ -452,3 +452,79 @@ model WidgetConfig {
   @@index([isActive])
   @@map("widget_configs")
 }
+
+// ============================================================================
+// FASE 8: DATA ENRICHMENT AVANZATO
+// ============================================================================
+
+// Modello Valori OMI - Dati dettagliati Osservatorio Mercato Immobiliare
+model OMIValue {
+  id              String   @id @default(cuid())
+  citta           String
+  zona            String
+  cap             String?
+  tipoImmobile    String   @map("tipo_immobile") // residenziale, commerciale, uffici, etc.
+  categoria       String? // abitazioni civili, abitazioni economiche, ville/villini, etc.
+  valoreMinMq     Decimal  @map("valore_min_mq") @db.Decimal(10, 2)
+  valoreMaxMq     Decimal  @map("valore_max_mq") @db.Decimal(10, 2)
+  valoreMedioMq   Decimal  @map("valore_medio_mq") @db.Decimal(10, 2)
+  semestre        Int // 1 o 2
+  anno            Int
+  fonte           String   @default("OMI") // OMI, CSV, API, etc.
+  dataAggiornamento DateTime @default(now()) @map("data_aggiornamento")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([citta, zona, tipoImmobile, categoria, anno, semestre], name: "OMIValue_unique")
+  @@index([citta, zona])
+  @@index([cap])
+  @@index([anno, semestre])
+  @@map("omi_values")
+}
+
+// Modello Storico Prezzi - Trend prezzi zona nel tempo
+model PriceHistory {
+  id                    String   @id @default(cuid())
+  citta                 String
+  zona                  String
+  cap                   String?
+  tipoImmobile          String   @map("tipo_immobile")
+  valoreMinMq           Decimal  @map("valore_min_mq") @db.Decimal(10, 2)
+  valoreMaxMq           Decimal  @map("valore_max_mq") @db.Decimal(10, 2)
+  valoreMedioMq         Decimal  @map("valore_medio_mq") @db.Decimal(10, 2)
+  semestre              Int // 1 o 2
+  anno                  Int
+  variazionePrecedente  Decimal? @map("variazione_precedente") @db.Decimal(5, 2) // % variazione
+  numeroTransazioni     Int?     @map("numero_transazioni")
+  fonte                 String   @default("OMI")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@unique([citta, zona, tipoImmobile, anno, semestre], name: "PriceHistory_unique")
+  @@index([citta, zona])
+  @@index([cap])
+  @@index([anno, semestre])
+  @@map("price_history")
+}
+
+// Modello Insights Zona - Analisi automatiche trend mercato
+model ZoneInsight {
+  id                      String   @id @default(cuid())
+  citta                   String
+  zona                    String
+  cap                     String?
+  trend                   String // 'crescita', 'stabile', 'decrescita'
+  variazioneAnnuale       Decimal  @map("variazione_annuale") @db.Decimal(5, 2) // %
+  variazioneUltimoSemestre Decimal? @map("variazione_ultimo_semestre") @db.Decimal(5, 2) // %
+  prezzoMedioAttuale      Decimal  @map("prezzo_medio_attuale") @db.Decimal(10, 2)
+  descrizione             String?  @db.Text
+  icona                   String? // emoji o icon name
+  dataCalcolo             DateTime @default(now()) @map("data_calcolo")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  @@unique([citta, zona, dataCalcolo], name: "ZoneInsight_unique")
+  @@index([citta, zona])
+  @@index([cap])
+  @@map("zone_insights")
+}
