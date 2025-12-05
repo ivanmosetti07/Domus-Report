@@ -133,9 +133,10 @@ export default function SubscriptionPage() {
     fetchInvoices()
     fetchUsage()
 
-    // Controlla se c'è un messaggio di successo dall'acquisto
+    // Controlla se c'è un messaggio di successo dall'acquisto/upgrade
     const urlParams = new URLSearchParams(window.location.search)
     const purchase = urlParams.get('purchase')
+    const upgrade = urlParams.get('upgrade')
 
     if (purchase === 'success') {
       toast({
@@ -148,6 +149,26 @@ export default function SubscriptionPage() {
       toast({
         title: 'Acquisto annullato',
         description: 'L\'acquisto è stato annullato.',
+        variant: 'destructive'
+      })
+      // Rimuovi i parametri dall'URL
+      window.history.replaceState({}, '', '/dashboard/subscription')
+    } else if (upgrade === 'success') {
+      toast({
+        title: 'Abbonamento aggiornato!',
+        description: 'Il tuo piano è stato aggiornato con successo.'
+      })
+      // Rimuovi i parametri dall'URL
+      window.history.replaceState({}, '', '/dashboard/subscription')
+      // Ricarica i dati dopo un piccolo delay
+      setTimeout(() => {
+        fetchSubscription()
+        fetchUsage()
+      }, 1000)
+    } else if (upgrade === 'cancelled') {
+      toast({
+        title: 'Upgrade annullato',
+        description: 'L\'upgrade del piano è stato annullato.',
         variant: 'destructive'
       })
       // Rimuovi i parametri dall'URL
