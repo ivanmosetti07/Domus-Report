@@ -77,12 +77,11 @@ export async function PUT(request: Request) {
       data: { password: hashedPassword },
     })
 
-    // Optional: Revoke all existing sessions except the current one
-    // This forces re-login on all other devices
+    // Optional: Revoke all existing sessions
+    // This forces re-login on all devices for security
     await prisma.agencySession.updateMany({
       where: {
         agencyId: auth.agencyId,
-        tokenHash: { not: auth.sessionTokenHash || '' },
         revokedAt: null,
       },
       data: {
@@ -92,7 +91,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Password aggiornata con successo. Le altre sessioni sono state revocate.',
+      message: 'Password aggiornata con successo. Tutte le sessioni sono state revocate per sicurezza.',
     })
   } catch (error) {
     console.error('Errore PUT /api/auth/change-password:', error)
