@@ -101,14 +101,25 @@ export async function POST(request: Request) {
         data: { logoUrl: blob.url },
       })
     } else {
-      // Update agency settings with logo
-      await prisma.agencySetting.upsert({
-        where: { agencyId: agency.agencyId },
-        update: { /* logoUrl: blob.url - aggiungi campo se necessario */ },
-        create: {
-          agencyId: agency.agencyId,
-          /* logoUrl: blob.url */
-        },
+      // Get current agency logo to delete old one
+      const currentAgency = await prisma.agency.findUnique({
+        where: { id: agency.agencyId },
+        select: { logoUrl: true },
+      })
+
+      // Delete old logo if exists
+      if (currentAgency?.logoUrl) {
+        try {
+          await del(currentAgency.logoUrl)
+        } catch {
+          // Ignore delete errors
+        }
+      }
+
+      // Update agency with new logo
+      await prisma.agency.update({
+        where: { id: agency.agencyId },
+        data: { logoUrl: blob.url },
       })
     }
 
@@ -169,6 +180,12 @@ export async function DELETE(request: Request) {
           widgetId,
           agencyId: agency.agencyId,
         },
+        data: { logoUrl: null },
+      })
+    } else {
+      // Remove logo from agency
+      await prisma.agency.update({
+        where: { id: agency.agencyId },
         data: { logoUrl: null },
       })
     }

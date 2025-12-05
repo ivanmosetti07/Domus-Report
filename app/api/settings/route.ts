@@ -62,6 +62,8 @@ export async function PUT(request: Request) {
       language,
       widgetTheme,
       customCss,
+      brandColors,
+      dateFormat,
     } = body
 
     // Verifica se esistono già settings
@@ -82,6 +84,8 @@ export async function PUT(request: Request) {
           language: language || existingSettings.language,
           widgetTheme: widgetTheme || existingSettings.widgetTheme,
           customCss: customCss !== undefined ? customCss : existingSettings.customCss,
+          brandColors: brandColors !== undefined ? brandColors : existingSettings.brandColors,
+          dateFormat: dateFormat || existingSettings.dateFormat,
         },
       })
     } else {
@@ -95,6 +99,8 @@ export async function PUT(request: Request) {
           language: language || 'it',
           widgetTheme: widgetTheme || 'default',
           customCss: customCss || null,
+          brandColors: brandColors || null,
+          dateFormat: dateFormat || 'DD/MM/YYYY',
         },
       })
     }

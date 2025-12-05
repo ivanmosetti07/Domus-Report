@@ -23,6 +23,13 @@ model Agency {
   attiva        Boolean  @default(true)
   dataCreazione DateTime @default(now()) @map("data_creazione")
 
+  // Campi profilo avanzato
+  logoUrl       String?  @map("logo_url")
+  telefono      String?
+  indirizzo     String?
+  sitoWeb       String?  @map("sito_web")
+  partitaIva    String?  @map("partita_iva")
+
   // Relazioni
   leads          Lead[]
   sessions       AgencySession[]
@@ -272,6 +279,13 @@ model AgencySetting {
   language           String   @default("it")
   widgetTheme        String   @default("default") @map("widget_theme")
   customCss          String?  @map("custom_css")
+
+  // Brand colors
+  brandColors        Json?    @map("brand_colors") // {primary, secondary, accent}
+
+  // Preferenze
+  dateFormat         String   @default("DD/MM/YYYY") @map("date_format")
+
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 
