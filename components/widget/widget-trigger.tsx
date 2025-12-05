@@ -153,17 +153,15 @@ export function WidgetTrigger({
           fallback={
             <div
               className={cn(
-                "fixed inset-0 sm:inset-auto sm:bottom-4 sm:w-[400px] sm:h-[600px] sm:rounded-lg sm:shadow-2xl z-50 bg-white/95 backdrop-blur-sm flex items-center justify-center pointer-events-auto",
-                bubblePosition === 'bottom-left' ? 'sm:left-4' : 'sm:right-4'
+                "fixed w-16 h-16 rounded-full shadow-2xl flex items-center justify-center z-50 pointer-events-none",
+                positionClasses[bubblePosition]
               )}
+              style={{ background: gradientBackground }}
             >
-              <div className="flex flex-col items-center gap-3">
-                <div
-                  className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin"
-                  style={{ borderColor: primaryColor, borderTopColor: 'transparent' }}
-                />
-                <p className="text-sm text-gray-600">Caricamento...</p>
-              </div>
+              <div
+                className="w-6 h-6 border-3 border-t-transparent rounded-full animate-spin"
+                style={{ borderColor: 'white', borderTopColor: 'transparent', borderWidth: '3px' }}
+              />
             </div>
           }
         >
