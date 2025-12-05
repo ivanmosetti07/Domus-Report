@@ -72,24 +72,39 @@ export async function POST(request: Request) {
     // Calcola importo totale (in centesimi)
     const totalAmount = EXTRA_VALUATION_PRICE * quantity
 
-    // Crea Payment Intent per pagamento one-time
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalAmount,
-      currency: 'eur',
+    // Crea Stripe Checkout Session per pagamento one-time
+    const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
+      mode: 'payment', // Pagamento one-time (non subscription)
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: 'Valutazioni Extra',
+              description: `${quantity} valutazioni extra per Domus Report`,
+            },
+            unit_amount: EXTRA_VALUATION_PRICE,
+          },
+          quantity: quantity,
+        },
+      ],
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription?session_id={CHECKOUT_SESSION_ID}&purchase=success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription?purchase=cancelled`,
       metadata: {
         agencyId: agency.id,
         type: 'extra_valuations',
         quantity: quantity.toString()
       },
-      description: `${quantity} valutazioni extra - Domus Report`,
-      automatic_payment_methods: {
+      invoice_creation: {
         enabled: true,
-      }
+      },
     })
 
     return NextResponse.json({
-      clientSecret: paymentIntent.client_secret,
+      url: session.url, // URL per redirect a Stripe Checkout
+      sessionId: session.id,
       amount: totalAmount,
       quantity,
       unitPrice: EXTRA_VALUATION_PRICE

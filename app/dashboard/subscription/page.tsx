@@ -132,6 +132,27 @@ export default function SubscriptionPage() {
     fetchSubscription()
     fetchInvoices()
     fetchUsage()
+
+    // Controlla se c'è un messaggio di successo dall'acquisto
+    const urlParams = new URLSearchParams(window.location.search)
+    const purchase = urlParams.get('purchase')
+
+    if (purchase === 'success') {
+      toast({
+        title: 'Acquisto completato!',
+        description: 'Le valutazioni extra sono state aggiunte al tuo account.'
+      })
+      // Rimuovi i parametri dall'URL
+      window.history.replaceState({}, '', '/dashboard/subscription')
+    } else if (purchase === 'cancelled') {
+      toast({
+        title: 'Acquisto annullato',
+        description: 'L\'acquisto è stato annullato.',
+        variant: 'destructive'
+      })
+      // Rimuovi i parametri dall'URL
+      window.history.replaceState({}, '', '/dashboard/subscription')
+    }
   }, [])
 
   const fetchSubscription = async () => {
@@ -205,17 +226,9 @@ export default function SubscriptionPage() {
 
       const data = await res.json()
 
-      if (res.ok && data.clientSecret) {
-        // Redirect to Stripe Checkout or handle with Stripe Elements
-        // For simplicity, we'll use a redirect approach
-        toast({
-          title: 'Pagamento avviato',
-          description: `Acquisto di ${extraQuantity} valutazioni extra per €${(data.amount / 100).toFixed(2)}`
-        })
-        // In production, you'd integrate with Stripe Elements here
-        // For now, we'll show a success message
-        fetchUsage()
-        fetchSubscription()
+      if (res.ok && data.url) {
+        // Redirect a Stripe Checkout
+        window.location.href = data.url
       } else {
         toast({
           title: 'Errore',

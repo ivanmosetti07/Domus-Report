@@ -78,10 +78,6 @@ export async function POST(request: Request) {
         await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice)
         break
 
-      case 'payment_intent.succeeded':
-        await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent)
-        break
-
       default:
         console.log(`Evento non gestito: ${event.type}`)
     }
@@ -100,6 +96,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   console.log('Checkout completato:', session.id)
 
   const agencyId = session.metadata?.agencyId
+  const type = session.metadata?.type
   const planType = session.metadata?.planType as PlanType
 
   if (!agencyId) {
@@ -109,7 +106,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         where: { stripeCustomerId: session.customer as string }
       })
       if (subscription) {
-        await processCheckout(subscription.agencyId, session, planType)
+        if (type === 'extra_valuations') {
+          await processExtraValuationsCheckout(subscription.agencyId, session)
+        } else {
+          await processCheckout(subscription.agencyId, session, planType)
+        }
         return
       }
     }
@@ -117,7 +118,79 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return
   }
 
+  // Gestisci acquisto valutazioni extra
+  if (type === 'extra_valuations') {
+    await processExtraValuationsCheckout(agencyId, session)
+    return
+  }
+
+  // Gestisci subscription upgrade
   await processCheckout(agencyId, session, planType)
+}
+
+// Handler per acquisto valutazioni extra
+async function processExtraValuationsCheckout(agencyId: string, session: Stripe.Checkout.Session) {
+  const quantity = session.metadata?.quantity
+  if (!quantity) {
+    console.error('Quantity non trovata nel checkout session')
+    return
+  }
+
+  const quantityNum = parseInt(quantity, 10)
+  if (isNaN(quantityNum) || quantityNum < 1) {
+    console.error('Quantity non valida:', quantity)
+    return
+  }
+
+  // Aggiungi valutazioni extra all'agenzia
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+  await prisma.subscription.upsert({
+    where: { agencyId },
+    create: {
+      agencyId,
+      planType: 'free',
+      status: 'active',
+      extraValuationsPurchased: quantityNum,
+      valuationsResetDate: startOfMonth,
+      stripeCustomerId: session.customer as string
+    },
+    update: {
+      extraValuationsPurchased: { increment: quantityNum }
+    }
+  })
+
+  // Invia email conferma
+  const agency = await prisma.agency.findUnique({
+    where: { id: agencyId }
+  })
+
+  if (agency && session.amount_total) {
+    const amount = (session.amount_total / 100).toFixed(2)
+    await sendEmail(
+      agency.email,
+      `Acquisto confermato - ${quantityNum} valutazioni extra`,
+      `
+        <h1>Acquisto completato!</h1>
+        <p>Hai acquistato <strong>${quantityNum} valutazioni extra</strong> per €${amount}.</p>
+        <p>Le valutazioni sono già disponibili nel tuo account.</p>
+        <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">Vai alla Dashboard</a></p>
+      `
+    )
+  }
+
+  // Crea notifica
+  await prisma.notification.create({
+    data: {
+      agencyId,
+      type: 'VALUATIONS_PURCHASED',
+      title: 'Valutazioni acquistate',
+      message: `Hai acquistato ${quantityNum} valutazioni extra.`
+    }
+  })
+
+  console.log(`Aggiunte ${quantityNum} valutazioni extra per agenzia ${agencyId}`)
 }
 
 async function processCheckout(agencyId: string, session: Stripe.Checkout.Session, planType: PlanType) {
@@ -433,64 +506,3 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   })
 }
 
-// Handler: payment_intent.succeeded - Per acquisti one-time (valutazioni extra)
-async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  console.log('Payment Intent riuscito:', paymentIntent.id)
-
-  const { agencyId, type, quantity } = paymentIntent.metadata || {}
-
-  // Gestisci solo acquisti di valutazioni extra
-  if (type !== 'extra_valuations' || !agencyId || !quantity) {
-    return
-  }
-
-  const quantityNum = parseInt(quantity, 10)
-  if (isNaN(quantityNum) || quantityNum < 1) return
-
-  // Aggiungi valutazioni extra all'agenzia
-  const now = new Date()
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-
-  await prisma.subscription.upsert({
-    where: { agencyId },
-    create: {
-      agencyId,
-      planType: 'free',
-      status: 'active',
-      extraValuationsPurchased: quantityNum,
-      valuationsResetDate: startOfMonth
-    },
-    update: {
-      extraValuationsPurchased: { increment: quantityNum }
-    }
-  })
-
-  // Invia email conferma
-  const agency = await prisma.agency.findUnique({
-    where: { id: agencyId }
-  })
-
-  if (agency) {
-    const amount = (paymentIntent.amount / 100).toFixed(2)
-    await sendEmail(
-      agency.email,
-      `Acquisto confermato - ${quantityNum} valutazioni extra`,
-      `
-        <h1>Acquisto completato!</h1>
-        <p>Hai acquistato <strong>${quantityNum} valutazioni extra</strong> per €${amount}.</p>
-        <p>Le valutazioni sono già disponibili nel tuo account.</p>
-        <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">Vai alla Dashboard</a></p>
-      `
-    )
-  }
-
-  // Crea notifica
-  await prisma.notification.create({
-    data: {
-      agencyId,
-      type: 'VALUATIONS_PURCHASED',
-      title: 'Valutazioni acquistate',
-      message: `Hai acquistato ${quantityNum} valutazioni extra.`
-    }
-  })
-}

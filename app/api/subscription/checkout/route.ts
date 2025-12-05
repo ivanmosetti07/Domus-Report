@@ -44,13 +44,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Agenzia non trovata' }, { status: 404 })
     }
 
-    // Verifica priceId
+    // Ottieni info piano
     const plan = STRIPE_PLANS[planType]
-    if (!plan.priceId) {
-      return NextResponse.json({
-        error: 'Configurazione prezzi mancante. Contatta il supporto.'
-      }, { status: 500 })
-    }
 
     // Crea o recupera Stripe Customer
     let stripeCustomerId = agency.subscription?.stripeCustomerId
@@ -80,15 +75,26 @@ export async function POST(request: Request) {
       })
     }
 
-    // Prepara parametri checkout
+    // Prepara parametri checkout con prezzo dinamico
     const checkoutParams: Stripe.Checkout.SessionCreateParams = {
       customer: stripeCustomerId,
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [
         {
-          price: plan.priceId,
-          quantity: 1
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: `Piano ${plan.name}`,
+              description: plan.features.join(', '),
+            },
+            unit_amount: plan.priceMonthly * 100, // Converti in centesimi
+            recurring: {
+              interval: 'month',
+              interval_count: 1,
+            },
+          },
+          quantity: 1,
         }
       ],
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
