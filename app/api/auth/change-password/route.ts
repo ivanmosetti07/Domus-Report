@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAuth } from '@/lib/auth'
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt'
 
 // PUT /api/auth/change-password - Change password
 export async function PUT(request: Request) {
