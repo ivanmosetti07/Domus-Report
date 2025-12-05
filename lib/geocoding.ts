@@ -3,6 +3,10 @@
  * Converts addresses to coordinates (latitude, longitude)
  */
 
+import { createLogger } from './logger'
+
+const logger = createLogger('geocoding')
+
 export interface GeocodeResult {
   address: string
   city: string
@@ -21,7 +25,7 @@ export async function geocodeAddress(
   const apiKey = process.env.GOOGLE_MAPS_API_KEY
 
   if (!apiKey) {
-    console.warn("GOOGLE_MAPS_API_KEY not configured, skipping geocoding")
+    logger.warn("GOOGLE_MAPS_API_KEY not configured, skipping geocoding")
     return null
   }
 
@@ -41,7 +45,7 @@ export async function geocodeAddress(
     const data = await response.json()
 
     if (data.status !== "OK" || !data.results || data.results.length === 0) {
-      console.warn(`Geocoding failed for address: ${address}`, data.status)
+      logger.warn(`Geocoding failed for address: ${address}`, { status: data.status })
       return null
     }
 
@@ -72,7 +76,7 @@ export async function geocodeAddress(
       formattedAddress: result.formatted_address,
     }
   } catch (error) {
-    console.error("Geocoding error:", error)
+    logger.error("Geocoding error", error)
     return null
   }
 }

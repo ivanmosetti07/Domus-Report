@@ -2,6 +2,9 @@ import { Sidebar } from "@/components/dashboard/sidebar"
 import { getAuthAgency } from "@/lib/auth"
 import { redirect } from "next/navigation"
 
+// Force dynamic rendering (uses cookies for auth)
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardLayout({
   children,
 }: {

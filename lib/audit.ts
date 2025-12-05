@@ -1,4 +1,7 @@
 import { prisma } from './prisma'
+import { createLogger } from './logger'
+
+const logger = createLogger('audit')
 
 interface AuditLogData {
   agencyId?: string
@@ -31,7 +34,7 @@ export async function createAuditLog(data: AuditLogData) {
       },
     })
   } catch (error) {
-    console.error('Error creating audit log:', error)
+    logger.error('Error creating audit log', error)
     throw error
   }
 }
@@ -55,7 +58,7 @@ export async function getAuditLogs(agencyId: string, limit: number = 50, offset:
 
     return { logs, total }
   } catch (error) {
-    console.error('Error fetching audit logs:', error)
+    logger.error('Error fetching audit logs', error)
     throw error
   }
 }
@@ -79,7 +82,7 @@ export async function cleanupOldAuditLogs(retentionDays: number = 365) {
 
     return { deletedCount: result.count }
   } catch (error) {
-    console.error('Error cleaning up audit logs:', error)
+    logger.error('Error cleaning up audit logs', error)
     throw error
   }
 }

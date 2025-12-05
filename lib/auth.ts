@@ -1,5 +1,8 @@
 import { jwtVerify } from "jose"
 import { cookies } from "next/headers"
+import { createLogger } from "./logger"
+
+const logger = createLogger('auth')
 
 // JWT secret - same as in login route
 const JWT_SECRET = new TextEncoder().encode(
@@ -21,7 +24,7 @@ export async function verifyAuth(token: string): Promise<JWTPayload | null> {
     const verified = await jwtVerify(token, JWT_SECRET)
     return verified.payload as unknown as JWTPayload
   } catch (error) {
-    console.error("JWT verification failed:", error)
+    logger.error("JWT verification failed", error)
     return null
   }
 }
@@ -41,7 +44,7 @@ export async function getAuthAgency(): Promise<JWTPayload | null> {
 
     return await verifyAuth(token.value)
   } catch (error) {
-    console.error("Get auth agency error:", error)
+    logger.error("Get auth agency error", error)
     return null
   }
 }

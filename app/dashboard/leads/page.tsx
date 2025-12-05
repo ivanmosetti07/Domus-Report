@@ -11,6 +11,9 @@ import { prisma } from "@/lib/prisma"
 import { LeadsTableClient } from "@/components/dashboard/leads-table-client"
 import { ExportLeadsButtons } from "@/components/dashboard/export-leads-buttons"
 
+// Force dynamic rendering (uses cookies for auth)
+export const dynamic = 'force-dynamic'
+
 export default async function LeadsPage() {
   // Get authenticated agency
   const agency = await getAuthAgency()

@@ -15,7 +15,7 @@
   ],
   "headers": [
     {
-      "source": "/widget-embed.js",
+      "source": "/widget.js",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
@@ -49,10 +49,5 @@
       ]
     }
   ],
-  "rewrites": [
-    {
-      "source": "/widget.js",
-      "destination": "/widget-embed.js"
-    }
-  ]
+  "rewrites": []
 }

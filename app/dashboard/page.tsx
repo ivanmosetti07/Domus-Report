@@ -8,6 +8,9 @@ import { getAuthAgency } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { WidgetCodeCard } from "@/components/dashboard/widget-code-card"
 
+// Force dynamic rendering (uses cookies for auth)
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   // Get authenticated agency
   const agency = await getAuthAgency()
@@ -110,16 +113,16 @@ export default async function DashboardPage() {
             </Card>
           </Link>
 
-          <Link href="/test-embed.html" target="_blank">
+          <Link href="/docs/html" target="_blank">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full border-2 border-dashed border-gray-300">
               <CardContent className="flex items-center gap-4 p-6">
                 <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-lg">
-                  <Eye className="w-6 h-6 text-gray-600" />
+                  <BookOpen className="w-6 h-6 text-gray-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Testa il widget</h3>
+                  <h3 className="font-semibold text-gray-900">Guida installazione</h3>
                   <p className="text-sm text-gray-600">
-                    Prova il widget in modalità demo
+                    Consulta le istruzioni di integrazione
                   </p>
                 </div>
               </CardContent>

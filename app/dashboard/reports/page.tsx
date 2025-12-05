@@ -8,6 +8,9 @@ import { prisma } from '@/lib/prisma'
 import { formatDate } from '@/lib/utils'
 import { GenerateReportButton } from '@/components/dashboard/generate-report-button'
 
+// Force dynamic rendering (uses cookies for auth)
+export const dynamic = 'force-dynamic'
+
 export default async function ReportsPage() {
   // Get authenticated agency
   const agency = await getAuthAgency()

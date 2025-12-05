@@ -12,6 +12,9 @@ import { prisma } from "@/lib/prisma"
 import fs from "fs"
 import path from "path"
 import { parse } from "csv-parse/sync"
+import { createLogger } from "./logger"
+
+const logger = createLogger('omi-advanced')
 
 export interface OMIValueDetailed {
   citta: string
@@ -50,7 +53,7 @@ export async function loadOMIDataFromCSV(): Promise<number> {
   const csvPath = path.join(process.cwd(), "data", "omi-values.csv")
 
   if (!fs.existsSync(csvPath)) {
-    console.warn("CSV file not found:", csvPath)
+    logger.warn("CSV file not found", { path: csvPath })
     return 0
   }
 
@@ -145,7 +148,7 @@ export async function loadOMIDataFromCSV(): Promise<number> {
 
       count++
     } catch (error) {
-      console.error("Error loading OMI record:", record, error)
+      logger.error("Error loading OMI record", error, { record })
     }
   }
 

@@ -6,6 +6,9 @@
 
 import { PropertyType, PropertyCondition } from "@/types"
 import { getOMIValue } from "./omi"
+import { createLogger } from "./logger"
+
+const logger = createLogger('n8n')
 
 // In-memory cache for valuation results (15 minutes TTL)
 interface CacheEntry {
@@ -238,7 +241,7 @@ export async function calculateValuation(
   // Check cache first
   const cached = getCachedValuation(input)
   if (cached) {
-    console.log("Returning cached valuation")
+    logger.debug("Returning cached valuation", { city: input.city, type: input.propertyType })
     return cached
   }
 
@@ -246,7 +249,7 @@ export async function calculateValuation(
 
   // If n8n is not configured, use local calculation
   if (!n8nWebhookUrl) {
-    console.warn("N8N_WEBHOOK_URL not configured, using local calculation")
+    logger.warn("N8N_WEBHOOK_URL not configured, using local calculation")
     const result = calculateValuationLocal(input)
     setCachedValuation(input, result)
     return result
@@ -294,7 +297,7 @@ export async function calculateValuation(
     setCachedValuation(input, result)
     return result
   } catch (error) {
-    console.error("n8n webhook error, falling back to local calculation:", error)
+    logger.error("n8n webhook error, falling back to local calculation", error)
     // Fallback to local calculation
     const result = calculateValuationLocal(input)
     // Cache the fallback result too

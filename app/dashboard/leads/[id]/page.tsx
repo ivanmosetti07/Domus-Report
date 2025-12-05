@@ -18,6 +18,9 @@ import { ContactCardClient } from "@/components/dashboard/contact-card-client"
 import { ConversationView } from "@/components/dashboard/conversation-view"
 import { LeadStatusWrapper } from "@/components/dashboard/lead-status-wrapper"
 import { DownloadPDFButton } from "@/components/dashboard/download-pdf-button"
+
+// Force dynamic rendering (uses cookies for auth)
+export const dynamic = 'force-dynamic'
 import { SendEmailButton } from "@/components/dashboard/send-email-button"
 
 interface LeadDetailPageProps {
