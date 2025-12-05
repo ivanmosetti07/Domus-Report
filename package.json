@@ -34,6 +34,7 @@
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "csv-parse": "^6.1.0",
     "date-fns": "^4.1.0",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",
