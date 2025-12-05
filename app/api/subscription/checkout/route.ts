@@ -47,6 +47,8 @@ export async function POST(request: Request) {
     // Ottieni info piano
     const plan = STRIPE_PLANS[planType]
 
+    console.log('📋 Piano richiesto:', planType, 'Prezzo:', plan.priceMonthly)
+
     // Crea o recupera Stripe Customer
     let stripeCustomerId = agency.subscription?.stripeCustomerId
 
@@ -75,6 +77,14 @@ export async function POST(request: Request) {
       })
     }
 
+    // Determina BASE_URL con fallback
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    console.log('🔗 BASE_URL usato:', baseUrl)
+
+    if (!baseUrl.startsWith('http')) {
+      throw new Error(`URL non valido: ${baseUrl}. Deve iniziare con http:// o https://`)
+    }
+
     // Prepara parametri checkout con prezzo dinamico
     const checkoutParams: Stripe.Checkout.SessionCreateParams = {
       customer: stripeCustomerId,
@@ -97,8 +107,8 @@ export async function POST(request: Request) {
           quantity: 1,
         }
       ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription`,
+      success_url: `${baseUrl}/dashboard/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/dashboard/subscription`,
       metadata: {
         agencyId: agency.id,
         planType
@@ -135,7 +145,17 @@ export async function POST(request: Request) {
     }
 
     // Crea Checkout Session
+    console.log('🚀 Creazione Checkout Session con parametri:', {
+      mode: checkoutParams.mode,
+      customer: stripeCustomerId,
+      amount: plan.priceMonthly * 100,
+      success_url: checkoutParams.success_url,
+      cancel_url: checkoutParams.cancel_url
+    })
+
     const session = await stripe.checkout.sessions.create(checkoutParams)
+
+    console.log('✅ Checkout Session creata:', session.id, 'URL:', session.url)
 
     return NextResponse.json({
       sessionId: session.id,

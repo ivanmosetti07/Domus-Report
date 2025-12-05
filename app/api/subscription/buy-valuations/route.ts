@@ -72,6 +72,14 @@ export async function POST(request: Request) {
     // Calcola importo totale (in centesimi)
     const totalAmount = EXTRA_VALUATION_PRICE * quantity
 
+    // Determina BASE_URL con fallback
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    console.log('🔗 BASE_URL usato:', baseUrl)
+
+    if (!baseUrl.startsWith('http')) {
+      throw new Error(`URL non valido: ${baseUrl}. Deve iniziare con http:// o https://`)
+    }
+
     // Crea Stripe Checkout Session per pagamento one-time
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
@@ -90,8 +98,8 @@ export async function POST(request: Request) {
           quantity: quantity,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription?session_id={CHECKOUT_SESSION_ID}&purchase=success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription?purchase=cancelled`,
+      success_url: `${baseUrl}/dashboard/subscription?session_id={CHECKOUT_SESSION_ID}&purchase=success`,
+      cancel_url: `${baseUrl}/dashboard/subscription?purchase=cancelled`,
       metadata: {
         agencyId: agency.id,
         type: 'extra_valuations',
