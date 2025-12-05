@@ -77,10 +77,11 @@ export async function POST(request: NextRequest) {
       .setExpirationTime("7d") // Token expires in 7 days
       .sign(JWT_SECRET)
 
-    // Create response with cookie
+    // Create response with cookie and token in body
     const response = NextResponse.json({
       success: true,
       message: "Login effettuato con successo",
+      token, // Restituisce il token anche nel body per localStorage
       agency: {
         id: agency.id,
         nome: agency.nome,
@@ -90,7 +91,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Set HTTP-only cookie for security
+    // Set HTTP-only cookie for security (backup)
     response.cookies.set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -117,6 +117,11 @@ export default function RegisterPage() {
       })
 
       if (loginResponse.ok) {
+        const loginData = await loginResponse.json()
+        // Salva il token in localStorage
+        if (loginData.token) {
+          localStorage.setItem('token', loginData.token)
+        }
         router.push("/dashboard")
       } else {
         // Registration succeeded but login failed - redirect to login page

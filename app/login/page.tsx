@@ -64,6 +64,11 @@ export default function LoginPage() {
         return
       }
 
+      // Salva il token in localStorage
+      if (data.token) {
+        localStorage.setItem('token', data.token)
+      }
+
       // Success - redirect to dashboard
       router.push("/dashboard")
     } catch (error) {

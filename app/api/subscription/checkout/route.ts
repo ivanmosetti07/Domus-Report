@@ -9,13 +9,17 @@ export async function POST(request: Request) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '')
     if (!token) {
-      return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+      console.error('Token mancante nell\'header Authorization')
+      return NextResponse.json({ error: 'Non autorizzato - Token mancante' }, { status: 401 })
     }
 
     const authResult = await verifyAuth(token)
     if (!authResult) {
-      return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
+      console.error('Token non valido o scaduto')
+      return NextResponse.json({ error: 'Token non valido o scaduto' }, { status: 401 })
     }
+
+    console.log('Auth OK - AgencyId:', authResult.agencyId)
 
     const body = await request.json()
     const { planType, promoCode } = body as { planType: PlanType; promoCode?: string }
