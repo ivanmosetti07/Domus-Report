@@ -77,9 +77,12 @@ export default async function DashboardPage() {
       }
     }),
 
-    // Widget configs
+    // Widget configs (solo attivi)
     prisma.widgetConfig.findMany({
-      where: { agencyId: agency.agencyId },
+      where: {
+        agencyId: agency.agencyId,
+        isActive: true
+      },
       select: {
         id: true,
         name: true,

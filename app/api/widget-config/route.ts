@@ -57,9 +57,12 @@ export async function POST(request: Request) {
     })
     const plan = agencyData?.piano || 'free'
 
-    // Conta widget attuali
+    // Conta widget attuali (solo quelli non eliminati)
     const currentCount = await prisma.widgetConfig.count({
-      where: { agencyId: agency.agencyId },
+      where: {
+        agencyId: agency.agencyId,
+        isActive: true
+      },
     })
 
     // Verifica limite widget
@@ -248,7 +251,7 @@ export async function PUT(request: Request) {
   }
 }
 
-// DELETE /api/widget-config - Elimina widget (soft delete)
+// DELETE /api/widget-config - Elimina widget (hard delete dal database)
 export async function DELETE(request: Request) {
   try {
     const agency = await getAuthAgency()
@@ -275,17 +278,16 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Widget non trovato' }, { status: 404 })
     }
 
-    // Non permettere eliminazione del widget default se è l'unico attivo
+    // Non permettere eliminazione del widget default se ci sono altri widget
     if (existingWidget.isDefault) {
-      const otherActiveWidgets = await prisma.widgetConfig.count({
+      const otherWidgets = await prisma.widgetConfig.count({
         where: {
           agencyId: agency.agencyId,
           id: { not: id },
-          isActive: true,
         },
       })
 
-      if (otherActiveWidgets === 0) {
+      if (otherWidgets > 0) {
         return NextResponse.json(
           { error: 'Non puoi eliminare il widget predefinito. Imposta prima un altro widget come predefinito.' },
           { status: 400 }
@@ -293,18 +295,12 @@ export async function DELETE(request: Request) {
       }
     }
 
-    // Soft delete - imposta isActive = false
-    const widgetConfig = await prisma.widgetConfig.update({
-      where: { id },
-      data: { isActive: false },
-    })
-
-    // Se era il default, imposta un altro widget come default
+    // Se era il default, imposta un altro widget come default prima di eliminarlo
     if (existingWidget.isDefault) {
       const nextDefault = await prisma.widgetConfig.findFirst({
         where: {
           agencyId: agency.agencyId,
-          isActive: true,
+          id: { not: id },
         },
         orderBy: { createdAt: 'asc' },
       })
@@ -317,7 +313,15 @@ export async function DELETE(request: Request) {
       }
     }
 
-    return NextResponse.json({ message: 'Widget eliminato', widgetConfig })
+    // Hard delete - elimina completamente dal database
+    await prisma.widgetConfig.delete({
+      where: { id },
+    })
+
+    return NextResponse.json({
+      message: 'Widget eliminato definitivamente dal database',
+      success: true
+    })
   } catch (error) {
     console.error('Errore DELETE widget-config:', error)
     return NextResponse.json({ error: 'Errore server' }, { status: 500 })
