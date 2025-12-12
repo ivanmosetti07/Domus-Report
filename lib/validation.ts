@@ -61,18 +61,26 @@ export function validatePhone(phone: string | undefined | null): { valid: boolea
     return { valid: true, sanitized: null } // Phone is optional
   }
 
-  const sanitized = sanitizeString(phone).replace(/\s/g, "")
+  // Sanitize: remove spaces, dashes, dots, parentheses - keep only + and digits
+  // This matches what the widget does before sending
+  let sanitized = phone
+    .trim()
+    .replace(/\s/g, "")       // Remove spaces
+    .replace(/-/g, "")        // Remove dashes
+    .replace(/\./g, "")       // Remove dots
+    .replace(/\(/g, "")       // Remove parentheses
+    .replace(/\)/g, "")       // Remove parentheses
 
   if (!sanitized) {
     return { valid: true, sanitized: null } // Phone is optional
   }
 
   // Allow +39, 0039, or direct number
-  // Should be 9-13 digits
+  // Should be 9-13 digits (aligned with widget regex)
   const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
 
   if (!phoneRegex.test(sanitized)) {
-    return { valid: false, sanitized: null, error: "Formato telefono non valido (es. +39 123 456 7890)" }
+    return { valid: false, sanitized: null, error: "Formato telefono non valido (es. +39 333 123 4567)" }
   }
 
   return { valid: true, sanitized }
