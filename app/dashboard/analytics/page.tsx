@@ -101,6 +101,8 @@ export default function AnalyticsPage() {
     getDateRange("30days")
   )
   const [analyticsData, setAnalyticsData] = React.useState<AnalyticsData | null>(null)
+  const [previousAnalyticsData, setPreviousAnalyticsData] = React.useState<AnalyticsData | null>(null)
+  const [platformAverage, setPlatformAverage] = React.useState<number | null>(null)
   const [liveData, setLiveData] = React.useState<any | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
@@ -112,17 +114,40 @@ export default function AnalyticsPage() {
       setError(null)
 
       try {
-        // Fetch historical data
-        const response = await fetch(
-          `/api/analytics?startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
-        )
+        // Calcola periodo precedente (stessa durata)
+        const periodDuration = dateRange.end.getTime() - dateRange.start.getTime()
+        const previousStart = new Date(dateRange.start.getTime() - periodDuration)
+        const previousEnd = new Date(dateRange.start.getTime() - 1)
 
-        if (!response.ok) {
+        // Fetch dati periodo corrente e precedente in parallelo
+        const [currentResponse, previousResponse, platformResponse] = await Promise.all([
+          fetch(
+            `/api/analytics?startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
+          ),
+          fetch(
+            `/api/analytics?startDate=${previousStart.toISOString()}&endDate=${previousEnd.toISOString()}`
+          ),
+          fetch("/api/analytics/platform-average"),
+        ])
+
+        if (!currentResponse.ok) {
           throw new Error("Errore nel caricamento dei dati")
         }
 
-        const data = await response.json()
-        setAnalyticsData(data)
+        const currentData = await currentResponse.json()
+        setAnalyticsData(currentData)
+
+        // Dati periodo precedente
+        if (previousResponse.ok) {
+          const previousData = await previousResponse.json()
+          setPreviousAnalyticsData(previousData)
+        }
+
+        // Media piattaforma
+        if (platformResponse.ok) {
+          const platformData = await platformResponse.json()
+          setPlatformAverage(platformData.averageConversionRate)
+        }
 
         // Fetch live data (today only)
         if (datePreset === "today") {
@@ -265,12 +290,12 @@ export default function AnalyticsPage() {
     averageConversionRate: 0,
   }
 
-  // Mock previous period data (in produzione, fare query separata)
-  const previousTotals = {
-    totalImpressions: Math.floor(totals.totalImpressions * 0.85),
-    totalLeads: Math.floor(totals.totalLeads * 0.9),
-    totalValuations: Math.floor(totals.totalValuations * 0.88),
-    averageConversionRate: totals.averageConversionRate * 0.92,
+  // Dati periodo precedente (reali, non più mock)
+  const previousTotals = previousAnalyticsData?.totals || {
+    totalImpressions: 0,
+    totalLeads: 0,
+    totalValuations: 0,
+    averageConversionRate: 0,
   }
 
   return (
@@ -555,34 +580,38 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Benchmark Comparison */}
-            <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-              <h4 className="font-semibold text-gray-900 mb-2">Confronto con la Media</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Il tuo Conversion Rate</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {totals.averageConversionRate.toFixed(2)}%
-                  </p>
+            {platformAverage !== null && (
+              <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <h4 className="font-semibold text-gray-900 mb-2">Confronto con la Media</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Il tuo Conversion Rate</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {totals.averageConversionRate.toFixed(2)}%
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Media Piattaforma</p>
+                    <p className="text-2xl font-bold text-gray-600">
+                      {platformAverage.toFixed(2)}%
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Media Piattaforma</p>
-                  <p className="text-2xl font-bold text-gray-600">2.80%</p>
+                <div className="mt-3">
+                  {totals.averageConversionRate > platformAverage ? (
+                    <p className="text-sm text-green-700 flex items-center gap-1">
+                      <TrendingUp className="w-4 h-4" />
+                      Il tuo widget performa meglio della media!
+                    </p>
+                  ) : (
+                    <p className="text-sm text-orange-700 flex items-center gap-1">
+                      <TrendingDown className="w-4 h-4" />
+                      C'è margine di miglioramento rispetto alla media
+                    </p>
+                  )}
                 </div>
               </div>
-              <div className="mt-3">
-                {totals.averageConversionRate > 2.8 ? (
-                  <p className="text-sm text-green-700 flex items-center gap-1">
-                    <TrendingUp className="w-4 h-4" />
-                    Il tuo widget performa meglio della media!
-                  </p>
-                ) : (
-                  <p className="text-sm text-orange-700 flex items-center gap-1">
-                    <TrendingDown className="w-4 h-4" />
-                    C'è margine di miglioramento rispetto alla media
-                  </p>
-                )}
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}
