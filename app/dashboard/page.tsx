@@ -203,7 +203,7 @@ export default async function DashboardPage() {
   const planLimits: Record<string, number> = {
     'free': 10,
     'basic': 50,
-    'premium': 100
+    'premium': 150
   }
   const valuationsLimit = planLimits[subscription?.planType || 'free'] || 10
   const valuationsUsed = subscription?.valuationsUsedThisMonth || 0
