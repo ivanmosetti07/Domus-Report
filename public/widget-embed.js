@@ -177,8 +177,9 @@
     }
 
     // Badge notifica (se configurato)
+    let badge = null;
     if (config.showBadge !== false) {
-      const badge = document.createElement('div');
+      badge = document.createElement('div');
       badge.style.cssText = `
         position: absolute;
         top: -4px;
@@ -194,6 +195,7 @@
         font-size: 11px;
         font-weight: bold;
         color: white;
+        pointer-events: none;
       `;
       badge.textContent = '1';
       button.appendChild(badge);
@@ -213,6 +215,11 @@
 
     // Click handler - crea iframe solo al primo click
     button.onclick = function() {
+      // Nascondi badge quando si apre la chat
+      if (badge) {
+        badge.style.display = 'none';
+      }
+
       if (iframe) {
         // Iframe già creato, mostralo
         iframe.style.display = 'block';
@@ -244,8 +251,10 @@
         box-shadow: 0 4px 24px rgba(0,0,0,0.15);
         border-radius: 12px 12px 0 0;
         background: transparent;
+        opacity: 1;
       `;
       iframe.id = 'domusreport-widget-iframe';
+      iframe.setAttribute('allowTransparency', 'true');
 
       document.body.appendChild(iframe);
 
@@ -254,22 +263,23 @@
       iframeDoc.open();
       iframeDoc.write(`
         <!DOCTYPE html>
-        <html lang="it">
+        <html lang="it" style="background: transparent;">
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>DomusReport Widget</title>
           <style>
-            body {
+            html, body {
               margin: 0;
               padding: 0;
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-              background: transparent;
+              background: transparent !important;
+              background-color: transparent !important;
             }
             * { box-sizing: border-box; }
           </style>
         </head>
-        <body>
+        <body style="background: transparent;">
           <div id="widget-root"></div>
 
           <!-- Carica il widget Next.js -->
@@ -299,6 +309,7 @@
           iframe.style.display = 'none';
         }
         button.style.display = 'flex';
+        // Non far riapparire il badge una volta chiuso
       }
     });
 
