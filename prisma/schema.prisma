@@ -69,18 +69,30 @@ model Lead {
 
 // Modello Immobile
 model Property {
-  id           String  @id @default(cuid())
-  leadId       String  @unique @map("lead_id")
-  indirizzo    String
-  citta        String
-  cap          String?
-  latitudine   Float?
-  longitudine  Float?
-  tipo         String  // Appartamento, Villa, Ufficio, Altro
-  superficieMq Int     @map("superficie_mq")
-  piano        Int?
-  ascensore    Boolean?
-  stato        String  // Nuovo, Ottimo, Buono, Da ristrutturare
+  id                String   @id @default(cuid())
+  leadId            String   @unique @map("lead_id")
+  indirizzo         String
+  citta             String
+  quartiere         String?  // Neighborhood
+  cap               String?
+  latitudine        Float?
+  longitudine       Float?
+  tipo              String   // Appartamento, Attico, Villa, Ufficio, Negozio, Box, Terreno, Altro
+  superficieMq      Int      @map("superficie_mq")
+  locali            Int?     // Number of rooms
+  bagni             Int?     // Number of bathrooms
+  piano             Int?
+  ascensore         Boolean?
+  tipoPiano         String?  @map("tipo_piano") // FloorType enum value
+  spaziEsterni      String?  @map("spazi_esterni") // OutdoorSpace enum value
+  postoAuto         Boolean? @map("posto_auto") // Has parking
+  stato             String   // Nuovo, Ristrutturato, Buono, Da ristrutturare
+  riscaldamento     String?  // HeatingType enum value
+  ariaCondizionata  Boolean? @map("aria_condizionata")
+  classeEnergetica  String?  @map("classe_energetica") // EnergyClass enum value
+  annoCostruzione   Int?     @map("anno_costruzione")
+  statoOccupazione  String?  @map("stato_occupazione") // OccupancyStatus enum value
+  dataScadenza      String?  @map("data_scadenza") // Lease end date if occupied
 
   // Relazioni
   lead         Lead                 @relation(fields: [leadId], references: [id], onDelete: Cascade)

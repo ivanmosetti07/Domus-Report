@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { PropertyType, PropertyCondition } from "@/types"
+import { PropertyType, PropertyCondition, FloorType, OutdoorSpace, HeatingType, EnergyClass, OccupancyStatus } from "@/types"
 import {
   validateEmail,
   validatePhone,
@@ -24,14 +24,26 @@ export interface CreateLeadRequest {
   // Property data
   address: string
   city: string
+  neighborhood?: string
   postalCode?: string
   latitude?: number
   longitude?: number
   type: PropertyType
   surfaceSqm: number
+  rooms?: number
+  bathrooms?: number
   floor?: number
   hasElevator?: boolean
+  floorType?: FloorType
+  outdoorSpace?: OutdoorSpace
+  hasParking?: boolean
   condition: PropertyCondition
+  heatingType?: HeatingType
+  hasAirConditioning?: boolean
+  energyClass?: EnergyClass
+  buildYear?: number
+  occupancyStatus?: OccupancyStatus
+  occupancyEndDate?: string
   // Valuation data
   minPrice: number
   maxPrice: number
@@ -246,14 +258,26 @@ export async function POST(request: NextRequest) {
           create: {
             indirizzo: addressValidation.sanitized,
             citta: cityValidation.sanitized,
+            quartiere: body.neighborhood ? sanitizeString(body.neighborhood) : undefined,
             cap: body.postalCode ? sanitizeString(body.postalCode) : undefined,
             latitudine: body.latitude,
             longitudine: body.longitude,
             tipo: body.type,
             superficieMq: surfaceValidation.value,
+            locali: body.rooms,
+            bagni: body.bathrooms,
             piano: body.floor,
             ascensore: body.hasElevator,
+            tipoPiano: body.floorType,
+            spaziEsterni: body.outdoorSpace,
+            postoAuto: body.hasParking,
             stato: body.condition,
+            riscaldamento: body.heatingType,
+            ariaCondizionata: body.hasAirConditioning,
+            classeEnergetica: body.energyClass,
+            annoCostruzione: body.buildYear,
+            statoOccupazione: body.occupancyStatus,
+            dataScadenza: body.occupancyEndDate ? sanitizeString(body.occupancyEndDate) : undefined,
             valuation: {
               create: {
                 prezzoMinimo: body.minPrice,

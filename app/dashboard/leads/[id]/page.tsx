@@ -139,6 +139,12 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                 <p className="text-sm text-gray-900 mt-1">
                   {lead.property.indirizzo}
                   <br />
+                  {lead.property.quartiere && (
+                    <>
+                      {lead.property.quartiere}
+                      <br />
+                    </>
+                  )}
                   {lead.property.cap && `${lead.property.cap} `}
                   {lead.property.citta}
                 </p>
@@ -164,27 +170,91 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                 </div>
               </div>
 
-              {lead.property.piano !== null && lead.property.piano !== undefined && (
+              {(lead.property.locali || lead.property.bagni) && (
+                <div className="grid grid-cols-2 gap-4">
+                  {lead.property.locali && (
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Locali
+                      </label>
+                      <p className="text-sm text-gray-900 mt-1">
+                        {lead.property.locali} {lead.property.locali === 1 ? 'locale' : 'locali'}
+                      </p>
+                    </div>
+                  )}
+
+                  {lead.property.bagni && (
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Bagni
+                      </label>
+                      <p className="text-sm text-gray-900 mt-1">
+                        {lead.property.bagni} {lead.property.bagni === 1 ? 'bagno' : 'bagni'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {(lead.property.piano !== null && lead.property.piano !== undefined) || lead.property.tipoPiano ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                      Piano
+                      Piano {lead.property.ascensore !== null && '& Ascensore'}
                     </label>
-                    <p className="text-sm text-gray-900 mt-1">
-                      {lead.property.piano}° piano
-                    </p>
+                    {lead.property.tipoPiano ? (
+                      <div className="mt-1">
+                        <Badge variant="outline">{lead.property.tipoPiano}</Badge>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-900 mt-1">
+                        {lead.property.piano}° piano
+                        {lead.property.ascensore !== null && (
+                          <Badge
+                            variant={lead.property.ascensore ? "default" : "secondary"}
+                            className="ml-2"
+                          >
+                            {lead.property.ascensore ? "Con ascensore" : "Senza ascensore"}
+                          </Badge>
+                        )}
+                      </p>
+                    )}
                   </div>
 
-                  {lead.property.ascensore !== null && (
+                  {lead.property.spaziEsterni && (
                     <div>
                       <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                        Ascensore
+                        Spazi Esterni
                       </label>
                       <div className="mt-1">
-                        <Badge
-                          variant={lead.property.ascensore ? "default" : "secondary"}
-                        >
-                          {lead.property.ascensore ? "Sì" : "No"}
+                        <Badge variant="outline">{lead.property.spaziEsterni}</Badge>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              {lead.property.postoAuto !== null && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Box/Posto Auto
+                    </label>
+                    <div className="mt-1">
+                      <Badge variant={lead.property.postoAuto ? "default" : "secondary"}>
+                        {lead.property.postoAuto ? "Sì" : "No"}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {lead.property.ariaCondizionata !== null && (
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Aria Condizionata
+                      </label>
+                      <div className="mt-1">
+                        <Badge variant={lead.property.ariaCondizionata ? "default" : "secondary"}>
+                          {lead.property.ariaCondizionata ? "Sì" : "No"}
                         </Badge>
                       </div>
                     </div>
@@ -192,14 +262,71 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                 </div>
               )}
 
-              <div>
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  Stato
-                </label>
-                <div className="mt-1">
-                  <Badge variant="outline">{lead.property.stato}</Badge>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Stato
+                  </label>
+                  <div className="mt-1">
+                    <Badge variant="outline">{lead.property.stato}</Badge>
+                  </div>
                 </div>
+
+                {lead.property.riscaldamento && (
+                  <div>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Riscaldamento
+                    </label>
+                    <div className="mt-1">
+                      <Badge variant="outline">{lead.property.riscaldamento}</Badge>
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {(lead.property.classeEnergetica || lead.property.annoCostruzione) && (
+                <div className="grid grid-cols-2 gap-4">
+                  {lead.property.classeEnergetica && (
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Classe Energetica
+                      </label>
+                      <div className="mt-1">
+                        <Badge variant="outline">{lead.property.classeEnergetica}</Badge>
+                      </div>
+                    </div>
+                  )}
+
+                  {lead.property.annoCostruzione && (
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Anno Costruzione
+                      </label>
+                      <p className="text-sm text-gray-900 mt-1">
+                        {lead.property.annoCostruzione}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {(lead.property.statoOccupazione || lead.property.dataScadenza) && (
+                <div>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Disponibilità
+                  </label>
+                  <div className="mt-1 flex items-center gap-2">
+                    <Badge variant={lead.property.statoOccupazione === 'Libero' ? "default" : "secondary"}>
+                      {lead.property.statoOccupazione}
+                    </Badge>
+                    {lead.property.dataScadenza && (
+                      <span className="text-xs text-gray-600">
+                        (Scadenza: {lead.property.dataScadenza})
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
