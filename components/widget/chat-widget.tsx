@@ -154,7 +154,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   // Tracking: Funzione per accodare evento (batching)
   const trackEvent = React.useCallback((
     eventType: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
+    immediate: boolean = false
   ) => {
     // Skip tracking per demo widget
     if (isDemo) return
@@ -167,15 +168,21 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       metadata,
     })
 
+    // Eventi critici vanno inviati immediatamente
+    if (immediate || eventType === 'CONTACT_FORM_SUBMIT' || eventType === 'VALUATION_VIEW') {
+      sendEventBatch()
+      return
+    }
+
     // Resetta timer batch
     if (batchTimerRef.current) {
       clearTimeout(batchTimerRef.current)
     }
 
-    // Invia batch dopo 10 secondi
+    // Invia batch dopo 2 secondi (ridotto da 10 per maggiore affidabilità)
     batchTimerRef.current = setTimeout(() => {
       sendEventBatch()
-    }, 10000)
+    }, 2000)
   }, [widgetId, isDemo])
 
   // Tracking: Invia batch di eventi
@@ -186,27 +193,43 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     eventQueueRef.current = [] // Svuota la coda
 
     try {
-      await fetch("/api/widget-events", {
+      console.log('[ChatWidget] Sending events batch:', eventsToSend.map(e => e.eventType).join(', '))
+      const response = await fetch("/api/widget-events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ events: eventsToSend }),
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('[ChatWidget] Failed to send events:', errorData)
+      } else {
+        console.log('[ChatWidget] Events sent successfully')
+      }
     } catch (error) {
-      console.error("Error sending widget events:", error)
+      console.error("[ChatWidget] Error sending widget events:", error)
       // Non bloccare l'esperienza utente se il tracking fallisce
     }
   }, [])
 
   // Tracking: OPEN - quando widget viene montato
   React.useEffect(() => {
-    trackEvent("OPEN")
+    trackEvent("OPEN", undefined, true) // Invia immediatamente
 
     // Cleanup: invia eventi rimanenti quando componente viene smontato
     return () => {
       if (batchTimerRef.current) {
         clearTimeout(batchTimerRef.current)
       }
-      sendEventBatch()
+      // Usa sendBeacon per garantire l'invio anche durante l'unload
+      if (eventQueueRef.current.length > 0 && typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        const eventsToSend = [...eventQueueRef.current]
+        const blob = new Blob([JSON.stringify({ events: eventsToSend })], { type: 'application/json' })
+        navigator.sendBeacon('/api/widget-events', blob)
+        eventQueueRef.current = []
+      } else {
+        sendEventBatch()
+      }
     }
   }, [trackEvent, sendEventBatch])
 
