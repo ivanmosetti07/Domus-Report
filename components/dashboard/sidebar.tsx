@@ -33,9 +33,10 @@ const navigation = [
 
 interface SidebarProps {
   agencyName?: string
+  agencyLogo?: string | null
 }
 
-export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
+export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
@@ -65,14 +66,27 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
       {/* Header */}
       <div className="px-6 py-6 border-b border-border">
         <Link href="/dashboard" className="flex flex-col gap-3 group">
-          <Image
-            src="/logo.png"
-            alt="DomusReport"
-            width={180}
-            height={60}
-            className="h-10 w-auto group-hover:scale-105 transition-transform duration-180"
-            priority
-          />
+          {/* Logo Agenzia o Domus Report */}
+          {agencyLogo ? (
+            <div className="relative h-16 w-full group-hover:scale-105 transition-transform duration-180">
+              <Image
+                src={agencyLogo}
+                alt={agencyName}
+                fill
+                className="object-contain object-left"
+                priority
+              />
+            </div>
+          ) : (
+            <Image
+              src="/logo.png"
+              alt="DomusReport"
+              width={180}
+              height={60}
+              className="h-10 w-auto group-hover:scale-105 transition-transform duration-180"
+              priority
+            />
+          )}
           <p className="text-xs text-foreground-muted truncate">
             {agencyName}
           </p>

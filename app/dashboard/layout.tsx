@@ -21,7 +21,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar agencyName={agency.nome} />
+      <Sidebar agencyName={agency.nome} agencyLogo={agency.logoUrl} />
 
       {/* Main Content */}
       <div className="lg:pl-64">
