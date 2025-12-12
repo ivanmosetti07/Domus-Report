@@ -10,8 +10,12 @@ export interface OMIValue {
   city: string
   values: {
     [PropertyType.APARTMENT]: number // €/m²
+    [PropertyType.ATTICO]: number
     [PropertyType.VILLA]: number
     [PropertyType.OFFICE]: number
+    [PropertyType.SHOP]: number
+    [PropertyType.BOX]: number
+    [PropertyType.LAND]: number
     [PropertyType.OTHER]: number
   }
 }
@@ -23,8 +27,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Milano",
     values: {
       [PropertyType.APARTMENT]: 4800,
+      [PropertyType.ATTICO]: 6000,
       [PropertyType.VILLA]: 5500,
       [PropertyType.OFFICE]: 4200,
+      [PropertyType.SHOP]: 3800,
+      [PropertyType.BOX]: 2000,
+      [PropertyType.LAND]: 1200,
       [PropertyType.OTHER]: 3500,
     },
   },
@@ -32,8 +40,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Roma",
     values: {
       [PropertyType.APARTMENT]: 3800,
+      [PropertyType.ATTICO]: 4800,
       [PropertyType.VILLA]: 4500,
       [PropertyType.OFFICE]: 3500,
+      [PropertyType.SHOP]: 3200,
+      [PropertyType.BOX]: 1800,
+      [PropertyType.LAND]: 1000,
       [PropertyType.OTHER]: 3000,
     },
   },
@@ -41,8 +53,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Firenze",
     values: {
       [PropertyType.APARTMENT]: 3900,
+      [PropertyType.ATTICO]: 5000,
       [PropertyType.VILLA]: 4800,
       [PropertyType.OFFICE]: 3400,
+      [PropertyType.SHOP]: 3000,
+      [PropertyType.BOX]: 1700,
+      [PropertyType.LAND]: 900,
       [PropertyType.OTHER]: 3200,
     },
   },
@@ -50,8 +66,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Venezia",
     values: {
       [PropertyType.APARTMENT]: 4200,
+      [PropertyType.ATTICO]: 5500,
       [PropertyType.VILLA]: 5000,
       [PropertyType.OFFICE]: 3600,
+      [PropertyType.SHOP]: 3300,
+      [PropertyType.BOX]: 1900,
+      [PropertyType.LAND]: 1000,
       [PropertyType.OTHER]: 3300,
     },
   },
@@ -59,8 +79,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Bologna",
     values: {
       [PropertyType.APARTMENT]: 3200,
+      [PropertyType.ATTICO]: 4200,
       [PropertyType.VILLA]: 3800,
       [PropertyType.OFFICE]: 2900,
+      [PropertyType.SHOP]: 2600,
+      [PropertyType.BOX]: 1500,
+      [PropertyType.LAND]: 800,
       [PropertyType.OTHER]: 2600,
     },
   },
@@ -68,8 +92,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Torino",
     values: {
       [PropertyType.APARTMENT]: 2400,
+      [PropertyType.ATTICO]: 3200,
       [PropertyType.VILLA]: 3200,
       [PropertyType.OFFICE]: 2200,
+      [PropertyType.SHOP]: 2000,
+      [PropertyType.BOX]: 1200,
+      [PropertyType.LAND]: 600,
       [PropertyType.OTHER]: 2000,
     },
   },
@@ -77,8 +105,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Napoli",
     values: {
       [PropertyType.APARTMENT]: 2800,
+      [PropertyType.ATTICO]: 3600,
       [PropertyType.VILLA]: 3500,
       [PropertyType.OFFICE]: 2500,
+      [PropertyType.SHOP]: 2200,
+      [PropertyType.BOX]: 1300,
+      [PropertyType.LAND]: 700,
       [PropertyType.OTHER]: 2200,
     },
   },
@@ -86,8 +118,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Genova",
     values: {
       [PropertyType.APARTMENT]: 2600,
+      [PropertyType.ATTICO]: 3400,
       [PropertyType.VILLA]: 3400,
       [PropertyType.OFFICE]: 2400,
+      [PropertyType.SHOP]: 2100,
+      [PropertyType.BOX]: 1200,
+      [PropertyType.LAND]: 600,
       [PropertyType.OTHER]: 2100,
     },
   },
@@ -95,8 +131,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Palermo",
     values: {
       [PropertyType.APARTMENT]: 1800,
+      [PropertyType.ATTICO]: 2400,
       [PropertyType.VILLA]: 2500,
       [PropertyType.OFFICE]: 1600,
+      [PropertyType.SHOP]: 1400,
+      [PropertyType.BOX]: 900,
+      [PropertyType.LAND]: 400,
       [PropertyType.OTHER]: 1400,
     },
   },
@@ -104,8 +144,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Bari",
     values: {
       [PropertyType.APARTMENT]: 2000,
+      [PropertyType.ATTICO]: 2700,
       [PropertyType.VILLA]: 2700,
       [PropertyType.OFFICE]: 1800,
+      [PropertyType.SHOP]: 1600,
+      [PropertyType.BOX]: 1000,
+      [PropertyType.LAND]: 500,
       [PropertyType.OTHER]: 1600,
     },
   },
@@ -113,8 +157,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Catania",
     values: {
       [PropertyType.APARTMENT]: 1600,
+      [PropertyType.ATTICO]: 2200,
       [PropertyType.VILLA]: 2300,
       [PropertyType.OFFICE]: 1500,
+      [PropertyType.SHOP]: 1300,
+      [PropertyType.BOX]: 800,
+      [PropertyType.LAND]: 400,
       [PropertyType.OTHER]: 1300,
     },
   },
@@ -122,8 +170,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Verona",
     values: {
       [PropertyType.APARTMENT]: 2900,
+      [PropertyType.ATTICO]: 3800,
       [PropertyType.VILLA]: 3600,
       [PropertyType.OFFICE]: 2600,
+      [PropertyType.SHOP]: 2400,
+      [PropertyType.BOX]: 1400,
+      [PropertyType.LAND]: 700,
       [PropertyType.OTHER]: 2400,
     },
   },
@@ -131,8 +183,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Padova",
     values: {
       [PropertyType.APARTMENT]: 2700,
+      [PropertyType.ATTICO]: 3500,
       [PropertyType.VILLA]: 3400,
       [PropertyType.OFFICE]: 2500,
+      [PropertyType.SHOP]: 2200,
+      [PropertyType.BOX]: 1300,
+      [PropertyType.LAND]: 700,
       [PropertyType.OTHER]: 2200,
     },
   },
@@ -140,8 +196,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Trieste",
     values: {
       [PropertyType.APARTMENT]: 2300,
+      [PropertyType.ATTICO]: 3000,
       [PropertyType.VILLA]: 3000,
       [PropertyType.OFFICE]: 2100,
+      [PropertyType.SHOP]: 1900,
+      [PropertyType.BOX]: 1100,
+      [PropertyType.LAND]: 600,
       [PropertyType.OTHER]: 1900,
     },
   },
@@ -149,8 +209,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Brescia",
     values: {
       [PropertyType.APARTMENT]: 2500,
+      [PropertyType.ATTICO]: 3300,
       [PropertyType.VILLA]: 3200,
       [PropertyType.OFFICE]: 2300,
+      [PropertyType.SHOP]: 2000,
+      [PropertyType.BOX]: 1200,
+      [PropertyType.LAND]: 600,
       [PropertyType.OTHER]: 2000,
     },
   },
@@ -158,8 +222,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Parma",
     values: {
       [PropertyType.APARTMENT]: 2400,
+      [PropertyType.ATTICO]: 3200,
       [PropertyType.VILLA]: 3100,
       [PropertyType.OFFICE]: 2200,
+      [PropertyType.SHOP]: 2000,
+      [PropertyType.BOX]: 1200,
+      [PropertyType.LAND]: 600,
       [PropertyType.OTHER]: 2000,
     },
   },
@@ -167,8 +235,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Modena",
     values: {
       [PropertyType.APARTMENT]: 2600,
+      [PropertyType.ATTICO]: 3400,
       [PropertyType.VILLA]: 3300,
       [PropertyType.OFFICE]: 2400,
+      [PropertyType.SHOP]: 2100,
+      [PropertyType.BOX]: 1300,
+      [PropertyType.LAND]: 700,
       [PropertyType.OTHER]: 2100,
     },
   },
@@ -176,8 +248,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Reggio Emilia",
     values: {
       [PropertyType.APARTMENT]: 2300,
+      [PropertyType.ATTICO]: 3000,
       [PropertyType.VILLA]: 3000,
       [PropertyType.OFFICE]: 2100,
+      [PropertyType.SHOP]: 1900,
+      [PropertyType.BOX]: 1100,
+      [PropertyType.LAND]: 600,
       [PropertyType.OTHER]: 1900,
     },
   },
@@ -185,8 +261,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Perugia",
     values: {
       [PropertyType.APARTMENT]: 2000,
+      [PropertyType.ATTICO]: 2700,
       [PropertyType.VILLA]: 2700,
       [PropertyType.OFFICE]: 1800,
+      [PropertyType.SHOP]: 1600,
+      [PropertyType.BOX]: 1000,
+      [PropertyType.LAND]: 500,
       [PropertyType.OTHER]: 1600,
     },
   },
@@ -194,8 +274,12 @@ export const OMI_DATABASE: OMIValue[] = [
     city: "Rimini",
     values: {
       [PropertyType.APARTMENT]: 2800,
+      [PropertyType.ATTICO]: 3600,
       [PropertyType.VILLA]: 3500,
       [PropertyType.OFFICE]: 2500,
+      [PropertyType.SHOP]: 2200,
+      [PropertyType.BOX]: 1300,
+      [PropertyType.LAND]: 700,
       [PropertyType.OTHER]: 2200,
     },
   },
@@ -206,8 +290,12 @@ const NATIONAL_AVERAGE: OMIValue = {
   city: "Italia (media nazionale)",
   values: {
     [PropertyType.APARTMENT]: 2000,
+    [PropertyType.ATTICO]: 2700,
     [PropertyType.VILLA]: 2800,
     [PropertyType.OFFICE]: 1800,
+    [PropertyType.SHOP]: 1600,
+    [PropertyType.BOX]: 1000,
+    [PropertyType.LAND]: 500,
     [PropertyType.OTHER]: 1600,
   },
 }
@@ -262,11 +350,12 @@ export function getOMICities(): string[] {
 }
 
 /**
- * Searches for cities that match a query
+ * Search cities by partial name
  */
 export function searchOMICities(query: string): string[] {
-  const normalizedQuery = query.toLowerCase().trim()
+  if (!query.trim()) return []
 
+  const normalizedQuery = query.toLowerCase().trim()
   return OMI_DATABASE.filter((data) =>
     data.city.toLowerCase().includes(normalizedQuery)
   ).map((data) => data.city)

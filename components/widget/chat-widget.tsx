@@ -6,7 +6,7 @@ import { Message } from "./message"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, Send, Building2, Loader2 } from "lucide-react"
-import { Message as MessageType, PropertyType, PropertyCondition } from "@/types"
+import { Message as MessageType, PropertyType, PropertyCondition, FloorType, OutdoorSpace, HeatingType, EnergyClass, OccupancyStatus } from "@/types"
 import { formatCurrency } from "@/lib/utils"
 
 export interface WidgetThemeConfig {
@@ -38,24 +38,48 @@ interface ChatWidgetProps {
 type ConversationStep =
   | "welcome"
   | "address"
+  | "neighborhood"
   | "type"
   | "surface"
-  | "floor"
-  | "elevator"
+  | "rooms"
+  | "bathrooms"
+  | "floor_and_elevator"
+  | "outdoor_space"
+  | "parking"
   | "condition"
+  | "heating"
+  | "air_conditioning"
+  | "energy_class"
+  | "build_year"
+  | "occupancy"
+  | "occupancy_end_date"
+  | "contacts_name"
+  | "contacts_email"
+  | "contacts_phone"
   | "calculating"
   | "valuation"
-  | "contacts"
   | "completed"
 
 interface CollectedData {
   address?: string
   city?: string
+  neighborhood?: string
   type?: PropertyType
   surfaceSqm?: number
+  rooms?: number
+  bathrooms?: number
   floor?: number
   hasElevator?: boolean
+  floorType?: FloorType
+  outdoorSpace?: OutdoorSpace
+  hasParking?: boolean
   condition?: PropertyCondition
+  heatingType?: HeatingType
+  hasAirConditioning?: boolean
+  energyClass?: EnergyClass
+  buildYear?: number
+  occupancyStatus?: OccupancyStatus
+  occupancyEndDate?: string
   firstName?: string
   lastName?: string
   email?: string
@@ -242,13 +266,22 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           address: input,
           city: extractCity(input)
         }))
+        addBotMessage("Ottimo! In che quartiere/zona si trova? (Se possibile, indica anche via e numero)", "neighborhood")
+        break
+
+      case "neighborhood":
+        setCollectedData(prev => ({ ...prev, neighborhood: input }))
         addBotMessage(
-          "Perfetto! Che tipo di immobile è?",
+          "Che tipo di immobile è?",
           "type",
           [
             { label: "Appartamento", value: PropertyType.APARTMENT },
+            { label: "Attico", value: PropertyType.ATTICO },
             { label: "Villa", value: PropertyType.VILLA },
             { label: "Ufficio", value: PropertyType.OFFICE },
+            { label: "Negozio", value: PropertyType.SHOP },
+            { label: "Box", value: PropertyType.BOX },
+            { label: "Terreno", value: PropertyType.LAND },
             { label: "Altro", value: PropertyType.OTHER }
           ]
         )
@@ -256,35 +289,85 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       case "type":
         setCollectedData(prev => ({ ...prev, type: input as PropertyType }))
-        addBotMessage("Quanti metri quadri ha?", "surface")
+        addBotMessage("Quanti metri quadri ha? (Mq commerciali o indicativi)", "surface")
         break
 
       case "surface":
         const surface = parseInt(input)
-        if (isNaN(surface) || surface < 20 || surface > 1000) {
-          addBotMessage("Per favore inserisci un numero valido tra 20 e 1000 m²")
+        if (isNaN(surface) || surface < 10 || surface > 10000) {
+          addBotMessage("Per favore inserisci un numero valido tra 10 e 10000 m²")
           return
         }
         setCollectedData(prev => ({ ...prev, surfaceSqm: surface }))
 
-        // Check if it's apartment or office to ask for floor
-        if (collectedData.type === PropertyType.APARTMENT || collectedData.type === PropertyType.OFFICE) {
-          addBotMessage("A che piano si trova?", "floor")
+        // Ask for rooms if it's a residential property
+        if ([PropertyType.APARTMENT, PropertyType.ATTICO, PropertyType.VILLA].includes(collectedData.type as PropertyType)) {
+          addBotMessage("Quanti locali/vani ha? (es. 2, 3, 4, 5+)", "rooms")
         } else {
-          askForCondition()
+          // Skip to floor for offices/shops or to condition for other types
+          askForFloorOrSkip()
         }
         break
 
-      case "floor":
-        const floor = parseInt(input)
-        if (isNaN(floor) || floor < 0 || floor > 30) {
-          addBotMessage("Per favore inserisci un numero valido tra 0 e 30")
+      case "rooms":
+        const rooms = parseInt(input.replace('+', ''))
+        if (isNaN(rooms) || rooms < 1 || rooms > 20) {
+          addBotMessage("Per favore inserisci un numero valido (1-20)")
           return
         }
-        setCollectedData(prev => ({ ...prev, floor }))
+        setCollectedData(prev => ({ ...prev, rooms }))
         addBotMessage(
-          "C'è l'ascensore?",
-          "elevator",
+          "Quanti bagni ha?",
+          "bathrooms",
+          [
+            { label: "1", value: "1" },
+            { label: "2", value: "2" },
+            { label: "3+", value: "3" }
+          ]
+        )
+        break
+
+      case "bathrooms":
+        const bathrooms = parseInt(input.replace('+', ''))
+        if (isNaN(bathrooms) || bathrooms < 0 || bathrooms > 10) {
+          addBotMessage("Per favore inserisci un numero valido (0-10)")
+          return
+        }
+        setCollectedData(prev => ({ ...prev, bathrooms }))
+        askForFloorOrSkip()
+        break
+
+      case "floor_and_elevator":
+        setCollectedData(prev => ({ ...prev, floorType: input as FloorType }))
+
+        // Extract floor number and elevator from FloorType
+        if (input.includes("Terra")) {
+          setCollectedData(prev => ({ ...prev, floor: 0, hasElevator: false }))
+        } else if (input.includes("1-2")) {
+          setCollectedData(prev => ({ ...prev, floor: 1, hasElevator: input.includes("con") }))
+        } else if (input.includes("3+")) {
+          setCollectedData(prev => ({ ...prev, floor: 3, hasElevator: input.includes("con") }))
+        } else if (input.includes("Ultimo")) {
+          setCollectedData(prev => ({ ...prev, floor: 5, hasElevator: input.includes("con") }))
+        }
+
+        addBotMessage(
+          "Ha spazi esterni?",
+          "outdoor_space",
+          [
+            { label: "Nessuno", value: OutdoorSpace.NONE },
+            { label: "Balcone", value: OutdoorSpace.BALCONY },
+            { label: "Terrazzo", value: OutdoorSpace.TERRACE },
+            { label: "Giardino", value: OutdoorSpace.GARDEN }
+          ]
+        )
+        break
+
+      case "outdoor_space":
+        setCollectedData(prev => ({ ...prev, outdoorSpace: input as OutdoorSpace }))
+        addBotMessage(
+          "Ha box o posto auto?",
+          "parking",
           [
             { label: "Sì", value: "true" },
             { label: "No", value: "false" }
@@ -292,57 +375,165 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         )
         break
 
-      case "elevator":
-        setCollectedData(prev => ({ ...prev, hasElevator: input === "true" }))
+      case "parking":
+        setCollectedData(prev => ({ ...prev, hasParking: input === "true" }))
         askForCondition()
         break
 
       case "condition":
         setCollectedData(prev => ({ ...prev, condition: input as PropertyCondition }))
-        calculateValuation()
+        addBotMessage(
+          "Che tipo di riscaldamento ha?",
+          "heating",
+          [
+            { label: "Autonomo", value: HeatingType.AUTONOMOUS },
+            { label: "Centralizzato", value: HeatingType.CENTRALIZED },
+            { label: "Assente", value: HeatingType.NONE }
+          ]
+        )
         break
 
-      case "valuation":
-        // Extract name from first input after valuation
+      case "heating":
+        setCollectedData(prev => ({ ...prev, heatingType: input as HeatingType }))
+        addBotMessage(
+          "Ha l'aria condizionata?",
+          "air_conditioning",
+          [
+            { label: "Sì", value: "true" },
+            { label: "No", value: "false" }
+          ]
+        )
+        break
+
+      case "air_conditioning":
+        setCollectedData(prev => ({ ...prev, hasAirConditioning: input === "true" }))
+        addBotMessage(
+          "Conosci la classe energetica (APE)?",
+          "energy_class",
+          [
+            { label: "A", value: EnergyClass.A },
+            { label: "B", value: EnergyClass.B },
+            { label: "C", value: EnergyClass.C },
+            { label: "D", value: EnergyClass.D },
+            { label: "E", value: EnergyClass.E },
+            { label: "F", value: EnergyClass.F },
+            { label: "G", value: EnergyClass.G },
+            { label: "Non disponibile", value: EnergyClass.NOT_AVAILABLE },
+            { label: "Non so", value: EnergyClass.UNKNOWN }
+          ]
+        )
+        break
+
+      case "energy_class":
+        setCollectedData(prev => ({ ...prev, energyClass: input as EnergyClass }))
+        addBotMessage("Conosci l'anno di costruzione? (Scrivi l'anno o 'non so')", "build_year")
+        break
+
+      case "build_year":
+        if (input.toLowerCase() === "non so" || input.toLowerCase() === "no") {
+          setCollectedData(prev => ({ ...prev, buildYear: undefined }))
+        } else {
+          const year = parseInt(input)
+          if (isNaN(year) || year < 1800 || year > new Date().getFullYear()) {
+            addBotMessage(`Per favore inserisci un anno valido (1800-${new Date().getFullYear()}) o scrivi 'non so'`)
+            return
+          }
+          setCollectedData(prev => ({ ...prev, buildYear: year }))
+        }
+        addBotMessage(
+          "L'immobile è libero o occupato?",
+          "occupancy",
+          [
+            { label: "Libero", value: OccupancyStatus.FREE },
+            { label: "Occupato", value: OccupancyStatus.OCCUPIED }
+          ]
+        )
+        break
+
+      case "occupancy":
+        setCollectedData(prev => ({ ...prev, occupancyStatus: input as OccupancyStatus }))
+
+        if (input === OccupancyStatus.OCCUPIED) {
+          addBotMessage("Quando scade il contratto? (es. 31/12/2025 o scrivi 'non so')", "occupancy_end_date")
+        } else {
+          // Chiedi contatti PRIMA della valutazione
+          addBotMessage("Perfetto! Per inviarti la valutazione, come ti chiami?", "contacts_name")
+        }
+        break
+
+      case "occupancy_end_date":
+        if (input.toLowerCase() !== "non so" && input.toLowerCase() !== "no") {
+          setCollectedData(prev => ({ ...prev, occupancyEndDate: input }))
+        }
+        // Chiedi contatti PRIMA della valutazione
+        addBotMessage("Perfetto! Per inviarti la valutazione, come ti chiami?", "contacts_name")
+        break
+
+      case "contacts_name":
         const [firstName, ...lastNameParts] = input.trim().split(" ")
         setCollectedData(prev => ({
           ...prev,
           firstName: firstName || input,
           lastName: lastNameParts.join(" ") || ""
         }))
-        addBotMessage("Perfetto! Qual è la tua email?", "contacts")
+        addBotMessage("Qual è la tua email?", "contacts_email")
         break
 
-      case "contacts":
-        // Check if it looks like an email
-        if (input.includes("@")) {
-          // Validate email format
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-          if (!emailRegex.test(input)) {
-            addBotMessage("L'email non sembra valida. Puoi inserirla di nuovo?")
-            return
-          }
-          setCollectedData(prev => ({ ...prev, email: input }))
-
-          addBotMessage("Ottimo! Vuoi lasciare anche un numero di telefono? (Opzionale - scrivi 'no' per saltare)")
-        } else {
-          // It's a phone number or "no"
-          if (input.toLowerCase() !== "no") {
-            // Valida il formato del telefono prima di salvarlo
-            const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
-            const sanitizedPhone = input.replace(/\s/g, "")
-
-            if (!phoneRegex.test(sanitizedPhone)) {
-              addBotMessage("Il numero di telefono non sembra valido. Inserisci un numero italiano valido o scrivi 'no' per saltare.")
-              return
-            }
-
-            setCollectedData(prev => ({ ...prev, phone: sanitizedPhone }))
-          }
-          // Salva il lead solo DOPO aver raccolto tutti i dati
-          completeConversation()
+      case "contacts_email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(input)) {
+          addBotMessage("L'email non sembra valida. Puoi inserirla di nuovo?")
+          return
         }
+        setCollectedData(prev => ({ ...prev, email: input }))
+        addBotMessage("Qual è il tuo numero di telefono?", "contacts_phone")
         break
+
+      case "contacts_phone":
+        const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
+        const sanitizedPhone = input.replace(/\s/g, "")
+
+        if (!phoneRegex.test(sanitizedPhone)) {
+          addBotMessage("Il numero di telefono non sembra valido. Inserisci un numero italiano valido.")
+          return
+        }
+
+        setCollectedData(prev => ({ ...prev, phone: sanitizedPhone }))
+        // DOPO aver raccolto i contatti, calcola la valutazione
+        calculateValuation()
+        break
+    }
+  }
+
+  const askForFloorOrSkip = () => {
+    // Ask for floor only for apartments, attics, offices, shops
+    const type = collectedData.type
+    if ([PropertyType.APARTMENT, PropertyType.ATTICO, PropertyType.OFFICE, PropertyType.SHOP].includes(type as PropertyType)) {
+      addBotMessage(
+        "A che piano si trova e c'è l'ascensore?",
+        "floor_and_elevator",
+        [
+          { label: "Terra (senza ascensore)", value: FloorType.GROUND_NO_ELEVATOR },
+          { label: "1-2 senza ascensore", value: FloorType.FLOOR_1_2_NO_ELEVATOR },
+          { label: "1-2 con ascensore", value: FloorType.FLOOR_1_2_WITH_ELEVATOR },
+          { label: "3+ senza ascensore", value: FloorType.FLOOR_3_PLUS_NO_ELEVATOR },
+          { label: "3+ con ascensore", value: FloorType.FLOOR_3_PLUS_WITH_ELEVATOR },
+          { label: "Ultimo piano (senza ascensore)", value: FloorType.TOP_FLOOR_NO_ELEVATOR },
+          { label: "Ultimo piano (con ascensore)", value: FloorType.TOP_FLOOR_WITH_ELEVATOR }
+        ]
+      )
+    } else {
+      // Skip floor question for villas, boxes, lands
+      addBotMessage(
+        "Ha spazi esterni?",
+        "outdoor_space",
+        [
+          { label: "Nessuno", value: OutdoorSpace.NONE },
+          { label: "Balcone", value: OutdoorSpace.BALCONY },
+          { label: "Terrazzo", value: OutdoorSpace.TERRACE },
+          { label: "Giardino", value: OutdoorSpace.GARDEN }
+        ]
+      )
     }
   }
 
@@ -369,7 +560,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       "condition",
       [
         { label: "Nuovo", value: PropertyCondition.NEW },
-        { label: "Ottimo", value: PropertyCondition.EXCELLENT },
+        { label: "Ristrutturato", value: PropertyCondition.RENOVATED },
         { label: "Buono", value: PropertyCondition.GOOD },
         { label: "Da ristrutturare", value: PropertyCondition.TO_RENOVATE }
       ]
@@ -460,14 +651,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     }
     setMessages(prev => [...prev, valuationMessage])
 
+    // Salva il lead subito dopo aver mostrato la valutazione
     setTimeout(() => {
-      // Track CONTACT_FORM_START event
-      trackEvent("CONTACT_FORM_START")
-
-      addBotMessage(
-        "Per ricevere il report dettagliato, lasciami i tuoi contatti. Come ti chiami?",
-        "valuation"
-      )
+      completeConversation()
     }, 1500)
   }
 
@@ -492,11 +678,23 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         // Property data
         address: collectedData.address,
         city: collectedData.city,
+        neighborhood: collectedData.neighborhood,
         type: collectedData.type,
         surfaceSqm: collectedData.surfaceSqm,
+        rooms: collectedData.rooms,
+        bathrooms: collectedData.bathrooms,
         floor: collectedData.floor,
         hasElevator: collectedData.hasElevator,
+        floorType: collectedData.floorType,
+        outdoorSpace: collectedData.outdoorSpace,
+        hasParking: collectedData.hasParking,
         condition: collectedData.condition,
+        heatingType: collectedData.heatingType,
+        hasAirConditioning: collectedData.hasAirConditioning,
+        energyClass: collectedData.energyClass,
+        buildYear: collectedData.buildYear,
+        occupancyStatus: collectedData.occupancyStatus,
+        occupancyEndDate: collectedData.occupancyEndDate,
         // Valuation data
         minPrice: valuation?.minPrice || 0,
         maxPrice: valuation?.maxPrice || 0,
@@ -594,7 +792,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       // Messaggio diverso per demo vs reale
       const successMessage = isDemo
         ? `Grazie ${firstName}! 🎉 Questa è una demo. Per ricevere lead reali, registrati gratuitamente!`
-        : `Grazie ${firstName}! 🎉 Sarai ricontattato a breve da un nostro consulente.`
+        : `Grazie ${firstName}! 🎉 Il report dettagliato ti è stato inviato via email. Sarai ricontattato a breve da un nostro consulente.`
 
       addBotMessage(successMessage, "completed")
 
@@ -641,21 +839,43 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const getPlaceholder = (): string => {
     switch (currentStep) {
       case "welcome":
-        return "es. Via Roma 15, Milano"
+        return "es. Milano"
+      case "neighborhood":
+        return "es. Centro, Via Roma 15"
       case "type":
-        return "Seleziona o scrivi il tipo..."
+        return "Seleziona il tipo..."
       case "surface":
         return "es. 85"
-      case "floor":
+      case "rooms":
         return "es. 3"
-      case "elevator":
+      case "bathrooms":
+        return "es. 2"
+      case "floor_and_elevator":
+        return "Seleziona..."
+      case "outdoor_space":
+        return "Seleziona..."
+      case "parking":
         return "Sì o No"
       case "condition":
-        return "Seleziona o scrivi..."
-      case "valuation":
-        return "Il tuo nome e cognome"
-      case "contacts":
-        return "La tua email o telefono"
+        return "Seleziona..."
+      case "heating":
+        return "Seleziona..."
+      case "air_conditioning":
+        return "Sì o No"
+      case "energy_class":
+        return "Seleziona..."
+      case "build_year":
+        return "es. 1995 o 'non so'"
+      case "occupancy":
+        return "Seleziona..."
+      case "occupancy_end_date":
+        return "es. 31/12/2025"
+      case "contacts_name":
+        return "Nome e cognome"
+      case "contacts_email":
+        return "tua@email.com"
+      case "contacts_phone":
+        return "es. 3331234567"
       case "completed":
         return "Conversazione completata"
       default:
@@ -762,7 +982,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         className="border-t border-gray-200 p-4"
         style={{ backgroundColor }}
       >
-        {currentStep === "contacts" && !collectedData.email ? (
+        {currentStep === "contacts_email" ? (
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
               ref={inputRef}
@@ -772,6 +992,29 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               disabled={isInputDisabled}
               className="flex-1 h-11 sm:h-10"
               type="email"
+              style={{ borderColor: primaryColor }}
+            />
+            <Button
+              type="submit"
+              size="icon"
+              disabled={isInputDisabled || !inputValue.trim()}
+              className="h-11 w-11 sm:h-10 sm:w-10"
+              style={{ backgroundColor: primaryColor }}
+              aria-label="Invia messaggio"
+            >
+              <Send className="w-5 h-5 sm:w-4 sm:h-4" />
+            </Button>
+          </form>
+        ) : currentStep === "contacts_phone" ? (
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <Input
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder={getPlaceholder()}
+              disabled={isInputDisabled}
+              className="flex-1 h-11 sm:h-10"
+              type="tel"
               style={{ borderColor: primaryColor }}
             />
             <Button

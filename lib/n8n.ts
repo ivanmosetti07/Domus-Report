@@ -136,7 +136,7 @@ export function calculateConditionCoefficient(
 ): number {
   const coefficients: Record<PropertyCondition, number> = {
     [PropertyCondition.NEW]: 1.25, // New construction premium
-    [PropertyCondition.EXCELLENT]: 1.12, // Excellent condition
+    [PropertyCondition.RENOVATED]: 1.12, // Renovated condition
     [PropertyCondition.GOOD]: 1.0, // Good condition baseline
     [PropertyCondition.TO_RENOVATE]: 0.82, // Needs renovation discount
   }

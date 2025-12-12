@@ -162,7 +162,7 @@ export const mockLeads: Lead[] = [
       surfaceSqm: 65,
       floor: 2,
       hasElevator: true,
-      condition: PropertyCondition.EXCELLENT
+      condition: PropertyCondition.GOOD
     },
     valuation: {
       id: "val_3",
