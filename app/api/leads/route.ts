@@ -266,6 +266,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Verifica limite valutazioni mensili
+    const valuationLimit = await checkValuationLimit(agency.id)
+    if (!valuationLimit.allowed) {
+      console.log('[POST /api/leads] Valuation limit reached:', {
+        agencyId: agency.id,
+        current: valuationLimit.current,
+        limit: valuationLimit.limit,
+        extra: valuationLimit.extra
+      })
+      return NextResponse.json(
+        {
+          error: "Limite valutazioni mensili raggiunto",
+          message: valuationLimit.message || "Hai esaurito le valutazioni disponibili per questo mese. Acquista valutazioni extra o passa a un piano superiore per continuare.",
+          current: valuationLimit.current,
+          limit: valuationLimit.limit,
+          extra: valuationLimit.extra,
+          upgradeRequired: true
+        },
+        { status: 403 }
+      )
+    }
+
     console.log('[POST /api/leads] Creating lead for agency:', { agencyId: agency.id, agencyName: agency.nome })
 
     // Create lead with related data in a transaction
