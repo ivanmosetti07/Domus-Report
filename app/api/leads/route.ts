@@ -12,6 +12,7 @@ import {
   sanitizeString,
 } from "@/lib/validation"
 import { geocodeAddress } from "@/lib/geocoding"
+import { incrementValuationCount, checkValuationLimit } from "@/lib/subscription-limits"
 
 export interface CreateLeadRequest {
   widgetId: string
@@ -82,6 +83,7 @@ export async function POST(request: NextRequest) {
     console.log('[POST /api/leads] Received request:', {
       widgetId: body.widgetId,
       email: body.email,
+      phone: body.phone,
       hasPhone: !!body.phone,
       timestamp: new Date().toISOString()
     })
@@ -126,6 +128,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    console.log('[POST /api/leads] Phone validation:', {
+      input: body.phone,
+      sanitized: phoneValidation.sanitized,
+      valid: phoneValidation.valid
+    })
 
     // Sanitize and validate property data using geocoding
     const addressInput = sanitizeString(body.address || "")
@@ -269,7 +277,7 @@ export async function POST(request: NextRequest) {
         nome: firstNameValidation.sanitized,
         cognome: lastNameValidation.sanitized,
         email: emailValidation.sanitized,
-        telefono: phoneValidation.sanitized || undefined,
+        telefono: phoneValidation.sanitized ? phoneValidation.sanitized : null,
         property: {
           create: {
             indirizzo: finalAddress,
@@ -329,6 +337,10 @@ export async function POST(request: NextRequest) {
       email: body.email,
       timestamp: new Date().toISOString()
     })
+
+    // Incrementa il contatore delle valutazioni usate questo mese
+    await incrementValuationCount(agency.id)
+    console.log('[POST /api/leads] Valuation count incremented for agency:', { agencyId: agency.id })
 
     return NextResponse.json({
       success: true,
