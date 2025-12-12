@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { PageHeader } from "@/components/ui/page-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -127,54 +127,59 @@ export default function SubscriptionPage() {
   const [extraQuantity, setExtraQuantity] = useState(10)
   const [buyingExtra, setBuyingExtra] = useState(false)
   const { toast } = useToast()
+  const hasProcessedParams = useRef(false)
 
   useEffect(() => {
-    fetchSubscription()
-    fetchInvoices()
-    fetchUsage()
+    const init = async () => {
+      await fetchSubscription()
+      await fetchInvoices()
+      await fetchUsage()
 
-    // Controlla se c'è un messaggio di successo dall'acquisto/upgrade
-    const urlParams = new URLSearchParams(window.location.search)
-    const purchase = urlParams.get('purchase')
-    const upgrade = urlParams.get('upgrade')
+      // Controlla se c'è un messaggio di successo dall'acquisto/upgrade (solo una volta)
+      if (!hasProcessedParams.current) {
+        hasProcessedParams.current = true
+        const urlParams = new URLSearchParams(window.location.search)
+        const purchase = urlParams.get('purchase')
+        const upgrade = urlParams.get('upgrade')
 
-    if (purchase === 'success') {
-      toast({
-        title: 'Acquisto completato!',
-        description: 'Le valutazioni extra sono state aggiunte al tuo account.'
-      })
-      // Rimuovi i parametri dall'URL
-      window.history.replaceState({}, '', '/dashboard/subscription')
-    } else if (purchase === 'cancelled') {
-      toast({
-        title: 'Acquisto annullato',
-        description: 'L\'acquisto è stato annullato.',
-        variant: 'destructive'
-      })
-      // Rimuovi i parametri dall'URL
-      window.history.replaceState({}, '', '/dashboard/subscription')
-    } else if (upgrade === 'success') {
-      toast({
-        title: 'Abbonamento aggiornato!',
-        description: 'Il tuo piano è stato aggiornato con successo.'
-      })
-      // Rimuovi i parametri dall'URL
-      window.history.replaceState({}, '', '/dashboard/subscription')
-      // Ricarica i dati dopo un piccolo delay
-      setTimeout(() => {
-        fetchSubscription()
-        fetchUsage()
-      }, 1000)
-    } else if (upgrade === 'cancelled') {
-      toast({
-        title: 'Upgrade annullato',
-        description: 'L\'upgrade del piano è stato annullato.',
-        variant: 'destructive'
-      })
-      // Rimuovi i parametri dall'URL
-      window.history.replaceState({}, '', '/dashboard/subscription')
+        // Rimuovi i parametri dall'URL prima di mostrare i toast
+        if (purchase || upgrade) {
+          window.history.replaceState({}, '', '/dashboard/subscription')
+        }
+
+        if (purchase === 'success') {
+          toast({
+            title: 'Acquisto completato!',
+            description: 'Le valutazioni extra sono state aggiunte al tuo account.'
+          })
+        } else if (purchase === 'cancelled') {
+          toast({
+            title: 'Acquisto annullato',
+            description: 'L\'acquisto è stato annullato.',
+            variant: 'destructive'
+          })
+        } else if (upgrade === 'success') {
+          toast({
+            title: 'Abbonamento aggiornato!',
+            description: 'Il tuo piano è stato aggiornato con successo.'
+          })
+          // Ricarica i dati dopo un piccolo delay
+          setTimeout(() => {
+            fetchSubscription()
+            fetchUsage()
+          }, 1000)
+        } else if (upgrade === 'cancelled') {
+          toast({
+            title: 'Upgrade annullato',
+            description: 'L\'upgrade del piano è stato annullato.',
+            variant: 'destructive'
+          })
+        }
+      }
     }
-  }, [])
+
+    init()
+  }, [toast])
 
   const fetchSubscription = async () => {
     try {
