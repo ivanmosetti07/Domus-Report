@@ -55,11 +55,16 @@ export function validateEmail(email: string): { valid: boolean; sanitized: strin
 /**
  * Validate phone number (Italian format)
  */
-export function validatePhone(phone: string): { valid: boolean; sanitized: string; error?: string } {
+export function validatePhone(phone: string | undefined | null): { valid: boolean; sanitized: string | null; error?: string } {
+  // Handle undefined or null
+  if (!phone) {
+    return { valid: true, sanitized: null } // Phone is optional
+  }
+
   const sanitized = sanitizeString(phone).replace(/\s/g, "")
 
   if (!sanitized) {
-    return { valid: true, sanitized: "" } // Phone is optional
+    return { valid: true, sanitized: null } // Phone is optional
   }
 
   // Allow +39, 0039, or direct number
@@ -67,7 +72,7 @@ export function validatePhone(phone: string): { valid: boolean; sanitized: strin
   const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
 
   if (!phoneRegex.test(sanitized)) {
-    return { valid: false, sanitized, error: "Formato telefono non valido (es. +39 123 456 7890)" }
+    return { valid: false, sanitized: null, error: "Formato telefono non valido (es. +39 123 456 7890)" }
   }
 
   return { valid: true, sanitized }

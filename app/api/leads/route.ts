@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const phoneValidation = validatePhone(body.phone || "")
+    const phoneValidation = validatePhone(body.phone)
     if (!phoneValidation.valid) {
       return NextResponse.json(
         { error: phoneValidation.error },
@@ -132,7 +132,8 @@ export async function POST(request: NextRequest) {
     console.log('[POST /api/leads] Phone validation:', {
       input: body.phone,
       sanitized: phoneValidation.sanitized,
-      valid: phoneValidation.valid
+      valid: phoneValidation.valid,
+      willSaveAsNull: phoneValidation.sanitized === null
     })
 
     // Sanitize and validate property data using geocoding
@@ -299,7 +300,7 @@ export async function POST(request: NextRequest) {
         nome: firstNameValidation.sanitized,
         cognome: lastNameValidation.sanitized,
         email: emailValidation.sanitized,
-        telefono: phoneValidation.sanitized ? phoneValidation.sanitized : null,
+        telefono: phoneValidation.sanitized,
         property: {
           create: {
             indirizzo: finalAddress,
