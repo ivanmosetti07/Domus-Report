@@ -305,12 +305,12 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                     {statusInfo.label}
                   </Badge>
                 </div>
-                <Link href={`/dashboard/leads/${lead.id}`}>
-                  <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/dashboard/leads/${lead.id}`}>
                     <ExternalLink className="w-4 h-4 mr-2" />
                     Dettagli
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </div>
           </Card>
