@@ -384,34 +384,53 @@ export default function DebugAnalyticsPage() {
             <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
               <h4 className="font-semibold text-green-900 flex items-center gap-2 mb-3">
                 <CheckCircle2 className="w-5 h-5" />
-                Aggregazione Completata
+                {aggregationResult.message || "Aggregazione Completata"}
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <p className="text-green-700">Eventi Trovati</p>
-                  <p className="text-2xl font-bold text-green-900">
-                    {aggregationResult.aggregation.widgetEventsFound}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-green-700">Impressioni</p>
-                  <p className="text-2xl font-bold text-green-900">
-                    {aggregationResult.aggregation.totals.totalImpressions}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-green-700">Lead</p>
-                  <p className="text-2xl font-bold text-green-900">
-                    {aggregationResult.aggregation.totals.totalLeads}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-green-700">Valutazioni</p>
-                  <p className="text-2xl font-bold text-green-900">
-                    {aggregationResult.aggregation.totals.totalValuations}
-                  </p>
-                </div>
+                {aggregationResult.aggregation?.widgetEventsFound !== undefined && (
+                  <div>
+                    <p className="text-green-700">Eventi Trovati</p>
+                    <p className="text-2xl font-bold text-green-900">
+                      {aggregationResult.aggregation.widgetEventsFound}
+                    </p>
+                  </div>
+                )}
+                {aggregationResult.leadsProcessed !== undefined && (
+                  <div>
+                    <p className="text-green-700">Lead Processati</p>
+                    <p className="text-2xl font-bold text-green-900">
+                      {aggregationResult.leadsProcessed}
+                    </p>
+                  </div>
+                )}
+                {aggregationResult.totals && (
+                  <>
+                    <div>
+                      <p className="text-green-700">Impressioni</p>
+                      <p className="text-2xl font-bold text-green-900">
+                        {aggregationResult.totals.totalImpressions || aggregationResult.aggregation?.totals?.totalImpressions || 0}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-green-700">Lead</p>
+                      <p className="text-2xl font-bold text-green-900">
+                        {aggregationResult.totals.totalLeads || aggregationResult.aggregation?.totals?.totalLeads || 0}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-green-700">Valutazioni</p>
+                      <p className="text-2xl font-bold text-green-900">
+                        {aggregationResult.totals.totalValuations || aggregationResult.aggregation?.totals?.totalValuations || 0}
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
+              {aggregationResult.note && (
+                <p className="text-sm text-green-700 mt-3">
+                  ℹ️ {aggregationResult.note}
+                </p>
+              )}
             </div>
           )}
         </CardContent>
