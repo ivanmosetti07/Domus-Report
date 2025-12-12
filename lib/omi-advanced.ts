@@ -13,6 +13,7 @@ import fs from "fs"
 import path from "path"
 import { parse } from "csv-parse/sync"
 import { createLogger } from "./logger"
+import type { Prisma } from "@prisma/client"
 
 const logger = createLogger('omi-advanced')
 
@@ -251,14 +252,23 @@ export async function getOMIValueByZone(
 
   // Calcola media dei valori più recenti
   const recentValues = avgValues.slice(0, Math.min(5, avgValues.length))
+
+  type OMIValueType = Prisma.OMIValueGetPayload<{
+    select: {
+      valoreMinMq: true
+      valoreMaxMq: true
+      valoreMedioMq: true
+    }
+  }>
+
   const avgMin =
-    recentValues.reduce((sum, v) => sum + parseFloat(v.valoreMinMq.toString()), 0) /
+    recentValues.reduce((sum: number, v: OMIValueType) => sum + parseFloat(v.valoreMinMq.toString()), 0) /
     recentValues.length
   const avgMax =
-    recentValues.reduce((sum, v) => sum + parseFloat(v.valoreMaxMq.toString()), 0) /
+    recentValues.reduce((sum: number, v: OMIValueType) => sum + parseFloat(v.valoreMaxMq.toString()), 0) /
     recentValues.length
   const avgMedio =
-    recentValues.reduce((sum, v) => sum + parseFloat(v.valoreMedioMq.toString()), 0) /
+    recentValues.reduce((sum: number, v: OMIValueType) => sum + parseFloat(v.valoreMedioMq.toString()), 0) /
     recentValues.length
 
   return {
@@ -434,7 +444,9 @@ export async function getZonesByCity(citta: string): Promise<
     },
   })
 
-  return zones.map((z) => ({
+  type ZoneType = typeof zones[number]
+
+  return zones.map((z: ZoneType) => ({
     zona: z.zona,
     cap: z.cap || undefined,
     numeroValori: z._count.id,

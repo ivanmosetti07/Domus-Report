@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getAuthAgency } from '@/lib/auth'
 import { generatePerformanceReportPDF } from '@/lib/performance-report-generator'
+import type { Prisma } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -89,6 +90,12 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    type LeadWithStatus = Prisma.LeadGetPayload<{
+      include: {
+        statuses: true
+      }
+    }>
+
     const leadsByStatus: Record<string, number> = {
       NEW: 0,
       CONTACTED: 0,
@@ -97,7 +104,7 @@ export async function POST(request: NextRequest) {
       LOST: 0,
     }
 
-    allLeadsWithStatus.forEach((lead) => {
+    allLeadsWithStatus.forEach((lead: LeadWithStatus) => {
       const status = lead.statuses[0]?.status || 'NEW'
       if (leadsByStatus[status] !== undefined) {
         leadsByStatus[status]++

@@ -18,6 +18,7 @@ import { ContactCardClient } from "@/components/dashboard/contact-card-client"
 import { ConversationView } from "@/components/dashboard/conversation-view"
 import { LeadStatusWrapper } from "@/components/dashboard/lead-status-wrapper"
 import { DownloadPDFButton } from "@/components/dashboard/download-pdf-button"
+import type { Prisma } from "@prisma/client"
 
 // Force dynamic rendering (uses cookies for auth)
 export const dynamic = 'force-dynamic'
@@ -54,6 +55,16 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
       },
     },
   })
+
+  type LeadStatusType = Prisma.LeadStatusGetPayload<{
+    select: {
+      id: true
+      status: true
+      note: true
+      createdAt: true
+      createdByAgencyId: true
+    }
+  }>
 
   // Lead not found
   if (!lead) {
@@ -258,7 +269,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         <LeadStatusWrapper
           leadId={lead.id}
           currentStatus={lead.statuses?.[0]?.status || 'NEW'}
-          statuses={lead.statuses.map(s => ({
+          statuses={lead.statuses.map((s: LeadStatusType) => ({
             id: s.id,
             status: s.status,
             note: s.note,

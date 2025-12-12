@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createHash } from "crypto"
 import { prisma } from "@/lib/prisma"
 import { verifyAuth } from "@/lib/auth"
+import type { Prisma } from "@prisma/client"
 
 /**
  * GET /api/auth/sessions
@@ -49,8 +50,20 @@ export async function GET(request: NextRequest) {
       },
     })
 
+    type SessionType = Prisma.AgencySessionGetPayload<{
+      select: {
+        id: true
+        tokenHash: true
+        ipAddress: true
+        userAgent: true
+        loginAt: true
+        expiresAt: true
+        lastActivityAt: true
+      }
+    }>
+
     // Mark current session and format response
-    const formattedSessions = sessions.map((session) => ({
+    const formattedSessions = sessions.map((session: SessionType) => ({
       id: session.id,
       ipAddress: session.ipAddress,
       userAgent: session.userAgent,
