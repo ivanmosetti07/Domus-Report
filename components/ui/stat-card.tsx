@@ -26,25 +26,25 @@ export function StatCard({
   className
 }: StatCardProps) {
   const variantColors = {
-    default: 'border-gray-200',
-    success: 'border-green-200 bg-green-50',
-    warning: 'border-yellow-200 bg-yellow-50'
+    default: 'border-border bg-surface-2',
+    success: 'border-success/20 bg-success/5',
+    warning: 'border-warning/20 bg-warning/5'
   }
 
   return (
     <Card className={cn(
-      "p-4 sm:p-6 hover:shadow-md transition-shadow",
+      "p-4 sm:p-6 card-lift group",
       variantColors[variant],
       className
     )}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 truncate">{label}</p>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">{value}</p>
+          <p className="text-xs sm:text-sm font-medium text-foreground-muted mb-1 truncate">{label}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-foreground truncate">{value}</p>
           {trend && (
             <div className={cn(
               "flex items-center gap-1 mt-1 sm:mt-2 text-xs sm:text-sm font-medium",
-              trend.isPositive ? "text-green-600" : "text-red-600"
+              trend.isPositive ? "text-success" : "text-destructive"
             )}>
               {trend.isPositive ? (
                 <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -56,7 +56,7 @@ export function StatCard({
           )}
         </div>
         {icon && (
-          <div className="p-2 sm:p-3 bg-primary/10 rounded-lg flex-shrink-0">
+          <div className="p-2 sm:p-3 bg-primary/10 rounded-xl flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-180">
             {icon}
           </div>
         )}

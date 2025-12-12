@@ -214,6 +214,8 @@ model Subscription {
   planType             String    @default("free") @map("plan_type") // free, basic, premium
   status               String    @default("active") // active, cancelled, expired, trial, past_due
   trialEndsAt          DateTime? @map("trial_ends_at")
+  trialDays            Int?      @map("trial_days") // Giorni trial scelti (0-7)
+  onboardingCompletedAt DateTime? @map("onboarding_completed_at")
   nextBillingDate      DateTime? @map("next_billing_date")
   cancelledAt          DateTime? @map("cancelled_at")
   paymentMethodId      String?   @map("payment_method_id")

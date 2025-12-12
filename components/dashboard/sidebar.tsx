@@ -63,14 +63,14 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
   const SidebarContent = () => (
     <>
       {/* Header */}
-      <div className="px-6 py-6 border-b border-gray-200">
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
-            <Building2 className="w-6 h-6 text-white" />
+      <div className="px-6 py-6 border-b border-border">
+        <Link href="/dashboard" className="flex items-center gap-3 group">
+          <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl group-hover:scale-105 transition-transform duration-180">
+            <Building2 className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">DomusReport</h2>
-            <p className="text-xs text-gray-500 truncate max-w-[160px]">
+            <h2 className="text-lg font-bold text-foreground">DomusReport</h2>
+            <p className="text-xs text-foreground-muted truncate max-w-[160px]">
               {agencyName}
             </p>
           </div>
@@ -90,10 +90,10 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
               href={item.href}
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-180 ease-smooth border border-transparent",
                 isActive
-                  ? "bg-blue-50 text-primary border-l-4 border-primary"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-primary/10 text-primary border-primary/20 shadow-soft"
+                  : "text-foreground-muted hover:bg-surface hover:text-foreground hover:border-border-hover"
               )}
             >
               <Icon className="w-5 h-5" />
@@ -104,16 +104,16 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-gray-200">
+      <div className="px-4 py-4 border-t border-border">
         <Button
           variant="ghost"
-          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-180"
           onClick={handleLogout}
         >
           <LogOut className="w-5 h-5 mr-3" />
           Logout
         </Button>
-        <p className="text-xs text-gray-400 mt-3 px-3">
+        <p className="text-xs text-foreground-subtle mt-3 px-3">
           v0.1.0
         </p>
       </div>
@@ -123,7 +123,7 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64 lg:bg-white lg:border-r lg:border-gray-200">
+      <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64 lg:bg-surface lg:border-r lg:border-border border-soft">
         <SidebarContent />
       </div>
 
@@ -133,7 +133,7 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
           variant="outline"
           size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="bg-white shadow-lg"
+          className="bg-surface shadow-soft-lg border-border hover:border-border-hover"
         >
           {mobileMenuOpen ? (
             <X className="w-5 h-5" />
@@ -148,12 +148,12 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
         <>
           {/* Overlay */}
           <div
-            className="lg:hidden fixed inset-0 bg-black/50 z-40"
+            className="lg:hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-40 animate-fade-in"
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Sidebar */}
-          <div className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-50 flex flex-col">
+          <div className="lg:hidden fixed inset-y-0 left-0 w-64 bg-surface border-r border-border z-50 flex flex-col animate-slide-in-left">
             <SidebarContent />
           </div>
         </>

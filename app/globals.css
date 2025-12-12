@@ -4,26 +4,61 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    /* Fintech Dark Theme - Palette Petrolio + Verde Fluo */
+
+    /* Background layers - verde petrolio scuro progressivo */
+    --background: 195 35% 12%;        /* Base: petrolio molto scuro (#1a2e32) */
+    --surface: 195 30% 16%;           /* Surface: un passo più chiaro (#223a3f) */
+    --surface-2: 195 25% 20%;         /* Surface elevated: ancora più chiaro (#2a474e) */
+
+    /* Foreground colors */
+    --foreground: 180 5% 92%;         /* Testo principale: bianco sporco (#e8ebed) */
+    --foreground-muted: 180 5% 65%;   /* Testo secondario: grigio medio (#9da5a8) */
+    --foreground-subtle: 180 5% 45%;  /* Testo placeholder: grigio scuro (#6a7477) */
+
+    /* Cards & Containers */
+    --card: 195 30% 16%;              /* Card background: surface */
+    --card-foreground: 180 5% 92%;    /* Card text */
+    --card-hover: 195 25% 20%;        /* Card hover state */
+
+    /* Popover & Dropdown */
+    --popover: 195 25% 20%;
+    --popover-foreground: 180 5% 92%;
+
+    /* Primary accent - Verde Fluo */
+    --primary: 142 76% 56%;           /* Verde fluo brillante (#3dd68c) */
+    --primary-hover: 142 76% 50%;     /* Hover: più scuro */
+    --primary-foreground: 195 35% 12%; /* Testo su verde: scuro per contrasto */
+
+    /* Secondary colors */
+    --secondary: 195 25% 25%;         /* Grigio petrolio medio */
+    --secondary-foreground: 180 5% 92%;
+
+    /* Muted (backgrounds attenuati) */
+    --muted: 195 30% 18%;
+    --muted-foreground: 180 5% 65%;
+
+    /* Accent (highlight) */
+    --accent: 142 76% 56%;            /* Verde fluo */
+    --accent-foreground: 195 35% 12%;
+
+    /* Semantic colors */
+    --destructive: 0 72% 51%;         /* Rosso */
+    --destructive-foreground: 180 5% 98%;
+    --success: 142 76% 56%;           /* Verde positivo */
+    --warning: 38 92% 50%;            /* Arancione */
+
+    /* Borders & Inputs */
+    --border: 195 25% 24%;            /* Border sottile */
+    --border-hover: 195 20% 30%;      /* Border hover */
+    --input: 195 30% 18%;             /* Input background */
+    --input-border: 195 25% 24%;      /* Input border */
+    --ring: 142 76% 56%;              /* Focus ring: verde fluo */
+
+    /* Radius - ampi e coerenti */
+    --radius: 1.125rem;               /* 18px - più generosi */
+    --radius-lg: 1.5rem;              /* 24px - card principali */
+    --radius-sm: 0.75rem;             /* 12px - elementi piccoli */
   }
 }
 
@@ -31,6 +66,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -38,5 +74,49 @@
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar styling per match del theme dark */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--border-hover));
+  }
+}
+
+@layer components {
+  /* Premium card hover effect */
+  .card-lift {
+    transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Soft inset border effect */
+  .border-soft {
+    border: 1px solid hsl(var(--border));
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+  }
+
+  /* Glassmorphism effect (leggero) */
+  .glass-effect {
+    background: rgba(var(--surface-rgb), 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 }

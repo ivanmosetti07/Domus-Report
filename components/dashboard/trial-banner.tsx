@@ -29,8 +29,13 @@ export function TrialBanner({
   // Trial attivo
   if (subscriptionStatus === 'trial' && trialDaysRemaining !== null) {
     const isUrgent = trialDaysRemaining <= 3
+
+    // Calcola percentuale progress basata su giorni rimanenti
+    // Usa 7 giorni come default per il trial
+    const totalTrialDays = 7
+
     const progressPercentage = trialEndsAt
-      ? Math.max(0, Math.min(100, (trialDaysRemaining / 14) * 100))
+      ? Math.max(0, Math.min(100, (trialDaysRemaining / totalTrialDays) * 100))
       : 0
 
     return (
@@ -47,7 +52,7 @@ export function TrialBanner({
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
-                  Prova Premium Attiva
+                  Prova {planType === 'premium' ? 'Premium' : 'Basic'} Attiva
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-700 mb-3">
                   {trialDaysRemaining === 0

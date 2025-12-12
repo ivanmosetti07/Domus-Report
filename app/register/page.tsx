@@ -122,7 +122,8 @@ export default function RegisterPage() {
         if (loginData.token) {
           localStorage.setItem('token', loginData.token)
         }
-        router.push("/dashboard")
+        // REDIRECT A ONBOARDING invece di dashboard
+        router.push("/onboarding/plan")
       } else {
         // Registration succeeded but login failed - redirect to login page
         router.push("/login?message=Registrazione completata. Effettua il login.")

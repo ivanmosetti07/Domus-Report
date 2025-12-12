@@ -15,8 +15,15 @@ export interface PlanLimits {
 // Prezzi piani (in centesimi EUR)
 export const PLAN_PRICES = {
   free: 0,
-  basic: 5000, // €50/mese
-  premium: 10000, // €100/mese
+  basic: 2900, // €29/mese
+  premium: 9900, // €99/mese
+} as const
+
+// Giorni trial per piano (0 = nessun trial)
+export const TRIAL_DAYS = {
+  free: 0,
+  basic: 7,
+  premium: 7,
 } as const
 
 // Prezzo per valutazione extra (in centesimi EUR)
@@ -25,7 +32,7 @@ export const EXTRA_VALUATION_PRICE = 150 // €1.50
 export const planLimits: Record<string, PlanLimits> = {
   free: {
     maxWidgets: 1,
-    maxValutationsPerMonth: 5,
+    maxValutationsPerMonth: 10,
     customBranding: false,
     customCss: false,
     emailNotifications: true,
@@ -35,7 +42,7 @@ export const planLimits: Record<string, PlanLimits> = {
   },
   basic: {
     maxWidgets: 3,
-    maxValutationsPerMonth: 50,
+    maxValutationsPerMonth: 100,
     customBranding: true,
     customCss: false,
     emailNotifications: true,
@@ -44,8 +51,8 @@ export const planLimits: Record<string, PlanLimits> = {
     prioritySupport: true,
   },
   premium: {
-    maxWidgets: 10,
-    maxValutationsPerMonth: 150,
+    maxWidgets: -1, // illimitato
+    maxValutationsPerMonth: -1, // illimitato
     customBranding: true,
     customCss: true,
     emailNotifications: true,

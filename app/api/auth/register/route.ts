@@ -84,11 +84,7 @@ export async function POST(request: NextRequest) {
     // Generate unique widget ID
     const widgetId = nanoid(16) // 16 characters unique ID
 
-    // Calcola data fine trial (14 giorni)
-    const trialEndsAt = new Date()
-    trialEndsAt.setDate(trialEndsAt.getDate() + 14)
-
-    // Create agency con trial premium
+    // Create agency SENZA piano selezionato (stato onboarding incompleto)
     const agency = await prisma.agency.create({
       data: {
         nome,
@@ -96,16 +92,9 @@ export async function POST(request: NextRequest) {
         password: hashedPassword,
         citta: cityValidation.sanitized,
         widgetId,
-        piano: "premium", // Trial premium
+        piano: "free", // Default free durante onboarding
         attiva: true,
-        // Crea subscription con trial
-        subscription: {
-          create: {
-            planType: "premium",
-            status: "trial",
-            trialEndsAt,
-          }
-        }
+        // NO subscription creata qui - verrà creata durante onboarding
       },
       select: {
         id: true,
@@ -119,16 +108,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Registrazione completata con successo! Hai 14 giorni di prova Premium gratuita.",
+      message: "Registrazione completata! Scegli il tuo piano.",
       agency: {
         id: agency.id,
         nome: agency.nome,
         email: agency.email,
       },
-      trial: {
-        endsAt: trialEndsAt,
-        daysRemaining: 14
-      }
     })
   } catch (error) {
     console.error("Registration error:", error)
