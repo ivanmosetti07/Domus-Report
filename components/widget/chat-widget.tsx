@@ -737,14 +737,18 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setMessages(prev => [...prev, valuationMessage])
 
     // Salva il lead subito dopo aver mostrato la valutazione
+    // Passa il result direttamente invece di usare lo stato
     setTimeout(() => {
-      completeConversation()
+      completeConversation(result)
     }, 1500)
   }
 
 
-  const completeConversation = async () => {
+  const completeConversation = async (valuationResult?: ValuationResult) => {
     const firstName = collectedData.firstName || "Amico"
+
+    // Use passed result or fall back to state
+    const finalValuation = valuationResult || valuation
 
     // Show loading message
     addBotMessage("Sto salvando i tuoi dati... ⏳", "completed")
@@ -781,9 +785,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         occupancyStatus: collectedData.occupancyStatus,
         occupancyEndDate: collectedData.occupancyEndDate,
         // Valuation data
-        minPrice: valuation?.minPrice || 0,
-        maxPrice: valuation?.maxPrice || 0,
-        estimatedPrice: valuation?.estimatedPrice || 0,
+        minPrice: finalValuation?.minPrice || 0,
+        maxPrice: finalValuation?.maxPrice || 0,
+        estimatedPrice: finalValuation?.estimatedPrice || 0,
         // Conversation
         messages: messages.map((msg) => ({
           role: msg.role,
@@ -798,10 +802,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         : {
             ...basePayload,
             widgetId,
-            baseOMIValue: valuation?.baseOMIValue || 0,
-            floorCoefficient: valuation?.floorCoefficient || 1.0,
-            conditionCoefficient: valuation?.conditionCoefficient || 1.0,
-            explanation: valuation?.explanation || "",
+            baseOMIValue: finalValuation?.baseOMIValue || 0,
+            floorCoefficient: finalValuation?.floorCoefficient || 1.0,
+            conditionCoefficient: finalValuation?.conditionCoefficient || 1.0,
+            explanation: finalValuation?.explanation || "",
           }
 
       // Save lead to database with timeout
@@ -813,12 +817,12 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         widgetId: isDemo ? 'DEMO' : widgetId,
         hasPhone: !!payload.phone,
         email: payload.email,
-        hasValuation: !!valuation,
-        valuationData: valuation ? {
-          baseOMIValue: valuation.baseOMIValue,
-          floorCoefficient: valuation.floorCoefficient,
-          conditionCoefficient: valuation.conditionCoefficient,
-          estimatedPrice: valuation.estimatedPrice
+        hasValuation: !!finalValuation,
+        valuationData: finalValuation ? {
+          baseOMIValue: finalValuation.baseOMIValue,
+          floorCoefficient: finalValuation.floorCoefficient,
+          conditionCoefficient: finalValuation.conditionCoefficient,
+          estimatedPrice: finalValuation.estimatedPrice
         } : null,
         timestamp: new Date().toISOString()
       })
@@ -871,7 +875,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       trackEvent("CONTACT_FORM_SUBMIT", {
         hasPhone: !!collectedData.phone,
         propertyType: collectedData.type,
-        estimatedPrice: valuation?.estimatedPrice,
+        estimatedPrice: finalValuation?.estimatedPrice,
       })
 
       // Messaggio diverso per demo vs reale
@@ -899,7 +903,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         widgetId,
         isDemo,
         hasEmail: !!collectedData.email,
-        hasValuation: !!valuation,
+        hasValuation: !!finalValuation,
         timestamp: new Date().toISOString()
       })
 
