@@ -347,9 +347,20 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   }
 
   const extractCity = (address: string): string => {
-    // Simple extraction - take last word
+    // Extract city from address, removing postal codes and numbers
     const parts = address.split(",")
-    return parts[parts.length - 1]?.trim() || "Milano"
+    const lastPart = parts[parts.length - 1]?.trim() || "Milano"
+
+    // Remove postal code (5 digits) if present
+    // Es: "20100 Milano" → "Milano"
+    const withoutPostalCode = lastPart.replace(/^\d{5}\s*/, '')
+
+    // Remove any remaining numbers at the start
+    // Es: "123 Roma" → "Roma"
+    const cityName = withoutPostalCode.replace(/^\d+\s*/, '').trim()
+
+    // If nothing left or too short, use default
+    return cityName.length >= 2 ? cityName : "Milano"
   }
 
   const askForCondition = () => {
