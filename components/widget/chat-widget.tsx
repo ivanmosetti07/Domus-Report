@@ -104,6 +104,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const [currentStep, setCurrentStep] = React.useState<ConversationStep>("welcome")
   const [collectedData, setCollectedData] = React.useState<CollectedData>({})
   const [valuation, setValuation] = React.useState<ValuationResult | null>(null)
+  const messagesEndRef = React.useRef<HTMLDivElement>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   // Tracking: Event batching queue
@@ -116,7 +117,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const batchTimerRef = React.useRef<NodeJS.Timeout | null>(null)
   const leadIdRef = React.useRef<string | null>(null)
 
-  // Auto-scroll rimosso per mantenere il form fisso al centro
+  // Auto-scroll interno alla chat (non influenza l'embed esterno)
+  React.useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
+  }, [messages, isTyping])
 
   // Tracking: Funzione per accodare evento (batching)
   const trackEvent = React.useCallback((
@@ -749,6 +753,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             </div>
           </div>
         )}
+
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
