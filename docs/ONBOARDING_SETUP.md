@@ -19,10 +19,10 @@ Il nuovo flusso onboarding guida l'utente attraverso questi step:
 - ✅ `prisma/migrations/add_trial_onboarding_fields.sql` - Migration SQL
 
 ### Configurazione Piani
-- ✅ `lib/plan-limits.ts` - Aggiornato con nuovi limiti e prezzi:
-  - Free: 10 val/mese, 1 widget
-  - Basic: €29/mese, 100 val/mese, 3 widget, 7 giorni trial
-  - Premium: €99/mese, illimitato, 7 giorni trial
+- ✅ `lib/plan-limits.ts` - Aggiornato con limiti e prezzi corretti:
+  - Free: 5 val/mese, 1 widget
+  - Basic: €50/mese, 50 val/mese, 3 widget, 7 giorni trial
+  - Premium: €100/mese, 150 val/mese, 10 widget, 7 giorni trial
 
 ### API Endpoints
 - ✅ `app/api/auth/register/route.ts` - Modificato per NON creare subscription automaticamente

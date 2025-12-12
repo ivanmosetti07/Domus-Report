@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { PLAN_PRICES, planLimits } from "@/lib/plan-limits"
 
 type PlanType = 'free' | 'basic' | 'premium'
 
@@ -102,14 +103,14 @@ export default function OnboardingPlanPage() {
             price="€0"
             priceSubtext="/mese"
             features={[
-              { text: '10 valutazioni/mese', included: true },
-              { text: '1 widget base', included: true },
-              { text: 'Branding DomusReport', included: true },
-              { text: 'Supporto community', included: true },
-              { text: 'Widget illimitati', included: false },
-              { text: 'Colori brand custom', included: false },
-              { text: 'Analytics avanzate', included: false },
-              { text: 'Supporto prioritario', included: false }
+              { text: `${planLimits.free.maxWidgets} widget`, included: true },
+              { text: `${planLimits.free.maxValutationsPerMonth} valutazioni/mese`, included: true },
+              { text: 'Supporto email', included: true },
+              { text: 'Analytics base', included: planLimits.free.analytics },
+              { text: 'Custom branding', included: planLimits.free.customBranding },
+              { text: 'Supporto prioritario', included: planLimits.free.prioritySupport },
+              { text: 'CSS custom', included: planLimits.free.customCss },
+              { text: 'API access', included: planLimits.free.apiAccess }
             ]}
             ctaText="Inizia Gratis"
             onSelect={() => handlePlanSelect('free')}
@@ -121,17 +122,16 @@ export default function OnboardingPlanPage() {
           <PlanCard
             name="Basic"
             description="Ideale per agenzie in crescita"
-            price="€29"
+            price={`€${PLAN_PRICES.basic / 100}`}
             priceSubtext="/mese"
             features={[
-              { text: '100 valutazioni/mese', included: true },
-              { text: '3 widget personalizzabili', included: true },
-              { text: 'Colori brand custom', included: true },
-              { text: 'Analytics avanzate', included: true },
-              { text: 'Supporto email', included: true },
-              { text: 'CSS custom', included: false },
-              { text: 'Report PDF avanzati', included: false },
-              { text: 'Accesso API', included: false }
+              { text: `${planLimits.basic.maxWidgets} widget`, included: true },
+              { text: `${planLimits.basic.maxValutationsPerMonth} valutazioni/mese`, included: true },
+              { text: 'Analytics completo', included: planLimits.basic.analytics },
+              { text: 'Supporto prioritario', included: planLimits.basic.prioritySupport },
+              { text: 'Custom branding', included: planLimits.basic.customBranding },
+              { text: 'CSS custom', included: planLimits.basic.customCss },
+              { text: 'API access', included: planLimits.basic.apiAccess }
             ]}
             trialDays={7}
             recommended={true}
@@ -145,17 +145,15 @@ export default function OnboardingPlanPage() {
           <PlanCard
             name="Premium"
             description="Per agenzie professionali"
-            price="€99"
+            price={`€${PLAN_PRICES.premium / 100}`}
             priceSubtext="/mese"
             features={[
-              { text: 'Valutazioni illimitate', included: true },
-              { text: 'Widget illimitati', included: true },
-              { text: 'Branding completo + CSS custom', included: true },
-              { text: 'Analytics avanzate', included: true },
-              { text: 'Report PDF avanzati', included: true },
-              { text: 'Supporto prioritario', included: true },
-              { text: 'Accesso API', included: true },
-              { text: 'White label completo', included: true }
+              { text: `${planLimits.premium.maxWidgets} widget`, included: true },
+              { text: `${planLimits.premium.maxValutationsPerMonth} valutazioni/mese`, included: true },
+              { text: 'Analytics avanzato', included: planLimits.premium.analytics },
+              { text: 'Supporto dedicato', included: planLimits.premium.prioritySupport },
+              { text: 'White-label + CSS', included: planLimits.premium.customBranding && planLimits.premium.customCss },
+              { text: 'API access', included: planLimits.premium.apiAccess }
             ]}
             trialDays={7}
             ctaText="Prova 7 Giorni Gratis"
