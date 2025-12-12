@@ -35,22 +35,25 @@
   // Create container for the widget
   const container = document.createElement('div');
   container.id = 'domusreport-widget-' + widgetId;
-  container.style.cssText = 'position: fixed; bottom: 0; right: 0; z-index: 9999; pointer-events: none;';
+  container.style.cssText = 'position: fixed; bottom: 0; right: 0; z-index: 2147483647; pointer-events: none;';
 
   // Create iframe
   const iframe = document.createElement('iframe');
   iframe.id = 'domusreport-iframe-' + widgetId;
   iframe.src = WIDGET_HOST + '/widget/' + widgetId + (positionOverride ? '?position=' + positionOverride : '');
+
+  // Inizialmente l'iframe è piccolo (solo area bubble) per permettere click
   iframe.style.cssText = [
     'position: fixed',
     'bottom: 0',
     'right: 0',
-    'width: 100vw',
-    'height: 100vh',
+    'width: 120px',
+    'height: 120px',
     'border: none',
     'z-index: 2147483647',
-    'pointer-events: none',
-    'background: transparent'
+    'pointer-events: auto',
+    'background: transparent',
+    'transition: width 0.3s, height 0.3s'
   ].join(';');
 
   // Sandbox attributes for security
@@ -123,8 +126,10 @@
     if (data.type === 'DOMUS_WIDGET_CLOSE') {
       console.log('[DomusReport] Widget closed');
 
-      // Disable pointer events when widget is closed
-      iframe.style.pointerEvents = 'none';
+      // Riduci iframe solo all'area del bubble
+      iframe.style.width = '120px';
+      iframe.style.height = '120px';
+      iframe.style.pointerEvents = 'auto'; // Mantieni auto per permettere click sul bubble
 
       var closeEvent = new CustomEvent('domusreport:close', {
         detail: { widgetId: widgetId }
@@ -136,7 +141,9 @@
     if (data.type === 'DOMUS_WIDGET_OPEN') {
       console.log('[DomusReport] Widget opened');
 
-      // Enable pointer events when widget is open
+      // Espandi iframe a schermo intero
+      iframe.style.width = '100vw';
+      iframe.style.height = '100vh';
       iframe.style.pointerEvents = 'auto';
 
       var openEvent = new CustomEvent('domusreport:open', {
