@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -18,6 +21,11 @@ export function TrialBanner({
   nextBillingDate,
   trialEndsAt
 }: TrialBannerProps) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   // Trial attivo
   if (subscriptionStatus === 'trial' && trialDaysRemaining !== null) {
     const isUrgent = trialDaysRemaining <= 3
@@ -58,7 +66,7 @@ export function TrialBanner({
                   />
                 </div>
 
-                {trialEndsAt && (
+                {trialEndsAt && mounted && (
                   <p className="text-xs text-gray-600">
                     Scadenza: {new Date(trialEndsAt).toLocaleDateString('it-IT', {
                       day: 'numeric',
@@ -129,7 +137,7 @@ export function TrialBanner({
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
                   Piano {planType === 'premium' ? 'Premium' : 'Basic'} Attivo
                 </h3>
-                {nextBillingDate && (
+                {nextBillingDate && mounted && (
                   <p className="text-xs sm:text-sm text-gray-700">
                     Prossimo rinnovo: {new Date(nextBillingDate).toLocaleDateString('it-IT', {
                       day: 'numeric',
