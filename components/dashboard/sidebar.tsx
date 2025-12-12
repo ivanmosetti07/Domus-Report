@@ -65,31 +65,36 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
     <>
       {/* Header */}
       <div className="px-6 py-6 border-b border-border">
-        <Link href="/dashboard" className="flex flex-col gap-3 group">
-          {/* Logo Agenzia o Domus Report */}
+        <Link href="/dashboard" className="flex items-center gap-3 group">
+          {/* Logo Agenzia (quadrato) */}
           {agencyLogo ? (
-            <div className="relative h-16 w-full group-hover:scale-105 transition-transform duration-180">
+            <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 group-hover:scale-105 transition-transform duration-180">
               <Image
                 src={agencyLogo}
                 alt={agencyName}
                 fill
-                className="object-contain object-left"
+                className="object-cover"
                 priority
               />
             </div>
           ) : (
-            <Image
-              src="/logo.png"
-              alt="DomusReport"
-              width={180}
-              height={60}
-              className="h-10 w-auto group-hover:scale-105 transition-transform duration-180"
-              priority
-            />
+            <div className="h-12 w-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-180">
+              <Image
+                src="/favicon.png"
+                alt="DomusReport"
+                width={48}
+                height={48}
+                className="w-8 h-8"
+                priority
+              />
+            </div>
           )}
-          <p className="text-xs text-foreground-muted truncate">
-            {agencyName}
-          </p>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm font-bold text-foreground truncate">DomusReport</h2>
+            <p className="text-xs text-foreground-muted truncate">
+              {agencyName}
+            </p>
+          </div>
         </Link>
       </div>
 
