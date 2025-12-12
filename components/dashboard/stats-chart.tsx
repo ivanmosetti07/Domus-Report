@@ -28,18 +28,18 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
   const firstAvg = firstHalf.reduce((sum, d) => sum + d.count, 0) / firstHalf.length
   const secondAvg = secondHalf.reduce((sum, d) => sum + d.count, 0) / secondHalf.length
 
-  let trendIcon = <Minus className="w-4 h-4 text-gray-500" />
+  let trendIcon = <Minus className="w-4 h-4 text-foreground-muted" />
   let trendText = "Stabile"
-  let trendColor = "text-gray-600"
+  let trendColor = "text-foreground-muted"
 
   if (secondAvg > firstAvg * 1.1) {
-    trendIcon = <TrendingUp className="w-4 h-4 text-green-600" />
+    trendIcon = <TrendingUp className="w-4 h-4 text-success" />
     trendText = `+${Math.round(((secondAvg - firstAvg) / firstAvg) * 100)}% rispetto a 15 giorni fa`
-    trendColor = "text-green-600"
+    trendColor = "text-success"
   } else if (secondAvg < firstAvg * 0.9) {
-    trendIcon = <TrendingDown className="w-4 h-4 text-red-600" />
+    trendIcon = <TrendingDown className="w-4 h-4 text-destructive" />
     trendText = `${Math.round(((secondAvg - firstAvg) / firstAvg) * 100)}% rispetto a 15 giorni fa`
-    trendColor = "text-red-600"
+    trendColor = "text-destructive"
   }
 
   return (
@@ -74,19 +74,19 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
                 {/* Bar */}
                 <div className="w-full flex items-end justify-center flex-1">
                   <div
-                    className={`w-full rounded-t transition-all ${
+                    className={`w-full rounded-t transition-all duration-180 ${
                       isToday
                         ? 'bg-primary'
                         : item.count > 0
                         ? 'bg-primary/60 hover:bg-primary/80'
-                        : 'bg-gray-200'
+                        : 'bg-border'
                     }`}
                     style={{ height: `${heightPercentage}%` }}
                   />
                 </div>
 
                 {/* Tooltip on hover */}
-                <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-gray-900 text-white text-[10px] sm:text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none z-10 transition-opacity">
+                <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-surface-2 text-foreground text-[10px] sm:text-xs rounded-lg px-2 py-1 whitespace-nowrap pointer-events-none z-10 transition-opacity border border-border shadow-soft-lg">
                   {new Date(item.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
                   : {item.count} lead{item.count !== 1 ? 's' : ''}
                 </div>
@@ -96,7 +96,7 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
         </div>
 
         {/* X-axis labels (show only some dates to avoid clutter) */}
-        <div className="flex items-center justify-between mt-2 text-[10px] sm:text-xs text-gray-500">
+        <div className="flex items-center justify-between mt-2 text-[10px] sm:text-xs text-foreground-subtle">
           <span className="truncate">
             {new Date(data[0].date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
           </span>
@@ -111,9 +111,9 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
         </div>
 
         {/* Total */}
-        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t flex items-center justify-between">
-          <span className="text-[10px] sm:text-xs text-gray-600">Totale periodo</span>
-          <span className="text-xs sm:text-sm font-semibold text-gray-900">
+        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-border flex items-center justify-between">
+          <span className="text-[10px] sm:text-xs text-foreground-muted">Totale periodo</span>
+          <span className="text-xs sm:text-sm font-semibold text-foreground">
             {data.reduce((sum, d) => sum + d.count, 0)} lead{data.reduce((sum, d) => sum + d.count, 0) !== 1 ? 's' : ''}
           </span>
         </div>

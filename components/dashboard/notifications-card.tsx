@@ -20,17 +20,17 @@ interface NotificationsCardProps {
 }
 
 const iconMap = {
-  alert: <AlertCircle className="w-5 h-5 text-orange-600" />,
-  success: <CheckCircle className="w-5 h-5 text-green-600" />,
-  info: <Info className="w-5 h-5 text-blue-600" />,
-  insight: <TrendingUp className="w-5 h-5 text-purple-600" />
+  alert: <AlertCircle className="w-5 h-5 text-warning" />,
+  success: <CheckCircle className="w-5 h-5 text-success" />,
+  info: <Info className="w-5 h-5 text-primary" />,
+  insight: <TrendingUp className="w-5 h-5 text-primary" />
 }
 
 const bgColorMap = {
-  alert: 'bg-orange-50 border-orange-200',
-  success: 'bg-green-50 border-green-200',
-  info: 'bg-blue-50 border-blue-200',
-  insight: 'bg-purple-50 border-purple-200'
+  alert: 'bg-warning/10 border-warning/20',
+  success: 'bg-success/10 border-success/20',
+  info: 'bg-primary/10 border-primary/20',
+  insight: 'bg-primary/10 border-primary/20'
 }
 
 export function NotificationsCard({ notifications }: NotificationsCardProps) {
@@ -51,17 +51,17 @@ export function NotificationsCard({ notifications }: NotificationsCardProps) {
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`p-2 sm:p-3 rounded-lg border ${bgColorMap[notification.type]}`}
+              className={`p-2 sm:p-3 rounded-xl border ${bgColorMap[notification.type]}`}
             >
               <div className="flex items-start gap-2 sm:gap-3">
                 <div className="flex-shrink-0 mt-0.5">
                   {notification.icon || iconMap[notification.type]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1">
+                  <h4 className="text-xs sm:text-sm font-semibold text-foreground mb-1">
                     {notification.title}
                   </h4>
-                  <p className="text-[10px] sm:text-xs text-gray-700 mb-2">
+                  <p className="text-[10px] sm:text-xs text-foreground-muted mb-2">
                     {notification.message}
                   </p>
                   {notification.action && (
@@ -122,7 +122,7 @@ export function generateNotifications({
       type: 'info',
       title: 'Widget non ancora attivo',
       message: 'Non abbiamo rilevato eventi dal tuo widget. Assicurati di averlo installato correttamente sul tuo sito.',
-      icon: <Code className="w-5 h-5 text-blue-600" />,
+      icon: <Code className="w-5 h-5 text-primary" />,
       action: {
         label: 'Vedi Guida',
         href: '/docs/html'
@@ -151,7 +151,7 @@ export function generateNotifications({
       type: 'info',
       title: 'Personalizza il tuo widget',
       message: 'Configura i colori del tuo brand per un widget perfettamente integrato con il tuo sito.',
-      icon: <Palette className="w-5 h-5 text-blue-600" />,
+      icon: <Palette className="w-5 h-5 text-primary" />,
       action: {
         label: 'Configura Colori',
         href: '/dashboard/settings'

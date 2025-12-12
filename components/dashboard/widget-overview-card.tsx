@@ -19,17 +19,17 @@ interface WidgetOverviewCardProps {
 export function WidgetOverviewCard({ widgets }: WidgetOverviewCardProps) {
   if (widgets.length === 0) {
     return (
-      <Card className="border-2 border-dashed border-gray-300">
+      <Card className="border-2 border-dashed border-border">
         <CardContent className="p-8 text-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full">
-              <Code className="w-8 h-8 text-gray-400" />
+            <div className="flex items-center justify-center w-16 h-16 bg-surface-2 rounded-full">
+              <Code className="w-8 h-8 text-foreground-subtle" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Nessun widget configurato
               </h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-foreground-muted mb-4">
                 Crea il tuo primo widget per iniziare a raccogliere lead
               </p>
               <Link href="/dashboard/widgets">
@@ -48,7 +48,7 @@ export function WidgetOverviewCard({ widgets }: WidgetOverviewCardProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-lg font-semibold text-foreground">
           Widget Configurati
         </h2>
         <Link href="/dashboard/widgets">
@@ -61,7 +61,7 @@ export function WidgetOverviewCard({ widgets }: WidgetOverviewCardProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {widgets.map((widget) => (
-          <Card key={widget.id} className="hover:shadow-lg transition-shadow">
+          <Card key={widget.id} className="card-lift">
             <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
@@ -89,19 +89,19 @@ export function WidgetOverviewCard({ widgets }: WidgetOverviewCardProps) {
               {/* Stats */}
               <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-foreground-muted flex-shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs text-gray-600 truncate">Impressioni</p>
-                    <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                    <p className="text-[10px] sm:text-xs text-foreground-muted truncate">Impressioni</p>
+                    <p className="text-xs sm:text-sm font-semibold text-foreground truncate">
                       {widget.impressions.toLocaleString()}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-foreground-muted flex-shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs text-gray-600 truncate">Lead</p>
-                    <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                    <p className="text-[10px] sm:text-xs text-foreground-muted truncate">Lead</p>
+                    <p className="text-xs sm:text-sm font-semibold text-foreground truncate">
                       {widget.leadsGenerated}
                     </p>
                   </div>
