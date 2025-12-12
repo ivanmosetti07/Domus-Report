@@ -54,35 +54,63 @@ export function validateEmail(email: string): { valid: boolean; sanitized: strin
 
 /**
  * Validate phone number (Italian format)
+ * CRITICAL: This function must preserve valid phone numbers and never return null unless input is explicitly null/undefined
  */
 export function validatePhone(phone: string | undefined | null): { valid: boolean; sanitized: string | null; error?: string } {
-  // Handle undefined or null
-  if (!phone) {
-    return { valid: true, sanitized: null } // Phone is optional
+  console.log('[validatePhone] START - Input:', JSON.stringify(phone), 'Type:', typeof phone, 'Length:', phone?.length)
+
+  // Handle undefined or null - phone is optional
+  if (phone === undefined || phone === null) {
+    console.log('[validatePhone] Phone is null/undefined - returning null (optional field)')
+    return { valid: true, sanitized: null }
   }
 
-  // Sanitize: remove spaces, dashes, dots, parentheses - keep only + and digits
-  // This matches what the widget does before sending
-  let sanitized = phone
+  // Convert to string if needed (just in case)
+  const phoneStr = String(phone)
+
+  console.log('[validatePhone] Phone as string:', JSON.stringify(phoneStr))
+
+  // Sanitize: remove ALL non-numeric characters except + at the start
+  // Keep only digits and optional + prefix
+  let sanitized = phoneStr
     .trim()
     .replace(/\s/g, "")       // Remove spaces
     .replace(/-/g, "")        // Remove dashes
     .replace(/\./g, "")       // Remove dots
     .replace(/\(/g, "")       // Remove parentheses
     .replace(/\)/g, "")       // Remove parentheses
+    .replace(/[^\d+]/g, "")   // Remove any other non-digit, non-plus characters
 
-  if (!sanitized) {
-    return { valid: true, sanitized: null } // Phone is optional
+  console.log('[validatePhone] After sanitization:', JSON.stringify(sanitized), 'Length:', sanitized.length)
+
+  // If empty after sanitization, treat as optional (return null)
+  if (!sanitized || sanitized.length === 0) {
+    console.log('[validatePhone] Empty after sanitization - returning null')
+    return { valid: true, sanitized: null }
   }
 
-  // Allow +39, 0039, or direct number
-  // Should be 9-13 digits (aligned with widget regex)
+  // Normalize: remove 0039 prefix and replace with +39
+  if (sanitized.startsWith('0039')) {
+    sanitized = '+39' + sanitized.substring(4)
+    console.log('[validatePhone] Normalized 0039 to +39:', sanitized)
+  }
+
+  // Italian phone validation
+  // Format 1: 10 digits (mobile without prefix): 3331234567
+  // Format 2: +39 + 10 digits: +393331234567
+  // Format 3: +39 + 9-13 digits (general): +39xxxxxxxxx
   const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
+  const isValid = phoneRegex.test(sanitized)
 
-  if (!phoneRegex.test(sanitized)) {
-    return { valid: false, sanitized: null, error: "Formato telefono non valido (es. +39 333 123 4567)" }
+  console.log('[validatePhone] Regex test result:', isValid, 'Against pattern:', phoneRegex.toString())
+
+  if (!isValid) {
+    console.log('[validatePhone] ❌ VALIDATION FAILED - Input does not match Italian phone format')
+    // IMPORTANT: Return error but DON'T return null - validation failed
+    return { valid: false, sanitized: null, error: "Formato telefono non valido. Inserisci un numero italiano valido (es. 333 123 4567 o +39 333 123 4567)" }
   }
 
+  console.log('[validatePhone] ✅ SUCCESS - Valid phone number:', JSON.stringify(sanitized))
   return { valid: true, sanitized }
 }
 

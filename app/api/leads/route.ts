@@ -79,11 +79,14 @@ export async function POST(request: NextRequest) {
 
     const body = (await request.json()) as CreateLeadRequest
 
-    // Logging per debug
-    console.log('[POST /api/leads] Received request:', {
+    // Logging per debug - PHONE TRACKING
+    console.log('[POST /api/leads] 🔍 PHONE DEBUG - Received request:', {
       widgetId: body.widgetId,
       email: body.email,
       phone: body.phone,
+      phoneType: typeof body.phone,
+      phoneLength: body.phone?.length,
+      phoneRaw: JSON.stringify(body.phone),
       hasPhone: !!body.phone,
       timestamp: new Date().toISOString()
     })
@@ -122,19 +125,24 @@ export async function POST(request: NextRequest) {
     }
 
     const phoneValidation = validatePhone(body.phone)
+
+    console.log('[POST /api/leads] 📞 PHONE VALIDATION RESULT:', {
+      input: body.phone,
+      inputType: typeof body.phone,
+      sanitized: phoneValidation.sanitized,
+      sanitizedType: typeof phoneValidation.sanitized,
+      valid: phoneValidation.valid,
+      willSaveAsNull: phoneValidation.sanitized === null,
+      error: phoneValidation.error || 'none'
+    })
+
     if (!phoneValidation.valid) {
+      console.log('[POST /api/leads] ❌ PHONE VALIDATION FAILED - Rejecting request')
       return NextResponse.json(
         { error: phoneValidation.error },
         { status: 400 }
       )
     }
-
-    console.log('[POST /api/leads] Phone validation:', {
-      input: body.phone,
-      sanitized: phoneValidation.sanitized,
-      valid: phoneValidation.valid,
-      willSaveAsNull: phoneValidation.sanitized === null
-    })
 
     // Sanitize and validate property data using geocoding
     const addressInput = sanitizeString(body.address || "")
@@ -363,15 +371,25 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    console.log('[POST /api/leads] Lead created successfully:', {
+    console.log('[POST /api/leads] ✅ Lead created successfully:', {
       leadId: lead.id,
       agencyId: agency.id,
       email: body.email,
       savedTelefono: lead.telefono,
       savedTelefonoType: typeof lead.telefono,
       savedTelefonoIsNull: lead.telefono === null,
+      savedTelefonoValue: JSON.stringify(lead.telefono),
       timestamp: new Date().toISOString()
     })
+
+    // CRITICAL CHECK: Verify phone was actually saved
+    if (body.phone && !lead.telefono) {
+      console.error('[POST /api/leads] 🚨 CRITICAL BUG: Phone was provided but NOT saved to database!', {
+        providedPhone: body.phone,
+        validatedPhone: phoneValidation.sanitized,
+        savedPhone: lead.telefono
+      })
+    }
 
     // Incrementa il contatore delle valutazioni usate questo mese
     await incrementValuationCount(agency.id)
