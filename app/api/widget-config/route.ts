@@ -13,9 +13,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    // Fetch widget configs per l'agenzia
+    // Fetch widget configs per l'agenzia (solo attivi)
     const widgetConfigs = await prisma.widgetConfig.findMany({
-      where: { agencyId: agency.agencyId },
+      where: {
+        agencyId: agency.agencyId,
+        isActive: true
+      },
       orderBy: [
         { isDefault: 'desc' },
         { createdAt: 'desc' },
