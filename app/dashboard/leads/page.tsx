@@ -44,9 +44,9 @@ export default async function LeadsPage() {
           title="Nessun lead ancora"
           description="Installa il widget sul tuo sito per iniziare a raccogliere lead qualificati"
           action={
-            <Link href="/dashboard">
-              <Button>Installa Widget</Button>
-            </Link>
+            <Button asChild>
+              <Link href="/dashboard">Installa Widget</Link>
+            </Button>
           }
         />
       </div>
