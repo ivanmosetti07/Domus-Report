@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Widget DomusReport - Modalità Bubble</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      color: #2563eb;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      color: #475569;
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    p {
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .card h3 {
+      color: #334155;
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feature-list li {
+      padding: 10px;
+      margin: 5px 0;
+      background: white;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+    }
+
+    .test-section {
+      background: #fef3c7;
+      border: 2px solid #fbbf24;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 30px 0;
+    }
+
+    .test-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .test-checklist {
+      list-style: none;
+      padding: 0;
+    }
+
+    .test-checklist li {
+      padding: 8px 0;
+      color: #78350f;
+    }
+
+    .test-checklist li:before {
+      content: "✓ ";
+      color: #10b981;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .link {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .note {
+      background: #dbeafe;
+      border-left: 4px solid #2563eb;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .note strong {
+      color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏠 Test Widget DomusReport</h1>
+    <p class="subtitle">Pagina di test per verificare la corretta integrazione del widget in modalità bubble</p>
+
+    <div class="note">
+      <strong>Nota:</strong> Questa pagina simula un sito esterno che integra il widget DomusReport.
+      Verifica che il bottone sia visibile, cliccabile e che non ci siano overlay bianchi che coprono il contenuto.
+    </div>
+
+    <h2>📋 Descrizione del Servizio</h2>
+    <p>
+      DomusReport è una piattaforma innovativa per la gestione e creazione di report immobiliari.
+      Il nostro widget ti permette di integrare facilmente un sistema di chat con intelligenza artificiale
+      sul tuo sito web.
+    </p>
+
+    <div class="card">
+      <h3>🎯 Funzionalità Principali</h3>
+      <ul class="feature-list">
+        <li>Chat intelligente con AI per assistenza clienti</li>
+        <li>Integrazione semplice con un singolo script tag</li>
+        <li>Design personalizzabile con temi e colori</li>
+        <li>Modalità bubble e inline supportate</li>
+        <li>Notifiche in tempo reale</li>
+      </ul>
+    </div>
+
+    <h2>🚀 Come Funziona l'Integrazione</h2>
+    <p>
+      Per integrare il widget sul tuo sito, basta aggiungere questo codice prima della chiusura del tag &lt;/body&gt;:
+    </p>
+
+    <div class="card">
+      <pre style="background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto;">
+&lt;script src="http://localhost:3000/widget-embed.js?widgetId=TEST"&gt;&lt;/script&gt;</pre>
+    </div>
+
+    <h2>💼 Casi d'Uso</h2>
+
+    <div class="card">
+      <h3>Agenzie Immobiliari</h3>
+      <p>Fornisci assistenza immediata ai visitatori interessati alle proprietà.</p>
+    </div>
+
+    <div class="card">
+      <h3>Amministratori di Condominio</h3>
+      <p>Rispondi rapidamente alle domande dei condomini sulla documentazione.</p>
+    </div>
+
+    <div class="card">
+      <h3>Periti e Consulenti</h3>
+      <p>Offri consulenze preliminari e raccogli informazioni dai potenziali clienti.</p>
+    </div>
+
+    <div class="test-section">
+      <h3>🧪 Checklist di Test</h3>
+      <p>Verifica che i seguenti criteri siano soddisfatti:</p>
+      <ul class="test-checklist">
+        <li>Il bottone bubble è visibile in basso a destra</li>
+        <li>NON c'è nessun overlay bianco che copre il contenuto della pagina</li>
+        <li>Il bottone è cliccabile al primo tentativo</li>
+        <li>Cliccando il bottone si apre la finestra chat</li>
+        <li>La finestra chat appare sopra il contenuto della pagina</li>
+        <li>La chat ha dimensioni appropriate (non copre tutta la pagina)</li>
+        <li>È possibile chiudere la chat e il bottone riappare</li>
+        <li>Il badge di notifica è visibile sul bottone</li>
+        <li>Gli effetti hover funzionano correttamente</li>
+      </ul>
+    </div>
+
+    <h2>📞 Contatti</h2>
+    <p>
+      Per maggiori informazioni sul nostro servizio, visita il nostro sito web o contattaci direttamente
+      attraverso il widget chat qui in basso a destra! 👉
+    </p>
+
+    <div class="note">
+      <strong>Debug:</strong> Apri la console del browser (F12) per vedere i log di caricamento del widget
+      e eventuali errori. Il widget dovrebbe loggare "DomusReport Widget caricato con successo".
+    </div>
+
+    <h2>📝 Contenuto Aggiuntivo per Testing</h2>
+    <p>
+      Questo è contenuto aggiuntivo per verificare che il widget non interferisca con lo scrolling
+      della pagina e che nessun elemento copra il testo. Lorem ipsum dolor sit amet, consectetur
+      adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </p>
+
+    <p>
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+      commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+      dolore eu fugiat nulla pariatur.
+    </p>
+
+    <div class="card">
+      <h3>Verifica Visibilità</h3>
+      <p>
+        Se riesci a leggere questo testo chiaramente senza che sia coperto da overlay bianchi o
+        altri elementi, il test di visibilità è superato ✅
+      </p>
+    </div>
+
+    <h2>🎨 Test di Interazione</h2>
+    <p>
+      Prova a interagire con vari elementi della pagina mentre il widget è caricato:
+    </p>
+    <ul>
+      <li>Scorri la pagina su e giù - il bottone dovrebbe rimanere fisso</li>
+      <li>Passa il mouse sopra il bottone - dovrebbe ingrandirsi leggermente</li>
+      <li>Clicca il bottone - dovrebbe aprire la chat</li>
+      <li>Verifica che tutti i link siano cliccabili: <a href="#" class="link">Link di test</a></li>
+    </ul>
+
+    <p style="margin-top: 60px; padding-top: 40px; border-top: 2px solid #e2e8f0; color: #94a3b8; text-align: center;">
+      © 2024 DomusReport - Widget Test Page v1.0
+    </p>
+  </div>
+
+  <!-- Widget DomusReport -->
+  <script src="http://localhost:3000/widget-embed.js?widgetId=TEST"></script>
+</body>
+</html>

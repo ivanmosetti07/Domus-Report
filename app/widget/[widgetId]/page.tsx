@@ -143,9 +143,21 @@ export default function WidgetEmbedPage() {
     logoUrl: config.logoUrl,
   }
 
+  // Determina il mode: usa la configurazione salvata, non il parametro URL
+  // Il parametro embedMode è solo per compatibilità con l'iframe interno
+  const widgetMode = config.mode || 'bubble'
+
   return (
-    <div className="fixed inset-0 z-50 bg-transparent">
-      <WidgetTrigger widgetId={widgetId} isDemo={false} theme={theme} />
+    <div
+      className={embedMode === 'bubble' ? 'w-full h-full z-50' : 'fixed inset-0 z-50 bg-transparent'}
+      style={{ backgroundColor: 'transparent' }}
+    >
+      <WidgetTrigger
+        widgetId={widgetId}
+        isDemo={false}
+        theme={theme}
+        mode={widgetMode}
+      />
     </div>
   )
 }

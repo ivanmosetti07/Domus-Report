@@ -16,6 +16,35 @@ export async function GET(request: Request) {
       )
     }
 
+    // Widget demo per testing
+    if (widgetId === 'TEST' || widgetId === 'DEMO') {
+      const demoConfig = {
+        id: 'demo-widget',
+        widgetId: widgetId,
+        name: 'Widget Demo',
+        mode: 'bubble',
+        isActive: true,
+        themeName: 'default',
+        primaryColor: '#3b82f6',
+        secondaryColor: '#2563eb',
+        backgroundColor: '#ffffff',
+        textColor: '#1f2937',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        borderRadius: '12px',
+        buttonStyle: 'gradient',
+        bubblePosition: 'bottom-right',
+        bubbleIcon: null,
+        showBadge: true,
+        bubbleAnimation: 'pulse',
+        inlineHeight: '600px',
+        showHeader: true,
+        showBorder: true,
+        customCss: null,
+        logoUrl: null,
+      }
+      return NextResponse.json({ widgetConfig: demoConfig })
+    }
+
     // Cerca widget config per widgetId pubblico
     const widgetConfig = await prisma.widgetConfig.findUnique({
       where: { widgetId },

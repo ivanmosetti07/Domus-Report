@@ -28,12 +28,14 @@ interface WidgetTriggerProps {
   widgetId: string
   isDemo?: boolean
   theme?: WidgetThemeConfig
+  mode?: 'bubble' | 'inline'
 }
 
 export function WidgetTrigger({
   widgetId,
   isDemo = false,
   theme = {},
+  mode = 'bubble',
 }: WidgetTriggerProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [hasNotification, setHasNotification] = React.useState(true)
@@ -107,69 +109,87 @@ export function WidgetTrigger({
     ? `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
     : `linear-gradient(135deg, ${primaryColor}, ${primaryColor}dd)`
 
+  // In modalità inline, mostra subito la chat senza bottone
+  React.useEffect(() => {
+    if (mode === 'inline') {
+      setIsOpen(true)
+    }
+  }, [mode])
+
   return (
     <>
-      {/* Floating Button */}
-      <button
-        onClick={handleOpen}
-        className={cn(
-          "fixed w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform duration-200 flex items-center justify-center z-50",
-          positionClasses[bubblePosition],
-          getAnimationClasses(),
-          isOpen && "hidden"
-        )}
-        style={{ background: gradientBackground }}
-        aria-label="Apri chat"
-      >
-        {bubbleIcon ? (
-          <img
-            src={bubbleIcon}
-            alt="Chat"
-            className="w-8 h-8 object-contain"
-          />
-        ) : (
-          <MessageSquare className="w-7 h-7 text-white" />
-        )}
+      {/* Floating Button - solo in modalità bubble */}
+      {mode === 'bubble' && (
+        <button
+          onClick={handleOpen}
+          className={cn(
+            "fixed w-16 h-16 rounded-full shadow-2xl hover:scale-110 transition-transform duration-200 flex items-center justify-center z-50",
+            positionClasses[bubblePosition],
+            getAnimationClasses(),
+            isOpen && "hidden"
+          )}
+          style={{ background: gradientBackground }}
+          aria-label="Apri chat"
+        >
+          {bubbleIcon ? (
+            <img
+              src={bubbleIcon}
+              alt="Chat"
+              className="w-8 h-8 object-contain"
+            />
+          ) : (
+            <MessageSquare className="w-7 h-7 text-white" />
+          )}
 
-        {/* Notification Badge */}
-        {showBadge && hasNotification && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center animate-pulse">
-            <span className="text-xs text-white font-bold">1</span>
-          </span>
-        )}
+          {/* Notification Badge */}
+          {showBadge && hasNotification && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center animate-pulse">
+              <span className="text-xs text-white font-bold">1</span>
+            </span>
+          )}
 
-        {/* Pulse Animation Ring */}
-        {bubbleAnimation === 'pulse' && (
-          <span
-            className="absolute inset-0 rounded-full animate-ping opacity-20"
-            style={{ backgroundColor: primaryColor }}
-          />
-        )}
-      </button>
+          {/* Pulse Animation Ring */}
+          {bubbleAnimation === 'pulse' && (
+            <span
+              className="absolute inset-0 rounded-full animate-ping opacity-20"
+              style={{ backgroundColor: primaryColor }}
+            />
+          )}
+        </button>
+      )}
 
       {/* Chat Widget - Lazy loaded */}
       {isOpen && (
         <React.Suspense
           fallback={
-            <div
-              className={cn(
-                "fixed w-16 h-16 rounded-full shadow-2xl flex items-center justify-center z-50 pointer-events-none",
-                positionClasses[bubblePosition]
-              )}
-              style={{ background: gradientBackground }}
-            >
+            mode === 'bubble' ? (
               <div
-                className="w-6 h-6 border-3 border-t-transparent rounded-full animate-spin"
-                style={{ borderColor: 'white', borderTopColor: 'transparent', borderWidth: '3px' }}
-              />
-            </div>
+                className={cn(
+                  "fixed w-16 h-16 rounded-full shadow-2xl flex items-center justify-center z-50 pointer-events-none",
+                  positionClasses[bubblePosition]
+                )}
+                style={{ background: gradientBackground }}
+              >
+                <div
+                  className="w-6 h-6 border-3 border-t-transparent rounded-full animate-spin"
+                  style={{ borderColor: 'white', borderTopColor: 'transparent', borderWidth: '3px' }}
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <div
+                  className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin"
+                  style={{ borderColor: primaryColor, borderTopColor: 'transparent' }}
+                />
+              </div>
+            )
           }
         >
           <ChatWidget
             widgetId={widgetId}
-            mode="bubble"
+            mode={mode}
             isDemo={isDemo}
-            onClose={handleClose}
+            onClose={mode === 'bubble' ? handleClose : undefined}
             theme={theme}
           />
         </React.Suspense>
