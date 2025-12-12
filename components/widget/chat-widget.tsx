@@ -594,16 +594,26 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         }, 3000)
       }
     } catch (error) {
-      console.error("Error saving lead:", error)
+      console.error('[ChatWidget] CRITICAL ERROR saving lead:', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        widgetId,
+        isDemo,
+        hasEmail: !!collectedData.email,
+        hasValuation: !!valuation,
+        timestamp: new Date().toISOString()
+      })
 
       if (error instanceof Error && error.name === 'AbortError') {
         addBotMessage(
-          `Mi dispiace ${firstName}, il salvataggio sta richiedendo più tempo del previsto. I tuoi dati sono stati ricevuti.`,
+          `Mi dispiace ${firstName}, il salvataggio sta richiedendo più tempo del previsto. Riprova per favore.`,
           "completed"
         )
       } else {
+        // Mostra errore reale all'utente
+        const errorMessage = error instanceof Error ? error.message : "Errore sconosciuto"
         addBotMessage(
-          `Grazie ${firstName}! Abbiamo ricevuto i tuoi dati e ti ricontatteremo presto.`,
+          `Si è verificato un errore: ${errorMessage}. Riprova o contattaci direttamente.`,
           "completed"
         )
       }
