@@ -1,5 +1,5 @@
 /**
- * Geocoding service using Google Maps Geocoding API
+ * Geocoding service using OpenStreetMap Nominatim API (free, public)
  * Converts addresses to coordinates (latitude, longitude)
  */
 
@@ -10,6 +10,7 @@ const logger = createLogger('geocoding')
 export interface GeocodeResult {
   address: string
   city: string
+  neighborhood?: string
   postalCode?: string
   latitude: number
   longitude: number
@@ -17,63 +18,89 @@ export interface GeocodeResult {
 }
 
 /**
- * Geocodes an address using Google Maps API
+ * Geocodes an address using OpenStreetMap Nominatim API (free, public)
+ * https://nominatim.org/release-docs/latest/api/Search/
  */
 export async function geocodeAddress(
   address: string
 ): Promise<GeocodeResult | null> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY
-
-  if (!apiKey) {
-    logger.warn("GOOGLE_MAPS_API_KEY not configured, skipping geocoding")
-    return null
-  }
-
   try {
-    const encodedAddress = encodeURIComponent(address)
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&region=it&language=it&key=${apiKey}`
+    // Add "Italia" to improve results if not already present
+    const searchQuery = address.toLowerCase().includes("italia") ||
+      address.toLowerCase().includes("italy")
+      ? address
+      : `${address}, Italia`
 
-    const response = await fetch(url, {
+    // Use Nominatim API (free, public)
+    const url = new URL("https://nominatim.openstreetmap.org/search")
+    url.searchParams.set("q", searchQuery)
+    url.searchParams.set("format", "json")
+    url.searchParams.set("addressdetails", "1")
+    url.searchParams.set("limit", "1")
+    url.searchParams.set("countrycodes", "it") // Restrict to Italy
+    url.searchParams.set("accept-language", "it")
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        "User-Agent": "DomusReport/1.0", // Required by Nominatim usage policy
+      },
       // Timeout after 10 seconds
       signal: AbortSignal.timeout(10000),
     })
 
     if (!response.ok) {
-      throw new Error(`Geocoding API error: ${response.statusText}`)
+      logger.error("Nominatim API error", { status: response.status, statusText: response.statusText })
+      return null
     }
 
     const data = await response.json()
 
-    if (data.status !== "OK" || !data.results || data.results.length === 0) {
-      logger.warn(`Geocoding failed for address: ${address}`, { status: data.status })
+    // Check if we got results
+    if (!Array.isArray(data) || data.length === 0) {
+      logger.warn(`Geocoding failed for address: ${address}`)
       return null
     }
 
-    const result = data.results[0]
-    const location = result.geometry.location
+    // Get the best result (first one)
+    const result = data[0]
+    const addressDetails = result.address || {}
 
-    // Extract city and postal code from address components
-    let city = ""
-    let postalCode = ""
+    // Extract city
+    const city =
+      addressDetails.city ||
+      addressDetails.town ||
+      addressDetails.village ||
+      addressDetails.municipality ||
+      addressDetails.county ||
+      extractCityFromAddress(address)
 
-    for (const component of result.address_components) {
-      if (component.types.includes("locality")) {
-        city = component.long_name
-      } else if (component.types.includes("administrative_area_level_3")) {
-        // Fallback for smaller towns
-        if (!city) city = component.long_name
-      } else if (component.types.includes("postal_code")) {
-        postalCode = component.long_name
-      }
+    // Extract neighborhood/quarter
+    const neighborhood =
+      addressDetails.suburb ||
+      addressDetails.neighbourhood ||
+      addressDetails.quarter
+
+    // Extract postal code
+    const postalCode = addressDetails.postcode
+
+    // Validate coordinates
+    const latitude = parseFloat(result.lat)
+    const longitude = parseFloat(result.lon)
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      logger.error("Invalid coordinates received from Nominatim")
+      return null
     }
 
     return {
-      address: result.formatted_address,
-      city: city || extractCityFromAddress(address),
+      address: result.display_name,
+      city,
+      neighborhood,
       postalCode: postalCode || undefined,
-      latitude: location.lat,
-      longitude: location.lng,
-      formattedAddress: result.formatted_address,
+      latitude,
+      longitude,
+      formattedAddress: result.display_name,
     }
   } catch (error) {
     logger.error("Geocoding error", error)

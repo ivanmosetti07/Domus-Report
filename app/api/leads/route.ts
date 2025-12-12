@@ -5,14 +5,13 @@ import {
   validateEmail,
   validatePhone,
   validateName,
-  validateAddress,
-  validateCity,
   validateSurface,
   validateFloor,
   checkRateLimit,
   getClientIP,
   sanitizeString,
 } from "@/lib/validation"
+import { geocodeAddress } from "@/lib/geocoding"
 
 export interface CreateLeadRequest {
   widgetId: string
@@ -128,22 +127,39 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sanitize and validate property data
-    const addressValidation = validateAddress(body.address || "")
-    if (!addressValidation.valid) {
+    // Sanitize and validate property data using geocoding
+    const addressInput = sanitizeString(body.address || "")
+
+    if (!addressInput) {
       return NextResponse.json(
-        { error: addressValidation.error },
+        { error: "Indirizzo è obbligatorio" },
         { status: 400 }
       )
     }
 
-    const cityValidation = validateCity(body.city || "")
-    if (!cityValidation.valid) {
+    // Use geocoding to validate and enrich address data
+    console.log('[POST /api/leads] Geocoding address:', addressInput)
+    const geocodeResult = await geocodeAddress(addressInput)
+
+    if (!geocodeResult) {
       return NextResponse.json(
-        { error: cityValidation.error },
+        { error: "Indirizzo non trovato. Verifica che sia corretto e riprova." },
         { status: 400 }
       )
     }
+
+    console.log('[POST /api/leads] Geocoding successful:', {
+      city: geocodeResult.city,
+      hasCoordinates: !!(geocodeResult.latitude && geocodeResult.longitude)
+    })
+
+    // Use geocoded data (fallback to user input if geocoding didn't provide everything)
+    const finalAddress = geocodeResult.formattedAddress || addressInput
+    const finalCity = geocodeResult.city || body.city
+    const finalPostalCode = geocodeResult.postalCode || body.postalCode
+    const finalNeighborhood = geocodeResult.neighborhood || body.neighborhood
+    const finalLatitude = geocodeResult.latitude
+    const finalLongitude = geocodeResult.longitude
 
     const surfaceValidation = validateSurface(body.surfaceSqm || 0)
     if (!surfaceValidation.valid) {
@@ -256,12 +272,12 @@ export async function POST(request: NextRequest) {
         telefono: phoneValidation.sanitized || undefined,
         property: {
           create: {
-            indirizzo: addressValidation.sanitized,
-            citta: cityValidation.sanitized,
-            quartiere: body.neighborhood ? sanitizeString(body.neighborhood) : undefined,
-            cap: body.postalCode ? sanitizeString(body.postalCode) : undefined,
-            latitudine: body.latitude,
-            longitudine: body.longitude,
+            indirizzo: finalAddress,
+            citta: finalCity,
+            quartiere: finalNeighborhood,
+            cap: finalPostalCode,
+            latitudine: finalLatitude,
+            longitudine: finalLongitude,
             tipo: body.type,
             superficieMq: surfaceValidation.value,
             locali: body.rooms,
