@@ -757,6 +757,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       // Determina l'endpoint in base a se è demo o no
       const endpoint = isDemo ? "/api/demo-leads" : "/api/leads"
 
+      // Log dei dati raccolti PRIMA di inviarli
+      console.log('[ChatWidget] Phone data before sending:', {
+        phone: collectedData.phone,
+        phoneType: typeof collectedData.phone,
+        phoneIsUndefined: collectedData.phone === undefined,
+        phoneValue: JSON.stringify(collectedData.phone)
+      })
+
       // Prepara il payload base
       const basePayload = {
         // Lead data

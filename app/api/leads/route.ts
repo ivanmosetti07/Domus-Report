@@ -291,6 +291,15 @@ export async function POST(request: NextRequest) {
 
     console.log('[POST /api/leads] Creating lead for agency:', { agencyId: agency.id, agencyName: agency.nome })
 
+    // Log dettagliato dei dati PRIMA della creazione
+    console.log('[POST /api/leads] Data that will be saved to database:', {
+      telefono: phoneValidation.sanitized,
+      telefonoType: typeof phoneValidation.sanitized,
+      telefonoIsNull: phoneValidation.sanitized === null,
+      telefonoIsEmptyString: phoneValidation.sanitized === "",
+      telefonoValue: JSON.stringify(phoneValidation.sanitized)
+    })
+
     // Create lead with related data in a transaction
     // Prisma nested create operations are automatically wrapped in a transaction
     // If any operation fails, all changes are rolled back
@@ -358,6 +367,9 @@ export async function POST(request: NextRequest) {
       leadId: lead.id,
       agencyId: agency.id,
       email: body.email,
+      savedTelefono: lead.telefono,
+      savedTelefonoType: typeof lead.telefono,
+      savedTelefonoIsNull: lead.telefono === null,
       timestamp: new Date().toISOString()
     })
 
