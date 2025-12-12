@@ -2,8 +2,9 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Building2, Menu, X } from "lucide-react"
+import { Menu, X } from "lucide-react"
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
@@ -14,10 +15,14 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
-              <Building2 className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">DomusReport</span>
+            <Image
+              src="/logo.png"
+              alt="DomusReport"
+              width={180}
+              height={60}
+              className="h-10 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
