@@ -15,7 +15,8 @@ import {
   BarChart3,
   FileText,
   MessageSquare,
-  CreditCard
+  CreditCard,
+  Shield
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -26,6 +27,7 @@ const navigation = [
   { name: "Report", href: "/dashboard/reports", icon: FileText },
   { name: "Widget", href: "/dashboard/widgets", icon: MessageSquare },
   { name: "Abbonamento", href: "/dashboard/subscription", icon: CreditCard },
+  { name: "Sicurezza", href: "/dashboard/security", icon: Shield },
   { name: "Profilo", href: "/dashboard/profile", icon: User },
 ]
 
@@ -40,12 +42,19 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
+      const token = localStorage.getItem("token")
+
       await fetch("/api/auth/logout", {
         method: "POST",
+        headers: token ? {
+          Authorization: `Bearer ${token}`,
+        } : {},
       })
     } catch (error) {
       console.error("Logout error:", error)
     } finally {
+      // Clear token from localStorage
+      localStorage.removeItem("token")
       // Redirect to login regardless of API success
       router.push("/login")
     }

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 import { SignJWT } from "jose"
 import { validateEmail } from "@/lib/validation"
+import { createHash } from "crypto"
 
 export interface LoginRequest {
   email: string
@@ -76,6 +77,35 @@ export async function POST(request: NextRequest) {
       .setIssuedAt()
       .setExpirationTime("7d") // Token expires in 7 days
       .sign(JWT_SECRET)
+
+    // Calculate token hash for database storage
+    const tokenHash = createHash("sha256").update(token).digest("hex")
+
+    // Get client IP address
+    const ipAddress =
+      request.headers.get("x-forwarded-for")?.split(",")[0] ||
+      request.headers.get("x-real-ip") ||
+      "unknown"
+
+    // Get User-Agent
+    const userAgent = request.headers.get("user-agent") || "unknown"
+
+    // Calculate expiration date (7 days)
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 7)
+
+    // Create session in database
+    await prisma.agencySession.create({
+      data: {
+        agencyId: agency.id,
+        tokenHash,
+        ipAddress,
+        userAgent,
+        loginAt: new Date(),
+        expiresAt,
+        lastActivityAt: new Date(),
+      },
+    })
 
     // Create response with cookie and token in body
     const response = NextResponse.json({
