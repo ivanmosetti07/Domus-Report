@@ -66,6 +66,9 @@ interface ValuationResult {
   minPrice: number
   maxPrice: number
   estimatedPrice: number
+  baseOMIValue: number
+  floorCoefficient: number
+  conditionCoefficient: number
   explanation: string
 }
 
@@ -404,6 +407,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         minPrice: data.valuation.minPrice,
         maxPrice: data.valuation.maxPrice,
         estimatedPrice: data.valuation.estimatedPrice,
+        baseOMIValue: data.valuation.baseOMIValue,
+        floorCoefficient: data.valuation.floorCoefficient,
+        conditionCoefficient: data.valuation.conditionCoefficient,
         explanation: data.valuation.explanation,
       }
 
@@ -498,9 +504,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         : {
             ...basePayload,
             widgetId,
-            baseOMIValue: 0, // Will be calculated by API
-            floorCoefficient: 1.0,
-            conditionCoefficient: 1.0,
+            baseOMIValue: valuation?.baseOMIValue || 0,
+            floorCoefficient: valuation?.floorCoefficient || 1.0,
+            conditionCoefficient: valuation?.conditionCoefficient || 1.0,
             explanation: valuation?.explanation || "",
           }
 
@@ -512,6 +518,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         endpoint,
         widgetId: isDemo ? 'DEMO' : widgetId,
         hasPhone: !!payload.phone,
+        email: payload.email,
+        hasValuation: !!valuation,
+        valuationData: valuation ? {
+          baseOMIValue: valuation.baseOMIValue,
+          floorCoefficient: valuation.floorCoefficient,
+          conditionCoefficient: valuation.conditionCoefficient,
+          estimatedPrice: valuation.estimatedPrice
+        } : null,
         timestamp: new Date().toISOString()
       })
 
