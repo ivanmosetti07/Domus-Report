@@ -149,8 +149,13 @@ export default function WidgetEmbedPage() {
 
   return (
     <div
-      className={embedMode === 'bubble' ? 'w-full h-full z-50' : 'fixed inset-0 z-50 bg-transparent'}
-      style={{ backgroundColor: 'transparent' }}
+      className="w-full h-full z-50"
+      style={{
+        backgroundColor: 'transparent',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
     >
       <WidgetTrigger
         widgetId={widgetId}

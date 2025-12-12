@@ -256,48 +256,10 @@
       iframe.id = 'domusreport-widget-iframe';
       iframe.setAttribute('allowTransparency', 'true');
 
+      // Usa src diretto invece di scrivere contenuto e fare redirect
+      iframe.src = `${baseUrl}/widget/${widgetId}?embed=bubble`;
+
       document.body.appendChild(iframe);
-
-      // Scrivi contenuto nell'iframe
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-      iframeDoc.open();
-      iframeDoc.write(`
-        <!DOCTYPE html>
-        <html lang="it" style="background: transparent;">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>DomusReport Widget</title>
-          <style>
-            html, body {
-              margin: 0;
-              padding: 0;
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-              background: transparent !important;
-              background-color: transparent !important;
-            }
-            * { box-sizing: border-box; }
-          </style>
-        </head>
-        <body style="background: transparent;">
-          <div id="widget-root"></div>
-
-          <!-- Carica il widget Next.js -->
-          <script>
-            // Notifica parent window quando pronto
-            window.addEventListener('DOMContentLoaded', function() {
-              window.parent.postMessage({ type: 'WIDGET_READY' }, '*');
-            });
-          </script>
-
-          <!-- Redirect alla pagina widget Next.js con parametro embed=bubble -->
-          <script>
-            window.location.href = '${baseUrl}/widget/${widgetId}?embed=bubble';
-          </script>
-        </body>
-        </html>
-      `);
-      iframeDoc.close();
 
       button.style.display = 'none';
     };
