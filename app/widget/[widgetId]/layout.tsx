@@ -15,30 +15,26 @@ export default function WidgetLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="it">
-      <head>
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            html, body {
-              margin: 0;
-              padding: 0;
-              background: transparent !important;
-              background-color: transparent !important;
-              overflow: hidden;
-            }
-            body {
-              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-                sans-serif;
-              -webkit-font-smoothing: antialiased;
-              -moz-osx-font-smoothing: grayscale;
-            }
-          `
-        }} />
-      </head>
-      <body>
-        {children}
-      </body>
-    </html>
+    <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          html, body {
+            margin: 0;
+            padding: 0;
+            background: transparent !important;
+            background-color: transparent !important;
+            overflow: hidden;
+          }
+          body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+              'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+              sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+        `
+      }} />
+      {children}
+    </>
   );
 }
