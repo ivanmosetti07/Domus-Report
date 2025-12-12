@@ -325,7 +325,16 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         } else {
           // It's a phone number or "no"
           if (input.toLowerCase() !== "no") {
-            setCollectedData(prev => ({ ...prev, phone: input }))
+            // Valida il formato del telefono prima di salvarlo
+            const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
+            const sanitizedPhone = input.replace(/\s/g, "")
+
+            if (!phoneRegex.test(sanitizedPhone)) {
+              addBotMessage("Il numero di telefono non sembra valido. Inserisci un numero italiano valido o scrivi 'no' per saltare.")
+              return
+            }
+
+            setCollectedData(prev => ({ ...prev, phone: sanitizedPhone }))
           }
           // Salva il lead solo DOPO aver raccolto tutti i dati
           completeConversation()
@@ -499,6 +508,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
+      console.log('[ChatWidget] Sending lead to API:', {
+        endpoint,
+        widgetId: isDemo ? 'DEMO' : widgetId,
+        hasPhone: !!payload.phone,
+        timestamp: new Date().toISOString()
+      })
+
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -510,8 +526,20 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       clearTimeout(timeoutId)
 
+      console.log('[ChatWidget] API Response:', {
+        status: response.status,
+        ok: response.ok,
+        statusText: response.statusText
+      })
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
+
+        console.error('[ChatWidget] API Error:', {
+          status: response.status,
+          errorData,
+          payload: { ...payload, messages: `[${payload.messages?.length || 0} messages]` }
+        })
 
         // Handle rate limit
         if (response.status === 429) {

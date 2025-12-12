@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Widget DomusReport - Modalità Inline</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      color: #2563eb;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      color: #475569;
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    p {
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+
+    .note {
+      background: #dbeafe;
+      border-left: 4px solid #2563eb;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .note strong {
+      color: #1e40af;
+    }
+
+    .widget-container {
+      margin: 30px 0;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .widget-container h3 {
+      color: #334155;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    .test-section {
+      background: #fef3c7;
+      border: 2px solid #fbbf24;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 30px 0;
+    }
+
+    .test-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .test-checklist {
+      list-style: none;
+      padding: 0;
+    }
+
+    .test-checklist li {
+      padding: 8px 0;
+      color: #78350f;
+    }
+
+    .test-checklist li:before {
+      content: "✓ ";
+      color: #10b981;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏠 Test Widget DomusReport - Modalità Inline</h1>
+    <p class="subtitle">Pagina di test per verificare la corretta integrazione del widget in modalità inline (embedded)</p>
+
+    <div class="note">
+      <strong>Nota:</strong> In modalità inline, il widget viene integrato direttamente nella pagina come un elemento embedded.
+      Non dovrebbe esserci alcun bottone floating - la chat dovrebbe essere visibile e pronta all'uso.
+    </div>
+
+    <h2>📋 Test Modalità Inline</h2>
+    <p>
+      Il widget qui sotto dovrebbe apparire come una chat integrata nella pagina, senza alcun bottone bubble.
+      La chat dovrebbe essere immediatamente visibile e funzionante.
+    </p>
+
+    <div class="widget-container">
+      <h3>💬 Widget Chat Inline</h3>
+
+      <!-- Widget DomusReport Inline -->
+      <div id="domusreport-widget-container"></div>
+      <script src="http://localhost:3001/widget-embed.js?widgetId=TEST"></script>
+    </div>
+
+    <div class="test-section">
+      <h3>🧪 Checklist di Test - Modalità Inline</h3>
+      <p>Verifica che i seguenti criteri siano soddisfatti:</p>
+      <ul class="test-checklist">
+        <li>NON c'è nessun bottone bubble floating nella pagina</li>
+        <li>La chat è visibile direttamente nel container qui sopra</li>
+        <li>La chat ha un'altezza appropriata (default 600px)</li>
+        <li>La chat mostra il messaggio di benvenuto automaticamente</li>
+        <li>È possibile interagire con la chat senza doverla "aprire"</li>
+        <li>La chat rispetta le dimensioni del container</li>
+        <li>Lo scroll della pagina funziona normalmente</li>
+        <li>NON c'è il pulsante di chiusura (X) nell'header</li>
+      </ul>
+    </div>
+
+    <h2>📝 Contenuto Aggiuntivo</h2>
+    <p>
+      Questo contenuto aggiuntivo serve per verificare che il widget inline non interferisca
+      con il resto della pagina. Il layout dovrebbe rimanere intatto e tutto il contenuto
+      dovrebbe essere leggibile e accessibile.
+    </p>
+
+    <div class="note">
+      <strong>Debug:</strong> Apri la console del browser (F12) per vedere i log.
+      Dovresti vedere "DomusReport Widget caricato con successo (widgetId: TEST mode: inline)".
+    </div>
+
+    <h2>🔄 Confronto con Modalità Bubble</h2>
+    <p>
+      Per confrontare, apri anche la pagina <a href="/test-widget.html" style="color: #2563eb;">test-widget.html</a>
+      che mostra il widget in modalità bubble con il bottone floating.
+    </p>
+
+    <p style="margin-top: 60px; padding-top: 40px; border-top: 2px solid #e2e8f0; color: #94a3b8; text-align: center;">
+      © 2024 DomusReport - Widget Inline Test Page v1.0
+    </p>
+  </div>
+</body>
+</html>
