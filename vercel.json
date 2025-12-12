@@ -9,12 +9,8 @@
       "schedule": "0 2 * * *"
     },
     {
-      "path": "/api/cron/check-trials",
-      "schedule": "0 3 * * *"
-    },
-    {
       "path": "/api/cron/check-trial-expiry",
-      "schedule": "0 4 * * *"
+      "schedule": "0 3 * * *"
     }
   ],
   "headers": [
