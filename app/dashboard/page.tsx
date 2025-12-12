@@ -230,7 +230,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div>
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         title={`Benvenuto, ${agency.nome}!`}
         subtitle="Ecco una panoramica della tua agenzia"
@@ -248,7 +248,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Statistics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
           label="Lead Totali"
           value={stats.totalLeads}
@@ -273,15 +273,13 @@ export default async function DashboardPage() {
 
       {/* Notifications & Alerts */}
       {notifications.length > 0 && (
-        <div className="mb-8">
-          <NotificationsCard notifications={notifications} />
-        </div>
+        <NotificationsCard notifications={notifications} />
       )}
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Left Column: Chart + Widget Code */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Stats Chart */}
           {completeChartData.length > 0 && (
             <StatsChart data={completeChartData} />
@@ -298,20 +296,20 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div>
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
           Azioni Rapide
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           <Link href="/dashboard/leads">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-lg">
-                  <Users className="w-6 h-6 text-white" />
+              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex-shrink-0">
+                  <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Gestisci Lead</h3>
-                  <p className="text-sm text-gray-600">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">Gestisci Lead</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate">
                     Visualizza e gestisci tutti i lead
                   </p>
                 </div>
@@ -321,13 +319,13 @@ export default async function DashboardPage() {
 
           <Link href="/dashboard/widgets">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg">
-                  <Code className="w-6 h-6 text-white" />
+              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-lg flex-shrink-0">
+                  <Code className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Widget</h3>
-                  <p className="text-sm text-gray-600">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">Widget</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate">
                     Configura i tuoi widget
                   </p>
                 </div>
@@ -337,13 +335,13 @@ export default async function DashboardPage() {
 
           <Link href="/docs/html" target="_blank">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full border-2 border-dashed border-gray-300">
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-lg">
-                  <BookOpen className="w-6 h-6 text-gray-600" />
+              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-lg flex-shrink-0">
+                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Documentazione</h3>
-                  <p className="text-sm text-gray-600">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">Documentazione</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate">
                     Guida installazione widget
                   </p>
                 </div>
@@ -355,50 +353,48 @@ export default async function DashboardPage() {
 
       {/* Empty State Hint (shown when no leads) */}
       {stats.totalLeads === 0 && (
-        <div className="mt-8">
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-full flex-shrink-0">
-                  <span className="text-2xl">👋</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Primi passi con DomusReport
-                  </h3>
-                  <ol className="space-y-2 text-sm text-gray-700">
-                    <li className="flex items-center gap-2">
-                      <span className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-xs font-bold">
-                        1
-                      </span>
-                      Configura il tuo primo widget
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-xs font-bold">
-                        2
-                      </span>
-                      Installa il codice sul tuo sito (prima del tag &lt;/body&gt;)
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-xs font-bold">
-                        3
-                      </span>
-                      Inizia a ricevere lead qualificati automaticamente!
-                    </li>
-                  </ol>
-                  <div className="mt-4">
-                    <Link href="/dashboard/widgets">
-                      <Button>
-                        <Code className="w-4 h-4 mr-2" />
-                        Crea il tuo primo widget
-                      </Button>
-                    </Link>
-                  </div>
+        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex-shrink-0">
+                <span className="text-xl sm:text-2xl">👋</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
+                  Primi passi con DomusReport
+                </h3>
+                <ol className="space-y-2 text-xs sm:text-sm text-gray-700">
+                  <li className="flex items-center gap-2">
+                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-white rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                      1
+                    </span>
+                    <span className="flex-1">Configura il tuo primo widget</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-white rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                      2
+                    </span>
+                    <span className="flex-1">Installa il codice sul tuo sito (prima del tag &lt;/body&gt;)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-white rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                      3
+                    </span>
+                    <span className="flex-1">Inizia a ricevere lead qualificati automaticamente!</span>
+                  </li>
+                </ol>
+                <div className="mt-3 sm:mt-4">
+                  <Link href="/dashboard/widgets">
+                    <Button className="w-full sm:w-auto">
+                      <Code className="w-4 h-4 mr-2" />
+                      Crea il tuo primo widget
+                    </Button>
+                  </Link>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   )
