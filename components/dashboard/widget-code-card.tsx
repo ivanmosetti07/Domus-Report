@@ -17,7 +17,7 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
   // Usa il dominio corretto in base all'ambiente
   const baseUrl = typeof window !== 'undefined'
     ? window.location.origin
-    : 'https://domusreport.com'
+    : 'https://domusreport.mainstream.agency'
 
   const widgetCode = `<script src="${baseUrl}/widget-embed.js?widgetId=${widgetId}"></script>`
 
