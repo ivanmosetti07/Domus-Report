@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Widget DomusReport</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      line-height: 1.6;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #2563eb;
+      border-bottom: 3px solid #2563eb;
+      padding-bottom: 10px;
+    }
+    .content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+    .highlight {
+      background-color: #fef3c7;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>🏠 Pagina di Test Widget DomusReport</h1>
+
+    <p>
+      Questa è una pagina di test per verificare il corretto funzionamento del widget DomusReport
+      in modalità <span class="highlight">bubble</span>.
+    </p>
+
+    <div style="background: #e0f2fe; padding: 15px; border-radius: 5px; margin: 20px 0;">
+      <strong>📋 Istruzioni Test:</strong><br>
+      1. Apri la Console del browser (F12 → Console)<br>
+      2. Verifica che appaia il log "[DomusReport Widget] Widget loaded successfully"<br>
+      3. Clicca il bottone bubble in basso a destra<br>
+      4. Verifica che appaia il log "[DomusReport Widget] Button clicked!"<br>
+      5. La chat dovrebbe aprirsi
+    </div>
+
+    <h2>Test Bug #2 - Bottone cliccabile</h2>
+    <p>
+      ✅ Il bottone bubble dovrebbe apparire in basso a destra<br>
+      ✅ Il bottone deve essere cliccabile senza interferenze<br>
+      ✅ NON deve apparire nessun overlay o sfondo bianco che copre il contenuto<br>
+      ✅ Al click, deve aprire la finestra di chat
+    </p>
+
+    <h2>Test Bug #3 - Mode rispettato</h2>
+    <p>
+      ✅ Il widget carica la configurazione dal backend<br>
+      ✅ Rispetta il mode configurato (bubble o inline)<br>
+      ✅ Questo test usa il widgetId TEST che è configurato come <strong>bubble</strong>
+    </p>
+
+    <h2>Contenuto di test</h2>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
+      ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+      laboris nisi ut aliquip ex ea commodo consequat.
+    </p>
+
+    <p>
+      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+      pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+      mollit anim id est laborum.
+    </p>
+
+    <p>
+      <strong>Questo contenuto deve rimanere sempre visibile e leggibile!</strong>
+      Se vedi un overlay bianco o elementi che lo coprono, il bug è ancora presente.
+    </p>
+  </div>
+
+  <!-- Widget DomusReport in modalità BUBBLE -->
+  <script src="http://localhost:3001/widget-embed.js?widgetId=TEST"></script>
+
+  <!-- Script di Debug per trovare cosa copre il bottone -->
+  <script>
+    // Aspetta che il widget sia caricato
+    setTimeout(() => {
+      console.log('=== DEBUG: Verifica elementi sulla pagina ===');
+
+      // Trova il bottone bubble
+      const button = document.querySelector('#domusreport-widget-root').nextElementSibling;
+      console.log('Bottone trovato:', button);
+
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        console.log('Posizione bottone:', rect);
+
+        // Verifica quale elemento è in quella posizione
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const elementAtPoint = document.elementFromPoint(centerX, centerY);
+        console.log('Elemento al centro del bottone:', elementAtPoint);
+        console.log('È il bottone stesso?', elementAtPoint === button);
+
+        if (elementAtPoint !== button) {
+          console.error('❌ IL BOTTONE È COPERTO DA:', elementAtPoint);
+          console.log('Z-index del bottone:', window.getComputedStyle(button).zIndex);
+          console.log('Z-index elemento sopra:', window.getComputedStyle(elementAtPoint).zIndex);
+          console.log('Pointer-events bottone:', window.getComputedStyle(button).pointerEvents);
+          console.log('Pointer-events elemento sopra:', window.getComputedStyle(elementAtPoint).pointerEvents);
+        } else {
+          console.log('✅ Il bottone NON è coperto');
+        }
+      }
+
+      // Lista tutti gli elementi con position fixed/absolute
+      console.log('=== Elementi fixed/absolute sulla pagina ===');
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(el => {
+        const style = window.getComputedStyle(el);
+        if (style.position === 'fixed' || style.position === 'absolute') {
+          console.log('Elemento:', el.tagName, el.id || el.className, {
+            position: style.position,
+            zIndex: style.zIndex,
+            display: style.display,
+            pointerEvents: style.pointerEvents
+          });
+        }
+      });
+    }, 2000);
+  </script>
+</body>
+</html>

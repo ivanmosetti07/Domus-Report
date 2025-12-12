@@ -48,7 +48,7 @@
     'width: 100vw',
     'height: 100vh',
     'border: none',
-    'z-index: 9999',
+    'z-index: 2147483647',
     'pointer-events: none',
     'background: transparent'
   ].join(';');

@@ -128,7 +128,10 @@ export function WidgetTrigger({
             getAnimationClasses(),
             isOpen && "hidden"
           )}
-          style={{ background: gradientBackground }}
+          style={{
+            background: gradientBackground,
+            pointerEvents: 'auto'
+          }}
           aria-label="Apri chat"
         >
           {bubbleIcon ? (
