@@ -25,7 +25,7 @@
 
   // Determina base URL (produzione o sviluppo)
   const baseUrl = src.includes('localhost')
-    ? 'http://localhost:3000'
+    ? src.split('/widget-embed.js')[0]  // Usa la stessa porta dello script
     : src.split('/widget-embed.js')[0];
 
   // Crea container per il widget
@@ -92,15 +92,20 @@
     // Rispetta il mode configurato dall'agenzia
     const mode = config.mode || 'bubble';
 
+    console.log('[DomusReport Widget] Config loaded:', config);
+    console.log('[DomusReport Widget] Mode:', mode);
+
     if (mode === 'inline') {
       // Modalità inline: crea iframe inline (non floating)
+      console.log('[DomusReport Widget] Creating inline widget');
       createInlineWidget(config);
     } else {
       // Modalità bubble: crea bottone + iframe on-demand
+      console.log('[DomusReport Widget] Creating bubble widget');
       createBubbleWidget(config);
     }
 
-    console.log('DomusReport Widget caricato con successo (widgetId:', widgetId, 'mode:', mode + ')');
+    console.log('[DomusReport Widget] Widget loaded successfully');
   }
 
   function createInlineWidget(config) {
@@ -214,7 +219,9 @@
     };
 
     // Click handler - crea iframe solo al primo click
-    button.onclick = function() {
+    button.onclick = function(e) {
+      console.log('[DomusReport Widget] Button clicked!', e);
+
       // Nascondi badge quando si apre la chat
       if (badge) {
         badge.style.display = 'none';
@@ -222,10 +229,13 @@
 
       if (iframe) {
         // Iframe già creato, mostralo
+        console.log('[DomusReport Widget] Showing existing iframe');
         iframe.style.display = 'block';
         button.style.display = 'none';
         return;
       }
+
+      console.log('[DomusReport Widget] Creating new iframe');
 
       // Crea iframe per isolare stili (solo modalità bubble)
       iframe = document.createElement('iframe');
@@ -276,5 +286,6 @@
     });
 
     document.body.appendChild(button);
+    console.log('[DomusReport Widget] Bubble button added to DOM', button);
   }
 })();
