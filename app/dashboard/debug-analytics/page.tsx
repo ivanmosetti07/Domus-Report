@@ -43,12 +43,14 @@ interface DebugData {
 }
 
 interface AggregationResult {
-  agency: {
+  success?: boolean
+  message?: string
+  agency?: {
     id: string
     name: string
     widgetId: string
   }
-  aggregation: {
+  aggregation?: {
     dateRange: {
       start: string
       end: string
@@ -63,6 +65,17 @@ interface AggregationResult {
       totalValuations: number
     }
   }
+  // Campi per popolazione da lead
+  leadsProcessed?: number
+  daysAggregated?: number
+  recordsCreated?: number
+  totals?: {
+    totalImpressions: number
+    totalClicks: number
+    totalLeads: number
+    totalValuations: number
+  }
+  note?: string
 }
 
 export default function DebugAnalyticsPage() {
