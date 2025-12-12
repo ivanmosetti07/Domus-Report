@@ -778,11 +778,11 @@ export default function SubscriptionPage() {
                       {invoice.status === 'paid' ? 'Pagata' : invoice.status}
                     </Badge>
                     {invoice.pdfUrl && (
-                      <Button variant="ghost" size="sm" asChild>
-                        <a href={invoice.pdfUrl} target="_blank" rel="noopener noreferrer">
+                      <a href={invoice.pdfUrl} target="_blank" rel="noopener noreferrer">
+                        <Button variant="ghost" size="sm">
                           <Download className="h-4 w-4" />
-                        </a>
-                      </Button>
+                        </Button>
+                      </a>
                     )}
                   </div>
                 </div>

@@ -232,11 +232,11 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`/dashboard/leads/${lead.id}`}>
+                      <Link href={`/dashboard/leads/${lead.id}`}>
+                        <Button variant="outline" size="sm">
                           Dettagli
-                        </Link>
-                      </Button>
+                        </Button>
+                      </Link>
                     </td>
                   </tr>
                   )
@@ -305,12 +305,12 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                     {statusInfo.label}
                   </Badge>
                 </div>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={`/dashboard/leads/${lead.id}`}>
+                <Link href={`/dashboard/leads/${lead.id}`}>
+                  <Button variant="outline" size="sm">
                     <ExternalLink className="w-4 h-4 mr-2" />
                     Dettagli
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </div>
             </div>
           </Card>

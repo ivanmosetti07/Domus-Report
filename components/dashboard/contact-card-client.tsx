@@ -101,12 +101,12 @@ export function ContactCardClient({
         )}
 
         <div className="pt-4 border-t border-gray-200">
-          <Button className="w-full" asChild>
-            <a href={`mailto:${email}`}>
+          <a href={`mailto:${email}`}>
+            <Button className="w-full">
               <Mail className="w-4 h-4 mr-2" />
               Invia Email
-            </a>
-          </Button>
+            </Button>
+          </a>
         </div>
       </CardContent>
     </Card>
