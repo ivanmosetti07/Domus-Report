@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
@@ -9,7 +10,6 @@ import {
   Users,
   User,
   LogOut,
-  Building2,
   Menu,
   X,
   BarChart3,
@@ -64,16 +64,18 @@ export function Sidebar({ agencyName = "La Tua Agenzia" }: SidebarProps) {
     <>
       {/* Header */}
       <div className="px-6 py-6 border-b border-border">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl group-hover:scale-105 transition-transform duration-180">
-            <Building2 className="w-6 h-6 text-primary-foreground" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-foreground">DomusReport</h2>
-            <p className="text-xs text-foreground-muted truncate max-w-[160px]">
-              {agencyName}
-            </p>
-          </div>
+        <Link href="/dashboard" className="flex flex-col gap-3 group">
+          <Image
+            src="/logo.png"
+            alt="DomusReport"
+            width={180}
+            height={60}
+            className="h-10 w-auto group-hover:scale-105 transition-transform duration-180"
+            priority
+          />
+          <p className="text-xs text-foreground-muted truncate">
+            {agencyName}
+          </p>
         </Link>
       </div>
 
