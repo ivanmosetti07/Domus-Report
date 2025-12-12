@@ -48,9 +48,14 @@ export async function POST(request: NextRequest) {
   try {
     // Rate limiting check
     const clientIP = getClientIP(request)
-    const rateLimitResult = checkRateLimit(clientIP, 100, 24 * 60 * 60 * 1000) // 100 per day
+    const rateLimitResult = checkRateLimit(
+      clientIP,
+      process.env.NODE_ENV === 'production' ? 100 : 10000, // Limite alto in development
+      24 * 60 * 60 * 1000
+    )
 
     if (!rateLimitResult.allowed) {
+      console.log('[POST /api/leads] Rate limit exceeded:', { clientIP, resetAt: rateLimitResult.resetAt })
       return NextResponse.json(
         {
           error: "Limite di richieste giornaliere raggiunto. Riprova domani.",
@@ -61,6 +66,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = (await request.json()) as CreateLeadRequest
+
+    // Logging per debug
+    console.log('[POST /api/leads] Received request:', {
+      widgetId: body.widgetId,
+      email: body.email,
+      hasPhone: !!body.phone,
+      timestamp: new Date().toISOString()
+    })
 
     // Validate required fields - Widget ID
     if (!body.widgetId || typeof body.widgetId !== "string") {
@@ -201,6 +214,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!agency.attiva) {
+      console.log('[POST /api/leads] Agency not active:', { agencyId: agency.id })
       return NextResponse.json(
         { error: "Agenzia non attiva" },
         { status: 403 }
@@ -209,11 +223,14 @@ export async function POST(request: NextRequest) {
 
     // Verifica che il widget sia attivo (solo per nuovi widget)
     if (widgetConfig && !widgetConfig.isActive) {
+      console.log('[POST /api/leads] Widget not active:', { widgetId: body.widgetId })
       return NextResponse.json(
         { error: "Widget non attivo" },
         { status: 403 }
       )
     }
+
+    console.log('[POST /api/leads] Creating lead for agency:', { agencyId: agency.id, agencyName: agency.nome })
 
     // Create lead with related data in a transaction
     // Prisma nested create operations are automatically wrapped in a transaction
@@ -266,6 +283,13 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    console.log('[POST /api/leads] Lead created successfully:', {
+      leadId: lead.id,
+      agencyId: agency.id,
+      email: body.email,
+      timestamp: new Date().toISOString()
+    })
+
     return NextResponse.json({
       success: true,
       leadId: lead.id,
@@ -273,7 +297,11 @@ export async function POST(request: NextRequest) {
       message: "Lead creato con successo",
     })
   } catch (error) {
-    console.error("Error creating lead:", error)
+    console.error('[POST /api/leads] Error creating lead:', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    })
 
     return NextResponse.json(
       {
