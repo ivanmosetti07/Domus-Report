@@ -97,13 +97,19 @@ export async function POST(req: NextRequest) {
       const widgetIds = [...new Set(events.map((e) => e.widgetId))]
 
       for (const widgetId of widgetIds) {
-        // Verifica esistenza widget
+        // Verifica esistenza widget (controlla sia WidgetConfig che Agency)
+        const widgetConfig = await prisma.widgetConfig.findUnique({
+          where: { widgetId },
+          select: { id: true, isActive: true },
+        })
+
         const agency = await prisma.agency.findUnique({
           where: { widgetId },
           select: { id: true },
         })
 
-        if (!agency) {
+        if (!widgetConfig && !agency) {
+          console.warn(`[widget-events] Widget non trovato: ${widgetId}`)
           return NextResponse.json(
             {
               success: false,
@@ -161,17 +167,24 @@ export async function POST(req: NextRequest) {
 
       const { widgetId, eventType, leadId, metadata } = validation.data
 
-      // Verifica che il widgetId esista
+      // Verifica che il widgetId esista (controlla sia WidgetConfig che Agency)
+      const widgetConfig = await prisma.widgetConfig.findUnique({
+        where: { widgetId },
+        select: { id: true, isActive: true },
+      })
+
       const agency = await prisma.agency.findUnique({
         where: { widgetId },
         select: { id: true },
       })
 
-      if (!agency) {
+      if (!widgetConfig && !agency) {
+        console.warn(`[widget-events] Widget non trovato: ${widgetId}`)
         return NextResponse.json(
           {
             success: false,
             error: "Widget non trovato",
+            widgetId,
           },
           { status: 404 }
         )
