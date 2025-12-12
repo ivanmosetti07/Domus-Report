@@ -57,17 +57,17 @@ export default function SubscriptionSuccessPage() {
                 Puoi ora accedere a tutte le funzionalità del tuo piano.
               </p>
               <div className="flex flex-col gap-2">
-                <Button asChild>
-                  <Link href="/dashboard">
+                <Link href="/dashboard">
+                  <Button className="w-full">
                     Vai alla Dashboard
                     <ArrowRight className="h-4 w-4 ml-2" />
-                  </Link>
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link href="/dashboard/subscription">
+                  </Button>
+                </Link>
+                <Link href="/dashboard/subscription">
+                  <Button variant="outline" className="w-full">
                     Vedi dettagli abbonamento
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </div>
             </>
           )}
