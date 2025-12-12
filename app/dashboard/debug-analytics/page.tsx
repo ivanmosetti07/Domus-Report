@@ -120,6 +120,31 @@ export default function DebugAnalyticsPage() {
     }
   }
 
+  const handlePopulateFromLeads = async () => {
+    setAggregating(true)
+    setError(null)
+
+    try {
+      const response = await fetch("/api/debug/populate-from-leads", {
+        method: "POST",
+      })
+
+      if (!response.ok) {
+        throw new Error("Errore nel popolare i dati dai lead")
+      }
+
+      const result = await response.json()
+      setAggregationResult(result)
+
+      // Ricarica i dati di debug
+      await fetchDebugData()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Errore sconosciuto")
+    } finally {
+      setAggregating(false)
+    }
+  }
+
   if (loading) {
     return (
       <div>
@@ -327,6 +352,33 @@ export default function DebugAnalyticsPage() {
               Ricarica Dati
             </Button>
           </div>
+
+          {/* Popola dai Lead - opzione alternativa se non ci sono widget events */}
+          {!debugData.diagnosis.hasWidgetEvents && debugData.diagnosis.hasLeads && (
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <h4 className="font-semibold text-yellow-900 mb-2">
+                💡 Nessun evento widget tracciato
+              </h4>
+              <p className="text-sm text-yellow-800 mb-3">
+                Non sono stati trovati eventi widget, ma hai {debugData.counts.totalLeads} lead nel database.
+                Puoi popolare i dati analytics basandoti sui lead esistenti (le impressioni e i click saranno stime).
+              </p>
+              <Button
+                onClick={handlePopulateFromLeads}
+                disabled={aggregating}
+                variant="default"
+              >
+                {aggregating ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Popolando...
+                  </>
+                ) : (
+                  "Popola Analytics dai Lead Esistenti"
+                )}
+              </Button>
+            </div>
+          )}
 
           {aggregationResult && (
             <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
