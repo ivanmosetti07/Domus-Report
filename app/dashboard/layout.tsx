@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { getAuthAgency } from "@/lib/auth"
+import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 
 // Force dynamic rendering (uses cookies for auth)
@@ -10,11 +11,24 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Get authenticated agency
-  const agency = await getAuthAgency()
+  // Get authenticated agency JWT payload
+  const authPayload = await getAuthAgency()
 
   // This should never happen because middleware protects this route
   // But we add it as a safety measure
+  if (!authPayload) {
+    redirect("/login")
+  }
+
+  // Get full agency data from database
+  const agency = await prisma.agency.findUnique({
+    where: { id: authPayload.agencyId },
+    select: {
+      nome: true,
+      logoUrl: true,
+    },
+  })
+
   if (!agency) {
     redirect("/login")
   }
