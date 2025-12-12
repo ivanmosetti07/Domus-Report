@@ -59,6 +59,7 @@ type ConversationStep =
   | "calculating"
   | "valuation"
   | "completed"
+  | "ask_restart"
 
 interface CollectedData {
   address?: string
@@ -122,6 +123,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     '--widget-radius': borderRadius,
   } as React.CSSProperties
 
+  // Chiave per localStorage (unica per widget)
+  const storageKey = `domus-chat-${widgetId}`
+
   const [messages, setMessages] = React.useState<MessageType[]>([])
   const [inputValue, setInputValue] = React.useState("")
   const [isTyping, setIsTyping] = React.useState(false)
@@ -130,6 +134,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const [valuation, setValuation] = React.useState<ValuationResult | null>(null)
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
+  const [isInitialized, setIsInitialized] = React.useState(false)
 
   // Tracking: Event batching queue
   const eventQueueRef = React.useRef<Array<{
@@ -205,13 +210,76 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     }
   }, [trackEvent, sendEventBatch])
 
-  // Initialize conversation
+  // Load persisted chat state on mount
   React.useEffect(() => {
+    if (isDemo) {
+      // No persistence for demo
+      initializeConversation()
+      return
+    }
+
+    try {
+      const saved = localStorage.getItem(storageKey)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+
+        // Restore state
+        if (parsed.messages && Array.isArray(parsed.messages)) {
+          setMessages(parsed.messages.map((msg: any) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp)
+          })))
+        }
+
+        if (parsed.currentStep) {
+          setCurrentStep(parsed.currentStep)
+        }
+
+        if (parsed.collectedData) {
+          setCollectedData(parsed.collectedData)
+        }
+
+        if (parsed.valuation) {
+          setValuation(parsed.valuation)
+        }
+
+        setIsInitialized(true)
+      } else {
+        // First time - initialize conversation
+        initializeConversation()
+      }
+    } catch (error) {
+      console.error('Error loading chat state:', error)
+      initializeConversation()
+    }
+  }, [])
+
+  // Initialize conversation
+  const initializeConversation = () => {
     addBotMessage(
       "Ciao! 👋 Ti aiuto a scoprire quanto vale la tua casa. Dove si trova?",
       "welcome"
     )
-  }, [])
+    setIsInitialized(true)
+  }
+
+  // Save to localStorage whenever state changes
+  React.useEffect(() => {
+    if (!isInitialized || isDemo) return
+
+    try {
+      const stateToSave = {
+        messages,
+        currentStep,
+        collectedData,
+        valuation,
+        timestamp: new Date().toISOString()
+      }
+      localStorage.setItem(storageKey, JSON.stringify(stateToSave))
+    } catch (error) {
+      console.error('Error saving chat state:', error)
+    }
+  }, [messages, currentStep, collectedData, valuation, isInitialized, isDemo, storageKey])
 
   const addBotMessage = (text: string, step?: ConversationStep, quickReplies?: MessageType['quickReplies']) => {
     const newMessage: MessageType = {
@@ -501,6 +569,23 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         setCollectedData(prev => ({ ...prev, phone: sanitizedPhone }))
         // DOPO aver raccolto i contatti, calcola la valutazione
         calculateValuation()
+        break
+
+      case "ask_restart":
+        if (input === "restart") {
+          addUserMessage("Sì, rifai valutazione")
+          addBotMessage("Perfetto! Ricominciamo da capo. 🔄")
+          resetConversation()
+        } else {
+          addUserMessage("No, grazie")
+          addBotMessage("Grazie per aver usato il nostro servizio! A presto! 👋")
+          // Opzionalmente chiudi il widget dopo qualche secondo se è in modalità bubble
+          if (mode === 'bubble' && onClose) {
+            setTimeout(() => {
+              onClose()
+            }, 3000)
+          }
+        }
         break
     }
   }
@@ -796,12 +881,17 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       addBotMessage(successMessage, "completed")
 
-      // Close widget after 3 seconds
-      if (mode === 'bubble' && onClose) {
-        setTimeout(() => {
-          onClose()
-        }, 3000)
-      }
+      // Ask if user wants to restart instead of closing
+      setTimeout(() => {
+        addBotMessage(
+          "Vuoi fare una nuova valutazione?",
+          "ask_restart",
+          [
+            { label: "Sì, rifai valutazione", value: "restart" },
+            { label: "No, grazie", value: "done" }
+          ]
+        )
+      }, 2000)
     } catch (error) {
       console.error('[ChatWidget] CRITICAL ERROR saving lead:', {
         error: error instanceof Error ? error.message : String(error),
@@ -827,13 +917,42 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         )
       }
 
-      // Close widget anyway
-      if (mode === 'bubble' && onClose) {
-        setTimeout(() => {
-          onClose()
-        }, 3000)
+      // Ask if user wants to restart even on error
+      setTimeout(() => {
+        addBotMessage(
+          "Vuoi riprovare con una nuova valutazione?",
+          "ask_restart",
+          [
+            { label: "Sì, riprova", value: "restart" },
+            { label: "No, grazie", value: "done" }
+          ]
+        )
+      }, 2000)
+    }
+  }
+
+  // Reset conversation to start over
+  const resetConversation = () => {
+    // Clear state
+    setMessages([])
+    setCollectedData({})
+    setValuation(null)
+    setCurrentStep("welcome")
+    setInputValue("")
+
+    // Clear localStorage
+    if (!isDemo) {
+      try {
+        localStorage.removeItem(storageKey)
+      } catch (error) {
+        console.error('Error clearing chat state:', error)
       }
     }
+
+    // Re-initialize
+    setTimeout(() => {
+      initializeConversation()
+    }, 500)
   }
 
   const getPlaceholder = (): string => {
@@ -878,12 +997,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         return "es. 3331234567"
       case "completed":
         return "Conversazione completata"
+      case "ask_restart":
+        return "Scegli un'opzione..."
       default:
         return "Scrivi qui..."
     }
   }
 
-  const isInputDisabled = currentStep === "calculating" || currentStep === "completed" || isTyping
+  const isInputDisabled = currentStep === "calculating" || currentStep === "completed" || currentStep === "ask_restart" || isTyping
 
   // Position class for bubble mode
   const bubblePositionClass = bubblePosition === 'bottom-left' ? 'sm:left-4' : 'sm:right-4'
