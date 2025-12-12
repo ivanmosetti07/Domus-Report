@@ -161,7 +161,7 @@
       border-radius: 50%;
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
       cursor: pointer;
-      z-index: 999998;
+      z-index: 2147483647;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -287,5 +287,40 @@
 
     document.body.appendChild(button);
     console.log('[DomusReport Widget] Bubble button added to DOM', button);
+
+    // Debug: verifica posizione e visibilità del bottone
+    setTimeout(() => {
+      const rect = button.getBoundingClientRect();
+      const computedStyle = window.getComputedStyle(button);
+      console.log('[DomusReport Widget] Button position:', {
+        top: rect.top,
+        left: rect.left,
+        bottom: rect.bottom,
+        right: rect.right,
+        width: rect.width,
+        height: rect.height
+      });
+      console.log('[DomusReport Widget] Button styles:', {
+        position: computedStyle.position,
+        zIndex: computedStyle.zIndex,
+        display: computedStyle.display,
+        pointerEvents: computedStyle.pointerEvents,
+        visibility: computedStyle.visibility
+      });
+
+      // Test se il bottone è coperto
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const elementAtPoint = document.elementFromPoint(centerX, centerY);
+
+      if (elementAtPoint !== button && !button.contains(elementAtPoint)) {
+        console.warn('[DomusReport Widget] ⚠️ BUTTON IS COVERED!');
+        console.warn('[DomusReport Widget] Element covering button:', elementAtPoint);
+        console.warn('[DomusReport Widget] Covering element z-index:', window.getComputedStyle(elementAtPoint).zIndex);
+      } else {
+        console.log('[DomusReport Widget] ✅ Button is visible and clickable');
+      }
+    }, 1000);
+
   }
 })();
