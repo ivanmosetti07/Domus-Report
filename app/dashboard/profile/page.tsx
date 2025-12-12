@@ -20,15 +20,15 @@ export default function ProfilePage() {
 
   // Profile Data
   const [profileData, setProfileData] = React.useState({
-    nome: "Immobiliare Roma Centro",
-    email: "info@immobiliareroma.it",
-    citta: "Roma",
-    telefono: "+39 06 1234567",
-    indirizzo: "Via Roma 123",
-    sitoWeb: "https://immobiliareroma.it",
-    partitaIva: "IT12345678901",
+    nome: "",
+    email: "",
+    citta: "",
+    telefono: "",
+    indirizzo: "",
+    sitoWeb: "",
+    partitaIva: "",
     logoUrl: null as string | null,
-    dataCreazione: "15/01/2024",
+    dataCreazione: "",
     piano: "basic" as "free" | "basic" | "premium"
   })
 
@@ -52,6 +52,81 @@ export default function ProfilePage() {
     newPassword: "",
     confirmPassword: ""
   })
+
+  // Fetch profile data on mount
+  React.useEffect(() => {
+    async function loadProfile() {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          console.log('[Profile] No token found')
+          return
+        }
+
+        console.log('[Profile] Loading profile data...')
+
+        // Carica profilo
+        const profileResponse = await fetch('/api/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        console.log('[Profile] Profile response status:', profileResponse.status)
+
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json()
+          console.log('[Profile] Profile data received:', profileData)
+
+          if (profileData.profile) {
+            const newProfileData = {
+              nome: profileData.profile.nome,
+              email: profileData.profile.email,
+              citta: profileData.profile.citta,
+              telefono: profileData.profile.telefono || "",
+              indirizzo: profileData.profile.indirizzo || "",
+              sitoWeb: profileData.profile.sitoWeb || "",
+              partitaIva: profileData.profile.partitaIva || "",
+              logoUrl: profileData.profile.logoUrl,
+              dataCreazione: new Date(profileData.profile.dataCreazione).toLocaleDateString('it-IT'),
+              piano: profileData.profile.piano
+            }
+            console.log('[Profile] Setting profile data:', newProfileData)
+            setProfileData(newProfileData)
+          }
+        } else {
+          console.error('[Profile] Profile response not ok:', await profileResponse.text())
+        }
+
+        // Carica impostazioni (brandColors e preferences)
+        const settingsResponse = await fetch('/api/settings', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (settingsResponse.ok) {
+          const settingsData = await settingsResponse.json()
+          if (settingsData.settings) {
+            // Carica brandColors se presenti
+            if (settingsData.settings.brandColors) {
+              setBrandColors(settingsData.settings.brandColors)
+            }
+
+            // Carica preferences
+            setPreferences({
+              timeZone: settingsData.settings.timeZone || "Europe/Rome",
+              language: settingsData.settings.language || "it",
+              dateFormat: settingsData.settings.dateFormat || "DD/MM/YYYY"
+            })
+          }
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error)
+      }
+    }
+    loadProfile()
+  }, [])
 
   // Logo Upload Handler
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,6 +261,23 @@ export default function ProfilePage() {
         throw new Error(data.error || 'Errore aggiornamento')
       }
 
+      console.log('[Profile] Save response:', data)
+
+      // Aggiorna lo stato con i dati restituiti dall'API
+      if (data.profile) {
+        const updatedData = {
+          ...profileData,
+          nome: data.profile.nome,
+          citta: data.profile.citta,
+          telefono: data.profile.telefono || "",
+          indirizzo: data.profile.indirizzo || "",
+          sitoWeb: data.profile.sitoWeb || "",
+          partitaIva: data.profile.partitaIva || ""
+        }
+        console.log('[Profile] Updating state with:', updatedData)
+        setProfileData(updatedData)
+      }
+
       toast({
         title: "Profilo aggiornato",
         description: "Le modifiche sono state salvate con successo"
@@ -223,6 +315,11 @@ export default function ProfilePage() {
         throw new Error(data.error || 'Errore aggiornamento')
       }
 
+      // Aggiorna lo stato con i dati restituiti dall'API
+      if (data.settings?.brandColors) {
+        setBrandColors(data.settings.brandColors)
+      }
+
       toast({
         title: "Colori salvati",
         description: "I colori del brand sono stati aggiornati"
@@ -258,6 +355,15 @@ export default function ProfilePage() {
 
       if (!response.ok) {
         throw new Error(data.error || 'Errore aggiornamento')
+      }
+
+      // Aggiorna lo stato con i dati restituiti dall'API
+      if (data.settings) {
+        setPreferences({
+          timeZone: data.settings.timeZone || preferences.timeZone,
+          language: data.settings.language || preferences.language,
+          dateFormat: data.settings.dateFormat || preferences.dateFormat
+        })
       }
 
       toast({
