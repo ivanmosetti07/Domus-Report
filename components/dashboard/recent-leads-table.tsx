@@ -85,27 +85,27 @@ export function RecentLeadsTable({ leads }: RecentLeadsTableProps) {
                 href={`/dashboard/leads/${lead.id}`}
                 className="block"
               >
-                <div className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:border-primary hover:shadow-md transition-all cursor-pointer">
+                <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-gray-200 hover:border-primary hover:shadow-md transition-all cursor-pointer">
                   {/* Avatar */}
-                  <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-full flex-shrink-0">
-                    <User className="w-5 h-5 text-primary" />
+                  <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 rounded-full flex-shrink-0">
+                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <h4 className="font-semibold text-sm text-gray-900 truncate">
+                      <h4 className="font-semibold text-xs sm:text-sm text-gray-900 truncate">
                         {lead.nome} {lead.cognome}
                       </h4>
-                      <Badge variant={statusInfo.variant} className="text-xs flex-shrink-0">
+                      <Badge variant={statusInfo.variant} className="text-[10px] sm:text-xs flex-shrink-0 px-1.5 sm:px-2.5">
                         {statusInfo.label}
                       </Badge>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-[10px] sm:text-xs text-gray-600 mb-1 sm:mb-2">
                       <span className="flex items-center gap-1 truncate">
                         <Mail className="w-3 h-3 flex-shrink-0" />
-                        {lead.email}
+                        <span className="truncate">{lead.email}</span>
                       </span>
                       <span className="flex items-center gap-1 flex-shrink-0">
                         <Calendar className="w-3 h-3" />
@@ -117,7 +117,7 @@ export function RecentLeadsTable({ leads }: RecentLeadsTableProps) {
                     </div>
 
                     {estimatedValue && (
-                      <div className="flex items-center gap-1 text-xs font-medium text-green-700">
+                      <div className="flex items-center gap-1 text-[10px] sm:text-xs font-medium text-green-700">
                         <TrendingUp className="w-3 h-3" />
                         Stima: €{estimatedValue.toLocaleString('it-IT')}
                       </div>

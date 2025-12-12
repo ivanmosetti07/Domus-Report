@@ -59,21 +59,21 @@ export function WidgetOverviewCard({ widgets }: WidgetOverviewCardProps) {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {widgets.map((widget) => (
           <Card key={widget.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-base truncate">
+                  <CardTitle className="text-sm sm:text-base truncate">
                     {widget.name}
                   </CardTitle>
-                  <CardDescription className="text-xs mt-1">
+                  <CardDescription className="text-[10px] sm:text-xs mt-1">
                     ID: {widget.widgetId.substring(0, 8)}...
                   </CardDescription>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Badge variant={widget.mode === 'bubble' ? 'default' : 'secondary'} className="text-xs">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                  <Badge variant={widget.mode === 'bubble' ? 'default' : 'secondary'} className="text-[10px] sm:text-xs px-1.5 sm:px-2.5">
                     {widget.mode === 'bubble' ? 'Bubble' : 'Inline'}
                   </Badge>
                   <div className="flex items-center gap-1">
@@ -85,23 +85,23 @@ export function WidgetOverviewCard({ widgets }: WidgetOverviewCardProps) {
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2 sm:space-y-3 p-3 sm:p-6 pt-0">
               {/* Stats */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-gray-500" />
-                  <div>
-                    <p className="text-xs text-gray-600">Impressioni</p>
-                    <p className="text-sm font-semibold text-gray-900">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs text-gray-600 truncate">Impressioni</p>
+                    <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                       {widget.impressions.toLocaleString()}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-gray-500" />
-                  <div>
-                    <p className="text-xs text-gray-600">Lead</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs text-gray-600 truncate">Lead</p>
+                    <p className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
                       {widget.leadsGenerated}
                     </p>
                   </div>
@@ -109,15 +109,15 @@ export function WidgetOverviewCard({ widgets }: WidgetOverviewCardProps) {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2 pt-2">
+              <div className="flex items-center gap-2 pt-1 sm:pt-2">
                 <Link href={`/dashboard/widgets?id=${widget.id}`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full h-8 text-[10px] sm:text-xs">
                     <Code className="w-3 h-3 mr-1" />
                     Codice
                   </Button>
                 </Link>
                 <Link href={`/dashboard/analytics?widget=${widget.widgetId}`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full h-8 text-[10px] sm:text-xs">
                     <BarChart3 className="w-3 h-3 mr-1" />
                     Stats
                   </Button>

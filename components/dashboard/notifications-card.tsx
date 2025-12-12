@@ -40,33 +40,33 @@ export function NotificationsCard({ notifications }: NotificationsCardProps) {
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Bell className="w-5 h-5" />
+      <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+          <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
           Notifiche e Suggerimenti
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
+      <CardContent className="p-3 sm:p-6 pt-0">
+        <div className="space-y-2 sm:space-y-3">
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`p-3 rounded-lg border ${bgColorMap[notification.type]}`}
+              className={`p-2 sm:p-3 rounded-lg border ${bgColorMap[notification.type]}`}
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-2 sm:gap-3">
                 <div className="flex-shrink-0 mt-0.5">
                   {notification.icon || iconMap[notification.type]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                  <h4 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1">
                     {notification.title}
                   </h4>
-                  <p className="text-xs text-gray-700 mb-2">
+                  <p className="text-[10px] sm:text-xs text-gray-700 mb-2">
                     {notification.message}
                   </p>
                   {notification.action && (
                     <Link href={notification.action.href}>
-                      <Button variant="outline" size="sm" className="text-xs h-7">
+                      <Button variant="outline" size="sm" className="text-[10px] sm:text-xs h-7">
                         {notification.action.label}
                       </Button>
                     </Link>

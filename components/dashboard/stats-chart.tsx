@@ -44,21 +44,24 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+      <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
-            <CardTitle className="text-base">{title}</CardTitle>
-            <CardDescription className="text-xs mt-1">{description}</CardDescription>
+            <CardTitle className="text-sm sm:text-base">{title}</CardTitle>
+            <CardDescription className="text-[10px] sm:text-xs mt-1">{description}</CardDescription>
           </div>
-          <div className={`flex items-center gap-1 text-xs font-medium ${trendColor}`}>
+          <div className={`flex items-center gap-1 text-[10px] sm:text-xs font-medium ${trendColor}`}>
             {trendIcon}
-            <span>{trendText}</span>
+            <span className="hidden sm:inline">{trendText}</span>
+            <span className="sm:hidden">
+              {trendText.includes('+') ? trendText.split(' ')[0] : trendText.split(' ')[0]}
+            </span>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-3 sm:p-6 pt-0">
         {/* Simple bar chart */}
-        <div className="flex items-end gap-1 h-32">
+        <div className="flex items-end gap-0.5 sm:gap-1 h-24 sm:h-32">
           {data.map((item, index) => {
             const heightPercentage = (item.count / maxCount) * 100
             const isToday = index === data.length - 1
@@ -83,7 +86,7 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
                 </div>
 
                 {/* Tooltip on hover */}
-                <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none z-10 transition-opacity">
+                <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-gray-900 text-white text-[10px] sm:text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none z-10 transition-opacity">
                   {new Date(item.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
                   : {item.count} lead{item.count !== 1 ? 's' : ''}
                 </div>
@@ -93,24 +96,24 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
         </div>
 
         {/* X-axis labels (show only some dates to avoid clutter) */}
-        <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-          <span>
+        <div className="flex items-center justify-between mt-2 text-[10px] sm:text-xs text-gray-500">
+          <span className="truncate">
             {new Date(data[0].date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
           </span>
           {data.length > 2 && (
-            <span>
+            <span className="hidden sm:inline truncate">
               {new Date(data[Math.floor(data.length / 2)].date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
             </span>
           )}
-          <span>
+          <span className="truncate">
             {new Date(data[data.length - 1].date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
           </span>
         </div>
 
         {/* Total */}
-        <div className="mt-3 pt-3 border-t flex items-center justify-between">
-          <span className="text-xs text-gray-600">Totale periodo</span>
-          <span className="text-sm font-semibold text-gray-900">
+        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t flex items-center justify-between">
+          <span className="text-[10px] sm:text-xs text-gray-600">Totale periodo</span>
+          <span className="text-xs sm:text-sm font-semibold text-gray-900">
             {data.reduce((sum, d) => sum + d.count, 0)} lead{data.reduce((sum, d) => sum + d.count, 0) !== 1 ? 's' : ''}
           </span>
         </div>
