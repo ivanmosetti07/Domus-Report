@@ -21,7 +21,9 @@ async function main() {
       data: {
         nome: 'Agenzia Test',
         email: 'test@domusreport.com',
+        password: '$2b$10$dummyHashForTestAgency1234567890', // Dummy hash per test
         telefono: '+39 123 456 7890',
+        citta: 'Milano',
         attiva: true,
         piano: 'TRIAL',
         widgetId: 'TEST-LEGACY', // Legacy widget ID
