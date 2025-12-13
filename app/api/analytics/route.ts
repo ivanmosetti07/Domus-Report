@@ -57,6 +57,54 @@ export async function GET(req: NextRequest) {
     const startDate = normalizeDate(startDateParam, defaultStartDate, false)
     const endDate = normalizeDate(endDateParam, defaultEndDate, true)
 
+    // Recupera tutti i widget IDs dell'agenzia PRIMA (necessario per verificare eventi)
+    const agencyData = await prisma.agency.findUnique({
+      where: { id: agency.agencyId },
+      select: { widgetId: true },
+    })
+
+    if (!agencyData) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Agenzia non trovata",
+        },
+        { status: 404 }
+      )
+    }
+
+    // Recupera widget configs per questa agenzia
+    const widgetConfigs = await prisma.widgetConfig.findMany({
+      where: { agencyId: agency.agencyId, isActive: true },
+      select: { widgetId: true },
+    })
+
+    // Raccogli tutti i widget IDs (legacy + configs)
+    const widgetIds: string[] = []
+    if (agencyData.widgetId) {
+      widgetIds.push(agencyData.widgetId)
+    }
+    widgetConfigs.forEach(config => {
+      if (config.widgetId && !widgetIds.includes(config.widgetId)) {
+        widgetIds.push(config.widgetId)
+      }
+    })
+
+    // Se non ci sono widget IDs, ritorna dati vuoti
+    if (widgetIds.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        totals: calculateTotals([]),
+        populated: false,
+      })
+    }
+
+    // Crea il filtro per i widget
+    const widgetFilter = widgetIds.length === 1
+      ? { widgetId: widgetIds[0] }
+      : { widgetId: { in: widgetIds } }
+
     // Query analytics daily
     const analyticsData = await prisma.analyticsDaily.findMany({
       where: {
@@ -71,50 +119,31 @@ export async function GET(req: NextRequest) {
       },
     })
 
-    // Se non ci sono dati, prova a popolare da WidgetEvent storici
-    if (analyticsData.length === 0) {
-      // Recupera tutti i widget IDs dell'agenzia (supporta multi-widget)
-      const agencyData = await prisma.agency.findUnique({
-        where: { id: agency.agencyId },
-        select: { widgetId: true },
-      })
+    // Calcola quanti giorni dovrebbero esserci nel range
+    const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+    const expectedDays = daysDiff + 1
 
-      if (!agencyData) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Agenzia non trovata",
-          },
-          { status: 404 }
-        )
-      }
+    // Verifica se ci sono eventi widget nel periodo
+    const hasWidgetEvents = await prisma.widgetEvent.findFirst({
+      where: {
+        ...widgetFilter,
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: { id: true },
+    })
 
-      // Recupera widget configs per questa agenzia
-      const widgetConfigs = await prisma.widgetConfig.findMany({
-        where: { agencyId: agency.agencyId, isActive: true },
-        select: { widgetId: true },
-      })
+    // Aggrega SE:
+    // 1. Non ci sono dati analytics MA ci sono eventi widget, OPPURE
+    // 2. Il numero di giorni aggregati è inferiore all'atteso E ci sono eventi widget
+    const shouldAggregate = (analyticsData.length === 0 && hasWidgetEvents) ||
+                           (analyticsData.length < expectedDays && hasWidgetEvents)
 
-      // Raccogli tutti i widget IDs (legacy + configs)
-      const widgetIds: string[] = []
-      if (agencyData.widgetId) {
-        widgetIds.push(agencyData.widgetId)
-      }
-      widgetConfigs.forEach(config => {
-        if (config.widgetId && !widgetIds.includes(config.widgetId)) {
-          widgetIds.push(config.widgetId)
-        }
-      })
-
-      // Se non ci sono widget IDs, ritorna dati vuoti
-      if (widgetIds.length === 0) {
-        return NextResponse.json({
-          success: true,
-          data: [],
-          totals: calculateTotals([]),
-          populated: false,
-        })
-      }
+    if (shouldAggregate) {
+      console.log(`[Analytics] Auto-aggregating for agency ${agency.agencyId}, period: ${startDate.toISOString()} to ${endDate.toISOString()}`)
+      console.log(`[Analytics] Found ${analyticsData.length} existing records, expected ${expectedDays} days`)
 
       // Popola analytics da eventi storici per TUTTI i widget
       await aggregateAnalyticsForDateRange(
