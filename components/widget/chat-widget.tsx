@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Message } from "./message"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { X, Send, Building2, Loader2, Download } from "lucide-react"
+import { X, Send, Building2, Loader2 } from "lucide-react"
 import { Message as MessageType, PropertyType, PropertyCondition, FloorType, OutdoorSpace, HeatingType, EnergyClass, OccupancyStatus } from "@/types"
 import { formatCurrency } from "@/lib/utils"
 
@@ -836,10 +836,20 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       }
       setMessages(prev => [...prev, loadingMsg])
 
-      // Chiama l'API per generare il PDF (stesso endpoint usato dalla dashboard)
-      const response = await fetch(`/api/leads/${savedLeadId}/download-pdf`)
+      // Determina l'URL base assoluto (importante per widget embeddati in siti esterni)
+      const baseUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+        ? 'http://localhost:3000'
+        : 'https://domusreport.mainstream.agency'
+
+      // Chiama l'API per generare il PDF usando URL assoluto
+      const pdfUrl = `${baseUrl}/api/leads/${savedLeadId}/download-pdf`
+      console.log('[downloadPDF] Fetching PDF from:', pdfUrl)
+
+      const response = await fetch(pdfUrl)
 
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error('[downloadPDF] Error response:', errorText)
         throw new Error("Errore nella generazione del PDF")
       }
 
@@ -861,7 +871,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       // Track PDF download event
       trackEvent("PDF_DOWNLOAD", { leadId: savedLeadId })
     } catch (error) {
-      console.error("Error downloading PDF:", error)
+      console.error("[downloadPDF] Error:", error)
       addBotMessage("Si è verificato un errore nel download del PDF. Riprova o contattaci.")
     }
   }
