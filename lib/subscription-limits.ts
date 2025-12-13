@@ -93,16 +93,17 @@ export async function checkValuationLimit(agencyId: string): Promise<{
   let valuationsUsed = subscription?.valuationsUsedThisMonth || 0
   let extraValuations = subscription?.extraValuationsPurchased || 0
 
-  // Se il reset date è di un mese precedente, resetta il contatore
+  // Se il reset date è di un mese precedente, resetta SOLO il contatore delle valutazioni usate
+  // I crediti extra (extraValuationsPurchased) sono CUMULATIVI e NON vengono azzerati
   if (subscription?.valuationsResetDate && subscription.valuationsResetDate < startOfMonth) {
     valuationsUsed = 0
-    extraValuations = 0
+    // extraValuations NON viene azzerato - i crediti extra sono cumulativi!
     // Aggiorna il database
     await prisma.subscription.update({
       where: { agencyId },
       data: {
         valuationsUsedThisMonth: 0,
-        extraValuationsPurchased: 0,
+        // extraValuationsPurchased NON viene toccato
         valuationsResetDate: startOfMonth
       }
     })
@@ -139,13 +140,13 @@ export async function incrementValuationCount(agencyId: string): Promise<void> {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
   if (subscription) {
-    // Se reset date è di un mese precedente, resetta prima
+    // Se reset date è di un mese precedente, resetta prima (ma mantieni crediti extra)
     if (!subscription.valuationsResetDate || subscription.valuationsResetDate < startOfMonth) {
       await prisma.subscription.update({
         where: { agencyId },
         data: {
           valuationsUsedThisMonth: 1,
-          extraValuationsPurchased: 0,
+          // extraValuationsPurchased NON viene toccato - crediti extra cumulativi
           valuationsResetDate: startOfMonth
         }
       })
@@ -243,10 +244,10 @@ export async function getAgencyUsage(agencyId: string): Promise<{
   let valuationsUsed = subscription?.valuationsUsedThisMonth || 0
   let extraValuations = subscription?.extraValuationsPurchased || 0
 
-  // Reset mensile se necessario
+  // Reset mensile se necessario (solo valutazioni usate, non crediti extra)
   if (subscription?.valuationsResetDate && subscription.valuationsResetDate < startOfMonth) {
     valuationsUsed = 0
-    extraValuations = 0
+    // extraValuations NON viene azzerato - crediti extra cumulativi
   }
 
   const totalLimit = limits.valuationsPerMonth + extraValuations

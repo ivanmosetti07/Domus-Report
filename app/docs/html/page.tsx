@@ -64,14 +64,74 @@ export default function HTMLDocsPage() {
           </p>
         </div>
 
-        {/* Quick Start */}
+        {/* Scegli il Tipo di Widget */}
         <Card className="mb-8 border-2 border-primary/20 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="flex items-center gap-2">
+              <Code2 className="w-5 h-5 text-purple-600" />
+              Scegli il Tipo di Widget
+            </CardTitle>
+            <CardDescription>Due modalità diverse per esigenze diverse</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Bubble Widget */}
+              <Card className="border-blue-200 bg-blue-50">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    Widget Bubble
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-blue-900 font-semibold">Bottone flottante in basso a destra</p>
+                  <ul className="text-xs text-blue-800 space-y-2 list-disc list-inside">
+                    <li>Sempre visibile senza occupare spazio</li>
+                    <li>Si apre al click con un modale</li>
+                    <li>Non invasivo, non disturba il design</li>
+                    <li>✅ Consigliato per la maggior parte dei siti</li>
+                  </ul>
+                  <p className="text-xs font-semibold text-blue-900 mt-3">Quando usarlo:</p>
+                  <p className="text-xs text-blue-800">Siti aziendali, blog, portfolio, e-commerce - qualsiasi sito dove vuoi lead sempre disponibili senza occupare spazio</p>
+                </CardContent>
+              </Card>
+
+              {/* Inline Widget */}
+              <Card className="border-purple-200 bg-purple-50">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
+                      <FileCode className="w-5 h-5 text-white" />
+                    </div>
+                    Widget Inline
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-purple-900 font-semibold">Form incorporato nella pagina</p>
+                  <ul className="text-xs text-purple-800 space-y-2 list-disc list-inside">
+                    <li>Parte integrante del contenuto della pagina</li>
+                    <li>Sempre visibile, massima visibilità</li>
+                    <li>Dimensioni personalizzabili</li>
+                    <li>Perfetto per pagine dedicate</li>
+                  </ul>
+                  <p className="text-xs font-semibold text-purple-900 mt-3">Quando usarlo:</p>
+                  <p className="text-xs text-purple-800">Landing page di conversione, pagine "Richiedi Valutazione", sezioni contatti dove vuoi massima attenzione sul form</p>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Start BUBBLE */}
+        <Card className="mb-8 border-2 border-blue-200 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-blue-600" />
-              Quick Start - 3 Passi
+              Metodo 1: Widget Bubble (Consigliato)
             </CardTitle>
-            <CardDescription>Installa il widget in meno di 2 minuti</CardDescription>
+            <CardDescription>Installa il bottone flottante in 3 semplici passi</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-6">
@@ -175,6 +235,103 @@ export default function HTMLDocsPage() {
                   </>
                 )}
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* METODO 2: INLINE WIDGET */}
+        <Card className="mb-8 border-2 border-purple-200 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="flex items-center gap-2">
+              <FileCode className="w-5 h-5 text-purple-600" />
+              Metodo 2: Widget Inline (Incorporato)
+            </CardTitle>
+            <CardDescription>Per incorporare il form direttamente nella pagina</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-4">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm">
+              <strong>Quando usare questo metodo:</strong> Perfetto per landing page dedicate, pagine "Richiedi Valutazione" o sezioni specifiche dove vuoi che il form sia sempre visibile come parte del contenuto.
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-3 flex items-center gap-2">
+                <Code2 className="w-4 h-4" />
+                Codice iFrame da Copiare
+              </h4>
+              <div className="relative">
+                <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs border border-gray-700 leading-relaxed">
+                  <code>{`<!-- DomusReport Widget Inline -->
+<iframe
+  src="https://domusreport.mainstream.agency/widget/inline/TUO_WIDGET_ID"
+  width="100%"
+  height="600"
+  frameborder="0"
+  style="border: none; border-radius: 8px;"
+  title="DomusReport Valutazione Immobiliare">
+</iframe>`}</code>
+                </pre>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="absolute top-3 right-3"
+                  onClick={() => handleCopy(`<!-- DomusReport Widget Inline -->
+<iframe
+  src="https://domusreport.mainstream.agency/widget/inline/TUO_WIDGET_ID"
+  width="100%"
+  height="600"
+  frameborder="0"
+  style="border: none; border-radius: 8px;"
+  title="DomusReport Valutazione Immobiliare">
+</iframe>`)}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 mr-1.5 text-green-600" />
+                      <span className="text-xs">Copiato!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 mr-1.5" />
+                      <span className="text-xs">Copia</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-foreground-muted mt-2">
+                ⚠️ Sostituisci <code className="bg-gray-200 px-1.5 py-0.5 rounded">TUO_WIDGET_ID</code> con il tuo Widget ID
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-semibold">Istruzioni:</h4>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                  1
+                </div>
+                <div className="flex-1 pt-0.5">
+                  <p className="text-sm">Incolla l'iFrame <strong>dove vuoi che appaia il form</strong> nella tua pagina HTML (non necessariamente prima di &lt;/body&gt;)</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                  2
+                </div>
+                <div className="flex-1 pt-0.5">
+                  <p className="text-sm">Personalizza le dimensioni modificando <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">width</code> e <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">height</code> (es: width="800" height="700")</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                  3
+                </div>
+                <div className="flex-1 pt-0.5">
+                  <p className="text-sm">Salva e carica il file sul server</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-900"><strong>💡 Pro Tip:</strong> Il widget inline è perfetto per una sezione dedicata "Richiedi Valutazione Gratuita" nel tuo sito!</p>
             </div>
           </CardContent>
         </Card>

@@ -20,6 +20,16 @@ export default function WordPressDocsPage() {
   async>
 </script>`
 
+  const inlineCode = `<!-- DomusReport Widget Inline -->
+<iframe
+  src="https://domusreport.mainstream.agency/widget/inline/TUO_WIDGET_ID"
+  width="100%"
+  height="600"
+  frameborder="0"
+  style="border: none; border-radius: 8px;"
+  title="DomusReport Valutazione Immobiliare">
+</iframe>`
+
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code)
     setCopied(true)
@@ -45,12 +55,72 @@ export default function WordPressDocsPage() {
           </p>
         </div>
 
-        {/* Metodi */}
+        {/* Scegli il Tipo di Widget */}
         <Card className="mb-8 border-2 border-primary/20 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="flex items-center gap-2">
+              <Code className="w-5 h-5 text-purple-600" />
+              Passo 1: Scegli il Tipo di Widget
+            </CardTitle>
+            <CardDescription>Due modalità diverse per esigenze diverse</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Bubble Widget */}
+              <Card className="border-blue-200 bg-blue-50">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    Widget Bubble
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-blue-900 font-semibold">Bottone flottante in basso a destra</p>
+                  <ul className="text-xs text-blue-800 space-y-2 list-disc list-inside">
+                    <li>Sempre visibile senza occupare spazio</li>
+                    <li>Si apre al click con un modale</li>
+                    <li>Presente su tutte le pagine automaticamente</li>
+                    <li>✅ Consigliato per la maggior parte dei siti</li>
+                  </ul>
+                  <p className="text-xs font-semibold text-blue-900 mt-3">Installazione:</p>
+                  <p className="text-xs text-blue-800">Usa la tab "Plugin" o "Editor Tema" qui sotto</p>
+                </CardContent>
+              </Card>
+
+              {/* Inline Widget */}
+              <Card className="border-purple-200 bg-purple-50">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
+                      <Boxes className="w-5 h-5 text-white" />
+                    </div>
+                    Widget Inline
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-purple-900 font-semibold">Form incorporato nella pagina</p>
+                  <ul className="text-xs text-purple-800 space-y-2 list-disc list-inside">
+                    <li>Parte integrante del contenuto</li>
+                    <li>Sempre visibile, massima visibilità</li>
+                    <li>Dimensioni personalizzabili</li>
+                    <li>Solo sulle pagine dove lo aggiungi</li>
+                  </ul>
+                  <p className="text-xs font-semibold text-purple-900 mt-3">Installazione:</p>
+                  <p className="text-xs text-purple-800">Usa la tab "Elementor/Divi" e aggiungi un widget HTML/iFrame</p>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Metodi */}
+        <Card className="mb-8 border-2 border-blue-200 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-blue-600" />
-              Scegli il Metodo di Installazione
+              Passo 2: Scegli il Metodo di Installazione (Widget Bubble)
             </CardTitle>
             <CardDescription>Tre metodi semplici - scegli quello più adatto a te</CardDescription>
           </CardHeader>
@@ -67,7 +137,7 @@ export default function WordPressDocsPage() {
               Editor Tema
             </TabsTrigger>
             <TabsTrigger value="builder" className="gap-2">
-              Elementor/Divi
+              Page Builder (Bubble + Inline)
             </TabsTrigger>
           </TabsList>
 
@@ -317,26 +387,88 @@ export default function WordPressDocsPage() {
                 <Sparkles className="w-5 h-5 text-purple-600 flex-shrink-0" />
                 <div className="text-sm text-purple-900">
                   <strong>Per Elementor, Divi, WPBakery e altri page builder</strong>
+                  <p className="mt-2 text-xs">Con i page builder puoi usare sia il widget Bubble (script tag) che il widget Inline (iFrame) a seconda delle tue esigenze.</p>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Scelta Bubble vs Inline */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card className="border-blue-200 bg-blue-50">
+                <CardContent className="p-4">
+                  <p className="text-sm font-semibold text-blue-900 mb-2">Widget Bubble (Script)</p>
+                  <p className="text-xs text-blue-800 mb-3">Usa il widget "HTML Personalizzato" e incolla lo <strong>script tag</strong> (vedi istruzioni dettagliate sotto)</p>
+                  <pre className="bg-gray-900 text-gray-100 p-2 rounded text-xs overflow-x-auto">
+{`<script src="..." data-widget-id="..."></script>`}
+                  </pre>
+                </CardContent>
+              </Card>
+
+              <Card className="border-purple-200 bg-purple-50">
+                <CardContent className="p-4">
+                  <p className="text-sm font-semibold text-purple-900 mb-2">Widget Inline (iFrame)</p>
+                  <p className="text-xs text-purple-800 mb-3">Usa il widget "HTML" e incolla l'<strong>iFrame</strong> per incorporare il form direttamente</p>
+                  <pre className="bg-gray-900 text-gray-100 p-2 rounded text-xs overflow-x-auto">
+{`<iframe src="..." width="100%" height="600"></iframe>`}
+                  </pre>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Elementor */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Elementor</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <ol className="text-sm space-y-2 list-decimal list-inside">
-                  <li>Apri la pagina con <strong>Modifica con Elementor</strong></li>
-                  <li>Cerca il widget <strong>"HTML"</strong> o <strong>"Codice Personalizzato"</strong> nella barra laterale</li>
-                  <li>Trascinalo in fondo alla pagina (nel footer se possibile)</li>
-                  <li>Incolla il codice widget nel campo HTML</li>
-                  <li>Clicca <strong>Pubblica</strong></li>
-                </ol>
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-sm mb-2">Per Widget Bubble (Script):</h4>
+                  <ol className="text-sm space-y-2 list-decimal list-inside">
+                    <li>Apri la pagina con <strong>Modifica con Elementor</strong></li>
+                    <li>Cerca il widget <strong>"HTML"</strong> nella barra laterale</li>
+                    <li>Trascinalo in fondo alla pagina (nel footer se possibile)</li>
+                    <li>Incolla lo <strong>script tag</strong> nel campo HTML</li>
+                    <li>Clicca <strong>Pubblica</strong></li>
+                  </ol>
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs mt-3">
+                    <strong>💡 Per tutte le pagine:</strong> Aggiungilo nel Footer Template globale (Theme Builder → Footer).
+                  </div>
+                </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs">
-                  <strong>💡 Pro tip:</strong> Per averlo su tutte le pagine, aggiungilo nel Footer Template globale (Theme Builder → Footer).
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold text-sm mb-2">Per Widget Inline (iFrame):</h4>
+                  <ol className="text-sm space-y-2 list-decimal list-inside">
+                    <li>Apri la pagina dove vuoi il form integrato</li>
+                    <li>Cerca il widget <strong>"HTML"</strong></li>
+                    <li>Trascinalo <strong>dove vuoi che appaia il form</strong> nella pagina</li>
+                    <li>Incolla il <strong>codice iFrame</strong>:</li>
+                  </ol>
+                  <div className="relative mt-3">
+                    <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg text-xs overflow-x-auto">
+                      <code>{inlineCode}</code>
+                    </pre>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="absolute top-2 right-2"
+                      onClick={() => handleCopy(inlineCode)}
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 mr-1.5 text-green-600" />
+                          <span className="text-xs">Copiato!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5 mr-1.5" />
+                          <span className="text-xs">Copia</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <div className="bg-purple-50 border border-purple-200 rounded p-3 text-xs mt-3">
+                    <strong>💡 Ideale per:</strong> Landing page "Richiedi Valutazione", pagine contatti, sezioni dedicate.
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -347,15 +479,15 @@ export default function WordPressDocsPage() {
                 <CardTitle className="text-lg">Divi Builder</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <ol className="text-sm space-y-2 list-decimal list-inside">
-                  <li>Apri la pagina con <strong>Divi Builder</strong></li>
-                  <li>Aggiungi un nuovo modulo di tipo <strong>"Codice"</strong></li>
-                  <li>Incolla il codice widget</li>
-                  <li>Salva e pubblica</li>
-                </ol>
+                <p className="text-sm text-foreground-muted">
+                  <strong>Widget Bubble:</strong> Aggiungi modulo "Codice" e incolla lo script tag
+                </p>
+                <p className="text-sm text-foreground-muted">
+                  <strong>Widget Inline:</strong> Aggiungi modulo "Codice" e incolla l'iFrame dove vuoi il form
+                </p>
 
-                <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs">
-                  <strong>Per tutte le pagine:</strong> Usa Theme Builder → Modelli Globali → Footer
+                <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs mt-3">
+                  <strong>Per tutte le pagine:</strong> Usa Theme Builder → Modelli Globali → Footer (solo per Bubble)
                 </div>
               </CardContent>
             </Card>
@@ -366,12 +498,12 @@ export default function WordPressDocsPage() {
                 <CardTitle className="text-lg">WPBakery Page Builder</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <ol className="text-sm space-y-2 list-decimal list-inside">
-                  <li>Apri la pagina con <strong>WPBakery</strong></li>
-                  <li>Aggiungi elemento <strong>"Raw HTML"</strong> o <strong>"Raw JavaScript"</strong></li>
-                  <li>Incolla il codice widget</li>
-                  <li>Salva le modifiche</li>
-                </ol>
+                <p className="text-sm text-foreground-muted">
+                  <strong>Widget Bubble:</strong> Elemento "Raw HTML" con script tag
+                </p>
+                <p className="text-sm text-foreground-muted">
+                  <strong>Widget Inline:</strong> Elemento "Raw HTML" con iFrame nella posizione desiderata
+                </p>
               </CardContent>
             </Card>
 
@@ -381,12 +513,15 @@ export default function WordPressDocsPage() {
                 <CardTitle className="text-lg">Gutenberg (Editor Blocchi)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <ol className="text-sm space-y-2 list-decimal list-inside">
-                  <li>Modifica la pagina</li>
-                  <li>Aggiungi un blocco <strong>"HTML Personalizzato"</strong></li>
-                  <li>Incolla il codice widget</li>
-                  <li>Pubblica o aggiorna la pagina</li>
-                </ol>
+                <p className="text-sm text-foreground-muted">
+                  <strong>Widget Bubble:</strong> Blocco "HTML Personalizzato" con script tag in fondo alla pagina
+                </p>
+                <p className="text-sm text-foreground-muted">
+                  <strong>Widget Inline:</strong> Blocco "HTML Personalizzato" con iFrame dove serve il form
+                </p>
+                <div className="bg-purple-50 border border-purple-200 rounded p-3 text-xs mt-3">
+                  <strong>💡 Widget Inline perfetto per:</strong> Sezioni "Richiedi Valutazione" in mezzo al contenuto
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

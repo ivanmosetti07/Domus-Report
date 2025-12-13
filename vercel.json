@@ -5,8 +5,8 @@
   "regions": ["fra1"],
   "crons": [
     {
-      "path": "/api/analytics/aggregate",
-      "schedule": "0 2 * * *"
+      "path": "/api/cron/reset-monthly-credits",
+      "schedule": "0 1 1 * *"
     },
     {
       "path": "/api/cron/check-trial-expiry",

@@ -353,9 +353,10 @@ ${bubbleCode}
             <TabsContent value="script" className="space-y-4 mt-0">
               <Card className="border-blue-200 bg-blue-50">
                 <CardContent className="p-4 flex gap-3">
-                  <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  <MessageSquare className="w-6 h-6 text-blue-600 flex-shrink-0" />
                   <div className="text-sm text-blue-900">
-                    <strong>Metodo consigliato!</strong> Il widget apparirà come bottone flottante in basso a destra. Funziona su qualsiasi sito web.
+                    <strong>Widget Bubble (Bottone Flottante)</strong>
+                    <p className="mt-1">Il widget appare come un bottone flottante in basso a destra della pagina. Quando cliccato, si apre un modale con il form. <strong>Metodo consigliato</strong> per la maggior parte dei siti.</p>
                   </div>
                 </CardContent>
               </Card>
@@ -397,9 +398,10 @@ ${bubbleCode}
             <TabsContent value="iframe" className="space-y-4 mt-0">
               <Card className="border-purple-200 bg-purple-50">
                 <CardContent className="p-4 flex gap-3">
-                  <Layout className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                  <Layout className="w-6 h-6 text-purple-600 flex-shrink-0" />
                   <div className="text-sm text-purple-900">
-                    <strong>Widget inline</strong> - Perfetto per incorporare il form direttamente nella pagina con dimensioni personalizzabili.
+                    <strong>Widget Inline (Incorporato)</strong>
+                    <p className="mt-1">Il form di valutazione è incorporato direttamente nella pagina come parte del contenuto. Ideale per pagine di contatto dedicate, landing page o sezioni specifiche del sito dove vuoi massima visibilità.</p>
                   </div>
                 </CardContent>
               </Card>

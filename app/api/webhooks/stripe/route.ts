@@ -423,11 +423,35 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const subData = stripeSubscription as any
 
+  // Determina i crediti del piano
+  const { STRIPE_PLANS } = await import('@/lib/stripe')
+  const planType = dbSubscription.planType as 'free' | 'basic' | 'premium'
+  const planCredits = STRIPE_PLANS[planType]?.limits?.valuationsPerMonth || 0
+
+  // IMPORTANTE: Al pagamento mensile, accredita i crediti del piano
+  // e resetta il contatore delle valutazioni usate
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
   await prisma.subscription.update({
     where: { agencyId: dbSubscription.agencyId },
     data: {
       status: 'active',
-      nextBillingDate: subData.current_period_end ? new Date(subData.current_period_end * 1000) : null
+      nextBillingDate: subData.current_period_end ? new Date(subData.current_period_end * 1000) : null,
+      // Reset crediti mensili al pagamento
+      valuationsUsedThisMonth: 0,
+      valuationsResetDate: startOfMonth
+      // extraValuationsPurchased NON viene toccato (i crediti extra sono cumulativi)
+    }
+  })
+
+  // Crea notifica accredito crediti
+  await prisma.notification.create({
+    data: {
+      agencyId: dbSubscription.agencyId,
+      type: 'CREDITS_ADDED',
+      title: 'Pagamento ricevuto e crediti accreditati',
+      message: `Pagamento di €${((invoiceData.amount_paid || 0) / 100).toFixed(2)} ricevuto. Hai ricevuto ${planCredits} crediti per questo mese.`
     }
   })
 
@@ -443,11 +467,15 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
       `
         <h1>Pagamento ricevuto!</h1>
         <p>Grazie per il tuo pagamento di <strong>€${((invoiceData.amount_paid || 0) / 100).toFixed(2)}</strong>.</p>
+        <p>Hai ricevuto <strong>${planCredits} crediti valutazioni</strong> per questo mese.</p>
         <p><a href="${invoiceData.hosted_invoice_url}">Visualizza ricevuta</a></p>
         ${invoiceData.invoice_pdf ? `<p><a href="${invoiceData.invoice_pdf}">Scarica PDF</a></p>` : ''}
+        <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">Vai alla Dashboard</a></p>
       `
     )
   }
+
+  console.log(`Crediti accreditati: ${planCredits} per agency ${dbSubscription.agencyId}`)
 }
 
 // Handler: invoice.payment_failed

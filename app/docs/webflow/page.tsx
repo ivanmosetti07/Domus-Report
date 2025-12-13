@@ -18,6 +18,16 @@ export default function WebflowDocsPage() {
   async>
 </script>`
 
+  const inlineCode = `<!-- DomusReport Widget Inline -->
+<iframe
+  src="https://domusreport.mainstream.agency/widget/inline/TUO_WIDGET_ID"
+  width="100%"
+  height="600"
+  frameborder="0"
+  style="border: none; border-radius: 8px;"
+  title="DomusReport Valutazione Immobiliare">
+</iframe>`
+
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code)
     setCopied(true)
@@ -43,14 +53,74 @@ export default function WebflowDocsPage() {
           </p>
         </div>
 
-        {/* Quick Start */}
+        {/* Scegli il Tipo di Widget */}
         <Card className="mb-8 border-2 border-primary/20 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="w-5 h-5 text-purple-600" />
+              Passo 1: Scegli il Tipo di Widget
+            </CardTitle>
+            <CardDescription>Due modalità diverse per esigenze diverse</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Bubble Widget */}
+              <Card className="border-blue-200 bg-blue-50">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    Widget Bubble
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-blue-900 font-semibold">Bottone flottante in basso a destra</p>
+                  <ul className="text-xs text-blue-800 space-y-2 list-disc list-inside">
+                    <li>Sempre visibile senza occupare spazio</li>
+                    <li>Si apre al click con un modale</li>
+                    <li>Presente su tutte le pagine automaticamente</li>
+                    <li>✅ Consigliato per la maggior parte dei siti</li>
+                  </ul>
+                  <p className="text-xs font-semibold text-blue-900 mt-3">Installazione:</p>
+                  <p className="text-xs text-blue-800">Usa Custom Code → Footer Code (vedi sotto)</p>
+                </CardContent>
+              </Card>
+
+              {/* Inline Widget */}
+              <Card className="border-purple-200 bg-purple-50">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
+                      <Globe className="w-5 h-5 text-white" />
+                    </div>
+                    Widget Inline
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-purple-900 font-semibold">Form incorporato nella pagina</p>
+                  <ul className="text-xs text-purple-800 space-y-2 list-disc list-inside">
+                    <li>Parte integrante del contenuto</li>
+                    <li>Sempre visibile, massima visibilità</li>
+                    <li>Dimensioni personalizzabili</li>
+                    <li>Solo sulle pagine dove lo aggiungi</li>
+                  </ul>
+                  <p className="text-xs font-semibold text-purple-900 mt-3">Installazione:</p>
+                  <p className="text-xs text-purple-800">Usa elemento Embed nella pagina (vedi metodo alternativo)</p>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Start BUBBLE */}
+        <Card className="mb-8 border-2 border-blue-200 shadow-lg">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-blue-600" />
-              Installazione in 4 Semplici Passi
+              Metodo 1: Widget Bubble (Consigliato)
             </CardTitle>
-            <CardDescription>Tempo stimato: 2 minuti</CardDescription>
+            <CardDescription>Installazione globale in 4 semplici passi - Tempo: 2 minuti</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-6">
@@ -224,15 +294,22 @@ export default function WebflowDocsPage() {
           </Card>
         </div>
 
-        {/* Alternative Method */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Metodo Alternativo: Embed Element</CardTitle>
-            <CardDescription>Per mostrare il widget solo su pagine specifiche</CardDescription>
+        {/* METODO 2: INLINE WIDGET */}
+        <Card className="mb-8 border-2 border-purple-200 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="w-5 h-5 text-purple-600" />
+              Metodo 2: Widget Inline (Incorporato)
+            </CardTitle>
+            <CardDescription>Per incorporare il form direttamente in pagine specifiche</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-6">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm">
+              <strong>Quando usare questo metodo:</strong> Perfetto per landing page dedicate, pagine "Richiedi Valutazione" o sezioni specifiche dove vuoi che il form sia sempre visibile come parte del contenuto della pagina.
+            </div>
+
             <p className="text-sm text-foreground-muted">
-              Se vuoi che il widget appaia solo su alcune pagine (non su tutte), usa l'elemento Embed:
+              Per il widget inline, usa l'elemento <strong>Embed</strong> di Webflow:
             </p>
 
             <div className="space-y-3">
@@ -262,12 +339,34 @@ export default function WebflowDocsPage() {
                   4
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm mb-2">Incolla il codice widget nell'Embed Element</p>
+                  <p className="text-sm mb-2">Incolla il codice <strong>iFrame</strong> nell'Embed Element</p>
                   <div className="relative">
-                    <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg text-xs">
-                      <code>{widgetCode}</code>
+                    <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg text-xs overflow-x-auto">
+                      <code>{inlineCode}</code>
                     </pre>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="absolute top-2 right-2"
+                      onClick={() => handleCopy(inlineCode)}
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 mr-1.5 text-green-600" />
+                          <span className="text-xs">Copiato!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5 mr-1.5" />
+                          <span className="text-xs">Copia</span>
+                        </>
+                      )}
+                    </Button>
                   </div>
+                  <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    Ricorda di sostituire <code className="bg-gray-200 px-1.5 py-0.5 rounded">TUO_WIDGET_ID</code> con il tuo Widget ID reale
+                  </p>
                 </div>
               </div>
 
@@ -279,8 +378,18 @@ export default function WebflowDocsPage() {
               </div>
             </div>
 
+            <div className="bg-purple-50 border border-purple-200 rounded p-3 text-sm mt-4">
+              <strong>💡 Vantaggi Widget Inline:</strong>
+              <ul className="text-xs mt-2 space-y-1 list-disc list-inside">
+                <li>Form sempre visibile, non richiede click</li>
+                <li>Perfetto per landing page di conversione</li>
+                <li>Puoi personalizzare width e height dell'iFrame</li>
+                <li>Funziona anche con il piano gratuito Webflow</li>
+              </ul>
+            </div>
+
             <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs mt-4">
-              <strong>💡 Quando usare questo metodo:</strong> Perfetto se vuoi il widget solo su landing page specifiche o se hai un piano gratuito di Webflow (non hai accesso a Custom Code).
+              <strong>💡 Nota:</strong> Se vuoi il widget Bubble su pagine specifiche (non globalmente), puoi usare lo stesso metodo Embed ma con lo script tag invece dell'iFrame.
             </div>
           </CardContent>
         </Card>
