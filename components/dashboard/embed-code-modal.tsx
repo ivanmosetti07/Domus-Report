@@ -262,21 +262,30 @@ ${bubbleCode}
 
         <div className="flex-1 overflow-y-auto px-1">
           <Tabs defaultValue="platforms" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6 bg-gray-100 p-1">
-              <TabsTrigger value="platforms" className="data-[state=active]:bg-white">
-                <Code2 className="w-4 h-4 mr-2" />
-                Piattaforme
-              </TabsTrigger>
-              <TabsTrigger value="script" className="data-[state=active]:bg-white">
-                Script HTML
-              </TabsTrigger>
-              <TabsTrigger value="iframe" className="data-[state=active]:bg-white">
-                iFrame
-              </TabsTrigger>
-              <TabsTrigger value="react" className="data-[state=active]:bg-white">
-                React/Next.js
-              </TabsTrigger>
-            </TabsList>
+            {widget.mode === 'bubble' ? (
+              <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-100 p-1">
+                <TabsTrigger value="platforms" className="data-[state=active]:bg-white">
+                  <Code2 className="w-4 h-4 mr-2" />
+                  Piattaforme
+                </TabsTrigger>
+                <TabsTrigger value="script" className="data-[state=active]:bg-white">
+                  Script HTML
+                </TabsTrigger>
+                <TabsTrigger value="react" className="data-[state=active]:bg-white">
+                  React/Next.js
+                </TabsTrigger>
+              </TabsList>
+            ) : (
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 p-1">
+                <TabsTrigger value="platforms" className="data-[state=active]:bg-white">
+                  <Code2 className="w-4 h-4 mr-2" />
+                  Piattaforme
+                </TabsTrigger>
+                <TabsTrigger value="iframe" className="data-[state=active]:bg-white">
+                  iFrame
+                </TabsTrigger>
+              </TabsList>
+            )}
 
             {/* PIATTAFORME POPOLARI */}
             <TabsContent value="platforms" className="space-y-6 mt-0">
@@ -349,8 +358,9 @@ ${bubbleCode}
               </div>
             </TabsContent>
 
-            {/* SCRIPT TAG */}
-            <TabsContent value="script" className="space-y-4 mt-0">
+            {/* SCRIPT TAG - Solo per Bubble */}
+            {widget.mode === 'bubble' && (
+              <TabsContent value="script" className="space-y-4 mt-0">
               <Card className="border-blue-200 bg-blue-50">
                 <CardContent className="p-4 flex gap-3">
                   <MessageSquare className="w-6 h-6 text-blue-600 flex-shrink-0" />
@@ -392,10 +402,12 @@ ${bubbleCode}
                   description="Salva le modifiche e carica il file sul tuo server. Il widget apparirà immediatamente!"
                 />
               </div>
-            </TabsContent>
+              </TabsContent>
+            )}
 
-            {/* IFRAME */}
-            <TabsContent value="iframe" className="space-y-4 mt-0">
+            {/* IFRAME - Solo per Inline */}
+            {widget.mode === 'inline' && (
+              <TabsContent value="iframe" className="space-y-4 mt-0">
               <Card className="border-purple-200 bg-purple-50">
                 <CardContent className="p-4 flex gap-3">
                   <Layout className="w-6 h-6 text-purple-600 flex-shrink-0" />
@@ -432,10 +444,12 @@ ${bubbleCode}
                   description={<>Modifica i parametri <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">width</code> e <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">height</code> secondo le tue esigenze (es: width="800" height="700")</>}
                 />
               </div>
-            </TabsContent>
+              </TabsContent>
+            )}
 
-            {/* REACT/NEXT.JS */}
-            <TabsContent value="react" className="space-y-4 mt-0">
+            {/* REACT/NEXT.JS - Solo per Bubble */}
+            {widget.mode === 'bubble' && (
+              <TabsContent value="react" className="space-y-4 mt-0">
               <Card className="border-cyan-200 bg-cyan-50">
                 <CardContent className="p-4 flex gap-3">
                   <Code2 className="w-5 h-5 text-cyan-600 flex-shrink-0" />
@@ -501,7 +515,8 @@ ${bubbleCode}
                   </div>
                 </TabsContent>
               </Tabs>
-            </TabsContent>
+              </TabsContent>
+            )}
           </Tabs>
 
           {/* SEZIONE FOOTER CON INFO E TEST */}

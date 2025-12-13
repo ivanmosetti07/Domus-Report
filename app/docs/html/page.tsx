@@ -46,7 +46,7 @@ export default function HTMLDocsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="max-w-5xl mx-auto px-4 py-12">
         {/* Header */}
@@ -55,7 +55,7 @@ export default function HTMLDocsPage() {
             <ArrowLeft className="w-4 h-4" />
             Torna ai Widget
           </Link>
-          <h1 className="text-4xl font-bold mb-3 flex items-center gap-3">
+          <h1 className="text-4xl font-bold mb-3 flex items-center gap-3 text-foreground">
             <FileCode className="w-10 h-10 text-primary" />
             Installazione Widget su HTML
           </h1>
@@ -65,59 +65,59 @@ export default function HTMLDocsPage() {
         </div>
 
         {/* Scegli il Tipo di Widget */}
-        <Card className="mb-8 border-2 border-primary/20 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
-            <CardTitle className="flex items-center gap-2">
-              <Code2 className="w-5 h-5 text-purple-600" />
+        <Card className="mb-8 border border-border bg-card">
+          <CardHeader className="bg-gradient-to-r from-surface via-surface-2 to-surface border-b border-border">
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <Code2 className="w-5 h-5 text-primary" />
               Scegli il Tipo di Widget
             </CardTitle>
-            <CardDescription>Due modalità diverse per esigenze diverse</CardDescription>
+            <CardDescription className="text-foreground-muted">Due modalità diverse per esigenze diverse</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Bubble Widget */}
-              <Card className="border-blue-200 bg-blue-50">
+              <Card className="border border-primary/30 bg-surface hover:bg-surface-2 transition-colors">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-white" />
+                  <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-primary-foreground" />
                     </div>
                     Widget Bubble
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-sm text-blue-900 font-semibold">Bottone flottante in basso a destra</p>
-                  <ul className="text-xs text-blue-800 space-y-2 list-disc list-inside">
+                  <p className="text-sm text-foreground font-semibold">Bottone flottante in basso a destra</p>
+                  <ul className="text-xs text-foreground-muted space-y-2 list-disc list-inside">
                     <li>Sempre visibile senza occupare spazio</li>
                     <li>Si apre al click con un modale</li>
                     <li>Non invasivo, non disturba il design</li>
                     <li>✅ Consigliato per la maggior parte dei siti</li>
                   </ul>
-                  <p className="text-xs font-semibold text-blue-900 mt-3">Quando usarlo:</p>
-                  <p className="text-xs text-blue-800">Siti aziendali, blog, portfolio, e-commerce - qualsiasi sito dove vuoi lead sempre disponibili senza occupare spazio</p>
+                  <p className="text-xs font-semibold text-foreground mt-3">Quando usarlo:</p>
+                  <p className="text-xs text-foreground-muted">Siti aziendali, blog, portfolio, e-commerce - qualsiasi sito dove vuoi lead sempre disponibili senza occupare spazio</p>
                 </CardContent>
               </Card>
 
               {/* Inline Widget */}
-              <Card className="border-purple-200 bg-purple-50">
+              <Card className="border border-border bg-surface hover:bg-surface-2 transition-colors">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
-                      <FileCode className="w-5 h-5 text-white" />
+                  <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+                    <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                      <FileCode className="w-5 h-5 text-accent-foreground" />
                     </div>
                     Widget Inline
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-sm text-purple-900 font-semibold">Form incorporato nella pagina</p>
-                  <ul className="text-xs text-purple-800 space-y-2 list-disc list-inside">
+                  <p className="text-sm text-foreground font-semibold">Form incorporato nella pagina</p>
+                  <ul className="text-xs text-foreground-muted space-y-2 list-disc list-inside">
                     <li>Parte integrante del contenuto della pagina</li>
                     <li>Sempre visibile, massima visibilità</li>
                     <li>Dimensioni personalizzabili</li>
                     <li>Perfetto per pagine dedicate</li>
                   </ul>
-                  <p className="text-xs font-semibold text-purple-900 mt-3">Quando usarlo:</p>
-                  <p className="text-xs text-purple-800">Landing page di conversione, pagine "Richiedi Valutazione", sezioni contatti dove vuoi massima attenzione sul form</p>
+                  <p className="text-xs font-semibold text-foreground mt-3">Quando usarlo:</p>
+                  <p className="text-xs text-foreground-muted">Landing page di conversione, pagine "Richiedi Valutazione", sezioni contatti dove vuoi massima attenzione sul form</p>
                 </CardContent>
               </Card>
             </div>
@@ -125,23 +125,23 @@ export default function HTMLDocsPage() {
         </Card>
 
         {/* Quick Start BUBBLE */}
-        <Card className="mb-8 border-2 border-blue-200 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-blue-600" />
+        <Card className="mb-8 border border-primary/40 bg-card shadow-soft-lg">
+          <CardHeader className="bg-gradient-to-r from-surface via-surface-2 to-surface border-b border-border">
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <Sparkles className="w-5 h-5 text-primary" />
               Metodo 1: Widget Bubble (Consigliato)
             </CardTitle>
-            <CardDescription>Installa il bottone flottante in 3 semplici passi</CardDescription>
+            <CardDescription className="text-foreground-muted">Installa il bottone flottante in 3 semplici passi</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="space-y-6">
               {/* Step 1 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold shadow-glow-primary">
                   1
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg mb-2">Ottieni il tuo Widget ID</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground">Ottieni il tuo Widget ID</h3>
                   <p className="text-sm text-foreground-muted mb-3">
                     Vai nella sezione <Link href="/dashboard/widgets" className="text-primary underline">Widget</Link> della dashboard,
                     clicca su "Codice" sul widget che vuoi installare, e copia il tuo Widget ID.
@@ -151,13 +151,13 @@ export default function HTMLDocsPage() {
 
               {/* Step 2 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold shadow-glow-primary">
                   2
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg mb-2">Copia questo codice</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground">Copia questo codice</h3>
                   <div className="relative">
-                    <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs border border-gray-700">
+                    <pre className="bg-surface-2 text-foreground p-4 rounded-lg overflow-x-auto text-xs border border-border">
                       <code>{widgetCode}</code>
                     </pre>
                     <Button
@@ -180,20 +180,20 @@ export default function HTMLDocsPage() {
                     </Button>
                   </div>
                   <p className="text-xs text-foreground-muted mt-2">
-                    ⚠️ Sostituisci <code className="bg-gray-200 px-1.5 py-0.5 rounded">TUO_WIDGET_ID</code> con il tuo Widget ID
+                    ⚠️ Sostituisci <code className="bg-muted px-1.5 py-0.5 rounded text-foreground">TUO_WIDGET_ID</code> con il tuo Widget ID
                   </p>
                 </div>
               </div>
 
               {/* Step 3 */}
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold shadow-glow-primary">
                   3
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg mb-2">Incolla prima del tag &lt;/body&gt;</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-foreground">Incolla prima del tag &lt;/body&gt;</h3>
                   <p className="text-sm text-foreground-muted mb-3">
-                    Apri il tuo file HTML e incolla lo script <strong>subito prima</strong> del tag di chiusura <code className="bg-gray-200 px-1.5 py-0.5 rounded">&lt;/body&gt;</code>
+                    Apri il tuo file HTML e incolla lo script <strong>subito prima</strong> del tag di chiusura <code className="bg-muted px-1.5 py-0.5 rounded text-foreground">&lt;/body&gt;</code>
                   </p>
                 </div>
               </div>
@@ -202,19 +202,19 @@ export default function HTMLDocsPage() {
         </Card>
 
         {/* Esempio Completo */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className="mb-8 bg-card border-border">
+          <CardHeader className="border-b border-border">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <Code2 className="w-5 h-5 text-primary" />
               Esempio Completo
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-foreground-muted">
               Ecco come dovrebbe apparire il tuo file HTML con il widget installato
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="relative">
-              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs border border-gray-700 leading-relaxed">
+              <pre className="bg-surface-2 text-foreground p-4 rounded-lg overflow-x-auto text-xs border border-border leading-relaxed">
                 <code>{fullExample}</code>
               </pre>
               <Button
@@ -240,26 +240,26 @@ export default function HTMLDocsPage() {
         </Card>
 
         {/* METODO 2: INLINE WIDGET */}
-        <Card className="mb-8 border-2 border-purple-200 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
-            <CardTitle className="flex items-center gap-2">
-              <FileCode className="w-5 h-5 text-purple-600" />
+        <Card className="mb-8 border border-accent/40 bg-card shadow-soft-lg">
+          <CardHeader className="bg-gradient-to-r from-surface via-surface-2 to-surface border-b border-border">
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <FileCode className="w-5 h-5 text-accent" />
               Metodo 2: Widget Inline (Incorporato)
             </CardTitle>
-            <CardDescription>Per incorporare il form direttamente nella pagina</CardDescription>
+            <CardDescription className="text-foreground-muted">Per incorporare il form direttamente nella pagina</CardDescription>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm">
-              <strong>Quando usare questo metodo:</strong> Perfetto per landing page dedicate, pagine "Richiedi Valutazione" o sezioni specifiche dove vuoi che il form sia sempre visibile come parte del contenuto.
+            <div className="bg-surface-2 border border-border rounded-lg p-4 text-sm">
+              <strong className="text-foreground">Quando usare questo metodo:</strong> <span className="text-foreground-muted">Perfetto per landing page dedicate, pagine "Richiedi Valutazione" o sezioni specifiche dove vuoi che il form sia sempre visibile come parte del contenuto.</span>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-3 flex items-center gap-2">
-                <Code2 className="w-4 h-4" />
+              <h4 className="font-semibold mb-3 flex items-center gap-2 text-foreground">
+                <Code2 className="w-4 h-4 text-primary" />
                 Codice iFrame da Copiare
               </h4>
               <div className="relative">
-                <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs border border-gray-700 leading-relaxed">
+                <pre className="bg-surface-2 text-foreground p-4 rounded-lg overflow-x-auto text-xs border border-border leading-relaxed">
                   <code>{`<!-- DomusReport Widget Inline -->
 <iframe
   src="https://domusreport.mainstream.agency/widget/inline/TUO_WIDGET_ID"
@@ -298,40 +298,40 @@ export default function HTMLDocsPage() {
                 </Button>
               </div>
               <p className="text-xs text-foreground-muted mt-2">
-                ⚠️ Sostituisci <code className="bg-gray-200 px-1.5 py-0.5 rounded">TUO_WIDGET_ID</code> con il tuo Widget ID
+                ⚠️ Sostituisci <code className="bg-muted px-1.5 py-0.5 rounded text-foreground">TUO_WIDGET_ID</code> con il tuo Widget ID
               </p>
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-semibold">Istruzioni:</h4>
+              <h4 className="font-semibold text-foreground">Istruzioni:</h4>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center text-sm font-bold shadow-glow-primary">
                   1
                 </div>
                 <div className="flex-1 pt-0.5">
-                  <p className="text-sm">Incolla l'iFrame <strong>dove vuoi che appaia il form</strong> nella tua pagina HTML (non necessariamente prima di &lt;/body&gt;)</p>
+                  <p className="text-sm text-foreground-muted">Incolla l'iFrame <strong className="text-foreground">dove vuoi che appaia il form</strong> nella tua pagina HTML (non necessariamente prima di &lt;/body&gt;)</p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center text-sm font-bold shadow-glow-primary">
                   2
                 </div>
                 <div className="flex-1 pt-0.5">
-                  <p className="text-sm">Personalizza le dimensioni modificando <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">width</code> e <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">height</code> (es: width="800" height="700")</p>
+                  <p className="text-sm text-foreground-muted">Personalizza le dimensioni modificando <code className="bg-muted px-1.5 py-0.5 rounded text-xs text-foreground">width</code> e <code className="bg-muted px-1.5 py-0.5 rounded text-xs text-foreground">height</code> (es: width="800" height="700")</p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center text-sm font-bold shadow-glow-primary">
                   3
                 </div>
                 <div className="flex-1 pt-0.5">
-                  <p className="text-sm">Salva e carica il file sul server</p>
+                  <p className="text-sm text-foreground-muted">Salva e carica il file sul server</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-900"><strong>💡 Pro Tip:</strong> Il widget inline è perfetto per una sezione dedicata "Richiedi Valutazione Gratuita" nel tuo sito!</p>
+            <div className="bg-surface-2 border border-primary/30 rounded-lg p-4">
+              <p className="text-sm text-foreground"><strong className="text-primary">💡 Pro Tip:</strong> Il widget inline è perfetto per una sezione dedicata "Richiedi Valutazione Gratuita" nel tuo sito!</p>
             </div>
           </CardContent>
         </Card>
