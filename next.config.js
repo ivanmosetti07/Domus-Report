@@ -4,6 +4,14 @@ const { withSentryConfig } = require("@sentry/nextjs")
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.blob.vercel-storage.com',
+      },
+    ],
+  },
 }
 
 // Sentry configuration options
