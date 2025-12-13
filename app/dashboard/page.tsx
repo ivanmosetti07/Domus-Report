@@ -158,6 +158,7 @@ export default async function DashboardPage() {
   let totalWidgetOpens = 0
   let widgetOpensLast7Days = 0
   let leadSubmitEvents = 0
+  let leadSubmitEventsLast7Days = 0
   let hasWidgetEvents = false
 
   if (widgetIds.length > 0) {
@@ -171,14 +172,17 @@ export default async function DashboardPage() {
       opensCount,
       opensLast7Days,
       leadEventsCount,
+      leadEventsLast7Days,
       firstEvent
     ] = await Promise.all([
+      // Total widget opens (all time)
       prisma.widgetEvent.count({
         where: {
           ...widgetFilter,
           eventType: 'OPEN'
         }
       }),
+      // Widget opens last 7 days
       prisma.widgetEvent.count({
         where: {
           ...widgetFilter,
@@ -188,12 +192,24 @@ export default async function DashboardPage() {
           }
         }
       }),
+      // Total lead submit events (all time)
       prisma.widgetEvent.count({
         where: {
           ...widgetFilter,
           eventType: 'CONTACT_FORM_SUBMIT'
         }
       }),
+      // Lead submit events last 7 days
+      prisma.widgetEvent.count({
+        where: {
+          ...widgetFilter,
+          eventType: 'CONTACT_FORM_SUBMIT',
+          createdAt: {
+            gte: sevenDaysAgo
+          }
+        }
+      }),
+      // Check if any widget events exist
       prisma.widgetEvent.findFirst({
         where: widgetFilter,
         select: { id: true }
@@ -203,14 +219,17 @@ export default async function DashboardPage() {
     totalWidgetOpens = opensCount
     widgetOpensLast7Days = opensLast7Days
     leadSubmitEvents = leadEventsCount
+    leadSubmitEventsLast7Days = leadEventsLast7Days
     hasWidgetEvents = !!firstEvent
   }
 
-  // Calculate conversion rate using tracked lead submissions (fallback to total leads if no events)
-  const leadsForConversion = leadSubmitEvents > 0 ? leadSubmitEvents : totalLeads
-  const conversionRate = totalWidgetOpens > 0
-    ? ((leadsForConversion / totalWidgetOpens) * 100).toFixed(1) + '%'
-    : 'N/A'
+  // Calculate conversion rate usando SOLO eventi tracciati (più preciso)
+  // Se non ci sono eventi widget, mostra N/A (evita calcoli basati su dati storici)
+  const conversionRate = totalWidgetOpens > 0 && leadSubmitEvents > 0
+    ? ((leadSubmitEvents / totalWidgetOpens) * 100).toFixed(1) + '%'
+    : hasWidgetEvents && totalWidgetOpens > 0
+    ? '0.0%'  // Ci sono opens ma nessun lead submit event
+    : 'N/A'   // Nessun evento widget tracciato
 
   // Transform leads by day data for chart
   const chartData = leadsLast30DaysByDay.map(item => ({
