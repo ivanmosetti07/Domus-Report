@@ -16,7 +16,8 @@ import {
   FileText,
   MessageSquare,
   CreditCard,
-  Shield
+  Shield,
+  BookOpen
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -29,6 +30,7 @@ const navigation = [
   { name: "Abbonamento", href: "/dashboard/subscription", icon: CreditCard },
   { name: "Sicurezza", href: "/dashboard/security", icon: Shield },
   { name: "Profilo", href: "/dashboard/profile", icon: User },
+  { name: "Documentazione", href: "/dashboard/docs", icon: BookOpen },
 ]
 
 interface SidebarProps {
