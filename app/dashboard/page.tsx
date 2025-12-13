@@ -32,9 +32,6 @@ export default async function DashboardPage() {
     subscription,
     widgetConfigs,
     recentLeads,
-    totalWidgetOpens,
-    widgetClicksLast7Days,
-    hasWidgetEvents,
     settings,
     newLeadsCount,
     leadsLast30DaysByDay
@@ -111,31 +108,6 @@ export default async function DashboardPage() {
       take: 5
     }),
 
-    // Total widget opens (for conversion rate)
-    prisma.widgetEvent.count({
-      where: {
-        widgetId: agency.widgetId,
-        eventType: 'OPEN'
-      }
-    }),
-
-    // Widget clicks last 7 days
-    prisma.widgetEvent.count({
-      where: {
-        widgetId: agency.widgetId,
-        eventType: 'OPEN',
-        createdAt: {
-          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-        }
-      }
-    }),
-
-    // Check if any widget events exist
-    prisma.widgetEvent.findFirst({
-      where: { widgetId: agency.widgetId },
-      select: { id: true }
-    }).then(result => !!result),
-
     // Agency settings (for brand colors check)
     prisma.agencySetting.findUnique({
       where: { agencyId: agency.agencyId },
@@ -176,9 +148,68 @@ export default async function DashboardPage() {
     trialDaysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   }
 
-  // Calculate conversion rate
+  // Collect widgetIds for analytics (support multi-widget + legacy field)
+  const widgetIds = widgetConfigs.map(widget => widget.widgetId)
+  if (widgetIds.length === 0 && agency.widgetId) {
+    widgetIds.push(agency.widgetId)
+  }
+
+  // Aggregate widget events across all widgetIds
+  let totalWidgetOpens = 0
+  let widgetOpensLast7Days = 0
+  let leadSubmitEvents = 0
+  let hasWidgetEvents = false
+
+  if (widgetIds.length > 0) {
+    const widgetFilter = widgetIds.length === 1
+      ? { widgetId: widgetIds[0] }
+      : { widgetId: { in: widgetIds } }
+
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+
+    const [
+      opensCount,
+      opensLast7Days,
+      leadEventsCount,
+      firstEvent
+    ] = await Promise.all([
+      prisma.widgetEvent.count({
+        where: {
+          ...widgetFilter,
+          eventType: 'OPEN'
+        }
+      }),
+      prisma.widgetEvent.count({
+        where: {
+          ...widgetFilter,
+          eventType: 'OPEN',
+          createdAt: {
+            gte: sevenDaysAgo
+          }
+        }
+      }),
+      prisma.widgetEvent.count({
+        where: {
+          ...widgetFilter,
+          eventType: 'CONTACT_FORM_SUBMIT'
+        }
+      }),
+      prisma.widgetEvent.findFirst({
+        where: widgetFilter,
+        select: { id: true }
+      })
+    ])
+
+    totalWidgetOpens = opensCount
+    widgetOpensLast7Days = opensLast7Days
+    leadSubmitEvents = leadEventsCount
+    hasWidgetEvents = !!firstEvent
+  }
+
+  // Calculate conversion rate using tracked lead submissions (fallback to total leads if no events)
+  const leadsForConversion = leadSubmitEvents > 0 ? leadSubmitEvents : totalLeads
   const conversionRate = totalWidgetOpens > 0
-    ? ((totalLeads / totalWidgetOpens) * 100).toFixed(1) + '%'
+    ? ((leadsForConversion / totalWidgetOpens) * 100).toFixed(1) + '%'
     : 'N/A'
 
   // Transform leads by day data for chart
@@ -224,7 +255,7 @@ export default async function DashboardPage() {
     leadsLast7Days,
     totalValuations,
     conversionRate,
-    widgetClicksLast7Days,
+    widgetOpensLast7Days,
     valuationsUsed,
     valuationsLimit
   }
