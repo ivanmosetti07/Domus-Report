@@ -10,6 +10,7 @@ import { WidgetCodeCard } from "@/components/dashboard/widget-code-card"
 import { TrialBanner } from "@/components/dashboard/trial-banner"
 import { WidgetOverviewCard } from "@/components/dashboard/widget-overview-card"
 import { RecentLeadsTable } from "@/components/dashboard/recent-leads-table"
+import { StatsChart } from "@/components/dashboard/stats-chart"
 import { NotificationsCard, generateNotifications } from "@/components/dashboard/notifications-card"
 
 // Force dynamic rendering (uses cookies for auth)
@@ -32,7 +33,8 @@ export default async function DashboardPage() {
     widgetConfigs,
     recentLeads,
     settings,
-    newLeadsCount
+    newLeadsCount,
+    leadsLast30DaysByDay
   ] = await Promise.all([
     // Total leads count
     prisma.lead.count({
@@ -123,6 +125,18 @@ export default async function DashboardPage() {
         }
       }
     })
+
+    // Leads by day (last 30 days) for chart
+    prisma.$queryRaw<Array<{ date: Date; count: bigint }>>`
+      SELECT
+        DATE(data_richiesta) as date,
+        COUNT(*)::bigint as count
+      FROM leads
+      WHERE agenzia_id = ${agency.agencyId}
+        AND data_richiesta >= NOW() - INTERVAL '30 days'
+      GROUP BY DATE(data_richiesta)
+      ORDER BY date ASC
+    `
   ])
 
   // Calculate trial days remaining
@@ -197,6 +211,24 @@ export default async function DashboardPage() {
   const conversionRate = totalWidgetOpens > 0
     ? ((leadsForConversion / totalWidgetOpens) * 100).toFixed(1) + '%'
     : 'N/A'
+
+  // Transform leads by day data for chart
+  const chartData = leadsLast30DaysByDay.map(item => ({
+    date: item.date.toISOString().split('T')[0],
+    count: Number(item.count)
+  }))
+
+  // Fill missing days with 0 to render a consistent chart
+  const last30Days = Array.from({ length: 30 }, (_, i) => {
+    const date = new Date()
+    date.setDate(date.getDate() - (29 - i))
+    return date.toISOString().split('T')[0]
+  })
+
+  const completeChartData = last30Days.map(date => {
+    const existing = chartData.find(d => d.date === date)
+    return existing || { date, count: 0 }
+  })
 
   // Get plan limits
   const planLimits: Record<string, number> = {
@@ -291,6 +323,11 @@ export default async function DashboardPage() {
           flexDirection: 'column',
           gap: 'var(--grid-gap-md)'
         }}>
+          {/* Stats Chart */}
+          {completeChartData.length > 0 && (
+            <StatsChart data={completeChartData} />
+          )}
+
           {/* Widget Overview */}
           <WidgetOverviewCard widgets={widgetConfigs} />
         </div>
