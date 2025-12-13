@@ -688,6 +688,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const calculateValuation = async () => {
     addBotMessage("Perfetto! Sto calcolando la valutazione... ⏳", "calculating")
 
+    // DEBUG: Log collectedData PRIMA della chiamata API
+    console.log('[calculateValuation] CollectedData BEFORE API call:', {
+      phone: collectedData.phone,
+      email: collectedData.email,
+      firstName: collectedData.firstName,
+      allData: collectedData
+    })
+
     try {
       // Call valuation API with timeout
       const controller = new AbortController()
@@ -782,6 +790,15 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
     // Use passed result or fall back to state
     const finalValuation = valuationResult || valuation
+
+    // DEBUG: Log COMPLETO di collectedData
+    console.log('[completeConversation] 🔍 CRITICAL DEBUG - CollectedData at start:', {
+      phone: collectedData.phone,
+      email: collectedData.email,
+      firstName: collectedData.firstName,
+      lastName: collectedData.lastName,
+      FULL_collectedData: JSON.stringify(collectedData, null, 2)
+    })
 
     // Show loading message
     addBotMessage("Sto salvando i tuoi dati... ⏳", "completed")
