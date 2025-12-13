@@ -141,6 +141,9 @@ export default function WidgetEmbedPage() {
     showBadge: config.showBadge,
     bubbleAnimation: config.bubbleAnimation as 'pulse' | 'bounce' | 'none',
     logoUrl: config.logoUrl,
+    showHeader: config.showHeader,
+    showBorder: config.showBorder,
+    inlineHeight: config.inlineHeight,
   }
 
   // Determina il mode: usa la configurazione salvata, non il parametro URL

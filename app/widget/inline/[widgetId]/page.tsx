@@ -137,7 +137,7 @@ export default function WidgetInlinePage() {
     buttonStyle: config.buttonStyle,
     showHeader: config.showHeader,
     showBorder: config.showBorder,
-    inlineHeight: '100vh', // Full height for iframe embed
+    inlineHeight: config.inlineHeight || '600px',
     logoUrl: config.logoUrl,
   }
 

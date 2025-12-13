@@ -22,6 +22,9 @@ export interface WidgetThemeConfig {
   showBadge?: boolean
   bubbleAnimation?: 'pulse' | 'bounce' | 'none'
   logoUrl?: string
+  showHeader?: boolean
+  showBorder?: boolean
+  inlineHeight?: string
 }
 
 interface WidgetTriggerProps {

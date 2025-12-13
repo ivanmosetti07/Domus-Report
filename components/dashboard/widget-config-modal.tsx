@@ -123,6 +123,12 @@ export function WidgetConfigModal({
 
     setIsUploadingLogo(true)
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+      if (!token) {
+        alert('Sessione non valida. Effettua nuovamente il login.')
+        return
+      }
+
       const formData = new FormData()
       formData.append('file', file)
       formData.append('type', 'widget')
@@ -132,7 +138,9 @@ export function WidgetConfigModal({
 
       const response = await fetch('/api/upload/logo', {
         method: 'POST',
-        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       })
 
