@@ -100,7 +100,7 @@ export function DomusReportWidget() {
 
   const CodeBlock = ({ code, type }: { code: string; type: string }) => (
     <div className="relative">
-      <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm max-h-64">
+      <pre className="bg-gray-900 text-foreground-inverse p-4 rounded-lg overflow-x-auto text-sm max-h-64">
         <code>{code}</code>
       </pre>
       <Button
@@ -111,7 +111,7 @@ export function DomusReportWidget() {
       >
         {copiedType === type ? (
           <>
-            <Check className="w-4 h-4 mr-2 text-green-600" />
+            <Check className="w-4 h-4 mr-2 text-success" />
             Copiato!
           </>
         ) : (
@@ -214,13 +214,13 @@ function App() {
           </Tabs>
 
           {/* Widget ID */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg border">
+          <div className="mt-6 p-4 bg-surface rounded-lg border border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <p className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                   Widget ID
                 </p>
-                <p className="text-sm font-mono text-gray-900 mt-1">
+                <p className="text-sm font-mono text-foreground mt-1">
                   {widget.widgetId}
                 </p>
               </div>
@@ -230,7 +230,7 @@ function App() {
                 onClick={() => handleCopy(widget.widgetId, 'widgetId')}
               >
                 {copiedType === 'widgetId' ? (
-                  <Check className="w-4 h-4 text-green-600" />
+                  <Check className="w-4 h-4 text-success" />
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}

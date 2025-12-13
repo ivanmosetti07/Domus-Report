@@ -51,10 +51,10 @@ export function TrialBanner({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1">
                   Prova {planType === 'premium' ? 'Premium' : 'Basic'} Attiva
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-700 mb-3">
+                <p className="text-xs sm:text-sm text-foreground mb-3">
                   {trialDaysRemaining === 0
                     ? "Il tuo trial scade oggi!"
                     : trialDaysRemaining === 1
@@ -64,7 +64,7 @@ export function TrialBanner({
                 </p>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                <div className="w-full bg-surface-2 rounded-full h-2 mb-2">
                   <div
                     className={`h-2 rounded-full transition-all ${isUrgent ? 'bg-orange-500' : 'bg-blue-500'}`}
                     style={{ width: `${progressPercentage}%` }}
@@ -72,7 +72,7 @@ export function TrialBanner({
                 </div>
 
                 {trialEndsAt && mounted && (
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-foreground-muted">
                     Scadenza: {new Date(trialEndsAt).toLocaleDateString('it-IT', {
                       day: 'numeric',
                       month: 'long',
@@ -107,10 +107,10 @@ export function TrialBanner({
                 <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1">
                   Il tuo trial è scaduto
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-700">
+                <p className="text-xs sm:text-sm text-foreground">
                   Effettua l'upgrade per continuare a usare tutte le funzionalità premium
                 </p>
               </div>
@@ -139,11 +139,11 @@ export function TrialBanner({
                 <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1">
                   Piano {planType === 'premium' ? 'Premium' : 'Basic'} Attivo
                 </h3>
                 {nextBillingDate && mounted && (
-                  <p className="text-xs sm:text-sm text-gray-700">
+                  <p className="text-xs sm:text-sm text-foreground">
                     Prossimo rinnovo: {new Date(nextBillingDate).toLocaleDateString('it-IT', {
                       day: 'numeric',
                       month: 'long',

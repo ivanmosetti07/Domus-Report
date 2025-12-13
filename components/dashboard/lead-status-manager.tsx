@@ -224,7 +224,7 @@ export function LeadStatusManager({
       </div>
 
       {/* Form cambio status */}
-      <div className="space-y-4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="space-y-4 mb-6 p-4 bg-surface rounded-lg border border-border">
         <div>
           <Label htmlFor="status-select">Cambia Status</Label>
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -272,7 +272,7 @@ export function LeadStatusManager({
       <div>
         <Label className="text-sm font-medium mb-3 block">Timeline Attività</Label>
         {statuses.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-4">
+          <p className="text-sm text-foreground-muted text-center py-4">
             Nessuno storico disponibile
           </p>
         ) : (
@@ -289,7 +289,7 @@ export function LeadStatusManager({
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${config?.color || 'bg-gray-100'} border-2`}>
                       <Icon className="w-4 h-4" />
                     </div>
-                    {!isLast && <div className="w-0.5 h-full bg-gray-200 mt-1" />}
+                    {!isLast && <div className="w-0.5 h-full bg-border mt-1" />}
                   </div>
 
                   {/* Contenuto */}
@@ -300,10 +300,10 @@ export function LeadStatusManager({
                           {config?.label || status.status}
                         </Badge>
                         {status.note && (
-                          <p className="text-sm text-gray-700 mt-2">{status.note}</p>
+                          <p className="text-sm text-foreground mt-2">{status.note}</p>
                         )}
                       </div>
-                      <span className="text-xs text-gray-500 whitespace-nowrap">
+                      <span className="text-xs text-foreground-muted whitespace-nowrap">
                         {formatRelativeTime(status.createdAt)}
                       </span>
                     </div>

@@ -48,7 +48,7 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
       <CardContent className="space-y-4">
         {/* Code Box */}
         <div className="relative">
-          <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+          <pre className="bg-gray-900 text-foreground-inverse p-4 rounded-lg overflow-x-auto text-sm">
             <code>{widgetCode}</code>
           </pre>
           <Button
@@ -59,7 +59,7 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 mr-2 text-green-600" />
+                <Check className="w-4 h-4 mr-2 text-success" />
                 Copiato!
               </>
             ) : (
@@ -72,19 +72,19 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
         </div>
 
         {/* Installation Instructions with Tabs */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b border-gray-200">
+        <div className="border border-border rounded-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b border-border">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-blue-600" />
-              <h3 className="font-semibold text-gray-900">Guida Installazione</h3>
+              <h3 className="font-semibold text-foreground">Guida Installazione</h3>
             </div>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-foreground-muted mt-1">
               Scegli la tua piattaforma e segui i passaggi
             </p>
           </div>
 
           <Tabs defaultValue="wordpress" className="w-full">
-            <TabsList className="w-full justify-start rounded-none border-b bg-gray-50 h-auto p-0">
+            <TabsList className="w-full justify-start rounded-none border-b bg-surface h-auto p-0">
               <TabsTrigger value="wordpress" className="rounded-none data-[state=active]:bg-white data-[state=active]:border-b-2 data-[state=active]:border-blue-600 px-6 py-3">
                 WordPress
               </TabsTrigger>
@@ -107,8 +107,8 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     1
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Accedi al tuo WordPress</p>
-                    <p className="text-sm text-gray-600 mt-1">Vai su <strong>Aspetto → Editor del Tema</strong> oppure usa un plugin come <strong>"Insert Headers and Footers"</strong></p>
+                    <p className="font-medium text-foreground">Accedi al tuo WordPress</p>
+                    <p className="text-sm text-foreground-muted mt-1">Vai su <strong>Aspetto → Editor del Tema</strong> oppure usa un plugin come <strong>"Insert Headers and Footers"</strong></p>
                   </div>
                 </div>
 
@@ -117,8 +117,8 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     2
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Incolla il codice</p>
-                    <p className="text-sm text-gray-600 mt-1">Aggiungi lo script <strong>prima del tag &lt;/body&gt;</strong> nel file <code className="bg-gray-100 px-1 rounded">footer.php</code> oppure nel campo "Scripts in Footer" del plugin</p>
+                    <p className="font-medium text-foreground">Incolla il codice</p>
+                    <p className="text-sm text-foreground-muted mt-1">Aggiungi lo script <strong>prima del tag &lt;/body&gt;</strong> nel file <code className="bg-surface-2 px-1 rounded">footer.php</code> oppure nel campo "Scripts in Footer" del plugin</p>
                   </div>
                 </div>
 
@@ -127,8 +127,8 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     3
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Salva e verifica</p>
-                    <p className="text-sm text-gray-600 mt-1">Salva le modifiche e visita il tuo sito. Il bottone widget apparirà in basso a destra!</p>
+                    <p className="font-medium text-foreground">Salva e verifica</p>
+                    <p className="text-sm text-foreground-muted mt-1">Salva le modifiche e visita il tuo sito. Il bottone widget apparirà in basso a destra!</p>
                   </div>
                 </div>
               </div>
@@ -149,8 +149,8 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     1
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Apri il file HTML</p>
-                    <p className="text-sm text-gray-600 mt-1">Apri il file HTML del tuo sito web con un editor di testo (es: VS Code, Sublime Text, Notepad++)</p>
+                    <p className="font-medium text-foreground">Apri il file HTML</p>
+                    <p className="text-sm text-foreground-muted mt-1">Apri il file HTML del tuo sito web con un editor di testo (es: VS Code, Sublime Text, Notepad++)</p>
                   </div>
                 </div>
 
@@ -159,8 +159,8 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     2
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Trova il tag &lt;/body&gt;</p>
-                    <p className="text-sm text-gray-600 mt-1">Cerca il tag di chiusura <code className="bg-gray-100 px-1 rounded">&lt;/body&gt;</code> alla fine del documento</p>
+                    <p className="font-medium text-foreground">Trova il tag &lt;/body&gt;</p>
+                    <p className="text-sm text-foreground-muted mt-1">Cerca il tag di chiusura <code className="bg-surface-2 px-1 rounded">&lt;/body&gt;</code> alla fine del documento</p>
                   </div>
                 </div>
 
@@ -169,10 +169,10 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     3
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Incolla lo script PRIMA del &lt;/body&gt;</p>
-                    <div className="text-sm text-gray-600 mt-1 space-y-1">
+                    <p className="font-medium text-foreground">Incolla lo script PRIMA del &lt;/body&gt;</p>
+                    <div className="text-sm text-foreground-muted mt-1 space-y-1">
                       <p>Inserisci lo script widget subito prima del tag di chiusura:</p>
-                      <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs mt-2 overflow-x-auto">
+                      <pre className="bg-gray-900 text-foreground-inverse p-3 rounded text-xs mt-2 overflow-x-auto">
 {`  <!-- DomusReport Widget -->
   ${widgetCode}
 </body>
@@ -187,8 +187,8 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     4
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Carica il file</p>
-                    <p className="text-sm text-gray-600 mt-1">Salva il file e caricalo sul tuo server (via FTP, cPanel, o il tuo hosting). Il widget apparirà immediatamente!</p>
+                    <p className="font-medium text-foreground">Carica il file</p>
+                    <p className="text-sm text-foreground-muted mt-1">Salva il file e caricalo sul tuo server (via FTP, cPanel, o il tuo hosting). Il widget apparirà immediatamente!</p>
                   </div>
                 </div>
               </div>
@@ -202,8 +202,8 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     1
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Crea un componente Script</p>
-                    <p className="text-sm text-gray-600 mt-1">Aggiungi lo script nel layout principale o nella pagina desiderata</p>
+                    <p className="font-medium text-foreground">Crea un componente Script</p>
+                    <p className="text-sm text-foreground-muted mt-1">Aggiungi lo script nel layout principale o nella pagina desiderata</p>
                   </div>
                 </div>
 
@@ -212,10 +212,10 @@ export function WidgetCodeCard({ widgetId }: WidgetCodeCardProps) {
                     2
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">Next.js App Router</p>
-                    <div className="text-sm text-gray-600 mt-1">
-                      <p className="mb-2">In <code className="bg-gray-100 px-1 rounded">app/layout.tsx</code>:</p>
-                      <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
+                    <p className="font-medium text-foreground">Next.js App Router</p>
+                    <div className="text-sm text-foreground-muted mt-1">
+                      <p className="mb-2">In <code className="bg-surface-2 px-1 rounded">app/layout.tsx</code>:</p>
+                      <pre className="bg-gray-900 text-foreground-inverse p-3 rounded text-xs overflow-x-auto">
 {`import Script from 'next/script'
 
 export default function RootLayout({ children }) {
@@ -241,10 +241,10 @@ export default function RootLayout({ children }) {
                     3
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">React (Vite, CRA)</p>
-                    <div className="text-sm text-gray-600 mt-1">
-                      <p className="mb-2">Nel file <code className="bg-gray-100 px-1 rounded">index.html</code>:</p>
-                      <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
+                    <p className="font-medium text-foreground">React (Vite, CRA)</p>
+                    <div className="text-sm text-foreground-muted mt-1">
+                      <p className="mb-2">Nel file <code className="bg-surface-2 px-1 rounded">index.html</code>:</p>
+                      <pre className="bg-gray-900 text-foreground-inverse p-3 rounded text-xs overflow-x-auto">
 {`<body>
   <div id="root"></div>
   ${widgetCode}
@@ -267,9 +267,9 @@ export default function RootLayout({ children }) {
             <TabsContent value="other" className="p-4 space-y-4 m-0">
               <div className="space-y-4">
                 {/* Wix */}
-                <div className="border border-gray-200 rounded-lg p-3">
-                  <h4 className="font-semibold text-gray-900 mb-2">Wix</h4>
-                  <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                <div className="border border-border rounded-lg p-3">
+                  <h4 className="font-semibold text-foreground mb-2">Wix</h4>
+                  <ol className="text-sm text-foreground-muted space-y-1 list-decimal list-inside">
                     <li>Vai su <strong>Impostazioni → Avanzate → Codice Personalizzato</strong></li>
                     <li>Clicca <strong>"+ Aggiungi Codice Personalizzato"</strong></li>
                     <li>Incolla lo script, seleziona <strong>"Body - end"</strong></li>
@@ -278,9 +278,9 @@ export default function RootLayout({ children }) {
                 </div>
 
                 {/* Squarespace */}
-                <div className="border border-gray-200 rounded-lg p-3">
-                  <h4 className="font-semibold text-gray-900 mb-2">Squarespace</h4>
-                  <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                <div className="border border-border rounded-lg p-3">
+                  <h4 className="font-semibold text-foreground mb-2">Squarespace</h4>
+                  <ol className="text-sm text-foreground-muted space-y-1 list-decimal list-inside">
                     <li>Vai su <strong>Impostazioni → Avanzate → Iniezione Codice</strong></li>
                     <li>Incolla lo script nel campo <strong>"Footer"</strong></li>
                     <li>Clicca <strong>Salva</strong></li>
@@ -288,20 +288,20 @@ export default function RootLayout({ children }) {
                 </div>
 
                 {/* Shopify */}
-                <div className="border border-gray-200 rounded-lg p-3">
-                  <h4 className="font-semibold text-gray-900 mb-2">Shopify</h4>
-                  <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                <div className="border border-border rounded-lg p-3">
+                  <h4 className="font-semibold text-foreground mb-2">Shopify</h4>
+                  <ol className="text-sm text-foreground-muted space-y-1 list-decimal list-inside">
                     <li>Vai su <strong>Negozio online → Temi → Azioni → Modifica codice</strong></li>
-                    <li>Apri <code className="bg-gray-100 px-1 rounded">theme.liquid</code></li>
-                    <li>Incolla lo script prima di <code className="bg-gray-100 px-1 rounded">&lt;/body&gt;</code></li>
+                    <li>Apri <code className="bg-surface-2 px-1 rounded">theme.liquid</code></li>
+                    <li>Incolla lo script prima di <code className="bg-surface-2 px-1 rounded">&lt;/body&gt;</code></li>
                     <li>Salva</li>
                   </ol>
                 </div>
 
                 {/* Webflow */}
-                <div className="border border-gray-200 rounded-lg p-3">
-                  <h4 className="font-semibold text-gray-900 mb-2">Webflow</h4>
-                  <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                <div className="border border-border rounded-lg p-3">
+                  <h4 className="font-semibold text-foreground mb-2">Webflow</h4>
+                  <ol className="text-sm text-foreground-muted space-y-1 list-decimal list-inside">
                     <li>Vai su <strong>Project Settings → Custom Code</strong></li>
                     <li>Incolla lo script nel campo <strong>"Footer Code"</strong></li>
                     <li>Clicca <strong>Save Changes</strong> e pubblica il sito</li>
@@ -321,13 +321,13 @@ export default function RootLayout({ children }) {
         </div>
 
         {/* Widget ID Info */}
-        <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="p-3 bg-surface rounded-lg border border-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <p className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                 Il tuo Widget ID
               </p>
-              <p className="text-sm font-mono text-gray-900 mt-1">
+              <p className="text-sm font-mono text-foreground mt-1">
                 {widgetId}
               </p>
             </div>

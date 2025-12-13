@@ -41,9 +41,9 @@ export function UsageIndicator() {
   if (loading || !usage) return null
 
   const getProgressColor = (percentage: number) => {
-    if (percentage >= 90) return 'bg-red-500'
-    if (percentage >= 70) return 'bg-yellow-500'
-    return 'bg-green-500'
+    if (percentage >= 90) return 'bg-destructive'
+    if (percentage >= 70) return 'bg-warning'
+    return 'bg-success'
   }
 
   const getPlanBadge = (planType: string) => {
@@ -59,24 +59,24 @@ export function UsageIndicator() {
 
   return (
     <Link href="/dashboard/subscription" className="block">
-      <div className="px-4 py-3 border-t border-gray-200 space-y-3 hover:bg-gray-50 transition-colors">
+      <div className="px-4 py-3 border-t border-border space-y-3 hover:bg-surface transition-colors">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-gray-500">Piano</span>
+          <span className="text-xs font-medium text-foreground-muted">Piano</span>
           {getPlanBadge(usage.planType)}
         </div>
 
         {/* Widget usage */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1 text-gray-600">
+            <span className="flex items-center gap-1 text-foreground-muted">
               <MessageSquare className="h-3 w-3" />
               Widget
             </span>
-            <span className="text-gray-500">
+            <span className="text-foreground-muted">
               {usage.widgets.current}/{usage.widgets.limit}
             </span>
           </div>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-surface-2 rounded-full overflow-hidden">
             <div
               className={`h-full ${getProgressColor(usage.widgets.percentage)} transition-all`}
               style={{ width: `${Math.min(100, usage.widgets.percentage)}%` }}
@@ -88,16 +88,16 @@ export function UsageIndicator() {
         {usage.leads.limit > 0 && (
           <div className="space-y-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="flex items-center gap-1 text-gray-600">
+              <span className="flex items-center gap-1 text-foreground-muted">
                 <Users className="h-3 w-3" />
                 Lead/mese
               </span>
-              <span className="text-gray-500">
+              <span className="text-foreground-muted">
                 {usage.leads.current}/{usage.leads.limit === -1 ? '∞' : usage.leads.limit}
               </span>
             </div>
             {usage.leads.limit !== -1 && (
-              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-surface-2 rounded-full overflow-hidden">
                 <div
                   className={`h-full ${getProgressColor(usage.leads.percentage)} transition-all`}
                   style={{ width: `${Math.min(100, usage.leads.percentage)}%` }}

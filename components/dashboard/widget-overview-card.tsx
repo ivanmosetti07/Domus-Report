@@ -78,7 +78,7 @@ export function WidgetOverviewCard({ widgets }: WidgetOverviewCardProps) {
                   </Badge>
                   <div className="flex items-center gap-1">
                     <Circle
-                      className={`w-2 h-2 fill-current ${widget.isActive ? 'text-green-500' : 'text-gray-400'}`}
+                      className={`w-2 h-2 fill-current ${widget.isActive ? 'text-success' : 'text-foreground-muted'}`}
                     />
                   </div>
                 </div>

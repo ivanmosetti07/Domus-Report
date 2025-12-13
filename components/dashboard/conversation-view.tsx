@@ -13,7 +13,7 @@ interface ConversationViewProps {
 export function ConversationView({ messages }: ConversationViewProps) {
   if (!messages || messages.length === 0) {
     return (
-      <p className="text-center text-gray-500 py-8">
+      <p className="text-center text-foreground-muted py-8">
         Nessun messaggio nella conversazione
       </p>
     )
@@ -31,8 +31,8 @@ export function ConversationView({ messages }: ConversationViewProps) {
           <div
             className={`max-w-[80%] ${
               message.role === "bot"
-                ? "bg-gray-100 text-gray-900"
-                : "bg-blue-100 text-gray-900"
+                ? "bg-surface text-foreground"
+                : "bg-primary/10 text-foreground"
             } rounded-lg p-3`}
           >
             {message.role === "bot" && (
@@ -40,11 +40,11 @@ export function ConversationView({ messages }: ConversationViewProps) {
                 <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-xs text-white">🤖</span>
                 </div>
-                <span className="text-xs font-medium text-gray-600">Bot</span>
+                <span className="text-xs font-medium text-foreground-muted">Bot</span>
               </div>
             )}
             <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-foreground-muted mt-2">
               {new Date(message.timestamp).toLocaleTimeString("it-IT", {
                 hour: "2-digit",
                 minute: "2-digit",

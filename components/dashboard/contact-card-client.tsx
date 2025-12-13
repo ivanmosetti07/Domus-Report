@@ -36,16 +36,16 @@ export function ContactCardClient({
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+          <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
             Nome Completo
           </label>
-          <p className="text-lg font-semibold text-gray-900 mt-1">
+          <p className="text-lg font-semibold text-foreground mt-1">
             {nome} {cognome}
           </p>
         </div>
 
         <div>
-          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+          <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
             Email
           </label>
           <div className="flex items-center gap-2 mt-1">
@@ -57,10 +57,10 @@ export function ContactCardClient({
             </a>
             <button
               onClick={() => handleCopy(email, "email")}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-foreground-muted hover:text-foreground"
             >
               {copiedField === "email" ? (
-                <span className="text-xs text-green-600">✓</span>
+                <span className="text-xs text-success">✓</span>
               ) : (
                 <Copy className="w-4 h-4" />
               )}
@@ -70,7 +70,7 @@ export function ContactCardClient({
 
         {telefono && (
           <div>
-            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
               Telefono
             </label>
             <div className="flex items-center gap-2 mt-1">
@@ -82,17 +82,17 @@ export function ContactCardClient({
               </a>
               <button
                 onClick={() => handleCopy(telefono, "phone")}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-foreground-muted hover:text-foreground"
               >
                 {copiedField === "phone" ? (
-                  <span className="text-xs text-green-600">✓</span>
+                  <span className="text-xs text-success">✓</span>
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}
               </button>
               <a
                 href={`tel:${telefono}`}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-foreground-muted hover:text-foreground"
               >
                 <Phone className="w-4 h-4" />
               </a>
@@ -100,7 +100,7 @@ export function ContactCardClient({
           </div>
         )}
 
-        <div className="pt-4 border-t border-gray-200">
+        <div className="pt-4 border-t border-border">
           <a href={`mailto:${email}`}>
             <Button className="w-full">
               <Mail className="w-4 h-4 mr-2" />

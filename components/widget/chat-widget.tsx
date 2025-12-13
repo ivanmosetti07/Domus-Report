@@ -1155,9 +1155,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
         {isTyping && (
           <div className="flex justify-start mb-4">
-            <div className="bg-gray-100 rounded-lg p-3 flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-gray-600" />
-              <span className="text-sm text-gray-600">Sto scrivendo...</span>
+            <div className="bg-surface rounded-lg p-3 flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-foreground-muted" />
+              <span className="text-sm text-foreground-muted">Sto scrivendo...</span>
             </div>
           </div>
         )}
@@ -1167,7 +1167,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       {/* Input */}
       <div
-        className="border-t border-gray-200 p-4"
+        className="border-t border-border p-4"
         style={{ backgroundColor }}
       >
         {currentStep === "contacts_email" ? (

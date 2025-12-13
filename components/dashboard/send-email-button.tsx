@@ -120,7 +120,7 @@ export function SendEmailButton({ leadId, defaultEmail, propertyAddress }: SendE
               rows={4}
               className="resize-none"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-foreground-muted">
               Questo messaggio verrà incluso nell'email prima del report
             </p>
           </div>

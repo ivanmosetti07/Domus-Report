@@ -245,7 +245,7 @@ export function WidgetConfigModal({
                   value={config.name || ''}
                   onChange={(e) => setConfig({ ...config, name: e.target.value })}
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-foreground-muted">
                   Un nome per identificare questo widget nella dashboard
                 </p>
               </div>
@@ -258,7 +258,7 @@ export function WidgetConfigModal({
                     className={`p-4 rounded-lg border-2 text-left transition-colors ${
                       config.mode === 'bubble'
                         ? 'border-primary bg-primary/5'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-border hover:border-border'
                     }`}
                     onClick={() => setConfig({ ...config, mode: 'bubble' })}
                   >
@@ -266,7 +266,7 @@ export function WidgetConfigModal({
                       <MessageSquare className="w-5 h-5 text-primary" />
                       <span className="font-medium">Bubble</span>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-foreground-muted">
                       Bottone flottante in basso a destra che apre la chat
                     </p>
                   </button>
@@ -276,7 +276,7 @@ export function WidgetConfigModal({
                     className={`p-4 rounded-lg border-2 text-left transition-colors ${
                       config.mode === 'inline'
                         ? 'border-primary bg-primary/5'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-border hover:border-border'
                     }`}
                     onClick={() => setConfig({ ...config, mode: 'inline' })}
                   >
@@ -284,7 +284,7 @@ export function WidgetConfigModal({
                       <Layout className="w-5 h-5 text-primary" />
                       <span className="font-medium">Inline</span>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-foreground-muted">
                       Widget integrato direttamente nella pagina
                     </p>
                   </button>
@@ -336,7 +336,7 @@ export function WidgetConfigModal({
                       <img
                         src={config.logoUrl}
                         alt="Logo"
-                        className="w-16 h-16 object-contain rounded-lg border border-gray-200"
+                        className="w-16 h-16 object-contain rounded-lg border border-border"
                       />
                       <button
                         type="button"
@@ -349,13 +349,13 @@ export function WidgetConfigModal({
                     </div>
                   ) : (
                     <div
-                      className={`w-16 h-16 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center ${canBrand ? 'cursor-pointer hover:border-primary' : 'cursor-not-allowed'}`}
+                      className={`w-16 h-16 border-2 border-dashed border-border rounded-lg flex items-center justify-center ${canBrand ? 'cursor-pointer hover:border-primary' : 'cursor-not-allowed'}`}
                       onClick={() => canBrand && fileInputRef.current?.click()}
                     >
                       {isUploadingLogo ? (
-                        <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                        <Loader2 className="w-6 h-6 text-foreground-muted animate-spin" />
                       ) : (
-                        <Upload className="w-6 h-6 text-gray-400" />
+                        <Upload className="w-6 h-6 text-foreground-muted" />
                       )}
                     </div>
                   )}
@@ -379,7 +379,7 @@ export function WidgetConfigModal({
                         </>
                       )}
                     </Button>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-foreground-muted mt-1">
                       PNG, JPG, SVG o WebP. Max 2MB.
                     </p>
                   </div>
@@ -499,7 +499,7 @@ export function WidgetConfigModal({
                         className={`px-4 py-2 text-sm border rounded-lg transition-colors ${
                           config.buttonStyle === style.value
                             ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-gray-200 hover:border-gray-300'
+                            : 'border-border hover:border-border'
                         } ${!canBrand ? 'cursor-not-allowed' : ''}`}
                         onClick={() => setConfig({ ...config, buttonStyle: style.value })}
                       >
@@ -553,10 +553,10 @@ export function WidgetConfigModal({
                     </Select>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-surface rounded-lg">
                     <div>
                       <Label htmlFor="showBadge">Mostra Badge Notifica</Label>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-foreground-muted">
                         Badge rosso con numero sopra il bottone
                       </p>
                     </div>
@@ -588,10 +588,10 @@ export function WidgetConfigModal({
                     </Select>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-surface rounded-lg">
                     <div>
                       <Label htmlFor="showHeader">Mostra Header</Label>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-foreground-muted">
                         Header con logo e titolo in alto
                       </p>
                     </div>
@@ -602,10 +602,10 @@ export function WidgetConfigModal({
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-surface rounded-lg">
                     <div>
                       <Label htmlFor="showBorder">Mostra Bordo</Label>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-foreground-muted">
                         Bordo visibile intorno al widget
                       </p>
                     </div>
@@ -659,7 +659,7 @@ export function WidgetConfigModal({
           <div className="mt-6 border-t pt-6">
             <Label className="mb-4 block">Anteprima</Label>
             <div
-              className="relative bg-gray-100 rounded-lg p-4 overflow-hidden"
+              className="relative bg-surface rounded-lg p-4 overflow-hidden"
               style={{ height: config.mode === 'inline' ? '300px' : '200px' }}
             >
               {config.mode === 'bubble' ? (
@@ -685,7 +685,7 @@ export function WidgetConfigModal({
                   className="h-full rounded-lg overflow-hidden"
                   style={{
                     backgroundColor: config.backgroundColor,
-                    border: config.showBorder ? '1px solid #e5e7eb' : 'none',
+                    border: config.showBorder ? '1px solid hsl(var(--border))' : 'none',
                   }}
                 >
                   {config.showHeader && (
