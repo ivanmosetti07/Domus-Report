@@ -328,11 +328,7 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 'var(--space-lg)'
-    }}>
+    <div className="page-stack">
       <PageHeader
         title="Analytics"
         subtitle="Analizza le performance del tuo widget e ottimizza le conversioni"

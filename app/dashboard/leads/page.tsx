@@ -67,7 +67,7 @@ export default async function LeadsPage() {
   })
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+    <div className="page-stack">
       <div className="flex items-center justify-between">
         <PageHeader
           title="I tuoi Lead"

@@ -38,11 +38,8 @@ export default async function DashboardLayout({
       <Sidebar agencyName={agency.nome} agencyLogo={agency.logoUrl} />
 
       {/* Main Content */}
-      <div className="lg:pl-64 min-h-screen">
-        <main className="page-container" style={{
-          paddingTop: 'var(--space-xl)',
-          paddingBottom: 'var(--space-xl)'
-        }}>
+      <div className="min-h-screen lg:pl-64">
+        <main className="page-container">
           {children}
         </main>
       </div>

@@ -79,16 +79,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-            <Building2 className="w-8 h-8 text-white" />
+    <div className="auth-shell">
+      <div className="auth-card space-y-6">
+        <div className="text-center space-y-3">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+            <Building2 className="h-8 w-8" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">DomusReport</h1>
+          <h1 className="text-3xl font-bold">DomusReport</h1>
+          <p className="text-sm text-foreground-muted">Accedi per gestire lead e valutazioni</p>
         </div>
 
-        <Card>
+        <Card className="border-border bg-surface">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Accedi al tuo account</CardTitle>
             <CardDescription>Inserisci le tue credenziali per continuare</CardDescription>
@@ -96,8 +97,8 @@ export default function LoginPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {errors.general && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                  <p className="text-sm text-red-600">{errors.general}</p>
+                <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3">
+                  <p className="text-sm text-destructive">{errors.general}</p>
                 </div>
               )}
               <div className="space-y-2">
@@ -108,21 +109,16 @@ export default function LoginPage() {
                   placeholder="email@tuaagenzia.it"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className={errors.email ? "border-red-500" : ""}
+                  className={errors.email ? "border-destructive" : ""}
                   autoComplete="email"
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-primary hover:underline"
-                  >
+                  <Link href="/forgot-password" className="text-sm text-primary hover:underline">
                     Password dimenticata?
                   </Link>
                 </div>
@@ -133,29 +129,27 @@ export default function LoginPage() {
                     placeholder="Inserisci la tua password"
                     value={formData.password}
                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                    className={errors.password ? "border-red-500 pr-10" : "pr-10"}
+                    className={errors.password ? "border-destructive pr-10" : "pr-10"}
                     autoComplete="current-password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-red-500">{errors.password}</p>
-                )}
+                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   id="remember"
                   checked={formData.rememberMe}
                   onChange={(e) => setFormData(prev => ({ ...prev, rememberMe: e.target.checked }))}
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
+                  className="rounded border-border bg-transparent text-primary focus:ring-primary"
                 />
                 <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">
                   Ricordami
@@ -168,7 +162,7 @@ export default function LoginPage() {
             </form>
           </CardContent>
           <CardFooter className="justify-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-foreground-muted">
               Non hai un account?{" "}
               <Link href="/register" className="text-primary font-medium hover:underline">
                 Registrati gratis
@@ -177,11 +171,8 @@ export default function LoginPage() {
           </CardFooter>
         </Card>
 
-        <div className="mt-6 text-center">
-          <Link
-            href="/"
-            className="text-sm text-gray-600 hover:text-gray-900 inline-flex items-center gap-1"
-          >
+        <div className="text-center text-sm text-foreground-muted">
+          <Link href="/" className="inline-flex items-center gap-1 hover:text-foreground">
             ← Torna alla home
           </Link>
         </div>

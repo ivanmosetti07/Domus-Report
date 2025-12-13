@@ -10,99 +10,90 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
   return (
-    <nav className="sticky top-0 z-40 bg-surface border-b border-border shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo.png"
-              alt="DomusReport"
-              width={180}
-              height={60}
-              className="h-10 w-auto"
-              priority
-            />
-          </Link>
+    <nav className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="site-container flex h-16 items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/logo.png"
+            alt="DomusReport"
+            width={160}
+            height={48}
+            className="h-10 w-auto"
+            priority
+          />
+        </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link
-              href="#features"
-              className="text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
-            >
-              Funzionalità
-            </Link>
-            <Link
-              href="#pricing"
-              className="text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/docs/wordpress"
-              className="text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
-            >
-              Documentazione
-            </Link>
-          </div>
-
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/login">
-              <Button variant="outline">Accedi</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Inizia Gratis</Button>
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-foreground"
+        <div className="hidden items-center gap-6 md:flex">
+          <Link
+            href="#features"
+            className="text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
           >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+            Funzionalità
+          </Link>
+          <Link
+            href="#pricing"
+            className="text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
+          >
+            Pricing
+          </Link>
+          <Link
+            href="/docs/wordpress"
+            className="text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
+          >
+            Documentazione
+          </Link>
         </div>
+
+        <div className="hidden items-center gap-3 md:flex">
+          <Link href="/login">
+            <Button variant="outline">Accedi</Button>
+          </Link>
+          <Link href="/register">
+            <Button>Inizia Gratis</Button>
+          </Link>
+        </div>
+
+        <button
+          onClick={() => setMobileMenuOpen((prev) => !prev)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-foreground md:hidden"
+          aria-label="Apri menu"
+          aria-expanded={mobileMenuOpen}
+        >
+          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </div>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-surface">
-          <div className="px-4 py-4 space-y-3">
+          <div className="site-container flex flex-col gap-4 py-6">
             <Link
               href="#features"
-              className="block text-base font-medium text-foreground-muted hover:text-foreground transition-colors"
+              className="text-base font-medium text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Funzionalità
             </Link>
             <Link
               href="#pricing"
-              className="block text-base font-medium text-foreground-muted hover:text-foreground transition-colors"
+              className="text-base font-medium text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Pricing
             </Link>
             <Link
               href="/docs/wordpress"
-              className="block text-base font-medium text-foreground-muted hover:text-foreground transition-colors"
+              className="text-base font-medium text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Documentazione
             </Link>
-            <div className="pt-3 space-y-2">
-              <Link href="/login" className="block">
+            <div className="flex flex-col gap-3 pt-2">
+              <Link href="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="outline" className="w-full">
                   Accedi
                 </Button>
               </Link>
-              <Link href="/register" className="block">
+              <Link href="/register" className="w-full" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full">Inizia Gratis</Button>
               </Link>
             </div>

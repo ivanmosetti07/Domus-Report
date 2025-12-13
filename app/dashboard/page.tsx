@@ -305,11 +305,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 'var(--space-lg)'
-    }}>
+    <div className="page-stack">
       <PageHeader
         title={`Benvenuto, ${agency.nome}!`}
         subtitle="Ecco una panoramica della tua agenzia"

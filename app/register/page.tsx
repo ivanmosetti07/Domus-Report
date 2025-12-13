@@ -104,7 +104,6 @@ export default function RegisterPage() {
         return
       }
 
-      // Success - now login automatically
       const loginResponse = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -118,14 +117,11 @@ export default function RegisterPage() {
 
       if (loginResponse.ok) {
         const loginData = await loginResponse.json()
-        // Salva il token in localStorage
         if (loginData.token) {
           localStorage.setItem('token', loginData.token)
         }
-        // REDIRECT A ONBOARDING invece di dashboard
         router.push("/onboarding/plan")
       } else {
-        // Registration succeeded but login failed - redirect to login page
         router.push("/login?message=Registrazione completata. Effettua il login.")
       }
     } catch (error) {
@@ -136,34 +132,44 @@ export default function RegisterPage() {
   }
 
   const getPasswordStrengthColor = () => {
-    if (!passwordStrength) return 'bg-gray-200'
-    if (passwordStrength === 'weak') return 'bg-red-500'
-    if (passwordStrength === 'medium') return 'bg-yellow-500'
-    return 'bg-green-500'
+    if (!passwordStrength) return 'bg-border'
+    if (passwordStrength === 'weak') return 'bg-destructive'
+    if (passwordStrength === 'medium') return 'bg-warning'
+    return 'bg-success'
   }
 
+  const passwordStrengthWidth = passwordStrength === 'weak'
+    ? '33%'
+    : passwordStrength === 'medium'
+    ? '66%'
+    : passwordStrength === 'strong'
+    ? '100%'
+    : '0%'
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-            <Building2 className="w-8 h-8 text-white" />
+    <div className="auth-shell">
+      <div className="auth-card space-y-6">
+        <div className="text-center space-y-3">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+            <Building2 className="h-8 w-8" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">DomusReport</h1>
+          <h1 className="text-3xl font-bold">DomusReport</h1>
+          <p className="text-sm text-foreground-muted">Inizia a generare lead qualificati dalla tua dashboard</p>
         </div>
 
-        <Card>
+        <Card className="border-border bg-surface">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Crea il tuo account</CardTitle>
-            <CardDescription>Inizia a generare lead in 2 minuti</CardDescription>
+            <CardDescription>Setup guidato in meno di due minuti</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {errors.general && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                  <p className="text-sm text-red-600">{errors.general}</p>
+                <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3">
+                  <p className="text-sm text-destructive">{errors.general}</p>
                 </div>
               )}
+
               <div className="space-y-2">
                 <Label htmlFor="agencyName">Nome Agenzia</Label>
                 <Input
@@ -171,11 +177,9 @@ export default function RegisterPage() {
                   placeholder="es. Immobiliare Roma Centro"
                   value={formData.agencyName}
                   onChange={(e) => setFormData(prev => ({ ...prev, agencyName: e.target.value }))}
-                  className={errors.agencyName ? "border-red-500" : ""}
+                  className={errors.agencyName ? "border-destructive" : ""}
                 />
-                {errors.agencyName && (
-                  <p className="text-sm text-red-500">{errors.agencyName}</p>
-                )}
+                {errors.agencyName && <p className="text-sm text-destructive">{errors.agencyName}</p>}
               </div>
 
               <div className="space-y-2">
@@ -186,11 +190,9 @@ export default function RegisterPage() {
                   placeholder="email@tuaagenzia.it"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className={errors.email ? "border-red-500" : ""}
+                  className={errors.email ? "border-destructive" : ""}
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -199,36 +201,23 @@ export default function RegisterPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Minimo 8 caratteri"
+                    placeholder="Crea una password sicura"
                     value={formData.password}
                     onChange={handlePasswordChange}
-                    className={errors.password ? "border-red-500 pr-10" : "pr-10"}
+                    className={errors.password ? "border-destructive pr-10" : "pr-10"}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {formData.password && (
-                  <div className="space-y-1">
-                    <div className="flex gap-1">
-                      <div className={`h-1 flex-1 rounded ${getPasswordStrengthColor()}`} />
-                      <div className={`h-1 flex-1 rounded ${passwordStrength !== 'weak' ? getPasswordStrengthColor() : 'bg-gray-200'}`} />
-                      <div className={`h-1 flex-1 rounded ${passwordStrength === 'strong' ? getPasswordStrengthColor() : 'bg-gray-200'}`} />
-                    </div>
-                    <p className="text-xs text-gray-600">
-                      {passwordStrength === 'weak' && 'Debole'}
-                      {passwordStrength === 'medium' && 'Media'}
-                      {passwordStrength === 'strong' && 'Forte'}
-                    </p>
-                  </div>
-                )}
-                {errors.password && (
-                  <p className="text-sm text-red-500">{errors.password}</p>
-                )}
+                <div className="h-2 rounded-full bg-border/40">
+                  <div className={`h-full rounded-full transition-all ${getPasswordStrengthColor()}`} style={{ width: passwordStrengthWidth }}></div>
+                </div>
+                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
               </div>
 
               <div className="space-y-2">
@@ -240,79 +229,65 @@ export default function RegisterPage() {
                     placeholder="Ripeti la password"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
+                    className={errors.confirmPassword ? "border-destructive pr-10" : "pr-10"}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground"
                   >
-                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.confirmPassword && (
-                  <p className="text-sm text-red-500">{errors.confirmPassword}</p>
-                )}
+                {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="city">Città</Label>
                 <Input
                   id="city"
-                  placeholder="es. Milano"
+                  placeholder="es. Roma"
                   value={formData.city}
                   onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                  className={errors.city ? "border-red-500" : ""}
+                  className={errors.city ? "border-destructive" : ""}
                 />
-                {errors.city && (
-                  <p className="text-sm text-red-500">{errors.city}</p>
-                )}
+                {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
               </div>
 
-              <div className="flex items-start space-x-2">
+              <div className="flex items-start gap-2">
                 <input
                   type="checkbox"
-                  id="terms"
+                  id="termsAccepted"
                   checked={formData.termsAccepted}
                   onChange={(e) => setFormData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
-                  className="mt-1 rounded border-gray-300 text-primary focus:ring-primary"
+                  className="mt-1 rounded border-border bg-transparent text-primary focus:ring-primary"
                 />
-                <Label htmlFor="terms" className="text-sm font-normal cursor-pointer">
-                  Accetto i{" "}
-                  <Link href="/terms" className="text-primary hover:underline">
-                    termini e condizioni
-                  </Link>
+                <Label htmlFor="termsAccepted" className="text-sm font-normal cursor-pointer text-foreground-muted">
+                  Accetto i <Link href="/terms" className="text-primary hover:underline">Termini e condizioni</Link> e la <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
                 </Label>
               </div>
-              {errors.termsAccepted && (
-                <p className="text-sm text-red-500">{errors.termsAccepted}</p>
-              )}
+              {errors.termsAccepted && <p className="text-sm text-destructive">{errors.termsAccepted}</p>}
 
               <Button type="submit" className="w-full" size="lg" loading={loading}>
-                Crea Account Gratis
+                Crea account gratuito
               </Button>
             </form>
           </CardContent>
           <CardFooter className="justify-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-foreground-muted">
               Hai già un account?{" "}
               <Link href="/login" className="text-primary font-medium hover:underline">
-                Accedi
+                Accedi qui
               </Link>
             </p>
           </CardFooter>
         </Card>
 
-        <p className="text-center text-xs text-gray-500 mt-4">
-          Creando un account accetti i nostri{" "}
-          <Link href="/terms" className="underline">
-            Termini di Servizio
-          </Link>{" "}
-          e{" "}
-          <Link href="/privacy" className="underline">
-            Privacy Policy
+        <div className="text-center text-sm text-foreground-muted">
+          <Link href="/" className="inline-flex items-center gap-1 hover:text-foreground">
+            ← Torna alla home
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   )

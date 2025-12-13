@@ -11,121 +11,110 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Chi Siamo
-          </h1>
-          <p className="text-xl text-gray-600">
+      <main className="marketing-shell marketing-prose">
+        <header className="stack-md text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-foreground-muted">
             La tecnologia al servizio delle agenzie immobiliari
           </p>
-        </div>
+          <h1 className="text-4xl font-bold leading-tight md:text-5xl">
+            Chi siamo
+          </h1>
+          <p className="text-lg text-foreground-muted">
+            Cresciamo insieme alle agenzie che vogliono automatizzare la generazione di lead
+          </p>
+        </header>
 
-        {/* Mission Section */}
-        <div className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Target className="w-6 h-6 text-primary" />
+        <section className="stack-md rounded-2xl border border-border bg-surface p-8">
+          <div className="cluster gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Target className="h-6 w-6" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">La Nostra Missione</h2>
+            <h2 className="text-2xl font-bold">La nostra missione</h2>
           </div>
-          <p className="text-lg text-gray-700 leading-relaxed mb-4">
-            DomusReport nasce dall'esperienza di <strong>Mainstream Agency</strong>, agenzia digitale
-            specializzata nello sviluppo di soluzioni software innovative per il settore immobiliare.
-          </p>
-          <p className="text-lg text-gray-700 leading-relaxed mb-4">
-            La nostra missione è semplice: aiutare le agenzie immobiliari a generare più lead qualificati
-            attraverso l'intelligenza artificiale e l'automazione, senza richiedere competenze tecniche.
-          </p>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Con DomusReport, ogni agenzia può offrire ai visitatori del proprio sito web un servizio di
-            valutazione immobiliare immediato e accurato, basato sui dati ufficiali dell'Osservatorio del
-            Mercato Immobiliare (OMI).
-          </p>
-        </div>
+          <div className="stack-md text-lg text-foreground-muted">
+            <p>
+              DomusReport nasce dall'esperienza di <strong>Mainstream Agency</strong>, agenzia digitale specializzata nello sviluppo di soluzioni software innovative per il settore immobiliare.
+            </p>
+            <p>
+              La nostra missione è semplice: aiutare le agenzie immobiliari a generare più lead qualificati attraverso l'intelligenza artificiale e l'automazione, senza richiedere competenze tecniche.
+            </p>
+            <p>
+              Con DomusReport, ogni agenzia può offrire ai visitatori del proprio sito un servizio di valutazione immobiliare immediato e accurato, basato sui dati ufficiali dell'Osservatorio del Mercato Immobiliare (OMI).
+            </p>
+          </div>
+        </section>
 
-        {/* Values Section */}
-        <div className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-green-600" />
+        <section className="stack-md">
+          <div className="cluster gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10 text-success">
+              <Users className="h-6 w-6" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">I Nostri Valori</h2>
+            <h2 className="text-2xl font-bold">I nostri valori</h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Semplicità</h3>
-              <p className="text-gray-700">
-                Crediamo che la tecnologia debba essere accessibile. Per questo DomusReport si integra
-                in pochi minuti, senza bisogno di sviluppatori.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Precisione</h3>
-              <p className="text-gray-700">
-                Le nostre valutazioni sono basate su dati OMI certificati e algoritmi che tengono conto
-                di oltre 15 variabili immobiliari.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Trasparenza</h3>
-              <p className="text-gray-700">
-                Niente costi nascosti. Il piano gratuito è davvero gratuito e puoi scalare quando vuoi
-                senza vincoli.
-              </p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Supporto</h3>
-              <p className="text-gray-700">
-                Siamo al tuo fianco. Il nostro team risponde rapidamente e ti aiuta a ottenere il massimo
-                dalla piattaforma.
-              </p>
-            </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              {
+                title: "Semplicità",
+                copy:
+                  "Crediamo che la tecnologia debba essere accessibile. Per questo DomusReport si integra in pochi minuti, senza bisogno di sviluppatori.",
+              },
+              {
+                title: "Precisione",
+                copy:
+                  "Le nostre valutazioni sono basate su dati OMI certificati e algoritmi che tengono conto di oltre 15 variabili immobiliari.",
+              },
+              {
+                title: "Trasparenza",
+                copy: "Niente costi nascosti. Il piano gratuito è davvero gratuito e puoi scalare quando vuoi senza vincoli.",
+              },
+              {
+                title: "Supporto",
+                copy: "Siamo al tuo fianco. Il nostro team risponde rapidamente e ti aiuta a ottenere il massimo dalla piattaforma.",
+              },
+            ].map((value) => (
+              <div key={value.title} className="rounded-2xl border border-border bg-surface-2 p-6">
+                <h3 className="text-lg font-semibold text-foreground">{value.title}</h3>
+                <p className="mt-2 text-sm text-foreground-muted">{value.copy}</p>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
 
-        {/* Team Section */}
-        <div className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-blue-600" />
+        <section className="stack-md rounded-2xl border border-border bg-surface p-8">
+          <div className="cluster gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent">
+              <Building2 className="h-6 w-6" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Mainstream Agency</h2>
+            <h2 className="text-2xl font-bold">Mainstream Agency</h2>
           </div>
-          <p className="text-lg text-gray-700 leading-relaxed mb-4">
-            DomusReport è sviluppato da Mainstream Agency, agenzia digitale con sede a Milano specializzata
-            in progetti SaaS per il real estate.
-          </p>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Il nostro team è composto da sviluppatori, designer e esperti del settore immobiliare che
-            lavorano ogni giorno per migliorare la piattaforma e offrire nuove funzionalità.
-          </p>
-        </div>
+          <div className="stack-md text-lg text-foreground-muted">
+            <p>
+              DomusReport è sviluppato da Mainstream Agency, agenzia digitale con sede a Milano specializzata in progetti SaaS per il real estate.
+            </p>
+            <p>
+              Il nostro team è composto da sviluppatori, designer e professionisti del settore immobiliare che lavorano ogni giorno per migliorare la piattaforma e offrire nuove funzionalità.
+            </p>
+          </div>
+        </section>
 
-        {/* CTA */}
-        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-2xl p-8 md:p-12 text-center text-white">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Pronto a far crescere la tua agenzia?
-          </h2>
-          <p className="text-lg text-blue-100 mb-6">
+        <section className="stack-md rounded-3xl bg-gradient-to-r from-primary to-primary-hover p-10 text-center text-primary-foreground">
+          <h2 className="text-3xl font-bold">Pronto a far crescere la tua agenzia?</h2>
+          <p className="text-lg text-primary-foreground/80">
             Unisciti alle agenzie che stanno già generando lead con DomusReport
           </p>
-          <Link href="/register">
-            <Button
-              size="lg"
-              variant="secondary"
-              className="bg-white text-primary hover:bg-gray-100"
-            >
-              Inizia Gratis
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </Link>
-        </div>
-      </div>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Link href="/register">
+              <Button size="lg" variant="secondary" className="min-w-[200px] text-primary">
+                Inizia gratis
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+      </main>
 
       <Footer />
     </div>

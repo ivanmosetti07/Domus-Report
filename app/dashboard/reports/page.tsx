@@ -106,11 +106,7 @@ export default async function ReportsPage() {
   ]
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 'var(--space-lg)'
-    }}>
+    <div className="page-stack">
       <PageHeader
         title="Report e Analisi"
         subtitle="Genera report personalizzati sulle performance della tua agenzia"

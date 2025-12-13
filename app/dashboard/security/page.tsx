@@ -187,12 +187,7 @@ export default function SecurityPage() {
   }
 
   return (
-    <div className="container mx-auto" style={{
-      padding: 'var(--space-lg)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 'var(--space-lg)'
-    }}>
+    <div className="page-stack">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-bold flex items-center" style={{
