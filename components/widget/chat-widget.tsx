@@ -136,7 +136,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const [collectedData, setCollectedData] = React.useState<CollectedData>({})
   const [valuation, setValuation] = React.useState<ValuationResult | null>(null)
   const [savedLeadId, setSavedLeadId] = React.useState<string | null>(null)
-  const messagesEndRef = React.useRef<HTMLDivElement>(null)
+  const messagesContainerRef = React.useRef<HTMLDivElement>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [isInitialized, setIsInitialized] = React.useState(false)
 
@@ -154,9 +154,24 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const phoneRef = React.useRef<string | undefined>(undefined)
 
   // Auto-scroll interno alla chat (non influenza l'embed esterno)
+  const scrollChatToBottom = React.useCallback(() => {
+    const container = messagesContainerRef.current
+    if (!container) return
+
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
+    const shouldSmoothScroll = distanceFromBottom <= 120
+
+    requestAnimationFrame(() => {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: shouldSmoothScroll ? "smooth" : "auto"
+      })
+    })
+  }, [])
+
   React.useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
-  }, [messages, isTyping])
+    scrollChatToBottom()
+  }, [messages, isTyping, scrollChatToBottom])
 
   // Tracking: Funzione per accodare evento (batching)
   const trackEvent = React.useCallback((
@@ -1286,6 +1301,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       {/* Messages */}
       <div
+        ref={messagesContainerRef}
         className="flex-1 overflow-y-auto"
         style={{
           backgroundColor: backgroundColor === '#ffffff' ? '#f9fafb' : `${backgroundColor}f5`,
@@ -1310,8 +1326,6 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             </div>
           </div>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
