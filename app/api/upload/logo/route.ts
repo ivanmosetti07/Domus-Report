@@ -12,15 +12,20 @@ const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 
 // POST /api/upload/logo - Upload logo per agenzia o widget
 export async function POST(request: Request) {
   try {
+    console.log('[Logo Upload] Inizio upload logo')
+
     const token = request.headers.get('authorization')?.replace('Bearer ', '')
     if (!token) {
+      console.log('[Logo Upload] Token mancante')
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
     const agency = await verifyAuth(token)
     if (!agency) {
+      console.log('[Logo Upload] Token non valido')
       return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
     }
+    console.log('[Logo Upload] Agency ID:', agency.agencyId)
 
     // Verifica piano per branding custom
     const agencyData = await prisma.agency.findUnique({
@@ -28,8 +33,10 @@ export async function POST(request: Request) {
       select: { piano: true },
     })
     const plan = agencyData?.piano || 'free'
+    console.log('[Logo Upload] Piano agenzia:', plan)
 
     if (!canUseCustomBranding(plan)) {
+      console.log('[Logo Upload] Piano non supporta custom branding')
       return NextResponse.json(
         { error: 'Upload logo non disponibile nel tuo piano. Passa a Basic o Premium.' },
         { status: 403 }
@@ -37,17 +44,21 @@ export async function POST(request: Request) {
     }
 
     // Parse form data
+    console.log('[Logo Upload] Parsing form data...')
     const formData = await request.formData()
     const file = formData.get('file') as File | null
     const widgetId = formData.get('widgetId') as string | null
     const type = formData.get('type') as string | null // 'agency' o 'widget'
 
     if (!file) {
+      console.log('[Logo Upload] File non fornito')
       return NextResponse.json({ error: 'File non fornito' }, { status: 400 })
     }
+    console.log('[Logo Upload] File ricevuto:', file.name, file.type, `${(file.size / 1024).toFixed(2)}KB`)
 
     // Validate file type
     if (!ALLOWED_TYPES.includes(file.type)) {
+      console.log('[Logo Upload] Tipo file non supportato:', file.type)
       return NextResponse.json(
         { error: 'Tipo file non supportato. Usa PNG, JPG, SVG o WebP.' },
         { status: 400 }
@@ -56,6 +67,7 @@ export async function POST(request: Request) {
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
+      console.log('[Logo Upload] File troppo grande:', file.size)
       return NextResponse.json(
         { error: 'File troppo grande. Massimo 2MB.' },
         { status: 400 }
@@ -65,12 +77,15 @@ export async function POST(request: Request) {
     // Generate unique filename
     const ext = file.name.split('.').pop() || 'png'
     const filename = `logos/${agency.agencyId}/${widgetId || 'agency'}_${Date.now()}.${ext}`
+    console.log('[Logo Upload] Filename generato:', filename)
 
     // Upload to Vercel Blob
+    console.log('[Logo Upload] Inizio upload a Vercel Blob...')
     const blob = await put(filename, file, {
       access: 'public',
       addRandomSuffix: true,
     })
+    console.log('[Logo Upload] Upload completato:', blob.url)
 
     // Save URL to database
     if (type === 'widget' && widgetId) {
@@ -129,16 +144,24 @@ export async function POST(request: Request) {
       filename: blob.pathname,
     })
   } catch (error) {
-    console.error('Errore upload logo:', error)
+    console.error('[Logo Upload] Errore:', error)
 
     // Handle Vercel Blob specific errors
     if (error instanceof Error) {
+      console.error('[Logo Upload] Dettagli errore:', error.message, error.stack)
+
       if (error.message.includes('BLOB_READ_WRITE_TOKEN')) {
         return NextResponse.json(
           { error: 'Configurazione storage mancante. Contatta il supporto.' },
           { status: 500 }
         )
       }
+
+      // Restituisci il messaggio di errore specifico per debug
+      return NextResponse.json(
+        { error: `Errore upload: ${error.message}` },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({ error: 'Errore server durante upload' }, { status: 500 })
