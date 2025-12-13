@@ -10,7 +10,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
   return (
-    <nav className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+    <nav className="sticky top-0 z-40 bg-surface border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -29,19 +29,19 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-8">
             <Link
               href="#features"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900"
+              className="text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
             >
               Funzionalità
             </Link>
             <Link
               href="#pricing"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900"
+              className="text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
             >
               Pricing
             </Link>
             <Link
               href="/docs/wordpress"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900"
+              className="text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
             >
               Documentazione
             </Link>
@@ -60,7 +60,7 @@ export function Navbar() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-gray-700"
+            className="md:hidden text-foreground"
           >
             {mobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -73,25 +73,25 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white">
+        <div className="md:hidden border-t border-border bg-surface">
           <div className="px-4 py-4 space-y-3">
             <Link
               href="#features"
-              className="block text-base font-medium text-gray-700 hover:text-gray-900"
+              className="block text-base font-medium text-foreground-muted hover:text-foreground transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Funzionalità
             </Link>
             <Link
               href="#pricing"
-              className="block text-base font-medium text-gray-700 hover:text-gray-900"
+              className="block text-base font-medium text-foreground-muted hover:text-foreground transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Pricing
             </Link>
             <Link
               href="/docs/wordpress"
-              className="block text-base font-medium text-gray-700 hover:text-gray-900"
+              className="block text-base font-medium text-foreground-muted hover:text-foreground transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Documentazione
