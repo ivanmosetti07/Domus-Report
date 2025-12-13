@@ -187,20 +187,25 @@ export default function SecurityPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto" style={{
+      padding: 'var(--space-lg)',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 'var(--space-lg)'
+    }}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="text-3xl font-bold flex items-center" style={{ gap: 'var(--space-2)' }}>
             <Shield className="h-8 w-8" />
             Sicurezza e Sessioni
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground" style={{ marginTop: 'var(--space-2)' }}>
             Gestisci le sessioni attive del tuo account
           </p>
         </div>
         {sessions.length > 1 && (
           <Button variant="destructive" onClick={revokeAllSessions}>
-            <AlertTriangle className="h-4 w-4 mr-2" />
+            <AlertTriangle className="h-4 w-4" style={{ marginRight: 'var(--space-2)' }} />
             Revoca tutte le altre sessioni
           </Button>
         )}
@@ -214,7 +219,7 @@ export default function SecurityPage() {
             sospette in qualsiasi momento.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           {sessions.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               Nessuna sessione attiva
@@ -222,12 +227,12 @@ export default function SecurityPage() {
           ) : (
             sessions.map((session) => (
               <Card key={session.id} className={session.isCurrent ? "border-primary" : ""}>
-                <CardContent className="pt-6">
+                <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
                   <div className="flex items-start justify-between">
-                    <div className="flex gap-4">
-                      <div className="mt-1">{getDeviceIcon(session.userAgent)}</div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
+                    <div className="flex" style={{ gap: 'var(--space-md)' }}>
+                      <div style={{ marginTop: 'var(--space-1)' }}>{getDeviceIcon(session.userAgent)}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                        <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
                           <h3 className="font-semibold">
                             {getBrowserName(session.userAgent)}
                           </h3>
@@ -238,16 +243,16 @@ export default function SecurityPage() {
                           )}
                         </div>
 
-                        <div className="text-sm text-muted-foreground space-y-1">
-                          <div className="flex items-center gap-2">
+                        <div className="text-sm text-muted-foreground" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                          <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
                             <MapPin className="h-4 w-4" />
                             <span>IP: {session.ipAddress || "Sconosciuto"}</span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
                             <Clock className="h-4 w-4" />
                             <span>Login: {formatDate(session.loginAt)}</span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
                             <Clock className="h-4 w-4" />
                             <span>
                               Ultima attività: {getRelativeTime(session.lastActivityAt)}
@@ -281,15 +286,15 @@ export default function SecurityPage() {
         <CardHeader>
           <CardTitle>Informazioni di Sicurezza</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          <div className="flex gap-2">
+        <CardContent className="text-sm" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+          <div className="flex" style={{ gap: 'var(--space-2)' }}>
             <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
             <div>
               <strong>Sessioni sospette?</strong> Se vedi sessioni che non riconosci, revocale
               immediatamente e cambia la password.
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex" style={{ gap: 'var(--space-2)' }}>
             <Shield className="h-5 w-5 text-green-600 flex-shrink-0" />
             <div>
               <strong>Protezione automatica:</strong> Le sessioni scadono automaticamente dopo

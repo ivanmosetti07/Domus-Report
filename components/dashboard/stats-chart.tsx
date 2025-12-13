@@ -44,13 +44,24 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
 
   return (
     <Card>
-      <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <CardHeader style={{
+        paddingBottom: 'clamp(0.5rem, 1.5vw, 0.75rem)',
+        padding: 'clamp(0.75rem, 2vw, 1.5rem)'
+      }}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{
+          gap: 'var(--space-2)'
+        }}>
           <div>
-            <CardTitle className="text-sm sm:text-base">{title}</CardTitle>
-            <CardDescription className="text-[10px] sm:text-xs mt-1">{description}</CardDescription>
+            <CardTitle style={{ fontSize: 'clamp(0.875rem, 1vw, 1rem)' }}>{title}</CardTitle>
+            <CardDescription style={{
+              fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)',
+              marginTop: 'var(--space-1)'
+            }}>{description}</CardDescription>
           </div>
-          <div className={`flex items-center gap-1 text-[10px] sm:text-xs font-medium ${trendColor}`}>
+          <div className={`flex items-center font-medium ${trendColor}`} style={{
+            gap: 'var(--space-1)',
+            fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
+          }}>
             {trendIcon}
             <span className="hidden sm:inline">{trendText}</span>
             <span className="sm:hidden">
@@ -59,9 +70,15 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-3 sm:p-6 pt-0">
+      <CardContent style={{
+        padding: 'clamp(0.75rem, 2vw, 1.5rem)',
+        paddingTop: '0'
+      }}>
         {/* Simple bar chart */}
-        <div className="flex items-end gap-0.5 sm:gap-1 h-24 sm:h-32">
+        <div className="flex items-end" style={{
+          gap: 'clamp(0.125rem, 0.5vw, 0.25rem)',
+          height: 'clamp(6rem, 20vw, 8rem)'
+        }}>
           {data.map((item, index) => {
             const heightPercentage = (item.count / maxCount) * 100
             const isToday = index === data.length - 1
@@ -86,7 +103,11 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
                 </div>
 
                 {/* Tooltip on hover */}
-                <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-surface-2 text-foreground text-[10px] sm:text-xs rounded-lg px-2 py-1 whitespace-nowrap pointer-events-none z-10 transition-opacity border border-border shadow-soft-lg">
+                <div className="opacity-0 group-hover:opacity-100 absolute bottom-full bg-surface-2 text-foreground rounded-lg whitespace-nowrap pointer-events-none z-10 transition-opacity border border-border shadow-soft-lg" style={{
+                  marginBottom: 'var(--space-2)',
+                  padding: 'clamp(0.125rem, 0.5vw, 0.25rem) clamp(0.25rem, 1vw, 0.5rem)',
+                  fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
+                }}>
                   {new Date(item.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
                   : {item.count} lead{item.count !== 1 ? 's' : ''}
                 </div>
@@ -96,7 +117,10 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
         </div>
 
         {/* X-axis labels (show only some dates to avoid clutter) */}
-        <div className="flex items-center justify-between mt-2 text-[10px] sm:text-xs text-foreground-subtle">
+        <div className="flex items-center justify-between text-foreground-subtle" style={{
+          marginTop: 'var(--space-2)',
+          fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
+        }}>
           <span className="truncate">
             {new Date(data[0].date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
           </span>
@@ -111,9 +135,16 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
         </div>
 
         {/* Total */}
-        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-border flex items-center justify-between">
-          <span className="text-[10px] sm:text-xs text-foreground-muted">Totale periodo</span>
-          <span className="text-xs sm:text-sm font-semibold text-foreground">
+        <div className="border-t border-border flex items-center justify-between" style={{
+          marginTop: 'clamp(0.5rem, 1.5vw, 0.75rem)',
+          paddingTop: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+        }}>
+          <span className="text-foreground-muted" style={{
+            fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
+          }}>Totale periodo</span>
+          <span className="font-semibold text-foreground" style={{
+            fontSize: 'clamp(0.75rem, 1vw, 0.875rem)'
+          }}>
             {data.reduce((sum, d) => sum + d.count, 0)} lead{data.reduce((sum, d) => sum + d.count, 0) !== 1 ? 's' : ''}
           </span>
         </div>

@@ -40,33 +40,63 @@ export function NotificationsCard({ notifications }: NotificationsCardProps) {
 
   return (
     <Card>
-      <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
-        <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
-          <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+      <CardHeader style={{
+        paddingBottom: 'clamp(0.5rem, 1.5vw, 0.75rem)',
+        padding: 'clamp(0.75rem, 2vw, 1.5rem)'
+      }}>
+        <CardTitle className="flex items-center" style={{
+          gap: 'var(--space-2)',
+          fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+        }}>
+          <Bell style={{
+            width: 'clamp(1rem, 2vw, 1.25rem)',
+            height: 'clamp(1rem, 2vw, 1.25rem)'
+          }} />
           Notifiche e Suggerimenti
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-3 sm:p-6 pt-0">
-        <div className="space-y-2 sm:space-y-3">
+      <CardContent style={{
+        padding: 'clamp(0.75rem, 2vw, 1.5rem)',
+        paddingTop: '0'
+      }}>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+        }}>
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`p-2 sm:p-3 rounded-xl border ${bgColorMap[notification.type]}`}
+              className={`rounded-xl border ${bgColorMap[notification.type]}`}
+              style={{
+                padding: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+              }}
             >
-              <div className="flex items-start gap-2 sm:gap-3">
-                <div className="flex-shrink-0 mt-0.5">
+              <div className="flex items-start" style={{
+                gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+              }}>
+                <div className="flex-shrink-0" style={{ marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)' }}>
                   {notification.icon || iconMap[notification.type]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-xs sm:text-sm font-semibold text-foreground mb-1">
+                  <h4 className="font-semibold text-foreground" style={{
+                    fontSize: 'clamp(0.75rem, 1vw, 0.875rem)',
+                    marginBottom: 'var(--space-1)'
+                  }}>
                     {notification.title}
                   </h4>
-                  <p className="text-[10px] sm:text-xs text-foreground-muted mb-2">
+                  <p className="text-foreground-muted" style={{
+                    fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)',
+                    marginBottom: 'var(--space-2)'
+                  }}>
                     {notification.message}
                   </p>
                   {notification.action && (
                     <Link href={notification.action.href}>
-                      <Button variant="outline" size="sm" className="text-[10px] sm:text-xs h-7">
+                      <Button variant="outline" size="sm" style={{
+                        fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)',
+                        height: 'clamp(1.5rem, 6vw, 1.75rem)'
+                      }}>
                         {notification.action.label}
                       </Button>
                     </Link>

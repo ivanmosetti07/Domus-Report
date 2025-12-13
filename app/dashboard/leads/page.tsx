@@ -80,8 +80,8 @@ export default async function LeadsPage() {
   })
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+      <div className="flex items-center justify-between">
         <PageHeader
           title="I tuoi Lead"
           subtitle={`${leads.length} lead ${leads.length === 1 ? "trovato" : "trovati"}`}

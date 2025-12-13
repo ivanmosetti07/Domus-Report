@@ -10,16 +10,29 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, actions, className }: PageHeaderProps) {
   return (
-    <div className={cn("border-b border-border pb-4 sm:pb-5 mb-4 sm:mb-6", className)}>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+    <div className={cn("border-b border-border", className)} style={{
+      paddingBottom: 'clamp(1rem, 2vw, 1.25rem)'
+    }}>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{
+        gap: 'clamp(0.75rem, 2vw, 1rem)'
+      }}>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground truncate">{title}</h1>
+          <h1 className="font-bold text-foreground truncate" style={{
+            fontSize: 'clamp(1.25rem, 2vw, 1.875rem)',
+            lineHeight: 'var(--leading-tight)'
+          }}>{title}</h1>
           {subtitle && (
-            <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-foreground-muted">{subtitle}</p>
+            <p className="text-foreground-muted" style={{
+              marginTop: 'clamp(0.25rem, 1vw, 0.5rem)',
+              fontSize: 'clamp(0.75rem, 1vw, 0.875rem)',
+              lineHeight: 'var(--leading-normal)'
+            }}>{subtitle}</p>
           )}
         </div>
         {actions && (
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center flex-shrink-0" style={{
+            gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+          }}>
             {actions}
           </div>
         )}

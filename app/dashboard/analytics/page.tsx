@@ -299,20 +299,24 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 'var(--space-lg)'
+    }}>
       <PageHeader
         title="Analytics"
         subtitle="Analizza le performance del tuo widget e ottimizza le conversioni"
       />
 
       {/* Date Range Picker */}
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-2">
+      <Card>
+        <CardContent style={{ padding: 'var(--space-md)' }}>
+          <div className="flex items-center justify-between flex-wrap" style={{ gap: 'var(--space-md)' }}>
+            <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
               <Calendar className="w-5 h-5 text-foreground-muted" />
               <span className="font-medium text-foreground">Periodo:</span>
-              <div className="flex gap-2">
+              <div className="flex" style={{ gap: 'var(--space-2)' }}>
                 <Button
                   variant={datePreset === "today" ? "default" : "outline"}
                   size="sm"
@@ -352,7 +356,7 @@ export default function AnalyticsPage() {
       </Card>
 
       {/* Main Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4" style={{ gap: 'var(--grid-gap-md)' }}>
         <StatCard
           label="Impression Widget"
           value={totals.totalImpressions.toLocaleString()}
@@ -390,11 +394,11 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: 'var(--grid-gap-lg)' }}>
         {/* Line Chart: Impressions vs Lead */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center" style={{ gap: 'var(--space-2)' }}>
               <TrendingUp className="w-5 h-5" />
               Impression vs Lead
             </CardTitle>
@@ -449,7 +453,7 @@ export default function AnalyticsPage() {
         {/* Funnel Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center" style={{ gap: 'var(--space-2)' }}>
               <BarChart3 className="w-5 h-5" />
               Funnel di Conversione
             </CardTitle>
@@ -495,9 +499,9 @@ export default function AnalyticsPage() {
 
       {/* Conversion Funnel Analysis */}
       {funnelData && (
-        <Card className="mb-8">
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center" style={{ gap: 'var(--space-2)' }}>
               <Target className="w-5 h-5" />
               Analisi Dettagliata Conversione
             </CardTitle>
@@ -506,7 +510,7 @@ export default function AnalyticsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <FunnelStep
                 from="Widget aperto"
                 to="Messaggio inviato"
@@ -538,12 +542,23 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Suggerimenti Ottimizzazione */}
-            <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-lg">
-              <h4 className="font-semibold text-foreground flex items-center gap-2 mb-3">
+            <div className="bg-primary/10 border border-primary/20 rounded-lg" style={{
+              marginTop: 'var(--space-lg)',
+              padding: 'var(--space-md)'
+            }}>
+              <h4 className="font-semibold text-foreground flex items-center" style={{
+                gap: 'var(--space-2)',
+                marginBottom: 'var(--space-3)'
+              }}>
                 <Lightbulb className="w-5 h-5" />
                 Suggerimenti per Ottimizzare
               </h4>
-              <ul className="space-y-2 text-sm text-foreground">
+              <ul style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--space-2)',
+                fontSize: 'var(--text-sm)'
+              }} className="text-foreground">
                 {funnelData.dropOff_openToMessage > 70 && (
                   <li>
                     • <strong>Drop-off alto tra apertura e messaggio ({funnelData.dropOff_openToMessage.toFixed(1)}%):</strong>{" "}
@@ -581,9 +596,12 @@ export default function AnalyticsPage() {
 
             {/* Benchmark Comparison */}
             {platformAverage !== null && (
-              <div className="mt-4 p-4 bg-surface-2 border border-border rounded-lg">
-                <h4 className="font-semibold text-foreground mb-2">Confronto con la Media</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-surface-2 border border-border rounded-lg" style={{
+                marginTop: 'var(--space-md)',
+                padding: 'var(--space-md)'
+              }}>
+                <h4 className="font-semibold text-foreground" style={{ marginBottom: 'var(--space-2)' }}>Confronto con la Media</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--space-md)' }}>
                   <div>
                     <p className="text-sm text-foreground-muted">Il tuo Conversion Rate</p>
                     <p className="text-2xl font-bold text-foreground">
@@ -597,14 +615,14 @@ export default function AnalyticsPage() {
                     </p>
                   </div>
                 </div>
-                <div className="mt-3">
+                <div style={{ marginTop: 'var(--space-3)' }}>
                   {totals.averageConversionRate > platformAverage ? (
-                    <p className="text-sm text-success flex items-center gap-1">
+                    <p className="text-sm text-success flex items-center" style={{ gap: 'var(--space-1)' }}>
                       <TrendingUp className="w-4 h-4" />
                       Il tuo widget performa meglio della media!
                     </p>
                   ) : (
-                    <p className="text-sm text-warning flex items-center gap-1">
+                    <p className="text-sm text-warning flex items-center" style={{ gap: 'var(--space-1)' }}>
                       <TrendingDown className="w-4 h-4" />
                       C'è margine di miglioramento rispetto alla media
                     </p>
@@ -690,12 +708,12 @@ function FunnelStep({
   const conversionRate = fromValue > 0 ? ((toValue / fromValue) * 100).toFixed(1) : "0.0"
 
   return (
-    <div className="flex items-center justify-between p-4 bg-surface-2 rounded-lg">
+    <div className="flex items-center justify-between bg-surface-2 rounded-lg" style={{ padding: 'var(--space-md)' }}>
       <div className="flex-1">
         <p className="text-sm text-foreground-muted">
           {from} → {to}
         </p>
-        <p className="text-xs text-foreground-muted mt-1">
+        <p className="text-xs text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>
           {fromValue.toLocaleString()} → {toValue.toLocaleString()} utenti
         </p>
       </div>

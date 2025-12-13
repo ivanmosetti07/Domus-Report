@@ -106,71 +106,75 @@ export default async function ReportsPage() {
   ]
 
   return (
-    <div>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 'var(--space-lg)'
+    }}>
       <PageHeader
         title="Report e Analisi"
         subtitle="Genera report personalizzati sulle performance della tua agenzia"
       />
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4" style={{ gap: 'var(--grid-gap-md)' }}>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
             <div className="text-center">
               <div className="text-3xl font-bold text-foreground">{totalLeads}</div>
-              <div className="text-sm text-foreground-muted mt-1">Totale Lead</div>
+              <div className="text-sm text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>Totale Lead</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">{leadsThisMonth}</div>
-              <div className="text-sm text-foreground-muted mt-1">Questo Mese</div>
+              <div className="text-sm text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>Questo Mese</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
             <div className="text-center">
               <div className="text-3xl font-bold text-success">{convertedLeads}</div>
-              <div className="text-sm text-foreground-muted mt-1">Convertiti</div>
+              <div className="text-sm text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>Convertiti</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
             <div className="text-center">
               <div className="text-3xl font-bold text-warning">{leadsToFollow}</div>
-              <div className="text-sm text-foreground-muted mt-1">Da Ricontattare</div>
+              <div className="text-sm text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>Da Ricontattare</div>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Report Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" style={{ gap: 'var(--grid-gap-md)' }}>
         {predefinedReports.map((report) => (
           <Card key={report.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <CardTitle className="flex items-center gap-3 text-xl">
+                  <CardTitle className="flex items-center text-xl" style={{ gap: 'var(--space-3)' }}>
                     {report.icon}
                     {report.title}
                   </CardTitle>
-                  <CardDescription className="mt-2">{report.description}</CardDescription>
+                  <CardDescription style={{ marginTop: 'var(--space-2)' }}>{report.description}</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2" style={{ gap: 'var(--space-md)' }}>
                   {report.stats.map((stat, index) => (
-                    <div key={index} className="bg-surface rounded-lg p-3">
+                    <div key={index} className="bg-surface rounded-lg" style={{ padding: 'var(--space-3)' }}>
                       <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                      <div className="text-xs text-foreground-muted mt-1">{stat.label}</div>
+                      <div className="text-xs text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -189,12 +193,12 @@ export default async function ReportsPage() {
       </div>
 
       {/* Info Section */}
-      <Card className="mt-8 bg-primary/5 border-primary/20">
-        <CardContent className="pt-6">
-          <div className="flex items-start gap-4">
+      <Card className="bg-primary/5 border-primary/20">
+        <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
+          <div className="flex items-start" style={{ gap: 'var(--space-md)' }}>
             <FileText className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
             <div>
-              <h3 className="font-semibold text-foreground mb-2">Come funzionano i report</h3>
+              <h3 className="font-semibold text-foreground" style={{ marginBottom: 'var(--space-2)' }}>Come funzionano i report</h3>
               <p className="text-sm text-foreground-muted">
                 I report vengono generati in formato PDF e includono grafici, tabelle e statistiche dettagliate.
                 Puoi scaricare i report o riceverli via email. I dati vengono aggiornati in tempo reale.
