@@ -17,7 +17,25 @@ const config: Config = {
         "2xl": "1400px",
       },
     },
+    screens: {
+      'xs': '360px',
+      'sm': '430px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1440px',
+    },
     extend: {
+      spacing: {
+        'space-1': 'var(--space-1)',
+        'space-2': 'var(--space-2)',
+        'space-3': 'var(--space-3)',
+        'space-4': 'var(--space-4)',
+        'space-5': 'var(--space-5)',
+        'space-6': 'var(--space-6)',
+        'space-7': 'var(--space-7)',
+        'space-8': 'var(--space-8)',
+      },
       colors: {
         /* Core system colors */
         border: "hsl(var(--border))",

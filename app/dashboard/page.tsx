@@ -230,7 +230,11 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 'var(--space-lg)'
+    }}>
       <PageHeader
         title={`Benvenuto, ${agency.nome}!`}
         subtitle="Ecco una panoramica della tua agenzia"
@@ -248,7 +252,9 @@ export default async function DashboardPage() {
       )}
 
       {/* Statistics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" style={{
+        gap: 'var(--grid-gap-md)'
+      }}>
         <StatCard
           label="Lead Totali"
           value={stats.totalLeads}
@@ -277,9 +283,15 @@ export default async function DashboardPage() {
       )}
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3" style={{
+        gap: 'var(--grid-gap-lg)'
+      }}>
         {/* Left Column: Chart + Widget Code */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+        <div className="lg:col-span-2" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--grid-gap-md)'
+        }}>
           {/* Stats Chart */}
           {completeChartData.length > 0 && (
             <StatsChart data={completeChartData} />
@@ -296,11 +308,22 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div>
-        <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-md)'
+      }}>
+        <h2 style={{
+          fontSize: 'var(--text-lg)',
+          fontWeight: '600',
+          color: 'hsl(var(--foreground))',
+          lineHeight: 'var(--leading-tight)'
+        }}>
           Azioni Rapide
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3" style={{
+          gap: 'var(--grid-gap-sm)'
+        }}>
           <Link href="/dashboard/leads">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">

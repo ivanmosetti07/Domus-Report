@@ -33,30 +33,56 @@ export function StatCard({
 
   return (
     <Card className={cn(
-      "p-4 sm:p-6 card-lift group",
+      "card-lift group",
       variantColors[variant],
       className
-    )}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs sm:text-sm font-medium text-foreground-muted mb-1 truncate">{label}</p>
-          <p className="text-2xl sm:text-3xl font-bold text-foreground truncate">{value}</p>
+    )} style={{
+      padding: 'var(--space-md)'
+    }}>
+      <div className="flex items-start justify-between" style={{
+        gap: 'var(--space-3)'
+      }}>
+        <div className="flex-1 min-w-0" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-1)'
+        }}>
+          <p className="font-medium text-foreground-muted truncate" style={{
+            fontSize: 'var(--text-sm)',
+            lineHeight: 'var(--leading-tight)'
+          }}>{label}</p>
+          <p className="font-bold text-foreground truncate" style={{
+            fontSize: 'clamp(1.5rem, 3vw, 1.875rem)',
+            lineHeight: 'var(--leading-tight)'
+          }}>{value}</p>
           {trend && (
             <div className={cn(
-              "flex items-center gap-1 mt-1 sm:mt-2 text-xs sm:text-sm font-medium",
+              "flex items-center font-medium",
               trend.isPositive ? "text-success" : "text-destructive"
-            )}>
+            )} style={{
+              gap: 'var(--space-1)',
+              marginTop: 'var(--space-1)',
+              fontSize: 'var(--text-sm)'
+            }}>
               {trend.isPositive ? (
-                <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
+                <TrendingUp style={{
+                  width: 'clamp(0.75rem, 1vw, 1rem)',
+                  height: 'clamp(0.75rem, 1vw, 1rem)'
+                }} />
               ) : (
-                <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4" />
+                <TrendingDown style={{
+                  width: 'clamp(0.75rem, 1vw, 1rem)',
+                  height: 'clamp(0.75rem, 1vw, 1rem)'
+                }} />
               )}
               <span className="truncate">{trend.value}</span>
             </div>
           )}
         </div>
         {icon && (
-          <div className="p-2 sm:p-3 bg-primary/10 rounded-xl flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-180">
+          <div className="bg-primary/10 rounded-xl flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-180" style={{
+            padding: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+          }}>
             {icon}
           </div>
         )}

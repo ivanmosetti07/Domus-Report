@@ -64,11 +64,18 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
   const SidebarContent = () => (
     <>
       {/* Header */}
-      <div className="px-6 py-6 border-b border-border">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
+      <div className="border-b border-border" style={{
+        padding: 'var(--space-md)'
+      }}>
+        <Link href="/dashboard" className="flex items-center group" style={{
+          gap: 'var(--space-3)'
+        }}>
           {/* Logo Agenzia (quadrato) */}
           {agencyLogo ? (
-            <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 group-hover:scale-105 transition-transform duration-180">
+            <div className="relative rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 group-hover:scale-105 transition-transform duration-180" style={{
+              width: 'clamp(2.5rem, 10vw, 3rem)',
+              height: 'clamp(2.5rem, 10vw, 3rem)'
+            }}>
               <Image
                 src={agencyLogo}
                 alt={agencyName}
@@ -78,20 +85,36 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
               />
             </div>
           ) : (
-            <div className="h-12 w-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-180">
+            <div className="bg-primary rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-180" style={{
+              width: 'clamp(2.5rem, 10vw, 3rem)',
+              height: 'clamp(2.5rem, 10vw, 3rem)'
+            }}>
               <Image
                 src="/favicon.png"
                 alt="DomusReport"
                 width={48}
                 height={48}
-                className="w-8 h-8"
+                style={{
+                  width: 'clamp(1.5rem, 6vw, 2rem)',
+                  height: 'clamp(1.5rem, 6vw, 2rem)'
+                }}
                 priority
               />
             </div>
           )}
-          <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold text-foreground truncate">DomusReport</h2>
-            <p className="text-xs text-foreground-muted truncate">
+          <div className="flex-1 min-w-0" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-1)'
+          }}>
+            <h2 className="font-bold text-foreground truncate" style={{
+              fontSize: 'var(--text-sm)',
+              lineHeight: 'var(--leading-tight)'
+            }}>DomusReport</h2>
+            <p className="text-foreground-muted truncate" style={{
+              fontSize: 'var(--text-xs)',
+              lineHeight: 'var(--leading-tight)'
+            }}>
               {agencyName}
             </p>
           </div>
@@ -99,7 +122,12 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-1">
+      <nav className="flex-1" style={{
+        padding: 'var(--space-sm) var(--space-3)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-1)'
+      }}>
         {navigation.map((item) => {
           const isActive = pathname === item.href ||
                           (item.href !== "/dashboard" && pathname.startsWith(item.href))
@@ -111,13 +139,21 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
               href={item.href}
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-180 ease-smooth border border-transparent",
+                "flex items-center rounded-xl font-medium transition-all duration-180 ease-smooth border border-transparent",
                 isActive
                   ? "bg-primary/10 text-primary border-primary/20 shadow-soft"
                   : "text-foreground-muted hover:bg-surface hover:text-foreground hover:border-border-hover"
               )}
+              style={{
+                gap: 'var(--space-3)',
+                padding: 'var(--space-2) var(--space-3)',
+                fontSize: 'var(--text-sm)'
+              }}
             >
-              <Icon className="w-5 h-5" />
+              <Icon style={{
+                width: 'clamp(1.125rem, 2vw, 1.25rem)',
+                height: 'clamp(1.125rem, 2vw, 1.25rem)'
+              }} />
               {item.name}
             </Link>
           )
@@ -125,16 +161,30 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-border">
+      <div className="border-t border-border" style={{
+        padding: 'var(--space-sm) var(--space-3)'
+      }}>
         <Button
           variant="ghost"
           className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-180"
           onClick={handleLogout}
+          style={{
+            fontSize: 'var(--text-sm)',
+            padding: 'var(--space-2) var(--space-3)'
+          }}
         >
-          <LogOut className="w-5 h-5 mr-3" />
+          <LogOut style={{
+            width: 'clamp(1.125rem, 2vw, 1.25rem)',
+            height: 'clamp(1.125rem, 2vw, 1.25rem)',
+            marginRight: 'var(--space-3)'
+          }} />
           Logout
         </Button>
-        <p className="text-xs text-foreground-subtle mt-3 px-3">
+        <p className="text-foreground-subtle" style={{
+          fontSize: 'var(--text-xs)',
+          marginTop: 'var(--space-3)',
+          paddingLeft: 'var(--space-3)'
+        }}>
           v0.1.0
         </p>
       </div>
@@ -144,22 +194,37 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:w-64 lg:bg-surface lg:border-r lg:border-border border-soft">
+      <div className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:bg-surface lg:border-r lg:border-border border-soft" style={{
+        width: 'var(--sidebar-width-desktop)'
+      }}>
         <SidebarContent />
       </div>
 
       {/* Mobile Menu Button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
+      <div className="lg:hidden fixed z-50" style={{
+        top: 'var(--space-4)',
+        left: 'var(--space-4)'
+      }}>
         <Button
           variant="outline"
           size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="bg-surface shadow-soft-lg border-border hover:border-border-hover"
+          style={{
+            width: 'clamp(2.5rem, 10vw, 3rem)',
+            height: 'clamp(2.5rem, 10vw, 3rem)'
+          }}
         >
           {mobileMenuOpen ? (
-            <X className="w-5 h-5" />
+            <X style={{
+              width: 'clamp(1.25rem, 5vw, 1.5rem)',
+              height: 'clamp(1.25rem, 5vw, 1.5rem)'
+            }} />
           ) : (
-            <Menu className="w-5 h-5" />
+            <Menu style={{
+              width: 'clamp(1.25rem, 5vw, 1.5rem)',
+              height: 'clamp(1.25rem, 5vw, 1.5rem)'
+            }} />
           )}
         </Button>
       </div>
@@ -174,7 +239,9 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
           />
 
           {/* Sidebar */}
-          <div className="lg:hidden fixed inset-y-0 left-0 w-64 bg-surface border-r border-border z-50 flex flex-col animate-slide-in-left">
+          <div className="lg:hidden fixed inset-y-0 left-0 bg-surface border-r border-border z-50 flex flex-col animate-slide-in-left" style={{
+            width: 'clamp(16rem, 80vw, 20rem)'
+          }}>
             <SidebarContent />
           </div>
         </>

@@ -1194,36 +1194,67 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       className={cn(
         "flex flex-col overflow-hidden",
         mode === 'bubble'
-          ? `fixed inset-0 sm:inset-auto sm:bottom-4 ${bubblePositionClass} sm:w-[400px] sm:h-[600px] sm:rounded-lg sm:shadow-2xl sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-2rem)] z-50 animate-fade-in`
+          ? `fixed inset-0 sm:inset-auto sm:bottom-4 ${bubblePositionClass} sm:rounded-lg sm:shadow-2xl z-50 animate-fade-in`
           : `w-full rounded-lg ${showBorder ? 'shadow-2xl border border-gray-200' : ''}`
       )}
       style={{
         ...themeStyles,
         backgroundColor,
         fontFamily,
-        height: mode === 'inline' ? inlineHeight : undefined,
+        // Responsive sizing per bubble mode
+        ...(mode === 'bubble' ? {
+          width: 'clamp(min(100vw, 360px), 90vw, 400px)',
+          height: 'clamp(min(100vh, 500px), 80vh, 650px)',
+          maxWidth: 'calc(100vw - 2rem)',
+          maxHeight: 'calc(100vh - 2rem)'
+        } : {
+          height: inlineHeight || 'clamp(500px, 60vh, 650px)',
+          minHeight: '500px'
+        })
       }}
     >
       {/* Header */}
       {(mode === 'bubble' || showHeader) && (
         <div
-          className="px-4 py-4 sm:py-3 flex items-center justify-between"
-          style={{ background: headerGradient }}
+          className="flex items-center justify-between flex-shrink-0"
+          style={{
+            background: headerGradient,
+            padding: 'clamp(0.75rem, 2vw, 1rem)'
+          }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center" style={{
+            gap: 'clamp(0.5rem, 2vw, 0.75rem)'
+          }}>
             <div
-              className="w-10 h-10 sm:w-9 sm:h-9 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: backgroundColor }}
+              className="rounded-full flex items-center justify-center flex-shrink-0"
+              style={{
+                backgroundColor: backgroundColor,
+                width: 'clamp(2rem, 8vw, 2.5rem)',
+                height: 'clamp(2rem, 8vw, 2.5rem)'
+              }}
             >
               {logoUrl ? (
-                <img src={logoUrl} alt="Logo" className="w-6 h-6 sm:w-5 sm:h-5 object-contain" />
+                <img src={logoUrl} alt="Logo" className="object-contain" style={{
+                  width: 'clamp(1.25rem, 5vw, 1.5rem)',
+                  height: 'clamp(1.25rem, 5vw, 1.5rem)'
+                }} />
               ) : (
-                <Building2 className="w-5 h-5 sm:w-4 sm:h-4" style={{ color: primaryColor }} />
+                <Building2 style={{
+                  color: primaryColor,
+                  width: 'clamp(1.125rem, 4vw, 1.25rem)',
+                  height: 'clamp(1.125rem, 4vw, 1.25rem)'
+                }} />
               )}
             </div>
             <div>
-              <h3 className="text-white font-semibold text-base sm:text-sm">Valuta la tua casa</h3>
-              <p className="text-xs text-white/70">Ti rispondo in pochi secondi</p>
+              <h3 className="text-white font-semibold" style={{
+                fontSize: 'clamp(0.875rem, 2vw, 1rem)',
+                lineHeight: '1.2'
+              }}>Valuta la tua casa</h3>
+              <p className="text-white/70" style={{
+                fontSize: 'clamp(0.6875rem, 1.5vw, 0.75rem)',
+                lineHeight: '1.2'
+              }}>Ti rispondo in pochi secondi</p>
             </div>
           </div>
           {mode === 'bubble' && onClose && (
@@ -1236,10 +1267,17 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
                 // Chiudi widget
                 onClose()
               }}
-              className="text-white hover:text-white/80 transition-colors p-2 sm:p-1 -mr-2 sm:-mr-1"
+              className="text-white hover:text-white/80 transition-colors flex-shrink-0"
+              style={{
+                padding: 'clamp(0.25rem, 1vw, 0.5rem)',
+                marginRight: 'calc(var(--space-1) * -1)'
+              }}
               aria-label="Chiudi chat"
             >
-              <X className="w-6 h-6 sm:w-5 sm:h-5" />
+              <X style={{
+                width: 'clamp(1.25rem, 5vw, 1.5rem)',
+                height: 'clamp(1.25rem, 5vw, 1.5rem)'
+              }} />
             </button>
           )}
         </div>
@@ -1247,9 +1285,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       {/* Messages */}
       <div
-        className="flex-1 overflow-y-auto p-4"
+        className="flex-1 overflow-y-auto"
         style={{
           backgroundColor: backgroundColor === '#ffffff' ? '#f9fafb' : `${backgroundColor}f5`,
+          padding: 'clamp(0.75rem, 2vw, 1rem)'
         }}
       >
         {messages.map((message) => (
@@ -1275,20 +1314,29 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       {/* Input */}
       <div
-        className="border-t border-border p-4"
-        style={{ backgroundColor }}
+        className="border-t border-border flex-shrink-0"
+        style={{
+          backgroundColor,
+          padding: 'clamp(0.75rem, 2vw, 1rem)'
+        }}
       >
         {currentStep === "contacts_email" ? (
-          <form onSubmit={handleSubmit} className="flex gap-2" data-form-type="other">
+          <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
+            gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+          }}>
             <Input
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={getPlaceholder()}
               disabled={isInputDisabled}
-              className="flex-1 h-11 sm:h-10"
+              className="flex-1"
               type="email"
-              style={{ borderColor: primaryColor }}
+              style={{
+                borderColor: primaryColor,
+                height: 'clamp(2.5rem, 10vw, 2.75rem)',
+                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
+              }}
               autoComplete="off"
               data-lpignore="true"
               data-1p-ignore="true"
@@ -1298,24 +1346,36 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               type="submit"
               size="icon"
               disabled={isInputDisabled || !inputValue.trim()}
-              className="h-11 w-11 sm:h-10 sm:w-10"
-              style={{ backgroundColor: primaryColor }}
+              style={{
+                backgroundColor: primaryColor,
+                width: 'clamp(2.5rem, 10vw, 2.75rem)',
+                height: 'clamp(2.5rem, 10vw, 2.75rem)'
+              }}
               aria-label="Invia messaggio"
             >
-              <Send className="w-5 h-5 sm:w-4 sm:h-4" />
+              <Send style={{
+                width: 'clamp(1.125rem, 4vw, 1.25rem)',
+                height: 'clamp(1.125rem, 4vw, 1.25rem)'
+              }} />
             </Button>
           </form>
         ) : currentStep === "contacts_phone" ? (
-          <form onSubmit={handleSubmit} className="flex gap-2" data-form-type="other">
+          <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
+            gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+          }}>
             <Input
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={getPlaceholder()}
               disabled={isInputDisabled}
-              className="flex-1 h-11 sm:h-10"
+              className="flex-1"
               type="tel"
-              style={{ borderColor: primaryColor }}
+              style={{
+                borderColor: primaryColor,
+                height: 'clamp(2.5rem, 10vw, 2.75rem)',
+                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
+              }}
               autoComplete="off"
               data-lpignore="true"
               data-1p-ignore="true"
@@ -1325,23 +1385,35 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               type="submit"
               size="icon"
               disabled={isInputDisabled || !inputValue.trim()}
-              className="h-11 w-11 sm:h-10 sm:w-10"
-              style={{ backgroundColor: primaryColor }}
+              style={{
+                backgroundColor: primaryColor,
+                width: 'clamp(2.5rem, 10vw, 2.75rem)',
+                height: 'clamp(2.5rem, 10vw, 2.75rem)'
+              }}
               aria-label="Invia messaggio"
             >
-              <Send className="w-5 h-5 sm:w-4 sm:h-4" />
+              <Send style={{
+                width: 'clamp(1.125rem, 4vw, 1.25rem)',
+                height: 'clamp(1.125rem, 4vw, 1.25rem)'
+              }} />
             </Button>
           </form>
         ) : (
-          <form onSubmit={handleSubmit} className="flex gap-2" data-form-type="other">
+          <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
+            gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+          }}>
             <Input
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={getPlaceholder()}
               disabled={isInputDisabled}
-              className="flex-1 h-11 sm:h-10"
-              style={{ borderColor: `${primaryColor}40` }}
+              className="flex-1"
+              style={{
+                borderColor: `${primaryColor}40`,
+                height: 'clamp(2.5rem, 10vw, 2.75rem)',
+                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
+              }}
               autoComplete="off"
               data-lpignore="true"
               data-1p-ignore="true"
@@ -1351,11 +1423,17 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               type="submit"
               size="icon"
               disabled={isInputDisabled || !inputValue.trim()}
-              className="h-11 w-11 sm:h-10 sm:w-10"
-              style={{ backgroundColor: primaryColor }}
+              style={{
+                backgroundColor: primaryColor,
+                width: 'clamp(2.5rem, 10vw, 2.75rem)',
+                height: 'clamp(2.5rem, 10vw, 2.75rem)'
+              }}
               aria-label="Invia messaggio"
             >
-              <Send className="w-5 h-5 sm:w-4 sm:h-4" />
+              <Send style={{
+                width: 'clamp(1.125rem, 4vw, 1.25rem)',
+                height: 'clamp(1.125rem, 4vw, 1.25rem)'
+              }} />
             </Button>
           </form>
         )}
