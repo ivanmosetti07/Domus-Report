@@ -192,6 +192,16 @@ const config: Config = {
             opacity: "1"
           },
         },
+        "slide-in-right": {
+          "0%": {
+            transform: "translateX(100%)",
+            opacity: "0"
+          },
+          "100%": {
+            transform: "translateX(0)",
+            opacity: "1"
+          },
+        },
       },
       animation: {
         /* Animazioni esistenti */
@@ -206,6 +216,7 @@ const config: Config = {
         "shimmer": "shimmer 2s linear infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "slide-in-left": "slide-in-left 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "slide-in-right": "slide-in-right 300ms cubic-bezier(0.4, 0, 0.2, 1)",
       },
     },
   },

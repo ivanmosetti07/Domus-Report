@@ -200,10 +200,10 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
         <SidebarContent />
       </div>
 
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Button - Top Right */}
       <div className="lg:hidden fixed z-50" style={{
         top: 'var(--space-4)',
-        left: 'var(--space-4)'
+        right: 'var(--space-4)'
       }}>
         <Button
           variant="outline"
@@ -229,7 +229,7 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
         </Button>
       </div>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar - Slide from Right */}
       {mobileMenuOpen && (
         <>
           {/* Overlay */}
@@ -238,8 +238,8 @@ export function Sidebar({ agencyName = "La Tua Agenzia", agencyLogo }: SidebarPr
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          {/* Sidebar */}
-          <div className="lg:hidden fixed inset-y-0 left-0 bg-surface border-r border-border z-50 flex flex-col animate-slide-in-left" style={{
+          {/* Sidebar - Right Side */}
+          <div className="lg:hidden fixed inset-y-0 right-0 bg-surface border-l border-border z-50 flex flex-col animate-slide-in-right" style={{
             width: 'clamp(16rem, 80vw, 20rem)'
           }}>
             <SidebarContent />
