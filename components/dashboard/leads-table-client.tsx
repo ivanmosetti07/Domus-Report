@@ -143,51 +143,51 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
         <Card>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-surface border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Nome
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Telefono
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Indirizzo
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Data
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Azioni
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredLeads.map((lead) => {
                   const latestStatus = lead.statuses?.[0]?.status || 'NEW'
                   const statusInfo = getStatusBadge(latestStatus)
                   return (
-                  <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={lead.id} className="hover:bg-surface transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-foreground">
                         {lead.nome} {lead.cognome}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-700">{lead.email}</span>
+                        <span className="text-sm text-foreground">{lead.email}</span>
                         <button
                           onClick={() => handleCopy(lead.email, `email-${lead.id}`)}
-                          className="text-gray-400 hover:text-gray-600"
+                          className="text-foreground-muted hover:text-foreground"
                         >
                           {copiedId === `email-${lead.id}` ? (
-                            <span className="text-xs text-green-600">✓</span>
+                            <span className="text-xs text-success">✓</span>
                           ) : (
                             <Copy className="w-4 h-4" />
                           )}
@@ -205,24 +205,24 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                           </a>
                           <a
                             href={`tel:${lead.telefono}`}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-foreground-muted hover:text-foreground"
                           >
                             <Phone className="w-4 h-4" />
                           </a>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-400">N/D</span>
+                        <span className="text-sm text-foreground-muted">N/D</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-700 max-w-xs truncate">
+                      <div className="text-sm text-foreground max-w-xs truncate">
                         {lead.property
                           ? `${lead.property.indirizzo}, ${lead.property.citta}`
                           : "N/D"}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-foreground">
                         {formatDate(lead.dataRichiesta)}
                       </span>
                     </td>
@@ -257,10 +257,10 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
             <div className="space-y-3">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-foreground">
                     {lead.nome} {lead.cognome}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-foreground-muted mt-1">
                     {lead.property
                       ? `${lead.property.indirizzo}, ${lead.property.citta}`
                       : "Indirizzo non disponibile"}
@@ -275,7 +275,7 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
 
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <Mail className="w-4 h-4 text-gray-400" />
+                  <Mail className="w-4 h-4 text-foreground-muted" />
                   <a
                     href={`mailto:${lead.email}`}
                     className="text-primary hover:underline"
@@ -285,7 +285,7 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                 </div>
                 {lead.telefono && (
                   <div className="flex items-center gap-2 text-sm">
-                    <Phone className="w-4 h-4 text-gray-400" />
+                    <Phone className="w-4 h-4 text-foreground-muted" />
                     <a
                       href={`tel:${lead.telefono}`}
                       className="text-primary hover:underline"
@@ -296,9 +296,9 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                 )}
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+              <div className="flex items-center justify-between pt-3 border-t border-border">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-foreground-muted">
                     {formatDate(lead.dataRichiesta)}
                   </span>
                   <Badge className={statusInfo.color + ' border text-xs'}>
