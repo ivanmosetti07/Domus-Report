@@ -46,7 +46,7 @@ export default async function OnboardingWelcomePage() {
     : 'Premium'
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-surface to-background py-12 px-4">
       <WelcomeChecklist
         agencyName={agency.nome}
         planName={planName}

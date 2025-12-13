@@ -418,13 +418,13 @@ export default function SubscriptionPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-500">Attivo</Badge>
+        return <Badge className="bg-success text-primary-foreground">Attivo</Badge>
       case 'trial':
-        return <Badge className="bg-blue-500">Prova</Badge>
+        return <Badge className="bg-primary text-primary-foreground">Prova</Badge>
       case 'cancelled':
-        return <Badge className="bg-yellow-500">Cancellato</Badge>
+        return <Badge className="bg-warning text-primary-foreground">Cancellato</Badge>
       case 'past_due':
-        return <Badge className="bg-red-500">Pagamento in ritardo</Badge>
+        return <Badge className="bg-destructive text-primary-foreground">Pagamento in ritardo</Badge>
       case 'expired':
         return <Badge variant="secondary">Scaduto</Badge>
       default:
@@ -470,26 +470,26 @@ export default function SubscriptionPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {subscription?.status === 'trial' && subscription.trialEndsAt && (
-            <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-blue-500" />
-              <span className="text-sm">
+            <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-primary" />
+              <span className="text-sm text-foreground">
                 Periodo di prova fino al {new Date(subscription.trialEndsAt).toLocaleDateString('it-IT')}
               </span>
             </div>
           )}
 
           {subscription?.status === 'cancelled' && subscription.nextBillingDate && (
-            <div className="flex items-center gap-2 p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-yellow-500" />
-              <span className="text-sm">
+            <div className="flex items-center gap-2 p-3 bg-warning/10 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-warning" />
+              <span className="text-sm text-foreground">
                 L'abbonamento resterà attivo fino al {new Date(subscription.nextBillingDate).toLocaleDateString('it-IT')}
               </span>
             </div>
           )}
 
           {subscription?.status === 'past_due' && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-950 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-red-500" />
+            <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-destructive" />
               <span className="text-sm">
                 Pagamento in ritardo. Aggiorna il metodo di pagamento per evitare l'interruzione del servizio.
               </span>
@@ -538,21 +538,21 @@ export default function SubscriptionPage() {
                 <span className="font-medium">
                   {usage.valuations.current} / {usage.valuations.limit + usage.valuations.extra}
                   {usage.valuations.extra > 0 && (
-                    <span className="text-green-600 ml-1">(+{usage.valuations.extra} extra)</span>
+                    <span className="text-success ml-1">(+{usage.valuations.extra} extra)</span>
                   )}
                 </span>
               </div>
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-surface-2 rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all ${
-                    usage.valuations.percentage >= 90 ? 'bg-red-500' :
-                    usage.valuations.percentage >= 70 ? 'bg-yellow-500' : 'bg-green-500'
+                    usage.valuations.percentage >= 90 ? 'bg-destructive' :
+                    usage.valuations.percentage >= 70 ? 'bg-warning' : 'bg-success'
                   }`}
                   style={{ width: `${Math.min(100, usage.valuations.percentage)}%` }}
                 />
               </div>
               {usage.valuations.percentage >= 80 && (
-                <p className="text-sm text-yellow-600">
+                <p className="text-sm text-warning">
                   Stai per raggiungere il limite. Considera l'acquisto di valutazioni extra.
                 </p>
               )}
@@ -563,10 +563,10 @@ export default function SubscriptionPage() {
                 <span>Widget</span>
                 <span className="font-medium">{usage.widgets.current} / {usage.widgets.limit}</span>
               </div>
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-surface-2 rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all ${
-                    usage.widgets.percentage >= 100 ? 'bg-red-500' : 'bg-blue-500'
+                    usage.widgets.percentage >= 100 ? 'bg-destructive' : 'bg-primary'
                   }`}
                   style={{ width: `${Math.min(100, usage.widgets.percentage)}%` }}
                 />
@@ -658,7 +658,7 @@ export default function SubscriptionPage() {
             </Button>
           </div>
           {promoValid && promoDiscount > 0 && (
-            <p className="text-sm text-green-600 mt-2">
+            <p className="text-sm text-success mt-2">
               Sconto del {promoDiscount}% sarà applicato al checkout
             </p>
           )}
@@ -699,9 +699,9 @@ export default function SubscriptionPage() {
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-center gap-2">
                         {feature.included ? (
-                          <Check className="h-4 w-4 text-green-500" />
+                          <Check className="h-4 w-4 text-success" />
                         ) : (
-                          <X className="h-4 w-4 text-gray-300" />
+                          <X className="h-4 w-4 text-foreground-muted opacity-30" />
                         )}
                         <span className={feature.included ? '' : 'text-muted-foreground'}>
                           {feature.text}
@@ -762,10 +762,10 @@ export default function SubscriptionPage() {
                   className="flex items-center justify-between p-3 border rounded-lg"
                 >
                   <div className="flex items-center gap-4">
-                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <FileText className="h-5 w-5 text-foreground-muted" />
                     <div>
-                      <p className="font-medium">{invoice.description}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="font-medium text-foreground">{invoice.description}</p>
+                      <p className="text-sm text-foreground-muted">
                         {new Date(invoice.date).toLocaleDateString('it-IT')} - {invoice.number}
                       </p>
                     </div>

@@ -581,7 +581,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         break
 
       case "contacts_phone":
-        const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
+        // Regex migliorato: accetta 8-13 cifre per includere tutti i numeri italiani
+        // (mobili 9-10 cifre, fissi 8-11 cifre con prefisso)
+        const phoneRegex = /^(\+39|0039)?[0-9]{8,13}$/
         // Sanitizza il numero nello stesso modo del server per garantire coerenza
         const sanitizedPhone = input
           .trim()

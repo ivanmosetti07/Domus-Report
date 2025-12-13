@@ -96,10 +96,11 @@ export function validatePhone(phone: string | undefined | null): { valid: boolea
   }
 
   // Italian phone validation
-  // Format 1: 10 digits (mobile without prefix): 3331234567
-  // Format 2: +39 + 10 digits: +393331234567
-  // Format 3: +39 + 9-13 digits (general): +39xxxxxxxxx
-  const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
+  // Format 1: Mobile without prefix: 9-10 digits (es. 3331234567, 349749487)
+  // Format 2: Landline with prefix: 8-11 digits (es. 02123456, 0612345678)
+  // Format 3: With +39 or 0039: +39 + 8-13 digits (es. +393331234567, +390212345678)
+  // Changed from {9,13} to {8,13} to accept all Italian phone numbers
+  const phoneRegex = /^(\+39|0039)?[0-9]{8,13}$/
   const isValid = phoneRegex.test(sanitized)
 
   console.log('[validatePhone] Regex test result:', isValid, 'Against pattern:', phoneRegex.toString())

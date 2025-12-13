@@ -257,8 +257,8 @@ export default function WidgetsPage() {
           <CardContent className="flex items-center gap-4 p-6">
             <AlertCircle className="w-8 h-8 text-destructive" />
             <div>
-              <h3 className="font-semibold">Errore nel caricamento</h3>
-              <p className="text-sm text-gray-600">{error}</p>
+              <h3 className="font-semibold text-foreground">Errore nel caricamento</h3>
+              <p className="text-sm text-foreground-muted">{error}</p>
               <Button variant="outline" size="sm" className="mt-2" onClick={fetchWidgets}>
                 Riprova
               </Button>
@@ -289,7 +289,7 @@ export default function WidgetsPage() {
               </>
             )}
           </Badge>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-foreground-muted">
             {widgets.filter(w => w.isActive).length} / {limits.maxWidgets} widget
           </span>
         </div>
@@ -324,11 +324,11 @@ export default function WidgetsPage() {
       {widgets.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <MessageSquare className="w-12 h-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <MessageSquare className="w-12 h-12 text-foreground-muted mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               Nessun widget configurato
             </h3>
-            <p className="text-sm text-gray-600 mb-4 text-center max-w-md">
+            <p className="text-sm text-foreground-muted mb-4 text-center max-w-md">
               Crea il tuo primo widget per iniziare a raccogliere lead dal tuo sito web.
             </p>
             <Button onClick={handleCreate}>
@@ -389,11 +389,11 @@ export default function WidgetsPage() {
               <CardContent className="space-y-4">
                 {/* Stats */}
                 <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-1 text-gray-600">
+                  <div className="flex items-center gap-1 text-foreground-muted">
                     <Eye className="w-4 h-4" />
                     <span>{widget.impressions.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-gray-600">
+                  <div className="flex items-center gap-1 text-foreground-muted">
                     <BarChart3 className="w-4 h-4" />
                     <span>{widget.leadsGenerated} lead</span>
                   </div>
@@ -402,11 +402,11 @@ export default function WidgetsPage() {
                 {/* Color preview */}
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-6 h-6 rounded-full border-2 border-white shadow"
+                    className="w-6 h-6 rounded-full border-2 border-card shadow"
                     style={{ backgroundColor: widget.primaryColor }}
                     title={widget.primaryColor}
                   />
-                  <span className="text-xs text-gray-500 font-mono">
+                  <span className="text-xs text-foreground-muted font-mono">
                     {widget.primaryColor}
                   </span>
                 </div>

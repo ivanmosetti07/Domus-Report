@@ -297,7 +297,7 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+        <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">
           Azioni Rapide
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
@@ -305,11 +305,11 @@ export default async function DashboardPage() {
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
                 <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex-shrink-0">
-                  <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">Gestisci Lead</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 truncate">
+                  <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">Gestisci Lead</h3>
+                  <p className="text-xs sm:text-sm text-foreground-muted truncate">
                     Visualizza e gestisci tutti i lead
                   </p>
                 </div>
@@ -320,12 +320,12 @@ export default async function DashboardPage() {
           <Link href="/dashboard/widgets">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-lg flex-shrink-0">
-                  <Code className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex-shrink-0">
+                  <Code className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">Widget</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 truncate">
+                  <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">Widget</h3>
+                  <p className="text-xs sm:text-sm text-foreground-muted truncate">
                     Configura i tuoi widget
                   </p>
                 </div>
@@ -334,14 +334,14 @@ export default async function DashboardPage() {
           </Link>
 
           <Link href="/docs/html" target="_blank">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full border-2 border-dashed border-gray-300">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full border-2 border-dashed border-border">
               <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-lg flex-shrink-0">
-                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-surface-2 rounded-lg flex-shrink-0">
+                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">Documentazione</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 truncate">
+                  <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">Documentazione</h3>
+                  <p className="text-xs sm:text-sm text-foreground-muted truncate">
                     Guida installazione widget
                   </p>
                 </div>
@@ -353,31 +353,31 @@ export default async function DashboardPage() {
 
       {/* Empty State Hint (shown when no leads) */}
       {stats.totalLeads === 0 && (
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="bg-surface-2 border-border">
           <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
               <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex-shrink-0">
                 <span className="text-xl sm:text-2xl">👋</span>
               </div>
               <div className="flex-1">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
+                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2 sm:mb-3">
                   Primi passi con DomusReport
                 </h3>
-                <ol className="space-y-2 text-xs sm:text-sm text-gray-700">
+                <ol className="space-y-2 text-xs sm:text-sm text-foreground">
                   <li className="flex items-center gap-2">
-                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-white rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
                       1
                     </span>
                     <span className="flex-1">Configura il tuo primo widget</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-white rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
                       2
                     </span>
                     <span className="flex-1">Installa il codice sul tuo sito (prima del tag &lt;/body&gt;)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-white rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
                       3
                     </span>
                     <span className="flex-1">Inizia a ricevere lead qualificati automaticamente!</span>

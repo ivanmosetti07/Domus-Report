@@ -269,12 +269,12 @@ export default function AnalyticsPage() {
           title="Analytics"
           subtitle="Analizza le performance del tuo widget"
         />
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive bg-destructive/10">
           <CardContent className="p-6 flex items-center gap-4">
-            <AlertCircle className="w-8 h-8 text-red-600" />
+            <AlertCircle className="w-8 h-8 text-destructive" />
             <div>
-              <h3 className="font-semibold text-red-900">Errore</h3>
-              <p className="text-sm text-red-700">{error}</p>
+              <h3 className="font-semibold text-destructive">Errore</h3>
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           </CardContent>
         </Card>
@@ -310,8 +310,8 @@ export default function AnalyticsPage() {
         <CardContent className="p-4">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-gray-600" />
-              <span className="font-medium text-gray-700">Periodo:</span>
+              <Calendar className="w-5 h-5 text-foreground-muted" />
+              <span className="font-medium text-foreground">Periodo:</span>
               <div className="flex gap-2">
                 <Button
                   variant={datePreset === "today" ? "default" : "outline"}
@@ -362,19 +362,19 @@ export default function AnalyticsPage() {
         <StatCard
           label="Lead Generati"
           value={totals.totalLeads.toLocaleString()}
-          icon={<Users className="w-6 h-6 text-green-600" />}
+          icon={<Users className="w-6 h-6 text-success" />}
           trend={calculateTrend(totals.totalLeads, previousTotals.totalLeads)}
         />
         <StatCard
           label="Valutazioni Completate"
           value={totals.totalValuations.toLocaleString()}
-          icon={<FileCheck className="w-6 h-6 text-blue-600" />}
+          icon={<FileCheck className="w-6 h-6 text-primary" />}
           trend={calculateTrend(totals.totalValuations, previousTotals.totalValuations)}
         />
         <StatCard
           label="Conversion Rate"
           value={`${totals.averageConversionRate.toFixed(2)}%`}
-          icon={<Target className="w-6 h-6 text-purple-600" />}
+          icon={<Target className="w-6 h-6 text-accent" />}
           variant={
             totals.averageConversionRate > 5
               ? "success"
@@ -406,14 +406,14 @@ export default function AnalyticsPage() {
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="date" stroke="#6b7280" fontSize={12} />
-                  <YAxis yAxisId="left" stroke="#6b7280" fontSize={12} />
-                  <YAxis yAxisId="right" orientation="right" stroke="#6b7280" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="date" stroke="hsl(var(--foreground-muted))" fontSize={12} />
+                  <YAxis yAxisId="left" stroke="hsl(var(--foreground-muted))" fontSize={12} />
+                  <YAxis yAxisId="right" orientation="right" stroke="hsl(var(--foreground-muted))" fontSize={12} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#fff",
-                      border: "1px solid #e5e7eb",
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
                       borderRadius: "8px",
                     }}
                   />
@@ -439,7 +439,7 @@ export default function AnalyticsPage() {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="flex items-center justify-center h-64 text-foreground-muted">
                 Nessun dato disponibile per questo periodo
               </div>
             )}
@@ -471,13 +471,13 @@ export default function AnalyticsPage() {
                   layout="vertical"
                   margin={{ left: 120 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis type="number" stroke="#6b7280" fontSize={12} />
-                  <YAxis dataKey="name" type="category" stroke="#6b7280" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--foreground-muted))" fontSize={12} />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--foreground-muted))" fontSize={12} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#fff",
-                      border: "1px solid #e5e7eb",
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
                       borderRadius: "8px",
                     }}
                   />
@@ -485,7 +485,7 @@ export default function AnalyticsPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-500">
+              <div className="flex items-center justify-center h-64 text-foreground-muted">
                 Dati funnel non disponibili
               </div>
             )}
@@ -538,12 +538,12 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Suggerimenti Ottimizzazione */}
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="font-semibold text-blue-900 flex items-center gap-2 mb-3">
+            <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+              <h4 className="font-semibold text-foreground flex items-center gap-2 mb-3">
                 <Lightbulb className="w-5 h-5" />
                 Suggerimenti per Ottimizzare
               </h4>
-              <ul className="space-y-2 text-sm text-blue-800">
+              <ul className="space-y-2 text-sm text-foreground">
                 {funnelData.dropOff_openToMessage > 70 && (
                   <li>
                     • <strong>Drop-off alto tra apertura e messaggio ({funnelData.dropOff_openToMessage.toFixed(1)}%):</strong>{" "}
@@ -581,30 +581,30 @@ export default function AnalyticsPage() {
 
             {/* Benchmark Comparison */}
             {platformAverage !== null && (
-              <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <h4 className="font-semibold text-gray-900 mb-2">Confronto con la Media</h4>
+              <div className="mt-4 p-4 bg-surface-2 border border-border rounded-lg">
+                <h4 className="font-semibold text-foreground mb-2">Confronto con la Media</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-600">Il tuo Conversion Rate</p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-sm text-foreground-muted">Il tuo Conversion Rate</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {totals.averageConversionRate.toFixed(2)}%
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Media Piattaforma</p>
-                    <p className="text-2xl font-bold text-gray-600">
+                    <p className="text-sm text-foreground-muted">Media Piattaforma</p>
+                    <p className="text-2xl font-bold text-foreground-muted">
                       {platformAverage.toFixed(2)}%
                     </p>
                   </div>
                 </div>
                 <div className="mt-3">
                   {totals.averageConversionRate > platformAverage ? (
-                    <p className="text-sm text-green-700 flex items-center gap-1">
+                    <p className="text-sm text-success flex items-center gap-1">
                       <TrendingUp className="w-4 h-4" />
                       Il tuo widget performa meglio della media!
                     </p>
                   ) : (
-                    <p className="text-sm text-orange-700 flex items-center gap-1">
+                    <p className="text-sm text-warning flex items-center gap-1">
                       <TrendingDown className="w-4 h-4" />
                       C'è margine di miglioramento rispetto alla media
                     </p>
@@ -627,36 +627,36 @@ export default function AnalyticsPage() {
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-surface-2 border-b border-border">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Data</th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700">Impression</th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700">Click</th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700">Lead</th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700">Valutazioni</th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700">Conv %</th>
+                  <th className="px-4 py-3 text-left font-semibold text-foreground">Data</th>
+                  <th className="px-4 py-3 text-right font-semibold text-foreground">Impression</th>
+                  <th className="px-4 py-3 text-right font-semibold text-foreground">Click</th>
+                  <th className="px-4 py-3 text-right font-semibold text-foreground">Lead</th>
+                  <th className="px-4 py-3 text-right font-semibold text-foreground">Valutazioni</th>
+                  <th className="px-4 py-3 text-right font-semibold text-foreground">Conv %</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-border">
                 {analyticsData?.data.map((day) => (
-                  <tr key={day.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-gray-900">
+                  <tr key={day.id} className="hover:bg-surface-2">
+                    <td className="px-4 py-3 text-foreground">
                       {format(new Date(day.date), "dd MMMM yyyy", { locale: it })}
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-900">{day.widgetImpressions}</td>
-                    <td className="px-4 py-3 text-right text-gray-900">{day.widgetClicks}</td>
-                    <td className="px-4 py-3 text-right font-medium text-green-600">
+                    <td className="px-4 py-3 text-right text-foreground">{day.widgetImpressions}</td>
+                    <td className="px-4 py-3 text-right text-foreground">{day.widgetClicks}</td>
+                    <td className="px-4 py-3 text-right font-medium text-success">
                       {day.leadsGenerated}
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-900">{day.valuationsCompleted}</td>
+                    <td className="px-4 py-3 text-right text-foreground">{day.valuationsCompleted}</td>
                     <td className="px-4 py-3 text-right">
                       <span
                         className={`font-medium ${
                           day.conversionRate > 5
-                            ? "text-green-600"
+                            ? "text-success"
                             : day.conversionRate > 2
-                            ? "text-gray-900"
-                            : "text-orange-600"
+                            ? "text-foreground"
+                            : "text-warning"
                         }`}
                       >
                         {day.conversionRate.toFixed(2)}%
@@ -690,18 +690,18 @@ function FunnelStep({
   const conversionRate = fromValue > 0 ? ((toValue / fromValue) * 100).toFixed(1) : "0.0"
 
   return (
-    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+    <div className="flex items-center justify-between p-4 bg-surface-2 rounded-lg">
       <div className="flex-1">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-foreground-muted">
           {from} → {to}
         </p>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-foreground-muted mt-1">
           {fromValue.toLocaleString()} → {toValue.toLocaleString()} utenti
         </p>
       </div>
       <div className="text-right">
-        <p className="text-lg font-semibold text-gray-900">{conversionRate}%</p>
-        <p className="text-xs text-red-600">Drop-off: {dropOff.toFixed(1)}%</p>
+        <p className="text-lg font-semibold text-foreground">{conversionRate}%</p>
+        <p className="text-xs text-destructive">Drop-off: {dropOff.toFixed(1)}%</p>
       </div>
     </div>
   )

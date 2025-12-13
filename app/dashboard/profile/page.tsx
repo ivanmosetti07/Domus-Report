@@ -536,7 +536,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-6">
               {/* Logo Preview */}
               <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-gray-200">
+                <div className="w-24 h-24 rounded-full bg-surface-2 flex items-center justify-center overflow-hidden border-2 border-border">
                   {profileData.logoUrl ? (
                     <Image
                       src={profileData.logoUrl}
@@ -546,7 +546,7 @@ export default function ProfilePage() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="text-2xl font-semibold text-gray-400">
+                    <div className="text-2xl font-semibold text-foreground-muted">
                       {getInitials(profileData.nome)}
                     </div>
                   )}
@@ -583,7 +583,7 @@ export default function ProfilePage() {
                   <Upload className="w-4 h-4 mr-2" />
                   {uploadingLogo ? "Caricamento..." : profileData.logoUrl ? "Cambia Logo" : "Carica Logo"}
                 </Button>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-foreground-muted">
                   Il logo verrà visualizzato nel widget e nelle comunicazioni con i clienti
                 </p>
               </div>
@@ -619,9 +619,9 @@ export default function ProfilePage() {
                     type="email"
                     value={profileData.email}
                     disabled
-                    className="bg-gray-50 cursor-not-allowed"
+                    className="bg-surface-2 cursor-not-allowed"
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-foreground-muted">
                     L'email non può essere modificata
                   </p>
                 </div>
@@ -759,8 +759,8 @@ export default function ProfilePage() {
               </div>
 
               {/* Preview */}
-              <div className="p-4 border rounded-lg bg-gray-50">
-                <p className="text-sm font-medium mb-3">Anteprima:</p>
+              <div className="p-4 border rounded-lg bg-surface-2">
+                <p className="text-sm font-medium text-foreground mb-3">Anteprima:</p>
                 <div className="flex gap-3">
                   <div
                     className="w-16 h-16 rounded-lg shadow-md flex items-center justify-center text-white font-semibold"
@@ -931,12 +931,12 @@ export default function ProfilePage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Data Registrazione</p>
-                <p className="font-medium">{profileData.dataCreazione}</p>
+                <p className="text-sm text-foreground-muted">Data Registrazione</p>
+                <p className="font-medium text-foreground">{profileData.dataCreazione}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Piano Attuale</p>
-                <p className="font-medium capitalize">{profileData.piano}</p>
+                <p className="text-sm text-foreground-muted">Piano Attuale</p>
+                <p className="font-medium text-foreground capitalize">{profileData.piano}</p>
               </div>
             </div>
             <Link href="/dashboard/subscription">

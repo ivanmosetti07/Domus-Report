@@ -79,17 +79,17 @@ export default function OnboardingPlanPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-surface to-background">
       <div className="container max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-            <Building2 className="w-8 h-8 text-white" />
+            <Building2 className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+          <h1 className="text-4xl font-bold text-foreground mb-3">
             Scegli il piano perfetto per te
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-foreground-muted max-w-2xl mx-auto">
             Inizia con il piano che meglio si adatta alle tue esigenze. Puoi cambiare o annullare in qualsiasi momento.
           </p>
         </div>
@@ -165,7 +165,7 @@ export default function OnboardingPlanPage() {
 
         {/* Note */}
         <div className="text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-foreground-muted">
             Tutti i piani includono supporto per widget responsive, valutazioni OMI precise e notifiche email.
             <br />
             Nessuna carta di credito richiesta per iniziare la prova gratuita.
@@ -181,30 +181,30 @@ export default function OnboardingPlanPage() {
               Hai scelto il piano {selectedPlan === 'basic' ? 'Basic' : 'Premium'}
             </DialogTitle>
             <DialogDescription className="space-y-3 pt-4">
-              <p className="text-base text-gray-700">
+              <p className="text-base text-foreground">
                 Inizia la tua prova gratuita di 7 giorni.
               </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <ul className="space-y-2 text-sm text-gray-700">
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                <ul className="space-y-2 text-sm text-foreground">
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">✓</span>
+                    <span className="text-primary font-bold">✓</span>
                     <span>Non ti chiederemo la carta di credito ora</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">✓</span>
+                    <span className="text-primary font-bold">✓</span>
                     <span>Accesso completo a tutte le funzionalità del piano</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">✓</span>
+                    <span className="text-primary font-bold">✓</span>
                     <span>Al termine dei 7 giorni potrai decidere se continuare</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">✓</span>
+                    <span className="text-primary font-bold">✓</span>
                     <span>Puoi annullare in qualsiasi momento</span>
                   </li>
                 </ul>
               </div>
-              <p className="text-xs text-gray-500 pt-2">
+              <p className="text-xs text-foreground-muted pt-2">
                 Se non aggiungi un metodo di pagamento entro 7 giorni, il tuo account passerà automaticamente al piano Free.
               </p>
             </DialogDescription>
