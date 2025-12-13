@@ -72,6 +72,8 @@
     --space-8: 4rem;      /* 64px */
     --space-9: 6rem;      /* 96px */
     --space-10: 8rem;     /* 128px */
+    --space-14: 3.5rem;   /* 56px */
+    --space-18: 4.5rem;   /* 72px */
 
     /* ===== DESIGN TOKENS: FLUID SPACING ===== */
     /* Spaziature responsive usando clamp() */
@@ -156,6 +158,11 @@
     hyphens: auto;
   }
 
+  /* Reset margini tipografici per controllare il vertical rhythm */
+  h1, h2, h3, h4, h5, h6, p, ul, ol {
+    margin: 0;
+  }
+
   /* Input e form: sizing prevedibile */
   input, textarea, select, button {
     max-width: 100%;
@@ -205,6 +212,44 @@
   .section-spacing {
     padding-top: var(--space-xl);
     padding-bottom: var(--space-xl);
+  }
+
+  /* Landing layout wrappers */
+  .landing-section {
+    padding-top: var(--space-14);
+    padding-bottom: var(--space-14);
+  }
+
+  .landing-container {
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .landing-section {
+      padding-top: var(--space-18);
+      padding-bottom: var(--space-18);
+    }
+
+    .landing-container {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .landing-section {
+      padding-top: var(--space-9);
+      padding-bottom: var(--space-9);
+    }
+
+    .landing-container {
+      padding-left: var(--space-5);
+      padding-right: var(--space-5);
+    }
   }
 
   /* Premium card hover effect */

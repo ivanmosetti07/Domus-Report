@@ -21,6 +21,7 @@ import {
   LineChart,
   MessageSquare,
   Database,
+  AlertTriangle,
   Smartphone
 } from "lucide-react"
 
@@ -32,76 +33,93 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background">
+      <section className="landing-section relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="landing-container relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left Column */}
-            <div className="text-foreground">
-              <Badge className="mb-6 bg-primary/20 text-primary hover:bg-primary/30 border-primary/30 backdrop-blur-sm">
+            <div className="text-foreground space-y-6 md:space-y-8">
+              <Badge className="bg-primary/20 text-primary hover:bg-primary/30 border-primary/30 backdrop-blur-sm inline-flex">
                 <Sparkles className="w-3 h-3 mr-1" />
                 Piattaforma AI per Agenzie Immobiliari
               </Badge>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
-                Trasforma visitatori in{" "}
-                <span className="text-primary">lead qualificati</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-foreground mb-8 leading-relaxed">
-                Il primo chatbot AI che genera valutazioni immobiliari accurate con dati OMI ufficiali
-                e trasforma ogni richiesta in un'opportunità di business
-              </p>
+              <div className="space-y-4">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight">
+                  Ottieni più{" "}
+                  <span className="text-primary">incarichi immobiliari</span> dal tuo sito
+                </h1>
+                <div className="text-xl md:text-2xl text-foreground leading-relaxed space-y-3">
+                  <p>Senza inseguire clienti e senza perdere tempo in valutazioni inutili.</p>
+                  <p>
+                    DomusReport trasforma ogni richiesta di valutazione in un contatto qualificato, pronto a parlare
+                    con la tua agenzia. Lavora 24/7 sul tuo sito e raccoglie solo richieste reali.
+                  </p>
+                </div>
+              </div>
 
               {/* Bullet Points */}
-              <div className="space-y-4 mb-10">
+              <div className="space-y-4">
                 <div className="flex items-center gap-4 bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border">
                   <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-5 h-5 text-primary-foreground" />
+                    <Database className="w-5 h-5 text-primary-foreground" />
                   </div>
-                  <span className="text-lg font-medium text-foreground">Setup in 2 minuti - Zero configurazione</span>
+                  <span className="text-lg font-medium text-foreground">Valutazioni basate su dati ufficiali</span>
                 </div>
                 <div className="flex items-center gap-4 bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border">
                   <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
                     <Target className="w-5 h-5 text-primary-foreground" />
                   </div>
-                  <span className="text-lg font-medium text-foreground">Valutazioni OMI certificate per 50+ città</span>
+                  <span className="text-lg font-medium text-foreground">Lead già qualificati, non semplici curiosi</span>
                 </div>
                 <div className="flex items-center gap-4 bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border">
                   <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <LineChart className="w-5 h-5 text-primary-foreground" />
+                    <MessageSquare className="w-5 h-5 text-primary-foreground" />
                   </div>
-                  <span className="text-lg font-medium text-foreground">CRM + Analytics in tempo reale</span>
+                  <span className="text-lg font-medium text-foreground">Dashboard con contatti e storico conversazioni</span>
+                </div>
+                <div className="flex items-center gap-4 bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border">
+                  <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-5 h-5 text-primary-foreground" />
+                  </div>
+                  <span className="text-lg font-medium text-foreground">14 giorni sono sufficienti per capire se funziona davvero</span>
                 </div>
               </div>
 
               {/* CTA */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/register">
-                  <Button size="lg" className="w-full sm:w-auto text-lg px-10 py-6 font-bold shadow-xl hover:shadow-2xl transition-all">
-                    Inizia Gratis Ora
-                    <ArrowRight className="w-5 h-5 ml-2" />
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
+                  <Link href="/register">
+                    <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6 font-bold shadow-xl hover:shadow-2xl transition-all">
+                      Attiva la prova gratuita di 14 giorni
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto text-lg px-8 py-6"
+                    onClick={() => {
+                      setShowDemoWidget(true)
+                      document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                  >
+                    Apri la demo live
                   </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto text-lg px-10 py-6"
-                  onClick={() => {
-                    setShowDemoWidget(true)
-                    document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
-                >
-                  Prova la Demo Live
-                </Button>
-              </div>
-
-              <div className="mt-6 flex items-center gap-6 text-sm text-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-primary" />
-                  <span>30 giorni di prova gratuita</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-primary" />
-                  <span>Nessuna carta richiesta</span>
+
+                <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-foreground">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary" />
+                    <span>14 giorni di prova gratuita</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary" />
+                    <span>Nessuna carta richiesta</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary" />
+                    <span>Installazione immediata</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -178,48 +196,135 @@ export default function LandingPage() {
       </section>
 
       {/* Social Proof */}
-      <section className="py-12 bg-surface border-y border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center text-center">
-            <div>
-              <div className="text-3xl font-bold text-foreground mb-1">100+</div>
-              <div className="text-sm text-foreground">Agenzie attive</div>
+      <section className="landing-section bg-surface border-y border-border">
+        <div className="landing-container">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-6 items-start">
+            <div className="flex items-start gap-3 p-4 md:p-6 bg-background border border-border rounded-xl">
+              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                <Shield className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <div className="font-semibold text-foreground">Valutazioni basate su dati ufficiali</div>
+                <div className="text-sm text-foreground-muted">Stime fondate su parametri reali per dare credibilità fin dal primo contatto.</div>
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-foreground mb-1">5.000+</div>
-              <div className="text-sm text-foreground">Lead generati</div>
+            <div className="flex items-start gap-3 p-4 md:p-6 bg-background border border-border rounded-xl">
+              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                <Target className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <div className="font-semibold text-foreground">Lead già qualificati, non semplici curiosi</div>
+                <div className="text-sm text-foreground-muted">Filtra subito chi non vuole vendere e concentra il tempo su chi è davvero interessato.</div>
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-foreground mb-1">50+</div>
-              <div className="text-sm text-foreground">Città coperte</div>
+            <div className="flex items-start gap-3 p-4 md:p-6 bg-background border border-border rounded-xl">
+              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                <LineChart className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <div className="font-semibold text-foreground">Dashboard con contatti e storico conversazioni</div>
+                <div className="text-sm text-foreground-muted">Tutto tracciato in un unico posto: richieste, note, avanzamento.</div>
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-foreground mb-1">95%</div>
-              <div className="text-sm text-foreground">Lead qualificati</div>
+            <div className="flex items-start gap-3 p-4 md:p-6 bg-background border border-border rounded-xl">
+              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                <Clock className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <div className="font-semibold text-foreground">14 giorni sono sufficienti per capire se funziona</div>
+                <div className="text-sm text-foreground-muted">Installi, raccolgi richieste reali e valuti subito i risultati.</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Problem Section */}
+      <section className="landing-section bg-background">
+        <div className="landing-container max-w-6xl">
+          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 inline-flex">
+            <AlertTriangle className="w-3 h-3 mr-1" />
+            Il problema
+          </Badge>
+          <div className="space-y-4 md:space-y-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
+              Il problema non sono le richieste
+            </h2>
+            <p className="text-2xl md:text-3xl text-primary font-semibold">
+              Sono le richieste sbagliate
+            </p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-6">
+            <Card className="h-full border-2 border-border bg-surface">
+              <CardContent className="p-4 md:p-6 space-y-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground">Contatti vaghi</h3>
+                <p className="text-foreground-muted text-sm leading-relaxed">
+                  Richieste generiche senza dati utili, difficili da richiamare e impossibili da qualificare.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="h-full border-2 border-border bg-surface">
+              <CardContent className="p-4 md:p-6 space-y-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Target className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground">Richieste di prezzo senza intenzione</h3>
+                <p className="text-foreground-muted text-sm leading-relaxed">
+                  Persone che vogliono solo un numero, senza reale volontà di vendere o affidare l'incarico.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="h-full border-2 border-border bg-surface">
+              <CardContent className="p-4 md:p-6 space-y-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground">Persone che spariscono</h3>
+                <p className="text-foreground-muted text-sm leading-relaxed">
+                  Dopo la valutazione non rispondono più, lasciandoti senza incarichi e senza controllo.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-8 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-4 md:p-6 space-y-2">
+            <p className="text-lg md:text-xl text-foreground">
+              Risultato: tempo perso, zero incarichi, nessun controllo.
+            </p>
+            <p className="text-foreground-muted">
+              DomusReport filtra a monte e trasforma la valutazione in un primo passo concreto verso l'incarico.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Demo Widget Section */}
-      <section id="demo" className="py-24 bg-surface-2">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+      <section id="demo" className="landing-section bg-surface-2">
+        <div className="landing-container max-w-5xl text-center space-y-4">
+          <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
             <Smartphone className="w-3 h-3 mr-1" />
             Demo Interattiva
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Prova il chatbot AI ora
-          </h2>
-          <p className="text-xl text-foreground mb-12 max-w-2xl mx-auto">
-            Questo è esattamente lo stesso widget che installerai sul tuo sito web.
-            Conversazione naturale guidata da GPT-4.
-          </p>
+          <div className="space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              Prova ora l'esperienza che vivranno i tuoi clienti
+            </h2>
+            <p className="text-xl text-foreground max-w-2xl mx-auto">
+              Questo è esattamente il widget che installerai sul tuo sito.
+              Stessa conversazione, stesso flusso, stesso risultato.
+            </p>
+          </div>
 
           <div className="relative">
             {!showDemoWidget ? (
-              <div className="bg-card rounded-2xl border-2 border-dashed border-border p-16 hover:border-primary transition-all">
-                <div className="mb-6">
+              <div className="bg-card rounded-2xl border-2 border-dashed border-border p-12 md:p-16 hover:border-primary transition-all space-y-6">
+                <div>
                   <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <MessageSquare className="w-10 h-10 text-primary-foreground" />
                   </div>
@@ -227,21 +332,21 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   onClick={() => setShowDemoWidget(true)}
-                  className="text-lg px-10 py-6 shadow-lg hover:shadow-xl"
+                  className="text-lg px-8 py-6 shadow-lg hover:shadow-xl"
                 >
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Apri Widget Demo
+                  Apri la demo live
                 </Button>
                 <p className="text-sm text-foreground mt-4">Nessuna registrazione richiesta</p>
               </div>
             ) : (
-              <div className="bg-card rounded-2xl shadow-2xl p-6 border border-border">
+              <div className="bg-card rounded-2xl shadow-2xl p-4 md:p-6 border border-border">
                 <ChatWidget widgetId="demo" mode="inline" isDemo={true} />
               </div>
             )}
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-foreground">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-4 h-4 text-primary" />
@@ -265,148 +370,201 @@ export default function LandingPage() {
       </section>
 
       {/* Benefits Section */}
-      <section id="features" className="py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+      <section id="features" className="landing-section bg-background">
+        <div className="landing-container">
+          <div className="text-center space-y-4 md:space-y-5 mb-8 md:mb-12">
+            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
               <Target className="w-3 h-3 mr-1" />
-              Funzionalità Complete
+              Funzionalità
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Tutto ciò che ti serve per<br />generare lead immobiliari
-            </h2>
-            <p className="text-xl text-foreground max-w-3xl mx-auto">
-              Una piattaforma completa che combina AI conversazionale, valutazioni certificate
-              e CRM professionale in un'unica soluzione
-            </p>
+            <div className="space-y-3">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+                Tutto ciò che serve per generare incarichi, non solo contatti
+              </h2>
+              <p className="text-xl text-foreground max-w-3xl mx-auto">
+                Ogni funzione è pensata per trasformare la valutazione in un incarico reale,
+                eliminando richieste vaghe e perdite di tempo.
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-6">
             {/* Feature 1 */}
             <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                  <MessageSquare className="w-7 h-7 text-primary-foreground" />
+              <CardContent className="p-4 md:p-6 space-y-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Database className="w-7 h-7 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">
-                  Chatbot AI Conversazionale
-                </h3>
-                <p className="text-foreground-muted leading-relaxed">
-                  GPT-4 raccoglie automaticamente 20+ parametri immobile tramite conversazione naturale.
-                  Quick replies per velocizzare il processo.
-                </p>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-foreground">
+                    Valutazioni basate su dati ufficiali
+                  </h3>
+                  <p className="text-foreground-muted leading-relaxed">
+                    Ogni stima è costruita su parametri reali e aggiornati, per aumentare credibilità
+                    e fiducia fin dal primo contatto.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
             {/* Feature 2 */}
             <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                  <Database className="w-7 h-7 text-primary-foreground" />
+              <CardContent className="p-4 md:p-6 space-y-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <Target className="w-7 h-7 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">
-                  Valutazioni OMI Certificate
-                </h3>
-                <p className="text-foreground-muted leading-relaxed">
-                  Algoritmo basato su dati ufficiali dell'Osservatorio Mercato Immobiliare.
-                  Copertura 50+ città italiane con aggiornamenti continui.
-                </p>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-foreground">
+                    Lead già qualificati
+                  </h3>
+                  <p className="text-foreground-muted leading-relaxed">
+                    DomusReport filtra subito i curiosi e consegna solo contatti con intenzione reale
+                    di vendere e parlare con l'agenzia.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
             {/* Feature 3 */}
             <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
-                  <Clock className="w-7 h-7 text-primary-foreground" />
+              <CardContent className="p-4 md:p-6 space-y-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                  <MessageSquare className="w-7 h-7 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">
-                  Setup in 2 Minuti
-                </h3>
-                <p className="text-foreground-muted leading-relaxed">
-                  Copia-incolla un codice sul tuo sito. Funziona su WordPress, Webflow, Wix e qualsiasi
-                  piattaforma HTML. Zero configurazione.
-                </p>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-foreground">
+                    Chat conversazionale guidata
+                  </h3>
+                  <p className="text-foreground-muted leading-relaxed">
+                    L'utente risponde passo dopo passo, senza moduli noiosi e senza abbandoni.
+                    Conversazione naturale che raccoglie tutti i dati essenziali.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
             {/* Feature 4 */}
             <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
+              <CardContent className="p-4 md:p-6 space-y-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                   <Users className="w-7 h-7 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">
-                  CRM Integrato
-                </h3>
-                <p className="text-foreground-muted leading-relaxed">
-                  Gestisci lead con workflow professionale: NEW → CONTACTED → INTERESTED → CONVERTED.
-                  Storico conversazioni e export Excel/PDF.
-                </p>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-foreground">
+                    CRM integrato
+                  </h3>
+                  <p className="text-foreground-muted leading-relaxed">
+                    Ogni lead ha uno stato chiaro: NEW → CONTACTED → INTERESTED → CONVERTED.
+                    Nessun contatto dimenticato, storico conversazioni sempre visibile.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
             {/* Feature 5 */}
             <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
+              <CardContent className="p-4 md:p-6 space-y-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                   <LineChart className="w-7 h-7 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">
-                  Analytics Real-Time
-                </h3>
-                <p className="text-foreground-muted leading-relaxed">
-                  Dashboard con metriche live: impressions, click, lead, conversion rate.
-                  Funnel analysis per ottimizzare performance.
-                </p>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-foreground">
+                    Analytics in tempo reale
+                  </h3>
+                  <p className="text-foreground-muted leading-relaxed">
+                    Sai da dove arrivano le richieste e quali portano risultati concreti.
+                    Metriche live per ottimizzare le campagne.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
             {/* Feature 6 */}
             <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-lg">
+              <CardContent className="p-4 md:p-6 space-y-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                   <Sparkles className="w-7 h-7 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">
-                  Personalizzazione Totale
-                </h3>
-                <p className="text-foreground-muted leading-relaxed">
-                  Colori brand, logo agenzia, tema custom, posizione widget.
-                  Multi-widget per siti diversi con configurazioni dedicate.
-                </p>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-foreground">
+                    Personalizzazione Totale
+                  </h3>
+                  <p className="text-foreground-muted leading-relaxed">
+                    Widget, colori, logo e posizione adattati al tuo brand e al tuo sito.
+                    Multi-widget per domini diversi con configurazioni dedicate.
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-24 bg-surface-2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
-              <Zap className="w-3 h-3 mr-1" />
-              Semplice e Veloce
+      {/* Setup Section */}
+      <section className="landing-section bg-surface">
+        <div className="landing-container max-w-6xl">
+          <div className="text-center space-y-3 mb-8 md:mb-12">
+            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
+              <Code className="w-3 h-3 mr-1" />
+              Setup
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Come funziona DomusReport
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Attivo in meno di 2 minuti
             </h2>
-            <p className="text-xl text-foreground max-w-2xl mx-auto">
-              Dal setup alla generazione del primo lead in meno di 5 minuti
+            <p className="text-lg text-foreground-muted">
+              Copi il codice, lo incolli e inizi subito a ricevere richieste.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 lg:gap-6">
+            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-4 md:p-6">
+              <CheckCircle className="w-5 h-5 text-primary" />
+              <span className="text-foreground font-medium">Nessun tecnico</span>
+            </div>
+            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-4 md:p-6">
+              <CheckCircle className="w-5 h-5 text-primary" />
+              <span className="text-foreground font-medium">Nessuna configurazione complessa</span>
+            </div>
+            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-4 md:p-6">
+              <CheckCircle className="w-5 h-5 text-primary" />
+              <span className="text-foreground font-medium">Funziona su qualsiasi sito</span>
+            </div>
+            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-4 md:p-6">
+              <CheckCircle className="w-5 h-5 text-primary" />
+              <span className="text-foreground font-medium">Installazione immediata</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="landing-section bg-surface-2">
+        <div className="landing-container">
+          <div className="text-center space-y-4 md:space-y-5 mb-8 md:mb-12">
+            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
+              <Zap className="w-3 h-3 mr-1" />
+              Semplice e Veloce
+            </Badge>
+            <div className="space-y-3">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+                Dal sito al lead qualificato, in automatico
+              </h2>
+              <p className="text-xl text-foreground max-w-2xl mx-auto">
+                Dalla richiesta di valutazione alla conversazione in dashboard, senza intervento manuale.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 lg:gap-6">
             {/* Step 1 */}
             <div className="relative">
-              <div className="bg-card rounded-2xl p-8 shadow-lg border-2 border-border hover:border-primary transition-all h-full">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center mb-4 text-primary-foreground font-bold text-xl">
+              <div className="bg-card rounded-2xl p-4 md:p-6 shadow-lg border-2 border-border hover:border-primary transition-all h-full space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl">
                   1
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">Registrati Gratis</h3>
-                <p className="text-foreground-muted text-sm">
-                  Crea il tuo account in 30 secondi. Nessuna carta di credito richiesta.
+                <h3 className="text-lg font-bold text-foreground">L'utente chiede una valutazione</h3>
+                <p className="text-foreground-muted text-sm leading-relaxed">
+                  Il widget appare sul tuo sito e guida la conversazione come una chat naturale.
                 </p>
               </div>
               <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
@@ -416,13 +574,13 @@ export default function LandingPage() {
 
             {/* Step 2 */}
             <div className="relative">
-              <div className="bg-card rounded-2xl p-8 shadow-lg border-2 border-border hover:border-primary transition-all h-full">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center mb-4 text-primary-foreground font-bold text-xl">
+              <div className="bg-card rounded-2xl p-4 md:p-6 shadow-lg border-2 border-border hover:border-primary transition-all h-full space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl">
                   2
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">Copia il Codice</h3>
-                <p className="text-foreground-muted text-sm">
-                  Dalla dashboard, copia il codice widget personalizzato per la tua agenzia.
+                <h3 className="text-lg font-bold text-foreground">Il sistema raccoglie i dati essenziali</h3>
+                <p className="text-foreground-muted text-sm leading-relaxed">
+                  Localizzazione, tipologia, stato dell'immobile e tutte le informazioni utili per la stima.
                 </p>
               </div>
               <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
@@ -432,13 +590,13 @@ export default function LandingPage() {
 
             {/* Step 3 */}
             <div className="relative">
-              <div className="bg-card rounded-2xl p-8 shadow-lg border-2 border-border hover:border-primary transition-all h-full">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center mb-4 text-primary-foreground font-bold text-xl">
+              <div className="bg-card rounded-2xl p-4 md:p-6 shadow-lg border-2 border-border hover:border-primary transition-all h-full space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl">
                   3
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">Installa sul Sito</h3>
-                <p className="text-foreground-muted text-sm">
-                  Incolla il codice sul tuo sito WordPress, Webflow o HTML. Funziona subito.
+                <h3 className="text-lg font-bold text-foreground">La valutazione viene elaborata in tempo reale</h3>
+                <p className="text-foreground-muted text-sm leading-relaxed">
+                  La stima si basa su dati OMI ufficiali e parametri aggiornati per la tua zona.
                 </p>
               </div>
               <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
@@ -447,49 +605,98 @@ export default function LandingPage() {
             </div>
 
             {/* Step 4 */}
-            <div className="bg-card rounded-2xl p-8 shadow-lg border-2 border-border hover:border-primary transition-all h-full">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center mb-4 text-primary-foreground font-bold text-xl">
+            <div className="bg-card rounded-2xl p-4 md:p-6 shadow-lg border-2 border-border hover:border-primary transition-all h-full space-y-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl">
                 4
               </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">Ricevi Lead</h3>
-              <p className="text-foreground-muted text-sm">
-                Ogni valutazione diventa automaticamente un lead qualificato nella tua dashboard.
+              <h3 className="text-lg font-bold text-foreground">Il contatto entra nella dashboard</h3>
+              <p className="text-foreground-muted text-sm leading-relaxed">
+                Entra come lead qualificato con storico conversazioni e stato pronto per essere contattato.
               </p>
             </div>
           </div>
+
+          <p className="text-center text-foreground mt-8 text-lg">
+            Tu trovi solo richieste complete, tracciate e utilizzabili.
+          </p>
+        </div>
+      </section>
+
+      {/* Free Trial Section */}
+      <section className="landing-section bg-background">
+        <div className="landing-container max-w-5xl text-center space-y-4">
+          <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
+            <Sparkles className="w-3 h-3 mr-1" />
+            Prova gratuita
+          </Badge>
+          <div className="space-y-3">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              14 giorni per capire se fa la differenza
+            </h2>
+            <p className="text-xl text-foreground-muted">
+              Durante la prova puoi vedere tutto in azione, con richieste reali dal tuo sito.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-6">
+            <div className="flex items-center gap-3 bg-surface border border-border rounded-xl p-4 text-left">
+              <CheckCircle className="w-5 h-5 text-primary" />
+              <span className="text-foreground">Installare il widget sul tuo sito</span>
+            </div>
+            <div className="flex items-center gap-3 bg-surface border border-border rounded-xl p-4 text-left">
+              <CheckCircle className="w-5 h-5 text-primary" />
+              <span className="text-foreground">Ricevere valutazioni reali</span>
+            </div>
+            <div className="flex items-center gap-3 bg-surface border border-border rounded-xl p-4 text-left">
+              <CheckCircle className="w-5 h-5 text-primary" />
+              <span className="text-foreground">Visualizzare lead e conversazioni</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
+            <Link href="/register">
+              <Button size="lg" className="px-8 py-6 font-bold text-lg shadow-lg hover:shadow-xl">
+                Attiva la prova gratuita di 14 giorni
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
+          <p className="text-sm text-foreground">Nessuna carta richiesta • Disattivi quando vuoi</p>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+      <section id="pricing" className="landing-section bg-background">
+        <div className="landing-container">
+          <div className="text-center space-y-4 md:space-y-5 mb-8 md:mb-12">
+            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
               <Sparkles className="w-3 h-3 mr-1" />
-              Piani Flessibili
+              Senza vincoli
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Prezzi trasparenti per ogni esigenza
-            </h2>
-            <p className="text-xl text-foreground max-w-2xl mx-auto">
-              Inizia gratis e scala quando vuoi. Nessun costo nascosto, cancellazione in qualsiasi momento.
-            </p>
+            <div className="space-y-3">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+                Piani semplici, senza vincoli
+              </h2>
+              <p className="text-xl text-foreground max-w-2xl mx-auto">
+                Scegli il piano giusto per la tua agenzia e provalo 14 giorni senza carta di credito.
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-6 max-w-6xl mx-auto">
             {/* Free Plan */}
-            <Card className="border-2 border-border hover:border-primary transition-all">
-              <CardContent className="p-8">
-                <div className="mb-6">
+            <Card className="border-2 border-border hover:border-primary transition-all h-full">
+              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
+                <div className="space-y-2">
                   <h3 className="text-2xl font-bold text-foreground mb-2">Free</h3>
-                  <p className="text-foreground-muted text-sm">Perfetto per iniziare</p>
+                  <p className="text-foreground-muted text-sm">Perfetto per testare il sistema</p>
                 </div>
-                <div className="flex items-end gap-1 mb-8">
+                <div className="flex items-end gap-1">
                   <span className="text-5xl font-bold text-foreground">€0</span>
                   <span className="text-foreground-muted mb-2">/mese</span>
                 </div>
 
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground"><strong>5 valutazioni</strong> al mese</span>
@@ -508,12 +715,12 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Supporto email</span>
+                    <span className="text-foreground">14 giorni di prova gratuita</span>
                   </li>
                 </ul>
 
                 <Link href="/register" className="block">
-                  <Button size="lg" variant="outline" className="w-full">
+                  <Button size="lg" variant="outline" className="w-full mt-4">
                     Inizia Gratis
                   </Button>
                 </Link>
@@ -521,23 +728,23 @@ export default function LandingPage() {
             </Card>
 
             {/* Basic Plan */}
-            <Card className="border-2 border-primary shadow-xl relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                  Più Popolare
-                </Badge>
-              </div>
-              <CardContent className="p-8">
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Basic</h3>
-                  <p className="text-foreground-muted text-sm">Per agenzie in crescita</p>
+            <Card className="border-2 border-primary shadow-xl relative h-full">
+              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
+                <div className="flex justify-center">
+                  <Badge className="bg-primary text-primary-foreground px-4 py-1">
+                    Più Popolare
+                  </Badge>
                 </div>
-                <div className="flex items-end gap-1 mb-8">
+                <div className="space-y-2 text-center">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">Basic</h3>
+                  <p className="text-foreground-muted text-sm">Per agenzie operative</p>
+                </div>
+                <div className="flex items-end gap-1 justify-center">
                   <span className="text-5xl font-bold text-primary">€50</span>
                   <span className="text-foreground-muted mb-2">/mese</span>
                 </div>
 
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground"><strong>50 valutazioni</strong> al mese</span>
@@ -556,16 +763,16 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Personalizzazione completa</span>
+                    <span className="text-foreground">Personalizzazione totale</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Supporto prioritario</span>
+                    <span className="text-foreground">14 giorni di prova gratuita</span>
                   </li>
                 </ul>
 
                 <Link href="/register" className="block">
-                  <Button size="lg" className="w-full">
+                  <Button size="lg" className="w-full mt-4">
                     Inizia Ora
                   </Button>
                 </Link>
@@ -573,18 +780,18 @@ export default function LandingPage() {
             </Card>
 
             {/* Premium Plan */}
-            <Card className="border-2 border-border hover:border-primary transition-all">
-              <CardContent className="p-8">
-                <div className="mb-6">
+            <Card className="border-2 border-border hover:border-primary transition-all h-full">
+              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
+                <div className="space-y-2">
                   <h3 className="text-2xl font-bold text-foreground mb-2">Premium</h3>
-                  <p className="text-foreground-muted text-sm">Massima potenza</p>
+                  <p className="text-foreground-muted text-sm">Per chi vuole il massimo controllo</p>
                 </div>
-                <div className="flex items-end gap-1 mb-8">
+                <div className="flex items-end gap-1">
                   <span className="text-5xl font-bold text-foreground">€100</span>
                   <span className="text-foreground-muted mb-2">/mese</span>
                 </div>
 
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground"><strong>150 valutazioni</strong> al mese</span>
@@ -595,11 +802,11 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">CRM enterprise</span>
+                    <span className="text-foreground">CRM avanzato</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Analytics real-time</span>
+                    <span className="text-foreground">Analytics in tempo reale</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -609,10 +816,14 @@ export default function LandingPage() {
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground">Supporto dedicato</span>
                   </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-foreground">14 giorni di prova gratuita</span>
+                  </li>
                 </ul>
 
                 <Link href="/register" className="block">
-                  <Button size="lg" variant="outline" className="w-full">
+                  <Button size="lg" variant="outline" className="w-full mt-4">
                     Inizia Ora
                   </Button>
                 </Link>
@@ -620,72 +831,72 @@ export default function LandingPage() {
             </Card>
           </div>
 
-          <p className="text-center text-foreground mt-12">
-            Tutti i piani includono 30 giorni di prova gratuita • Nessuna carta richiesta
+          <p className="text-center text-foreground mt-8 md:mt-10">
+            Tutti i piani includono 14 giorni di prova gratuita • Nessuna carta richiesta
           </p>
         </div>
       </section>
 
       {/* Testimonial/Trust Section */}
-      <section className="py-20 bg-surface-2">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+      <section className="landing-section bg-surface-2">
+        <div className="landing-container max-w-6xl">
+          <div className="text-center space-y-4 md:space-y-5 mb-8 md:mb-12">
+            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
               <Users className="w-3 h-3 mr-1" />
               Agenzie Soddisfatte
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Perché le agenzie scelgono DomusReport
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+              Agenzie che lo usano ogni giorno
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="shadow-lg">
-              <CardContent className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-6">
+            <Card className="shadow-lg h-full">
+              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className="text-primary text-lg">★</span>
                   ))}
                 </div>
                 <p className="text-foreground-muted mb-6 leading-relaxed italic">
-                  "In un mese abbiamo generato 45 lead qualificati. Il widget lavora 24/7 anche quando l'agenzia è chiusa. ROI incredibile!"
+                  "In un mese abbiamo ricevuto decine di richieste reali. Il sistema lavora anche quando l'agenzia è chiusa."
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-full flex items-center justify-center text-primary-foreground font-bold">
                     MC
                   </div>
                   <div>
-                    <div className="font-semibold text-foreground">Marco Conti</div>
+                    <div className="font-semibold text-foreground">Marco C.</div>
                     <div className="text-sm text-foreground-muted">Agenzia Immobiliare Milano</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg">
-              <CardContent className="p-8">
+            <Card className="shadow-lg h-full">
+              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className="text-primary text-lg">★</span>
                   ))}
                 </div>
                 <p className="text-foreground-muted mb-6 leading-relaxed italic">
-                  "Setup in 5 minuti, valutazioni precise basate su OMI. I clienti apprezzano la trasparenza e noi otteniamo contatti caldi."
+                  "Valutazioni chiare e contatti già filtrati. Meno perdite di tempo, più appuntamenti concreti."
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-full flex items-center justify-center text-primary-foreground font-bold">
                     LR
                   </div>
                   <div>
-                    <div className="font-semibold text-foreground">Laura Rossi</div>
-                    <div className="text-sm text-foreground-muted">Casa Tua Immobiliare</div>
+                    <div className="font-semibold text-foreground">Laura R.</div>
+                    <div className="text-sm text-foreground-muted">Agenzia Immobiliare</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg">
-              <CardContent className="p-8">
+            <Card className="shadow-lg h-full">
+              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
                     <span key={i} className="text-primary text-lg">★</span>
@@ -710,41 +921,42 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-primary/20 via-primary/10 to-background text-foreground relative overflow-hidden">
+      <section className="landing-section bg-gradient-to-br from-primary/20 via-primary/10 to-background text-foreground relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
-            Pronto a trasformare il tuo sito in una<br />
-            <span className="text-primary">macchina di lead generation?</span>
-          </h2>
-          <p className="text-xl md:text-2xl text-foreground mb-10 leading-relaxed">
-            Unisciti a 100+ agenzie che stanno già generando lead qualificati ogni giorno con DomusReport
-          </p>
+        <div className="landing-container max-w-4xl text-center relative z-10 space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-4xl md:text-5xl font-extrabold">
+              Trasforma il tuo sito in uno strumento che lavora per te
+            </h2>
+            <p className="text-xl md:text-2xl text-foreground leading-relaxed">
+              Unisciti alle agenzie che hanno smesso di rincorrere clienti e hanno iniziato a selezionarli.
+            </p>
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
             <Link href="/register">
               <Button
                 size="lg"
-                className="font-bold text-lg px-12 py-7 shadow-2xl hover:shadow-3xl transition-all"
+                className="font-bold text-lg px-12 py-6 shadow-2xl hover:shadow-3xl transition-all"
               >
-                Inizia Gratis - 30 Giorni di Prova
+                Attiva la prova gratuita di 14 giorni
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-primary" />
               <span>Nessuna carta richiesta</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-primary" />
-              <span>Setup in 2 minuti</span>
+              <span>Setup immediato</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-primary" />
-              <span>Cancellazione in qualsiasi momento</span>
+              <span>Disattivi quando vuoi</span>
             </div>
           </div>
         </div>

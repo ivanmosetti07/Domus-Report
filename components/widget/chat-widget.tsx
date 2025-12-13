@@ -1201,6 +1201,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         ...themeStyles,
         backgroundColor,
         fontFamily,
+        overscrollBehavior: 'contain', // lo scroll resta confinato al widget
         // Responsive sizing per bubble mode
         ...(mode === 'bubble' ? {
           width: 'clamp(min(100vw, 360px), 90vw, 400px)',
@@ -1288,7 +1289,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         className="flex-1 overflow-y-auto"
         style={{
           backgroundColor: backgroundColor === '#ffffff' ? '#f9fafb' : `${backgroundColor}f5`,
-          padding: 'clamp(0.75rem, 2vw, 1rem)'
+          padding: 'clamp(0.75rem, 2vw, 1rem)',
+          overscrollBehavior: 'contain' // evita che lo scroll interno trascini la pagina
         }}
       >
         {messages.map((message) => (
