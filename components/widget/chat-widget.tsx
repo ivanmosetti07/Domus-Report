@@ -150,6 +150,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const batchTimerRef = React.useRef<NodeJS.Timeout | null>(null)
   const leadIdRef = React.useRef<string | null>(null)
 
+  // FIX CRITICO: Ref per phone per evitare problemi di React state batching
+  const phoneRef = React.useRef<string | undefined>(undefined)
+
   // Auto-scroll interno alla chat (non influenza l'embed esterno)
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
@@ -620,14 +623,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           return
         }
 
-        // FIX CRITICO: Aggiorna lo stato E usa un callback per garantire
-        // che calculateValuation() usi il nuovo valore
-        setCollectedData(prev => {
-          const updated = { ...prev, phone: sanitizedPhone }
-          // Chiama calculateValuation nel prossimo tick per garantire che lo stato sia aggiornato
-          setTimeout(() => calculateValuation(), 0)
-          return updated
-        })
+        // FIX CRITICO: Salva il phone sia nello stato che nella ref
+        // La ref garantisce che il valore sia SEMPRE disponibile, anche con React batching
+        console.log('[contacts_phone] Saving phone:', sanitizedPhone)
+        phoneRef.current = sanitizedPhone
+        setCollectedData(prev => ({ ...prev, phone: sanitizedPhone }))
+
+        // Chiama calculateValuation dopo aver salvato il phone
+        calculateValuation()
         break
 
       case "ask_restart":
@@ -888,10 +891,11 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       // Log dei dati raccolti PRIMA di inviarli
       console.log('[ChatWidget] Phone data before sending:', {
-        phone: collectedData.phone,
-        phoneType: typeof collectedData.phone,
-        phoneIsUndefined: collectedData.phone === undefined,
-        phoneValue: JSON.stringify(collectedData.phone)
+        phoneFromState: collectedData.phone,
+        phoneFromRef: phoneRef.current,
+        phoneToUse: phoneRef.current || collectedData.phone,
+        phoneType: typeof (phoneRef.current || collectedData.phone),
+        phoneValue: JSON.stringify(phoneRef.current || collectedData.phone)
       })
 
       // Prepara il payload base
@@ -900,7 +904,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         firstName: collectedData.firstName,
         lastName: collectedData.lastName,
         email: collectedData.email,
-        phone: collectedData.phone,
+        // FIX CRITICO: Usa phoneRef invece di collectedData.phone per evitare state batching
+        phone: phoneRef.current || collectedData.phone,
         // Property data
         address: collectedData.address,
         city: collectedData.city,
