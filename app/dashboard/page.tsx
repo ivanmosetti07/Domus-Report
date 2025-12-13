@@ -33,8 +33,7 @@ export default async function DashboardPage() {
     widgetConfigs,
     recentLeads,
     settings,
-    newLeadsCount,
-    leadsLast30DaysByDay
+    newLeadsCount
   ] = await Promise.all([
     // Total leads count
     prisma.lead.count({
@@ -124,19 +123,7 @@ export default async function DashboardPage() {
           }
         }
       }
-    }),
-
-    // Leads by day (last 30 days) for chart
-    prisma.$queryRaw<Array<{ date: Date; count: bigint }>>`
-      SELECT
-        DATE(data_richiesta) as date,
-        COUNT(*)::bigint as count
-      FROM leads
-      WHERE agenzia_id = ${agency.agencyId}
-        AND data_richiesta >= NOW() - INTERVAL '30 days'
-      GROUP BY DATE(data_richiesta)
-      ORDER BY date ASC
-    `
+    })
   ])
 
   // Calculate trial days remaining
@@ -231,10 +218,48 @@ export default async function DashboardPage() {
     ? '0.0%'  // Ci sono opens ma nessun lead submit event
     : 'N/A'   // Nessun evento widget tracciato
 
+  // Query WidgetEvent per il grafico Trend Lead (ultimi 30 giorni)
+  // Usa eventi real-time invece della tabella leads per coerenza con il resto del dashboard
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+  let leadsLast30DaysByDay: Array<{ date: Date; count: number }> = []
+
+  if (widgetIds.length > 0) {
+    const widgetFilter = widgetIds.length === 1
+      ? { widgetId: widgetIds[0] }
+      : { widgetId: { in: widgetIds } }
+
+    // Recupera tutti i CONTACT_FORM_SUBMIT eventi degli ultimi 30 giorni
+    const leadEvents = await prisma.widgetEvent.findMany({
+      where: {
+        ...widgetFilter,
+        eventType: 'CONTACT_FORM_SUBMIT',
+        createdAt: {
+          gte: thirtyDaysAgo
+        }
+      },
+      select: {
+        createdAt: true
+      }
+    })
+
+    // Raggruppa per data
+    const dateCountMap = new Map<string, number>()
+    for (const event of leadEvents) {
+      const dateStr = event.createdAt.toISOString().split('T')[0]
+      dateCountMap.set(dateStr, (dateCountMap.get(dateStr) || 0) + 1)
+    }
+
+    // Converti in array
+    leadsLast30DaysByDay = Array.from(dateCountMap.entries()).map(([dateStr, count]) => ({
+      date: new Date(dateStr),
+      count
+    }))
+  }
+
   // Transform leads by day data for chart
   const chartData = leadsLast30DaysByDay.map(item => ({
     date: item.date.toISOString().split('T')[0],
-    count: Number(item.count)
+    count: item.count
   }))
 
   // Fill missing days with 0 to render a consistent chart
