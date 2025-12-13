@@ -634,59 +634,6 @@ export default function AnalyticsPage() {
         </Card>
       )}
 
-      {/* Daily Details Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Dettagli Giornalieri</CardTitle>
-          <CardDescription>
-            Breakdown completo per ogni giorno del periodo selezionato
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-surface-2 border-b border-border">
-                <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-foreground">Data</th>
-                  <th className="px-4 py-3 text-right font-semibold text-foreground">Impression</th>
-                  <th className="px-4 py-3 text-right font-semibold text-foreground">Click</th>
-                  <th className="px-4 py-3 text-right font-semibold text-foreground">Lead</th>
-                  <th className="px-4 py-3 text-right font-semibold text-foreground">Valutazioni</th>
-                  <th className="px-4 py-3 text-right font-semibold text-foreground">Conv %</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {analyticsData?.data.map((day) => (
-                  <tr key={day.id} className="hover:bg-surface-2">
-                    <td className="px-4 py-3 text-foreground">
-                      {format(new Date(day.date), "dd MMMM yyyy", { locale: it })}
-                    </td>
-                    <td className="px-4 py-3 text-right text-foreground">{day.widgetImpressions}</td>
-                    <td className="px-4 py-3 text-right text-foreground">{day.widgetClicks}</td>
-                    <td className="px-4 py-3 text-right font-medium text-success">
-                      {day.leadsGenerated}
-                    </td>
-                    <td className="px-4 py-3 text-right text-foreground">{day.valuationsCompleted}</td>
-                    <td className="px-4 py-3 text-right">
-                      <span
-                        className={`font-medium ${
-                          day.conversionRate > 5
-                            ? "text-success"
-                            : day.conversionRate > 2
-                            ? "text-foreground"
-                            : "text-warning"
-                        }`}
-                      >
-                        {day.conversionRate.toFixed(2)}%
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
