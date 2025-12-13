@@ -136,12 +136,23 @@ export async function POST(request: NextRequest) {
       error: phoneValidation.error || 'none'
     })
 
+    // CRITICAL FIX: Phone is optional - only reject if phone was provided AND is invalid
+    // If phone is null/undefined/empty, that's OK (valid: true, sanitized: null)
+    // Only reject if user provided a phone number that doesn't match Italian format
     if (!phoneValidation.valid) {
-      console.log('[POST /api/leads] ❌ PHONE VALIDATION FAILED - Rejecting request')
+      console.log('[POST /api/leads] ❌ PHONE VALIDATION FAILED - Rejecting request because invalid format')
       return NextResponse.json(
         { error: phoneValidation.error },
         { status: 400 }
       )
+    }
+
+    // Log warning if phone was provided but will be saved as null
+    if (body.phone && phoneValidation.sanitized === null) {
+      console.warn('[POST /api/leads] ⚠️ WARNING: Phone was provided but sanitized to null:', {
+        original: body.phone,
+        willSaveAsNull: true
+      })
     }
 
     // Sanitize and validate property data using geocoding

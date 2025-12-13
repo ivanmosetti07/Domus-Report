@@ -1,9 +1,12 @@
 /**
  * DomusReport Widget Embed Script
  * Carica dinamicamente il widget React sulla pagina del cliente
+ * Version: 2.1.0 (2025-12-13) - Cache-busting + config API
  */
 
 (function() {
+  // Version for cache busting
+  const WIDGET_VERSION = '2.1.0';
   // Estrai widgetId dall'URL dello script
   const scripts = document.getElementsByTagName('script');
   const currentScript = scripts[scripts.length - 1];
@@ -66,7 +69,7 @@
   // Carica configurazione widget dal backend
   async function loadWidgetConfig() {
     try {
-      const response = await fetch(`${baseUrl}/api/widget-config/public?widgetId=${widgetId}`);
+      const response = await fetch(`${baseUrl}/api/widget-config/public?widgetId=${widgetId}&v=${WIDGET_VERSION}`);
       const data = await response.json();
 
       if (!data.widgetConfig || !data.widgetConfig.isActive) {
@@ -122,7 +125,7 @@
 
     // Crea iframe per widget inline
     const iframe = document.createElement('iframe');
-    iframe.src = `${baseUrl}/widget/${widgetId}?embed=inline`;
+    iframe.src = `${baseUrl}/widget/${widgetId}?embed=inline&v=${WIDGET_VERSION}`;
     iframe.style.cssText = 'width: 100%; height: 100%; border: none;';
     iframe.id = 'domusreport-widget-iframe';
 
@@ -267,7 +270,7 @@
       iframe.setAttribute('allowTransparency', 'true');
 
       // Usa src diretto invece di scrivere contenuto e fare redirect
-      iframe.src = `${baseUrl}/widget/${widgetId}?embed=bubble`;
+      iframe.src = `${baseUrl}/widget/${widgetId}?embed=bubble&v=${WIDGET_VERSION}`;
 
       document.body.appendChild(iframe);
 

@@ -55,6 +55,14 @@ export function validateEmail(email: string): { valid: boolean; sanitized: strin
 /**
  * Validate phone number (Italian format)
  * CRITICAL: This function must preserve valid phone numbers and never return null unless input is explicitly null/undefined
+ *
+ * Behavior:
+ * - Input null/undefined/empty → valid: true, sanitized: null (phone is optional)
+ * - Input valid Italian number → valid: true, sanitized: cleaned number
+ * - Input invalid format → valid: false, sanitized: attempted cleanup, error: message
+ *
+ * This allows leads to be saved WITHOUT phone numbers (optional field).
+ * Only rejects if user provides a phone that doesn't match Italian format.
  */
 export function validatePhone(phone: string | undefined | null): { valid: boolean; sanitized: string | null; error?: string } {
   console.log('[validatePhone] START - Input:', JSON.stringify(phone), 'Type:', typeof phone, 'Length:', phone?.length)

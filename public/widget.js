@@ -1,6 +1,6 @@
 /**
- * DomusReport Widget Embed Script
- * Version: 2.0.0
+ * DomusReport Widget Embed Script (LEGACY - deprecated, use widget-embed.js instead)
+ * Version: 2.1.0 (2025-12-13) - Allineato a config API + cache-busting
  *
  * Usage:
  * <script src="https://domusreport.mainstream.agency/widget.js" data-widget-id="YOUR_WIDGET_ID"></script>
@@ -9,10 +9,16 @@
  * - data-widget-id: (required) Your unique widget ID
  * - data-position: Override bubble position (bottom-right, bottom-left, bottom-center)
  * - data-auto-open: Auto open widget after delay (milliseconds)
+ *
+ * NOTE: This script is now deprecated. Please migrate to widget-embed.js for full config API support.
+ * This version now respects widget configuration from backend (mode, theme, isActive).
  */
 
 (function() {
   'use strict';
+
+  // Version for cache busting
+  const WIDGET_VERSION = '2.1.0';
 
   // Configuration
   const WIDGET_HOST = typeof window !== 'undefined' && window.location.hostname === 'localhost'
@@ -32,195 +38,233 @@
 
   console.log('[DomusReport] Initializing widget:', widgetId);
 
-  // Create container for the widget
-  const container = document.createElement('div');
-  container.id = 'domusreport-widget-' + widgetId;
-  container.style.cssText = 'position: fixed; bottom: 0; right: 0; z-index: 2147483647; pointer-events: none;';
+  // Load widget configuration from backend
+  async function loadWidgetConfig() {
+    try {
+      const response = await fetch(WIDGET_HOST + '/api/widget-config/public?widgetId=' + widgetId + '&v=' + WIDGET_VERSION);
+      const data = await response.json();
 
-  // Create iframe
-  const iframe = document.createElement('iframe');
-  iframe.id = 'domusreport-iframe-' + widgetId;
-  iframe.src = WIDGET_HOST + '/widget/' + widgetId + (positionOverride ? '?position=' + positionOverride : '');
-
-  // Inizialmente l'iframe è piccolo (solo area bubble) per permettere click
-  iframe.style.cssText = [
-    'position: fixed',
-    'bottom: 0',
-    'right: 0',
-    'width: 120px',
-    'height: 120px',
-    'border: none',
-    'z-index: 2147483647',
-    'pointer-events: auto',
-    'background: transparent',
-    'transition: width 0.3s, height 0.3s'
-  ].join(';');
-
-  // Sandbox attributes for security
-  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads');
-  iframe.setAttribute('allow', 'clipboard-write');
-  iframe.setAttribute('title', 'DomusReport Chat Widget');
-  iframe.setAttribute('loading', 'lazy');
-
-  // Append iframe to container
-  container.appendChild(iframe);
-
-  // Add container to body when DOM is ready
-  function injectWidget() {
-    if (document.body) {
-      document.body.appendChild(container);
-      console.log('[DomusReport] Widget injected successfully');
-
-      // Auto open if configured
-      if (autoOpenDelay && autoOpenDelay > 0) {
-        setTimeout(function() {
-          iframe.contentWindow.postMessage({
-            type: 'DOMUS_WIDGET_OPEN_COMMAND'
-          }, WIDGET_HOST);
-        }, autoOpenDelay);
+      if (!data.widgetConfig || !data.widgetConfig.isActive) {
+        console.error('[DomusReport] Widget not active or not found');
+        return null;
       }
-    } else {
-      // If body is not ready, wait
-      setTimeout(injectWidget, 50);
+
+      return data.widgetConfig;
+    } catch (error) {
+      console.error('[DomusReport] Error loading widget config:', error);
+      // Fallback to default behavior
+      return null;
     }
   }
 
-  // Start injection when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectWidget);
-  } else {
-    injectWidget();
-  }
+  // Initialize widget with config
+  async function initWidget() {
+    const config = await loadWidgetConfig();
 
-  // Listen for messages from iframe
-  window.addEventListener('message', function(event) {
-    // Security: verify origin
-    if (event.origin !== WIDGET_HOST) {
+    // If widget is not active, don't inject
+    if (config && !config.isActive) {
+      console.warn('[DomusReport] Widget is not active, skipping injection');
       return;
     }
 
-    var data = event.data;
+    // Create container for the widget
+    const container = document.createElement('div');
+    container.id = 'domusreport-widget-' + widgetId;
+    container.style.cssText = 'position: fixed; bottom: 0; right: 0; z-index: 2147483647; pointer-events: none;';
 
-    // Handle widget loaded event
-    if (data.type === 'DOMUS_WIDGET_LOADED') {
-      console.log('[DomusReport] Widget loaded:', data.widgetId);
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.id = 'domusreport-iframe-' + widgetId;
 
-      // Send configuration to iframe if needed
-      iframe.contentWindow.postMessage({
-        type: 'DOMUS_WIDGET_CONFIG',
-        config: {
-          widgetId: widgetId,
-          parentUrl: window.location.href,
-          referrer: document.referrer
+    // Add version param for cache busting
+    const urlParams = new URLSearchParams();
+    if (positionOverride) urlParams.set('position', positionOverride);
+    urlParams.set('v', WIDGET_VERSION);
+    iframe.src = WIDGET_HOST + '/widget/' + widgetId + '?' + urlParams.toString();
+
+    // Inizialmente l'iframe è piccolo (solo area bubble) per permettere click
+    iframe.style.cssText = [
+      'position: fixed',
+      'bottom: 0',
+      'right: 0',
+      'width: 120px',
+      'height: 120px',
+      'border: none',
+      'z-index: 2147483647',
+      'pointer-events: auto',
+      'background: transparent',
+      'transition: width 0.3s, height 0.3s'
+    ].join(';');
+
+    // Sandbox attributes for security
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads');
+    iframe.setAttribute('allow', 'clipboard-write');
+    iframe.setAttribute('title', 'DomusReport Chat Widget');
+    iframe.setAttribute('loading', 'lazy');
+
+    // Append iframe to container
+    container.appendChild(iframe);
+
+    // Add container to body when DOM is ready
+    function injectWidget() {
+      if (document.body) {
+        document.body.appendChild(container);
+        console.log('[DomusReport] Widget injected successfully');
+
+        // Auto open if configured
+        if (autoOpenDelay && autoOpenDelay > 0) {
+          setTimeout(function() {
+            iframe.contentWindow.postMessage({
+              type: 'DOMUS_WIDGET_OPEN_COMMAND'
+            }, WIDGET_HOST);
+          }, autoOpenDelay);
         }
-      }, WIDGET_HOST);
-
-      // Fire custom event
-      var loadEvent = new CustomEvent('domusreport:loaded', {
-        detail: { widgetId: widgetId }
-      });
-      window.dispatchEvent(loadEvent);
-    }
-
-    // Handle widget close event
-    if (data.type === 'DOMUS_WIDGET_CLOSE') {
-      console.log('[DomusReport] Widget closed');
-
-      // Riduci iframe solo all'area del bubble
-      iframe.style.width = '120px';
-      iframe.style.height = '120px';
-      iframe.style.pointerEvents = 'auto'; // Mantieni auto per permettere click sul bubble
-
-      var closeEvent = new CustomEvent('domusreport:close', {
-        detail: { widgetId: widgetId }
-      });
-      window.dispatchEvent(closeEvent);
-    }
-
-    // Handle widget open event
-    if (data.type === 'DOMUS_WIDGET_OPEN') {
-      console.log('[DomusReport] Widget opened');
-
-      // Espandi iframe a schermo intero
-      iframe.style.width = '100vw';
-      iframe.style.height = '100vh';
-      iframe.style.pointerEvents = 'auto';
-
-      var openEvent = new CustomEvent('domusreport:open', {
-        detail: { widgetId: widgetId }
-      });
-      window.dispatchEvent(openEvent);
-    }
-
-    // Handle lead submitted event
-    if (data.type === 'DOMUS_LEAD_SUBMITTED') {
-      console.log('[DomusReport] Lead submitted:', data.leadId);
-
-      // Fire custom event for tracking
-      var leadEvent = new CustomEvent('domusreport:lead', {
-        detail: {
-          leadId: data.leadId,
-          widgetId: widgetId
-        }
-      });
-      window.dispatchEvent(leadEvent);
-
-      // Google Analytics 4 event (if available)
-      if (typeof gtag === 'function') {
-        gtag('event', 'generate_lead', {
-          'event_category': 'DomusReport',
-          'event_label': 'Lead Submitted',
-          'value': 1
-        });
-      }
-
-      // Facebook Pixel event (if available)
-      if (typeof fbq === 'function') {
-        fbq('track', 'Lead', {
-          content_name: 'DomusReport Valuation'
-        });
+      } else {
+        // If body is not ready, wait
+        setTimeout(injectWidget, 50);
       }
     }
 
-    // Handle valuation view event
-    if (data.type === 'DOMUS_VALUATION_VIEWED') {
-      console.log('[DomusReport] Valuation viewed');
+    // Start injection when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', injectWidget);
+    } else {
+      injectWidget();
+    }
 
-      var valuationEvent = new CustomEvent('domusreport:valuation', {
-        detail: {
-          widgetId: widgetId,
-          estimatedPrice: data.estimatedPrice
+    // Listen for messages from iframe
+    window.addEventListener('message', function(event) {
+      // Security: verify origin
+      if (event.origin !== WIDGET_HOST) {
+        return;
+      }
+
+      var data = event.data;
+
+      // Handle widget loaded event
+      if (data.type === 'DOMUS_WIDGET_LOADED') {
+        console.log('[DomusReport] Widget loaded:', data.widgetId);
+
+        // Send configuration to iframe if needed
+        iframe.contentWindow.postMessage({
+          type: 'DOMUS_WIDGET_CONFIG',
+          config: {
+            widgetId: widgetId,
+            parentUrl: window.location.href,
+            referrer: document.referrer
+          }
+        }, WIDGET_HOST);
+
+        // Fire custom event
+        var loadEvent = new CustomEvent('domusreport:loaded', {
+          detail: { widgetId: widgetId }
+        });
+        window.dispatchEvent(loadEvent);
+      }
+
+      // Handle widget close event
+      if (data.type === 'DOMUS_WIDGET_CLOSE') {
+        console.log('[DomusReport] Widget closed');
+
+        // Riduci iframe solo all'area del bubble
+        iframe.style.width = '120px';
+        iframe.style.height = '120px';
+        iframe.style.pointerEvents = 'auto'; // Mantieni auto per permettere click sul bubble
+
+        var closeEvent = new CustomEvent('domusreport:close', {
+          detail: { widgetId: widgetId }
+        });
+        window.dispatchEvent(closeEvent);
+      }
+
+      // Handle widget open event
+      if (data.type === 'DOMUS_WIDGET_OPEN') {
+        console.log('[DomusReport] Widget opened');
+
+        // Espandi iframe a schermo intero
+        iframe.style.width = '100vw';
+        iframe.style.height = '100vh';
+        iframe.style.pointerEvents = 'auto';
+
+        var openEvent = new CustomEvent('domusreport:open', {
+          detail: { widgetId: widgetId }
+        });
+        window.dispatchEvent(openEvent);
+      }
+
+      // Handle lead submitted event
+      if (data.type === 'DOMUS_LEAD_SUBMITTED') {
+        console.log('[DomusReport] Lead submitted:', data.leadId);
+
+        // Fire custom event for tracking
+        var leadEvent = new CustomEvent('domusreport:lead', {
+          detail: {
+            leadId: data.leadId,
+            widgetId: widgetId
+          }
+        });
+        window.dispatchEvent(leadEvent);
+
+        // Google Analytics 4 event (if available)
+        if (typeof gtag === 'function') {
+          gtag('event', 'generate_lead', {
+            'event_category': 'DomusReport',
+            'event_label': 'Lead Submitted',
+            'value': 1
+          });
         }
-      });
-      window.dispatchEvent(valuationEvent);
-    }
-  });
 
-  // Expose widget API on window object
-  window.DomusReportWidget = window.DomusReportWidget || {};
-  window.DomusReportWidget[widgetId] = {
-    open: function() {
-      iframe.contentWindow.postMessage({
-        type: 'DOMUS_WIDGET_OPEN_COMMAND'
-      }, WIDGET_HOST);
-    },
-    close: function() {
-      iframe.contentWindow.postMessage({
-        type: 'DOMUS_WIDGET_CLOSE_COMMAND'
-      }, WIDGET_HOST);
-    },
-    destroy: function() {
-      container.remove();
-      delete window.DomusReportWidget[widgetId];
-      console.log('[DomusReport] Widget destroyed');
-    },
-    getWidgetId: function() {
-      return widgetId;
-    },
-    isLoaded: function() {
-      return true;
-    }
-  };
+        // Facebook Pixel event (if available)
+        if (typeof fbq === 'function') {
+          fbq('track', 'Lead', {
+            content_name: 'DomusReport Valuation'
+          });
+        }
+      }
 
-  console.log('[DomusReport] Widget API available at window.DomusReportWidget["' + widgetId + '"]');
+      // Handle valuation view event
+      if (data.type === 'DOMUS_VALUATION_VIEWED') {
+        console.log('[DomusReport] Valuation viewed');
+
+        var valuationEvent = new CustomEvent('domusreport:valuation', {
+          detail: {
+            widgetId: widgetId,
+            estimatedPrice: data.estimatedPrice
+          }
+        });
+        window.dispatchEvent(valuationEvent);
+      }
+    });
+
+    // Expose widget API on window object
+    window.DomusReportWidget = window.DomusReportWidget || {};
+    window.DomusReportWidget[widgetId] = {
+      open: function() {
+        iframe.contentWindow.postMessage({
+          type: 'DOMUS_WIDGET_OPEN_COMMAND'
+        }, WIDGET_HOST);
+      },
+      close: function() {
+        iframe.contentWindow.postMessage({
+          type: 'DOMUS_WIDGET_CLOSE_COMMAND'
+        }, WIDGET_HOST);
+      },
+      destroy: function() {
+        container.remove();
+        delete window.DomusReportWidget[widgetId];
+        console.log('[DomusReport] Widget destroyed');
+      },
+      getWidgetId: function() {
+        return widgetId;
+      },
+      isLoaded: function() {
+        return true;
+      }
+    };
+
+    console.log('[DomusReport] Widget API available at window.DomusReportWidget["' + widgetId + '"]');
+  }
+
+  // Call initWidget on load
+  initWidget();
 })();
