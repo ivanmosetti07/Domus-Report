@@ -15,12 +15,21 @@ interface StatsChartProps {
 }
 
 export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 30 giorni" }: StatsChartProps) {
+  // Debug: mostra i dati in console
+  console.log('[StatsChart] Data received:', {
+    length: data.length,
+    sample: data.slice(0, 3),
+    totalLeads: data.reduce((sum, d) => sum + d.count, 0)
+  })
+
   if (data.length === 0) {
+    console.log('[StatsChart] No data, hiding chart')
     return null
   }
 
   // Calculate max value for scaling
   const maxCount = Math.max(...data.map(d => d.count), 1)
+  console.log('[StatsChart] Max count:', maxCount)
 
   // Calculate trend
   const firstHalf = data.slice(0, Math.floor(data.length / 2))
@@ -80,7 +89,10 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
           height: 'clamp(6rem, 20vw, 8rem)'
         }}>
           {data.map((item, index) => {
-            const heightPercentage = (item.count / maxCount) * 100
+            // Calcola altezza percentuale, con minimo visibile per giorni con count > 0
+            const heightPercentage = item.count > 0
+              ? Math.max((item.count / maxCount) * 100, 3)
+              : 1  // Mostra una barra sottilissima anche per giorni con 0 lead
             const isToday = index === data.length - 1
 
             return (
