@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Message } from "./message"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { X, Send, Building2, Loader2 } from "lucide-react"
+import { X, Send, Building2, Loader2, Download } from "lucide-react"
 import { Message as MessageType, PropertyType, PropertyCondition, FloorType, OutdoorSpace, HeatingType, EnergyClass, OccupancyStatus } from "@/types"
 import { formatCurrency } from "@/lib/utils"
 
@@ -41,7 +41,8 @@ type ConversationStep =
   | "neighborhood"
   | "type"
   | "surface"
-  | "rooms"
+  | "bedrooms"
+  | "total_rooms"
   | "bathrooms"
   | "floor_and_elevator"
   | "outdoor_space"
@@ -53,7 +54,8 @@ type ConversationStep =
   | "build_year"
   | "occupancy"
   | "occupancy_end_date"
-  | "contacts_name"
+  | "contacts_first_name"
+  | "contacts_last_name"
   | "contacts_email"
   | "contacts_phone"
   | "calculating"
@@ -68,6 +70,7 @@ interface CollectedData {
   type?: PropertyType
   surfaceSqm?: number
   rooms?: number
+  totalRooms?: number
   bathrooms?: number
   floor?: number
   hasElevator?: boolean
@@ -132,6 +135,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const [currentStep, setCurrentStep] = React.useState<ConversationStep>("welcome")
   const [collectedData, setCollectedData] = React.useState<CollectedData>({})
   const [valuation, setValuation] = React.useState<ValuationResult | null>(null)
+  const [savedLeadId, setSavedLeadId] = React.useState<string | null>(null)
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [isInitialized, setIsInitialized] = React.useState(false)
@@ -391,22 +395,33 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         }
         setCollectedData(prev => ({ ...prev, surfaceSqm: surface }))
 
-        // Ask for rooms if it's a residential property
+        // Ask for bedrooms if it's a residential property
         if ([PropertyType.APARTMENT, PropertyType.ATTICO, PropertyType.VILLA].includes(collectedData.type as PropertyType)) {
-          addBotMessage("Quanti locali/vani ha? (es. 2, 3, 4, 5+)", "rooms")
+          addBotMessage("Quante stanze/camere da letto ha? (es. 1, 2, 3, 4+)", "bedrooms")
         } else {
           // Skip to floor for offices/shops or to condition for other types
           askForFloorOrSkip()
         }
         break
 
-      case "rooms":
-        const rooms = parseInt(input.replace('+', ''))
-        if (isNaN(rooms) || rooms < 1 || rooms > 20) {
-          addBotMessage("Per favore inserisci un numero valido (1-20)")
+      case "bedrooms":
+        const bedrooms = parseInt(input.replace('+', ''))
+        if (isNaN(bedrooms) || bedrooms < 0 || bedrooms > 20) {
+          addBotMessage("Per favore inserisci un numero valido (0-20)")
           return
         }
-        setCollectedData(prev => ({ ...prev, rooms }))
+        setCollectedData(prev => ({ ...prev, rooms: bedrooms }))
+        addBotMessage("Quante camere ha in totale? (soggiorno, cucina, camere, studio, etc.)", "total_rooms")
+        break
+
+      case "total_rooms":
+        const totalRooms = parseInt(input.replace('+', ''))
+        if (isNaN(totalRooms) || totalRooms < 1 || totalRooms > 30) {
+          addBotMessage("Per favore inserisci un numero valido (1-30)")
+          return
+        }
+        // Memorizza le camere totali ma non le usiamo per la valutazione
+        setCollectedData(prev => ({ ...prev, totalRooms }))
         addBotMessage(
           "Quanti bagni ha?",
           "bathrooms",
@@ -547,8 +562,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         if (input === OccupancyStatus.OCCUPIED) {
           addBotMessage("Quando scade il contratto? (es. 31/12/2025 o scrivi 'non so')", "occupancy_end_date")
         } else {
-          // Chiedi contatti PRIMA della valutazione
-          addBotMessage("Perfetto! Per inviarti la valutazione, come ti chiami?", "contacts_name")
+          // Chiedi contatti PRIMA della valutazione - separati
+          addBotMessage("Perfetto! Per inviarti la valutazione, qual è il tuo nome?", "contacts_first_name")
         }
         break
 
@@ -556,16 +571,22 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         if (input.toLowerCase() !== "non so" && input.toLowerCase() !== "no") {
           setCollectedData(prev => ({ ...prev, occupancyEndDate: input }))
         }
-        // Chiedi contatti PRIMA della valutazione
-        addBotMessage("Perfetto! Per inviarti la valutazione, come ti chiami?", "contacts_name")
+        // Chiedi contatti PRIMA della valutazione - separati
+        addBotMessage("Perfetto! Per inviarti la valutazione, qual è il tuo nome?", "contacts_first_name")
         break
 
-      case "contacts_name":
-        const [firstName, ...lastNameParts] = input.trim().split(" ")
+      case "contacts_first_name":
         setCollectedData(prev => ({
           ...prev,
-          firstName: firstName || input,
-          lastName: lastNameParts.join(" ") || ""
+          firstName: input.trim()
+        }))
+        addBotMessage("E il tuo cognome?", "contacts_last_name")
+        break
+
+      case "contacts_last_name":
+        setCollectedData(prev => ({
+          ...prev,
+          lastName: input.trim()
         }))
         addBotMessage("Qual è la tua email?", "contacts_email")
         break
@@ -614,6 +635,12 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           addUserMessage("Sì, rifai valutazione")
           addBotMessage("Perfetto! Ricominciamo da capo. 🔄")
           resetConversation()
+        } else if (input === "download_pdf") {
+          addUserMessage("📥 Scarica PDF")
+          downloadPDF()
+        } else if (input === "skip_pdf") {
+          addUserMessage("No, grazie")
+          // Non fare nulla, aspetta la prossima domanda
         } else {
           addUserMessage("No, grazie")
           addBotMessage("Grazie per aver usato il nostro servizio! A presto! 👋")
@@ -789,6 +816,53 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     }, 1500)
   }
 
+  // Funzione per scaricare il PDF della valutazione
+  const downloadPDF = async () => {
+    if (!savedLeadId) {
+      addBotMessage("Errore: impossibile generare il PDF. ID lead non disponibile.")
+      return
+    }
+
+    try {
+      // Mostra messaggio di loading
+      const loadingMsg: MessageType = {
+        id: `msg_${Date.now()}`,
+        role: "bot",
+        text: "Sto generando il PDF... ⏳",
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, loadingMsg])
+
+      // Chiama l'API per generare il PDF
+      const response = await fetch(`/api/valuation/pdf?leadId=${savedLeadId}`)
+
+      if (!response.ok) {
+        throw new Error("Errore nella generazione del PDF")
+      }
+
+      // Scarica il file
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `valutazione-${collectedData.lastName || "immobile"}-${Date.now()}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+
+      // Rimuovi il messaggio di loading e aggiungi conferma
+      setMessages(prev => prev.filter(msg => msg.id !== loadingMsg.id))
+      addBotMessage("✅ PDF scaricato con successo!")
+
+      // Track PDF download event
+      trackEvent("PDF_DOWNLOAD", { leadId: savedLeadId })
+    } catch (error) {
+      console.error("Error downloading PDF:", error)
+      addBotMessage("Si è verificato un errore nel download del PDF. Riprova o contattaci.")
+    }
+  }
+
 
   const completeConversation = async (valuationResult?: ValuationResult) => {
     const firstName = collectedData.firstName || "Amico"
@@ -928,10 +1002,11 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         throw new Error(errorData.error || "Errore nel salvataggio del lead")
       }
 
-      // Salva leadId dal response per tracking futuro
+      // Salva leadId dal response per tracking futuro e per il PDF
       const responseData = await response.json()
       if (responseData.lead?.id) {
         leadIdRef.current = responseData.lead.id
+        setSavedLeadId(responseData.lead.id)
       }
 
       // Track CONTACT_FORM_SUBMIT event
@@ -948,6 +1023,20 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       addBotMessage(successMessage, "completed")
 
+      // Aggiungi opzione download PDF se NON è demo
+      if (!isDemo) {
+        setTimeout(() => {
+          addBotMessage(
+            "Vuoi scaricare il PDF della valutazione?",
+            "completed",
+            [
+              { label: "📥 Scarica PDF", value: "download_pdf" },
+              { label: "No, grazie", value: "skip_pdf" }
+            ]
+          )
+        }, 1500)
+      }
+
       // Ask if user wants to restart instead of closing
       setTimeout(() => {
         addBotMessage(
@@ -958,7 +1047,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             { label: "No, grazie", value: "done" }
           ]
         )
-      }, 2000)
+      }, isDemo ? 2000 : 3500)
     } catch (error) {
       console.error('[ChatWidget] CRITICAL ERROR saving lead:', {
         error: error instanceof Error ? error.message : String(error),
@@ -1032,8 +1121,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         return "Seleziona il tipo..."
       case "surface":
         return "es. 85"
-      case "rooms":
-        return "es. 3"
+      case "bedrooms":
+        return "es. 2"
+      case "total_rooms":
+        return "es. 4"
       case "bathrooms":
         return "es. 2"
       case "floor_and_elevator":
@@ -1056,8 +1147,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         return "Seleziona..."
       case "occupancy_end_date":
         return "es. 31/12/2025"
-      case "contacts_name":
-        return "Nome e cognome"
+      case "contacts_first_name":
+        return "es. Mario"
+      case "contacts_last_name":
+        return "es. Rossi"
       case "contacts_email":
         return "tua@email.com"
       case "contacts_phone":
