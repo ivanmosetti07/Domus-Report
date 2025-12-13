@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const daysParam = searchParams.get("days")
     const days = daysParam ? parseInt(daysParam, 10) : 90
 
-    // Recupera widgetId dell'agenzia
+    // Recupera widgetId dell'agenzia (supporto multi-widget)
     const agencyData = await prisma.agency.findUnique({
       where: { id: agency.agencyId },
       select: { widgetId: true, nome: true },
@@ -39,6 +39,31 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Recupera widget configs per questa agenzia
+    const widgetConfigs = await prisma.widgetConfig.findMany({
+      where: { agencyId: agency.agencyId, isActive: true },
+      select: { widgetId: true },
+    })
+
+    // Raccogli tutti i widget IDs (legacy + configs)
+    const widgetIds: string[] = []
+    if (agencyData.widgetId) {
+      widgetIds.push(agencyData.widgetId)
+    }
+    widgetConfigs.forEach(config => {
+      if (config.widgetId && !widgetIds.includes(config.widgetId)) {
+        widgetIds.push(config.widgetId)
+      }
+    })
+
+    // Se non ci sono widget IDs, ritorna errore
+    if (widgetIds.length === 0) {
+      return NextResponse.json(
+        { success: false, error: "Nessun widget configurato per questa agenzia" },
+        { status: 400 }
+      )
+    }
+
     // Calcola range date
     const endDate = new Date()
     const startDate = subDays(endDate, days)
@@ -47,18 +72,28 @@ export async function POST(req: NextRequest) {
       `[Force Aggregate] Aggregating analytics for agency ${agencyData.nome} (${agency.agencyId})`
     )
     console.log(
+      `[Force Aggregate] Widget IDs: ${widgetIds.join(', ')} (${widgetIds.length} widget(s))`
+    )
+    console.log(
       `[Force Aggregate] Date range: ${startDate.toISOString()} to ${endDate.toISOString()}`
     )
 
+    // Crea il filtro per i widget
+    const widgetFilter = widgetIds.length === 1
+      ? { widgetId: widgetIds[0] }
+      : { widgetId: { in: widgetIds } }
+
     // Conta eventi prima dell'aggregazione
     const eventsBefore = await prisma.widgetEvent.count({
-      where: { widgetId: agencyData.widgetId },
+      where: widgetFilter,
     })
 
-    // Esegui aggregazione
+    console.log(`[Force Aggregate] Found ${eventsBefore} widget events`)
+
+    // Esegui aggregazione per TUTTI i widget
     await aggregateAnalyticsForDateRange(
       agency.agencyId,
-      agencyData.widgetId,
+      widgetIds,
       startDate,
       endDate
     )
@@ -102,7 +137,8 @@ export async function POST(req: NextRequest) {
       agency: {
         id: agency.agencyId,
         name: agencyData.nome,
-        widgetId: agencyData.widgetId,
+        widgetIds: widgetIds,
+        widgetCount: widgetIds.length,
       },
       aggregation: {
         dateRange: {
