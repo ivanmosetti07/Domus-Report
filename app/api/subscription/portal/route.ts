@@ -27,10 +27,23 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
+    // Determina URL di ritorno con fallback sicuri
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.NEXTAUTH_URL ||
+      request.headers.get('origin')
+
+    if (!baseUrl || !baseUrl.startsWith('http')) {
+      console.error('Base URL non valida per il billing portal:', baseUrl)
+      return NextResponse.json({
+        error: 'Configurazione dominio non valida. Imposta NEXT_PUBLIC_APP_URL o NEXTAUTH_URL.'
+      }, { status: 500 })
+    }
+
     // Crea Portal Session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription`
+      return_url: `${baseUrl}/dashboard/subscription`
     })
 
     return NextResponse.json({
