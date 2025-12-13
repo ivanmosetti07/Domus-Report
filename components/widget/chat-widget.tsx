@@ -1166,7 +1166,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         style={{ backgroundColor }}
       >
         {currentStep === "contacts_email" ? (
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2" data-form-type="other">
             <Input
               ref={inputRef}
               value={inputValue}
@@ -1176,6 +1176,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               className="flex-1 h-11 sm:h-10"
               type="email"
               style={{ borderColor: primaryColor }}
+              autoComplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
+              data-bwignore="true"
             />
             <Button
               type="submit"
@@ -1189,7 +1193,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             </Button>
           </form>
         ) : currentStep === "contacts_phone" ? (
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2" data-form-type="other">
             <Input
               ref={inputRef}
               value={inputValue}
@@ -1199,6 +1203,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               className="flex-1 h-11 sm:h-10"
               type="tel"
               style={{ borderColor: primaryColor }}
+              autoComplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
+              data-bwignore="true"
             />
             <Button
               type="submit"
@@ -1212,7 +1220,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             </Button>
           </form>
         ) : (
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2" data-form-type="other">
             <Input
               ref={inputRef}
               value={inputValue}
@@ -1221,6 +1229,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               disabled={isInputDisabled}
               className="flex-1 h-11 sm:h-10"
               style={{ borderColor: `${primaryColor}40` }}
+              autoComplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
+              data-bwignore="true"
             />
             <Button
               type="submit"
