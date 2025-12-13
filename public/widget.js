@@ -57,7 +57,7 @@
   ].join(';');
 
   // Sandbox attributes for security
-  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox');
+  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads');
   iframe.setAttribute('allow', 'clipboard-write');
   iframe.setAttribute('title', 'DomusReport Chat Widget');
   iframe.setAttribute('loading', 'lazy');
