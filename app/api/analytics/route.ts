@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
 
     // Se non ci sono dati, prova a popolare da WidgetEvent storici
     if (analyticsData.length === 0) {
-      // Verifica che ci siano widget events per questa agenzia
+      // Recupera tutti i widget IDs dell'agenzia (supporta multi-widget)
       const agencyData = await prisma.agency.findUnique({
         where: { id: agency.agencyId },
         select: { widgetId: true },
@@ -89,10 +89,37 @@ export async function GET(req: NextRequest) {
         )
       }
 
-      // Popola analytics da eventi storici
+      // Recupera widget configs per questa agenzia
+      const widgetConfigs = await prisma.widgetConfig.findMany({
+        where: { agencyId: agency.agencyId, isActive: true },
+        select: { widgetId: true },
+      })
+
+      // Raccogli tutti i widget IDs (legacy + configs)
+      const widgetIds: string[] = []
+      if (agencyData.widgetId) {
+        widgetIds.push(agencyData.widgetId)
+      }
+      widgetConfigs.forEach(config => {
+        if (config.widgetId && !widgetIds.includes(config.widgetId)) {
+          widgetIds.push(config.widgetId)
+        }
+      })
+
+      // Se non ci sono widget IDs, ritorna dati vuoti
+      if (widgetIds.length === 0) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+          totals: calculateTotals([]),
+          populated: false,
+        })
+      }
+
+      // Popola analytics da eventi storici per TUTTI i widget
       await aggregateAnalyticsForDateRange(
         agency.agencyId,
-        agencyData.widgetId,
+        widgetIds,
         startDate,
         endDate
       )

@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    // Recupera widgetId
+    // Recupera widgetId (supporto multi-widget)
     const agencyData = await prisma.agency.findUnique({
       where: { id: agency.agencyId },
       select: { widgetId: true },
@@ -39,7 +39,53 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const widgetId = agencyData.widgetId
+    // Recupera widget configs per questa agenzia
+    const widgetConfigs = await prisma.widgetConfig.findMany({
+      where: { agencyId: agency.agencyId, isActive: true },
+      select: { widgetId: true },
+    })
+
+    // Raccogli tutti i widget IDs (legacy + configs)
+    const widgetIds: string[] = []
+    if (agencyData.widgetId) {
+      widgetIds.push(agencyData.widgetId)
+    }
+    widgetConfigs.forEach(config => {
+      if (config.widgetId && !widgetIds.includes(config.widgetId)) {
+        widgetIds.push(config.widgetId)
+      }
+    })
+
+    // Se non ci sono widget IDs, ritorna dati vuoti
+    if (widgetIds.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          widgetImpressions: 0,
+          widgetClicks: 0,
+          leadsGenerated: 0,
+          valuationsCompleted: 0,
+          conversionRate: 0,
+          closeEvents: 0,
+          messageEvents: 0,
+          contactFormStartEvents: 0,
+          valuationToLeadRate: 0,
+          formStartToSubmitRate: 0,
+          funnel: null,
+          hourlyStats: [],
+          dateRange: {
+            start: new Date().toISOString(),
+            end: new Date().toISOString(),
+          },
+          isLive: true,
+        },
+      })
+    }
+
+    // Crea il filtro per i widget
+    const widgetFilter = widgetIds.length === 1
+      ? { widgetId: widgetIds[0] }
+      : { widgetId: { in: widgetIds } }
 
     // Date range: oggi (da mezzanotte a ora)
     const todayStart = new Date()
@@ -47,7 +93,7 @@ export async function GET(req: NextRequest) {
 
     const now = new Date()
 
-    // Calcola statistiche live da WidgetEvent
+    // Calcola statistiche live da WidgetEvent (TUTTI i widget)
     const [
       openEvents,
       closeEvents,
@@ -59,7 +105,7 @@ export async function GET(req: NextRequest) {
       // OPEN eventi (widget aperti)
       prisma.widgetEvent.count({
         where: {
-          widgetId,
+          ...widgetFilter,
           eventType: "OPEN",
           createdAt: { gte: todayStart, lte: now },
         },
@@ -68,7 +114,7 @@ export async function GET(req: NextRequest) {
       // CLOSE eventi (widget chiusi)
       prisma.widgetEvent.count({
         where: {
-          widgetId,
+          ...widgetFilter,
           eventType: "CLOSE",
           createdAt: { gte: todayStart, lte: now },
         },
@@ -77,7 +123,7 @@ export async function GET(req: NextRequest) {
       // MESSAGE eventi (messaggi inviati)
       prisma.widgetEvent.count({
         where: {
-          widgetId,
+          ...widgetFilter,
           eventType: "MESSAGE",
           createdAt: { gte: todayStart, lte: now },
         },
@@ -86,7 +132,7 @@ export async function GET(req: NextRequest) {
       // VALUATION_VIEW eventi (valutazioni visualizzate)
       prisma.widgetEvent.count({
         where: {
-          widgetId,
+          ...widgetFilter,
           eventType: "VALUATION_VIEW",
           createdAt: { gte: todayStart, lte: now },
         },
@@ -95,7 +141,7 @@ export async function GET(req: NextRequest) {
       // CONTACT_FORM_START eventi (form contatti iniziato)
       prisma.widgetEvent.count({
         where: {
-          widgetId,
+          ...widgetFilter,
           eventType: "CONTACT_FORM_START",
           createdAt: { gte: todayStart, lte: now },
         },
@@ -104,7 +150,7 @@ export async function GET(req: NextRequest) {
       // CONTACT_FORM_SUBMIT eventi (lead generati)
       prisma.widgetEvent.count({
         where: {
-          widgetId,
+          ...widgetFilter,
           eventType: "CONTACT_FORM_SUBMIT",
           createdAt: { gte: todayStart, lte: now },
         },
@@ -185,7 +231,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Statistiche orarie (ultimi 24 ore, raggruppate per ora)
-    const hourlyStats = await getHourlyStats(widgetId, todayStart, now)
+    const hourlyStats = await getHourlyStats(widgetIds, todayStart, now)
 
     return NextResponse.json({
       success: true,
@@ -234,14 +280,19 @@ export async function GET(req: NextRequest) {
  * Ottiene statistiche raggruppate per ora
  */
 async function getHourlyStats(
-  widgetId: string,
+  widgetIds: string[],
   startDate: Date,
   endDate: Date
 ) {
+  // Crea il filtro per i widget
+  const widgetFilter = widgetIds.length === 1
+    ? { widgetId: widgetIds[0] }
+    : { widgetId: { in: widgetIds } }
+
   // Recupera tutti gli eventi
   const events = await prisma.widgetEvent.findMany({
     where: {
-      widgetId,
+      ...widgetFilter,
       createdAt: { gte: startDate, lte: endDate },
     },
     select: {

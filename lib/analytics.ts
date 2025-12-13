@@ -2,13 +2,27 @@ import { prisma } from "@/lib/prisma"
 
 /**
  * Aggrega analytics per un range di date
+ * Supporta sia widgetId singolo che multipli widget IDs
  */
 export async function aggregateAnalyticsForDateRange(
   agencyId: string,
-  widgetId: string,
+  widgetId: string | string[],
   startDate: Date,
   endDate: Date
 ) {
+  // Normalizza widgetId in array
+  const widgetIds = Array.isArray(widgetId) ? widgetId : [widgetId]
+
+  // Se non ci sono widget IDs, non fare nulla
+  if (widgetIds.length === 0) {
+    return
+  }
+
+  // Crea il filtro per i widget
+  const widgetFilter = widgetIds.length === 1
+    ? { widgetId: widgetIds[0] }
+    : { widgetId: { in: widgetIds } }
+
   // Cicla ogni giorno nel range
   const currentDate = new Date(startDate)
 
@@ -19,13 +33,13 @@ export async function aggregateAnalyticsForDateRange(
     const dayEnd = new Date(currentDate)
     dayEnd.setHours(23, 59, 59, 999)
 
-    // Aggrega dati per questo giorno
+    // Aggrega dati per questo giorno (TUTTI i widget dell'agenzia)
     const [openEvents, clickEvents, leadsGenerated, valuationsCompleted] =
       await Promise.all([
         // Widget impressions = OPEN eventi
         prisma.widgetEvent.count({
           where: {
-            widgetId,
+            ...widgetFilter,
             eventType: "OPEN",
             createdAt: { gte: dayStart, lte: dayEnd },
           },
@@ -34,7 +48,7 @@ export async function aggregateAnalyticsForDateRange(
         // Widget clicks = OPEN + MESSAGE eventi
         prisma.widgetEvent.count({
           where: {
-            widgetId,
+            ...widgetFilter,
             eventType: { in: ["OPEN", "MESSAGE"] },
             createdAt: { gte: dayStart, lte: dayEnd },
           },
@@ -43,7 +57,7 @@ export async function aggregateAnalyticsForDateRange(
         // Leads generati = CONTACT_FORM_SUBMIT eventi
         prisma.widgetEvent.count({
           where: {
-            widgetId,
+            ...widgetFilter,
             eventType: "CONTACT_FORM_SUBMIT",
             createdAt: { gte: dayStart, lte: dayEnd },
           },
@@ -52,7 +66,7 @@ export async function aggregateAnalyticsForDateRange(
         // Valutazioni completate = VALUATION_VIEW eventi
         prisma.widgetEvent.count({
           where: {
-            widgetId,
+            ...widgetFilter,
             eventType: "VALUATION_VIEW",
             createdAt: { gte: dayStart, lte: dayEnd },
           },

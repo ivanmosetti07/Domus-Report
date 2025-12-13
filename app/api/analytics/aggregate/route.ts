@@ -68,15 +68,40 @@ export async function POST(req: NextRequest) {
     // Aggrega per ogni agenzia
     for (const agency of agencies) {
       try {
+        // Recupera widget configs per questa agenzia (supporto multi-widget)
+        const widgetConfigs = await prisma.widgetConfig.findMany({
+          where: { agencyId: agency.id, isActive: true },
+          select: { widgetId: true },
+        })
+
+        // Raccogli tutti i widget IDs (legacy + configs)
+        const widgetIds: string[] = []
+        if (agency.widgetId) {
+          widgetIds.push(agency.widgetId)
+        }
+        widgetConfigs.forEach(config => {
+          if (config.widgetId && !widgetIds.includes(config.widgetId)) {
+            widgetIds.push(config.widgetId)
+          }
+        })
+
+        // Se non ci sono widget, salta
+        if (widgetIds.length === 0) {
+          console.log(
+            `[Cron] ⊘ Skipping agency ${agency.nome} (no widget IDs found)`
+          )
+          continue
+        }
+
         await aggregateAnalyticsForDateRange(
           agency.id,
-          agency.widgetId,
+          widgetIds,
           targetDate,
           targetDate // Single day
         )
         results.success++
         console.log(
-          `[Cron] ✓ Aggregated analytics for agency: ${agency.nome} (${agency.id})`
+          `[Cron] ✓ Aggregated analytics for agency: ${agency.nome} (${agency.id}) - ${widgetIds.length} widget(s)`
         )
       } catch (error) {
         results.failed++
