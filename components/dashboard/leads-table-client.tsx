@@ -47,13 +47,13 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
   // Helper per ottenere status badge
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      NEW: { label: 'Nuovo', variant: 'default' as const, color: 'bg-blue-100 text-blue-800 border-blue-200' },
-      CONTACTED: { label: 'Contattato', variant: 'secondary' as const, color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-      INTERESTED: { label: 'Interessato', variant: 'default' as const, color: 'bg-green-100 text-green-800 border-green-200' },
-      CONVERTED: { label: 'Convertito', variant: 'default' as const, color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-      LOST: { label: 'Perso', variant: 'destructive' as const, color: 'bg-red-100 text-red-800 border-red-200' },
+      NEW: { label: 'Nuovo', variant: 'default' as const, color: 'bg-primary/20 text-primary border-primary/30' },
+      CONTACTED: { label: 'Contattato', variant: 'secondary' as const, color: 'bg-warning/20 text-warning border-warning/30' },
+      INTERESTED: { label: 'Interessato', variant: 'default' as const, color: 'bg-success/20 text-success border-success/30' },
+      CONVERTED: { label: 'Convertito', variant: 'default' as const, color: 'bg-success/30 text-success border-success/40' },
+      LOST: { label: 'Perso', variant: 'destructive' as const, color: 'bg-destructive/20 text-destructive border-destructive/30' },
     }
-    return statusConfig[status as keyof typeof statusConfig] || { label: status, variant: 'outline' as const, color: 'bg-gray-100 text-gray-800' }
+    return statusConfig[status as keyof typeof statusConfig] || { label: status, variant: 'outline' as const, color: 'bg-surface text-foreground border-border' }
   }
 
   // Filtra lead in base al status

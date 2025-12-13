@@ -35,31 +35,31 @@ const STATUS_CONFIG = {
   NEW: {
     label: 'Nuovo',
     icon: Clock,
-    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    color: 'bg-primary/20 text-primary border-primary/30',
     description: 'Lead appena acquisito'
   },
   CONTACTED: {
     label: 'Contattato',
     icon: UserCheck,
-    color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    color: 'bg-warning/20 text-warning border-warning/30',
     description: 'Cliente contattato'
   },
   INTERESTED: {
     label: 'Interessato',
     icon: TrendingUp,
-    color: 'bg-green-100 text-green-800 border-green-200',
+    color: 'bg-success/20 text-success border-success/30',
     description: 'Cliente interessato'
   },
   CONVERTED: {
     label: 'Convertito',
     icon: CheckCircle2,
-    color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    color: 'bg-success/30 text-success border-success/40',
     description: 'Lead convertito in cliente'
   },
   LOST: {
     label: 'Perso',
     icon: XCircle,
-    color: 'bg-red-100 text-red-800 border-red-200',
+    color: 'bg-destructive/20 text-destructive border-destructive/30',
     description: 'Lead perso'
   },
 }
