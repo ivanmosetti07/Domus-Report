@@ -124,7 +124,7 @@ export default async function DashboardPage() {
           }
         }
       }
-    })
+    }),
 
     // Leads by day (last 30 days) for chart
     prisma.$queryRaw<Array<{ date: Date; count: bigint }>>`
