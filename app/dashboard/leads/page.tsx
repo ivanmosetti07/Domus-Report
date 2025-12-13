@@ -22,20 +22,28 @@ export default async function LeadsPage() {
     return null // Middleware should prevent this
   }
 
-  // Fetch leads from database with relations
-  const leads = await prisma.lead.findMany({
+  // Fetch leads with relations (includes latest status and valuation for exports)
+  const leadsWithRelations = await prisma.lead.findMany({
     where: {
       agenziaId: agency.agencyId,
     },
     include: {
-      property: true,
+      property: {
+        include: {
+          valuation: true,
+        },
+      },
+      statuses: {
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+      },
     },
     orderBy: {
       dataRichiesta: "desc", // Most recent first
     },
   })
 
-  if (leads.length === 0) {
+  if (leadsWithRelations.length === 0) {
     return (
       <div>
         <PageHeader title="I tuoi Lead" />
@@ -58,42 +66,21 @@ export default async function LeadsPage() {
     where: { id: agency.agencyId },
   })
 
-  // Fetch leads with statuses for export
-  const leadsWithStatuses = await prisma.lead.findMany({
-    where: {
-      agenziaId: agency.agencyId,
-    },
-    include: {
-      property: {
-        include: {
-          valuation: true,
-        },
-      },
-      statuses: {
-        orderBy: { createdAt: 'desc' },
-        take: 1,
-      },
-    },
-    orderBy: {
-      dataRichiesta: "desc",
-    },
-  })
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
       <div className="flex items-center justify-between">
         <PageHeader
           title="I tuoi Lead"
-          subtitle={`${leads.length} lead ${leads.length === 1 ? "trovato" : "trovati"}`}
+          subtitle={`${leadsWithRelations.length} lead ${leadsWithRelations.length === 1 ? "trovato" : "trovati"}`}
         />
         <ExportLeadsButtons
-          leads={leadsWithStatuses}
+          leads={leadsWithRelations}
           agencyName={agencyData?.nome || 'Agenzia'}
         />
       </div>
 
       {/* Use client component for interactive features */}
-      <LeadsTableClient leads={leads} />
+      <LeadsTableClient leads={leadsWithRelations} />
     </div>
   )
 }
