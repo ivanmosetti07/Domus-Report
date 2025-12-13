@@ -177,7 +177,7 @@ ${bubbleCode}
 
   const CodeBlock = ({ code, type }: { code: string; type: string }) => (
     <div className="relative group">
-      <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs leading-relaxed border border-gray-700 shadow-lg">
+      <pre className="bg-surface-2 text-foreground p-4 rounded-lg overflow-x-auto text-xs leading-relaxed border border-border shadow-soft-lg">
         <code>{code}</code>
       </pre>
       <Button
@@ -188,7 +188,7 @@ ${bubbleCode}
       >
         {copiedType === type ? (
           <>
-            <Check className="w-3.5 h-3.5 mr-1.5 text-green-600" />
+            <Check className="w-3.5 h-3.5 mr-1.5 text-success" />
             <span className="text-xs">Copiato!</span>
           </>
         ) : (
@@ -203,7 +203,7 @@ ${bubbleCode}
 
   const InstructionStep = ({ number, title, description }: { number: number; title: string; description: string | React.ReactNode }) => (
     <div className="flex gap-3 items-start">
-      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center text-sm font-bold shadow-glow-primary">
         {number}
       </div>
       <div className="flex-1 pt-0.5">
@@ -225,10 +225,10 @@ ${bubbleCode}
     href: string
   }) => (
     <Link href={href} className="block">
-      <Card className="h-full hover:shadow-lg hover:border-primary/50 transition-all duration-200 cursor-pointer group">
+      <Card className="h-full hover:shadow-glow-primary hover:border-primary/50 transition-all duration-200 cursor-pointer group bg-card border-border">
         <CardContent className="p-4 flex flex-col items-center text-center">
           <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">{icon}</div>
-          <h4 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">{title}</h4>
+          <h4 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors text-foreground">{title}</h4>
           <p className="text-xs text-foreground-muted">{description}</p>
         </CardContent>
       </Card>
@@ -263,25 +263,25 @@ ${bubbleCode}
         <div className="flex-1 overflow-y-auto px-1">
           <Tabs defaultValue="platforms" className="w-full">
             {widget.mode === 'bubble' ? (
-              <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-100 p-1">
-                <TabsTrigger value="platforms" className="data-[state=active]:bg-white">
+              <TabsList className="grid w-full grid-cols-3 mb-6 bg-surface p-1">
+                <TabsTrigger value="platforms" className="data-[state=active]:bg-card">
                   <Code2 className="w-4 h-4 mr-2" />
                   Piattaforme
                 </TabsTrigger>
-                <TabsTrigger value="script" className="data-[state=active]:bg-white">
+                <TabsTrigger value="script" className="data-[state=active]:bg-card">
                   Script HTML
                 </TabsTrigger>
-                <TabsTrigger value="react" className="data-[state=active]:bg-white">
+                <TabsTrigger value="react" className="data-[state=active]:bg-card">
                   React/Next.js
                 </TabsTrigger>
               </TabsList>
             ) : (
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 p-1">
-                <TabsTrigger value="platforms" className="data-[state=active]:bg-white">
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-surface p-1">
+                <TabsTrigger value="platforms" className="data-[state=active]:bg-card">
                   <Code2 className="w-4 h-4 mr-2" />
                   Piattaforme
                 </TabsTrigger>
-                <TabsTrigger value="iframe" className="data-[state=active]:bg-white">
+                <TabsTrigger value="iframe" className="data-[state=active]:bg-card">
                   iFrame
                 </TabsTrigger>
               </TabsList>
@@ -328,11 +328,11 @@ ${bubbleCode}
 
                     <TabsContent value="wordpress-quick" className="mt-4 space-y-4">
                       <CodeBlock code={wordpressCode} type="wordpress" />
-                      <Card className="bg-amber-50 border-amber-200">
+                      <Card className="bg-surface-2 border-warning/30">
                         <CardContent className="p-4 flex gap-3">
-                          <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                          <div className="text-sm text-amber-900">
-                            <strong>Elementor, Divi o altri builder?</strong> Usa il widget "HTML Personalizzato" e incolla il codice script.
+                          <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                          <div className="text-sm text-foreground">
+                            <strong>Elementor, Divi o altri builder?</strong> <span className="text-foreground-muted">Usa il widget "HTML Personalizzato" e incolla il codice script.</span>
                           </div>
                         </CardContent>
                       </Card>
@@ -361,12 +361,12 @@ ${bubbleCode}
             {/* SCRIPT TAG - Solo per Bubble */}
             {widget.mode === 'bubble' && (
               <TabsContent value="script" className="space-y-4 mt-0">
-              <Card className="border-blue-200 bg-blue-50">
+              <Card className="border-primary/30 bg-surface-2">
                 <CardContent className="p-4 flex gap-3">
-                  <MessageSquare className="w-6 h-6 text-blue-600 flex-shrink-0" />
-                  <div className="text-sm text-blue-900">
+                  <MessageSquare className="w-6 h-6 text-primary flex-shrink-0" />
+                  <div className="text-sm text-foreground">
                     <strong>Widget Bubble (Bottone Flottante)</strong>
-                    <p className="mt-1">Il widget appare come un bottone flottante in basso a destra della pagina. Quando cliccato, si apre un modale con il form. <strong>Metodo consigliato</strong> per la maggior parte dei siti.</p>
+                    <p className="mt-1 text-foreground-muted">Il widget appare come un bottone flottante in basso a destra della pagina. Quando cliccato, si apre un modale con il form. <strong className="text-foreground">Metodo consigliato</strong> per la maggior parte dei siti.</p>
                   </div>
                 </CardContent>
               </Card>
@@ -408,12 +408,12 @@ ${bubbleCode}
             {/* IFRAME - Solo per Inline */}
             {widget.mode === 'inline' && (
               <TabsContent value="iframe" className="space-y-4 mt-0">
-              <Card className="border-purple-200 bg-purple-50">
+              <Card className="border-accent/30 bg-surface-2">
                 <CardContent className="p-4 flex gap-3">
-                  <Layout className="w-6 h-6 text-purple-600 flex-shrink-0" />
-                  <div className="text-sm text-purple-900">
+                  <Layout className="w-6 h-6 text-accent flex-shrink-0" />
+                  <div className="text-sm text-foreground">
                     <strong>Widget Inline (Incorporato)</strong>
-                    <p className="mt-1">Il form di valutazione è incorporato direttamente nella pagina come parte del contenuto. Ideale per pagine di contatto dedicate, landing page o sezioni specifiche del sito dove vuoi massima visibilità.</p>
+                    <p className="mt-1 text-foreground-muted">Il form di valutazione è incorporato direttamente nella pagina come parte del contenuto. Ideale per pagine di contatto dedicate, landing page o sezioni specifiche del sito dove vuoi massima visibilità.</p>
                   </div>
                 </CardContent>
               </Card>
@@ -450,11 +450,11 @@ ${bubbleCode}
             {/* REACT/NEXT.JS - Solo per Bubble */}
             {widget.mode === 'bubble' && (
               <TabsContent value="react" className="space-y-4 mt-0">
-              <Card className="border-cyan-200 bg-cyan-50">
+              <Card className="border-primary/30 bg-surface-2">
                 <CardContent className="p-4 flex gap-3">
-                  <Code2 className="w-5 h-5 text-cyan-600 flex-shrink-0" />
-                  <div className="text-sm text-cyan-900">
-                    <strong>Per applicazioni React e Next.js</strong> - Integrazione ottimizzata con lazy loading per performance migliori.
+                  <Code2 className="w-5 h-5 text-primary flex-shrink-0" />
+                  <div className="text-sm text-foreground">
+                    <strong>Per applicazioni React e Next.js</strong> <span className="text-foreground-muted">- Integrazione ottimizzata con lazy loading per performance migliori.</span>
                   </div>
                 </CardContent>
               </Card>
@@ -520,9 +520,9 @@ ${bubbleCode}
           </Tabs>
 
           {/* SEZIONE FOOTER CON INFO E TEST */}
-          <div className="mt-8 pt-6 border-t space-y-4">
+          <div className="mt-8 pt-6 border-t border-border space-y-4">
             {/* Widget ID */}
-            <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+            <div className="p-4 bg-gradient-to-r from-surface via-surface-2 to-surface rounded-lg border border-border shadow-soft-lg">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold text-foreground-muted uppercase tracking-wider mb-1">
@@ -540,7 +540,7 @@ ${bubbleCode}
                 >
                   {copiedType === 'widgetId' ? (
                     <>
-                      <Check className="w-4 h-4 text-green-600" />
+                      <Check className="w-4 h-4 text-success" />
                       <span className="text-xs">Copiato!</span>
                     </>
                   ) : (
@@ -570,11 +570,11 @@ ${bubbleCode}
             </div>
 
             {/* Help Notice */}
-            <Card className="bg-green-50 border-green-200">
+            <Card className="bg-surface-2 border-success/30">
               <CardContent className="p-4 flex gap-3">
-                <Sparkles className="w-5 h-5 text-green-600 flex-shrink-0" />
-                <div className="text-sm text-green-900">
-                  <strong>Hai bisogno di aiuto?</strong> Consulta le nostre guide dettagliate per ogni piattaforma. Se il widget non appare, verifica di aver incollato il codice prima del tag &lt;/body&gt;.
+                <Sparkles className="w-5 h-5 text-success flex-shrink-0" />
+                <div className="text-sm text-foreground">
+                  <strong>Hai bisogno di aiuto?</strong> <span className="text-foreground-muted">Consulta le nostre guide dettagliate per ogni piattaforma. Se il widget non appare, verifica di aver incollato il codice prima del tag &lt;/body&gt;.</span>
                 </div>
               </CardContent>
             </Card>

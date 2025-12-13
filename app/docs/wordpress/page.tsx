@@ -37,7 +37,7 @@ export default function WordPressDocsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="max-w-5xl mx-auto px-4 py-12">
         {/* Header */}
@@ -46,7 +46,7 @@ export default function WordPressDocsPage() {
             <ArrowLeft className="w-4 h-4" />
             Torna ai Widget
           </Link>
-          <h1 className="text-4xl font-bold mb-3 flex items-center gap-3">
+          <h1 className="text-4xl font-bold mb-3 flex items-center gap-3 text-foreground">
             <div className="text-5xl">📘</div>
             Installazione Widget su WordPress
           </h1>
@@ -56,10 +56,10 @@ export default function WordPressDocsPage() {
         </div>
 
         {/* Scegli il Tipo di Widget */}
-        <Card className="mb-8 border-2 border-primary/20 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+        <Card className="mb-8 border border-border bg-card">
+          <CardHeader className="bg-gradient-to-r from-surface via-surface-2 to-surface border-b border-border">
             <CardTitle className="flex items-center gap-2">
-              <Code className="w-5 h-5 text-purple-600" />
+              <Code className="w-5 h-5 text-primary" />
               Passo 1: Scegli il Tipo di Widget
             </CardTitle>
             <CardDescription>Due modalità diverse per esigenze diverse</CardDescription>
@@ -67,48 +67,48 @@ export default function WordPressDocsPage() {
           <CardContent className="pt-6">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Bubble Widget */}
-              <Card className="border-blue-200 bg-blue-50">
+              <Card className="border border-primary/30 bg-surface hover:bg-surface-2 transition-colors">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-primary-foreground" />
                     </div>
                     Widget Bubble
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-sm text-blue-900 font-semibold">Bottone flottante in basso a destra</p>
-                  <ul className="text-xs text-blue-800 space-y-2 list-disc list-inside">
+                  <p className="text-sm text-foreground font-semibold">Bottone flottante in basso a destra</p>
+                  <ul className="text-xs text-foreground-muted space-y-2 list-disc list-inside">
                     <li>Sempre visibile senza occupare spazio</li>
                     <li>Si apre al click con un modale</li>
                     <li>Presente su tutte le pagine automaticamente</li>
                     <li>✅ Consigliato per la maggior parte dei siti</li>
                   </ul>
-                  <p className="text-xs font-semibold text-blue-900 mt-3">Installazione:</p>
-                  <p className="text-xs text-blue-800">Usa la tab "Plugin" o "Editor Tema" qui sotto</p>
+                  <p className="text-xs font-semibold text-foreground mt-3">Installazione:</p>
+                  <p className="text-xs text-foreground-muted">Usa la tab "Plugin" o "Editor Tema" qui sotto</p>
                 </CardContent>
               </Card>
 
               {/* Inline Widget */}
-              <Card className="border-purple-200 bg-purple-50">
+              <Card className="border border-border bg-surface hover:bg-surface-2 transition-colors">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
-                      <Boxes className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                      <Boxes className="w-5 h-5 text-primary-foreground" />
                     </div>
                     Widget Inline
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-sm text-purple-900 font-semibold">Form incorporato nella pagina</p>
-                  <ul className="text-xs text-purple-800 space-y-2 list-disc list-inside">
+                  <p className="text-sm text-foreground font-semibold">Form incorporato nella pagina</p>
+                  <ul className="text-xs text-foreground-muted space-y-2 list-disc list-inside">
                     <li>Parte integrante del contenuto</li>
                     <li>Sempre visibile, massima visibilità</li>
                     <li>Dimensioni personalizzabili</li>
                     <li>Solo sulle pagine dove lo aggiungi</li>
                   </ul>
-                  <p className="text-xs font-semibold text-purple-900 mt-3">Installazione:</p>
-                  <p className="text-xs text-purple-800">Usa la tab "Elementor/Divi" e aggiungi un widget HTML/iFrame</p>
+                  <p className="text-xs font-semibold text-foreground mt-3">Installazione:</p>
+                  <p className="text-xs text-foreground-muted">Usa la tab "Elementor/Divi" e aggiungi un widget HTML/iFrame</p>
                 </CardContent>
               </Card>
             </div>
@@ -116,13 +116,13 @@ export default function WordPressDocsPage() {
         </Card>
 
         {/* Metodi */}
-        <Card className="mb-8 border-2 border-blue-200 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-blue-600" />
+        <Card className="mb-8 border border-primary/40 bg-card shadow-soft-lg">
+          <CardHeader className="bg-gradient-to-r from-surface via-surface-2 to-surface border-b border-border">
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <Sparkles className="w-5 h-5 text-primary" />
               Passo 2: Scegli il Metodo di Installazione (Widget Bubble)
             </CardTitle>
-            <CardDescription>Tre metodi semplici - scegli quello più adatto a te</CardDescription>
+            <CardDescription className="text-foreground-muted">Tre metodi semplici - scegli quello più adatto a te</CardDescription>
           </CardHeader>
         </Card>
 
@@ -143,10 +143,10 @@ export default function WordPressDocsPage() {
 
           {/* METODO 1: PLUGIN */}
           <TabsContent value="plugin" className="space-y-6">
-            <Card className="border-green-200 bg-green-50">
+            <Card className="border-success/30 bg-surface-2">
               <CardContent className="p-4 flex gap-3">
-                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                <div className="text-sm text-green-900">
+                <CheckCircle className="w-5 h-5 text-success flex-shrink-0" />
+                <div className="text-sm text-foreground">
                   <strong>Metodo più semplice e sicuro!</strong> Non richiede modifiche al codice del tema.
                 </div>
               </CardContent>
@@ -156,7 +156,7 @@ export default function WordPressDocsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold">
                     1
                   </div>
                   Installa un Plugin
@@ -167,7 +167,7 @@ export default function WordPressDocsPage() {
                   Installa uno di questi plugin gratuiti dalla dashboard WordPress:
                 </p>
                 <div className="space-y-3">
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="p-3 bg-surface-2 border border-primary/30 rounded-lg">
                     <h4 className="font-semibold text-sm mb-1">🏆 Insert Headers and Footers (Consigliato)</h4>
                     <p className="text-xs text-foreground-muted mb-2">Plugin ufficiale WordPress, facile da usare</p>
                     <ol className="text-xs text-foreground-muted space-y-1 list-decimal list-inside">
@@ -177,14 +177,14 @@ export default function WordPressDocsPage() {
                     </ol>
                   </div>
 
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="p-3 bg-card border-border rounded-lg">
                     <h4 className="font-semibold text-sm mb-1">WPCode</h4>
                     <p className="text-xs text-foreground-muted">
                       Alternativa potente con più funzionalità
                     </p>
                   </div>
 
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="p-3 bg-card border-border rounded-lg">
                     <h4 className="font-semibold text-sm mb-1">Simple Custom CSS and JS</h4>
                     <p className="text-xs text-foreground-muted">
                       Per chi vuole anche aggiungere CSS personalizzato
@@ -198,7 +198,7 @@ export default function WordPressDocsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold">
                     2
                   </div>
                   Copia il Codice Widget
@@ -206,7 +206,7 @@ export default function WordPressDocsPage() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs border border-gray-700">
+                  <pre className="bg-surface-2 text-foreground p-4 rounded-lg overflow-x-auto text-xs border border-border">
                     <code>{widgetCode}</code>
                   </pre>
                   <Button
@@ -217,7 +217,7 @@ export default function WordPressDocsPage() {
                   >
                     {copied ? (
                       <>
-                        <Check className="w-3.5 h-3.5 mr-1.5 text-green-600" />
+                        <Check className="w-3.5 h-3.5 mr-1.5 text-success" />
                         <span className="text-xs">Copiato!</span>
                       </>
                     ) : (
@@ -228,9 +228,9 @@ export default function WordPressDocsPage() {
                     )}
                   </Button>
                 </div>
-                <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
+                <p className="text-xs text-warning mt-2 flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5" />
-                  Sostituisci <code className="bg-gray-200 px-1.5 py-0.5 rounded">TUO_WIDGET_ID</code> con il tuo Widget ID dalla dashboard
+                  Sostituisci <code className="bg-muted px-1.5 py-0.5 rounded text-foreground">TUO_WIDGET_ID</code> con il tuo Widget ID dalla dashboard
                 </p>
               </CardContent>
             </Card>
@@ -239,14 +239,14 @@ export default function WordPressDocsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold">
                     3
                   </div>
                   Incolla nel Footer del Plugin
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-surface-2 border border-primary/30 rounded-lg p-4">
                   <h4 className="font-semibold text-sm mb-3">Per "Insert Headers and Footers":</h4>
                   <ol className="text-sm space-y-2 list-decimal list-inside">
                     <li>Vai su <strong>Impostazioni → Insert Headers and Footers</strong></li>
@@ -256,7 +256,7 @@ export default function WordPressDocsPage() {
                   </ol>
                 </div>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="bg-card border-border rounded-lg p-4">
                   <h4 className="font-semibold text-sm mb-3">Per "WPCode":</h4>
                   <ol className="text-sm space-y-2 list-decimal list-inside">
                     <li>Vai su <strong>Code Snippets → + Add Snippet</strong></li>
@@ -271,10 +271,10 @@ export default function WordPressDocsPage() {
             </Card>
 
             {/* Step 4 */}
-            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <Card className="bg-gradient-to-r from-surface via-surface-2 to-surface border-primary/40 shadow-glow-primary">
               <CardContent className="p-6 text-center">
-                <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                <h3 className="text-xl font-bold mb-2">Fatto! 🎉</h3>
+                <CheckCircle className="w-12 h-12 text-success mx-auto mb-3" />
+                <h3 className="text-xl font-bold mb-2 text-foreground">Fatto! 🎉</h3>
                 <p className="text-sm text-foreground-muted mb-4">
                   Visita il tuo sito e vedrai il widget apparire in basso a destra.
                 </p>
@@ -287,10 +287,10 @@ export default function WordPressDocsPage() {
 
           {/* METODO 2: EDITOR TEMA */}
           <TabsContent value="theme" className="space-y-6">
-            <Card className="border-amber-200 bg-amber-50">
+            <Card className="border-warning/30 bg-surface-2">
               <CardContent className="p-4 flex gap-3">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                <div className="text-sm text-amber-900">
+                <AlertCircle className="w-5 h-5 text-warning flex-shrink-0" />
+                <div className="text-sm text-foreground">
                   <strong>⚠️ Metodo avanzato</strong> - Richiede accesso all'editor del tema. Le modifiche potrebbero essere perse con gli aggiornamenti del tema.
                 </div>
               </CardContent>
@@ -299,7 +299,7 @@ export default function WordPressDocsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold">
                     1
                   </div>
                   Accedi all'Editor del Tema
@@ -309,9 +309,9 @@ export default function WordPressDocsPage() {
                 <ol className="text-sm space-y-2 list-decimal list-inside">
                   <li>Dalla dashboard WordPress, vai su <strong>Aspetto → Editor del Tema</strong></li>
                   <li>Se richiesto, seleziona il tema attivo</li>
-                  <li>Nel menu laterale, cerca il file <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">footer.php</code></li>
+                  <li>Nel menu laterale, cerca il file <code className="bg-muted px-1.5 py-0.5 rounded text-xs text-foreground">footer.php</code></li>
                 </ol>
-                <div className="bg-amber-50 border border-amber-200 rounded p-3 text-xs">
+                <div className="bg-surface-2 border border-warning/30 rounded p-3 text-xs">
                   <strong>⚠️ Attenzione:</strong> Crea un backup del file footer.php prima di modificarlo!
                 </div>
               </CardContent>
@@ -320,7 +320,7 @@ export default function WordPressDocsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold">
                     2
                   </div>
                   Trova il tag &lt;/body&gt;
@@ -328,7 +328,7 @@ export default function WordPressDocsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-foreground-muted mb-3">
-                  Scorri fino alla fine del file footer.php e trova il tag <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">&lt;/body&gt;</code>
+                  Scorri fino alla fine del file footer.php e trova il tag <code className="bg-muted px-1.5 py-0.5 rounded text-xs text-foreground">&lt;/body&gt;</code>
                 </p>
                 <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs">
 {`<?php wp_footer(); ?>
@@ -344,7 +344,7 @@ export default function WordPressDocsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-hover text-primary-foreground flex items-center justify-center font-bold">
                     3
                   </div>
                   Incolla il Codice Widget
@@ -352,7 +352,7 @@ export default function WordPressDocsPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="relative">
-                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs border border-gray-700">
+                  <pre className="bg-surface-2 text-foreground p-4 rounded-lg overflow-x-auto text-xs border border-border">
                     <code>{widgetCode}</code>
                   </pre>
                   <Button
@@ -363,7 +363,7 @@ export default function WordPressDocsPage() {
                   >
                     {copied ? (
                       <>
-                        <Check className="w-3.5 h-3.5 mr-1.5 text-green-600" />
+                        <Check className="w-3.5 h-3.5 mr-1.5 text-success" />
                         <span className="text-xs">Copiato!</span>
                       </>
                     ) : (
@@ -374,7 +374,7 @@ export default function WordPressDocsPage() {
                     )}
                   </Button>
                 </div>
-                <p className="text-sm">Incolla il codice <strong>subito prima</strong> del tag <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">&lt;/body&gt;</code></p>
+                <p className="text-sm">Incolla il codice <strong>subito prima</strong> del tag <code className="bg-muted px-1.5 py-0.5 rounded text-xs text-foreground">&lt;/body&gt;</code></p>
                 <Button className="w-full">Aggiorna File</Button>
               </CardContent>
             </Card>
@@ -382,10 +382,10 @@ export default function WordPressDocsPage() {
 
           {/* METODO 3: PAGE BUILDER */}
           <TabsContent value="builder" className="space-y-6">
-            <Card className="border-purple-200 bg-purple-50">
+            <Card className="border border-border bg-surface hover:bg-surface-2 transition-colors">
               <CardContent className="p-4 flex gap-3">
-                <Sparkles className="w-5 h-5 text-purple-600 flex-shrink-0" />
-                <div className="text-sm text-purple-900">
+                <Sparkles className="w-5 h-5 text-primary flex-shrink-0" />
+                <div className="text-sm text-foreground">
                   <strong>Per Elementor, Divi, WPBakery e altri page builder</strong>
                   <p className="mt-2 text-xs">Con i page builder puoi usare sia il widget Bubble (script tag) che il widget Inline (iFrame) a seconda delle tue esigenze.</p>
                 </div>
@@ -394,20 +394,20 @@ export default function WordPressDocsPage() {
 
             {/* Scelta Bubble vs Inline */}
             <div className="grid md:grid-cols-2 gap-4">
-              <Card className="border-blue-200 bg-blue-50">
+              <Card className="border border-primary/30 bg-surface hover:bg-surface-2 transition-colors">
                 <CardContent className="p-4">
-                  <p className="text-sm font-semibold text-blue-900 mb-2">Widget Bubble (Script)</p>
-                  <p className="text-xs text-blue-800 mb-3">Usa il widget "HTML Personalizzato" e incolla lo <strong>script tag</strong> (vedi istruzioni dettagliate sotto)</p>
+                  <p className="text-sm font-semibold text-foreground mb-2">Widget Bubble (Script)</p>
+                  <p className="text-xs text-foreground-muted mb-3">Usa il widget "HTML Personalizzato" e incolla lo <strong>script tag</strong> (vedi istruzioni dettagliate sotto)</p>
                   <pre className="bg-gray-900 text-gray-100 p-2 rounded text-xs overflow-x-auto">
 {`<script src="..." data-widget-id="..."></script>`}
                   </pre>
                 </CardContent>
               </Card>
 
-              <Card className="border-purple-200 bg-purple-50">
+              <Card className="border border-border bg-surface hover:bg-surface-2 transition-colors">
                 <CardContent className="p-4">
-                  <p className="text-sm font-semibold text-purple-900 mb-2">Widget Inline (iFrame)</p>
-                  <p className="text-xs text-purple-800 mb-3">Usa il widget "HTML" e incolla l'<strong>iFrame</strong> per incorporare il form direttamente</p>
+                  <p className="text-sm font-semibold text-foreground mb-2">Widget Inline (iFrame)</p>
+                  <p className="text-xs text-foreground-muted mb-3">Usa il widget "HTML" e incolla l'<strong>iFrame</strong> per incorporare il form direttamente</p>
                   <pre className="bg-gray-900 text-gray-100 p-2 rounded text-xs overflow-x-auto">
 {`<iframe src="..." width="100%" height="600"></iframe>`}
                   </pre>
@@ -430,7 +430,7 @@ export default function WordPressDocsPage() {
                     <li>Incolla lo <strong>script tag</strong> nel campo HTML</li>
                     <li>Clicca <strong>Pubblica</strong></li>
                   </ol>
-                  <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs mt-3">
+                  <div className="bg-surface-2 border border-primary/30 rounded p-3 text-xs mt-3">
                     <strong>💡 Per tutte le pagine:</strong> Aggiungilo nel Footer Template globale (Theme Builder → Footer).
                   </div>
                 </div>
@@ -455,7 +455,7 @@ export default function WordPressDocsPage() {
                     >
                       {copied ? (
                         <>
-                          <Check className="w-3.5 h-3.5 mr-1.5 text-green-600" />
+                          <Check className="w-3.5 h-3.5 mr-1.5 text-success" />
                           <span className="text-xs">Copiato!</span>
                         </>
                       ) : (
@@ -486,7 +486,7 @@ export default function WordPressDocsPage() {
                   <strong>Widget Inline:</strong> Aggiungi modulo "Codice" e incolla l'iFrame dove vuoi il form
                 </p>
 
-                <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs mt-3">
+                <div className="bg-surface-2 border border-primary/30 rounded p-3 text-xs mt-3">
                   <strong>Per tutte le pagine:</strong> Usa Theme Builder → Modelli Globali → Footer (solo per Bubble)
                 </div>
               </CardContent>
@@ -533,7 +533,7 @@ export default function WordPressDocsPage() {
             <CardTitle>❓ Risoluzione Problemi</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="p-3 bg-gray-50 border border-gray-200 rounded">
+            <div className="p-3 bg-card border-border rounded">
               <h4 className="font-semibold text-sm mb-2">Il widget non appare</h4>
               <ul className="text-xs text-foreground-muted space-y-1 list-disc list-inside">
                 <li>Verifica di aver sostituito TUO_WIDGET_ID con il tuo vero Widget ID</li>
@@ -543,7 +543,7 @@ export default function WordPressDocsPage() {
               </ul>
             </div>
 
-            <div className="p-3 bg-gray-50 border border-gray-200 rounded">
+            <div className="p-3 bg-card border-border rounded">
               <h4 className="font-semibold text-sm mb-2">Il widget appare due volte</h4>
               <ul className="text-xs text-foreground-muted space-y-1 list-disc list-inside">
                 <li>Hai probabilmente installato il codice in due posti diversi</li>
@@ -551,7 +551,7 @@ export default function WordPressDocsPage() {
               </ul>
             </div>
 
-            <div className="p-3 bg-gray-50 border border-gray-200 rounded">
+            <div className="p-3 bg-card border-border rounded">
               <h4 className="font-semibold text-sm mb-2">Conflitti con altri plugin</h4>
               <ul className="text-xs text-foreground-muted space-y-1 list-disc list-inside">
                 <li>Se usi plugin di ottimizzazione JS, escludi widget.js dall'ottimizzazione</li>
@@ -562,9 +562,9 @@ export default function WordPressDocsPage() {
         </Card>
 
         {/* CTA */}
-        <Card className="bg-gradient-to-r from-primary/10 to-blue-500/10 border-primary/20">
+        <Card className="bg-gradient-to-r from-surface via-surface-2 to-surface border-primary/40 shadow-glow-primary">
           <CardContent className="p-8 text-center">
-            <h3 className="text-xl font-bold mb-2">Installazione Completata! 🎉</h3>
+            <h3 className="text-xl font-bold mb-2 text-foreground">Installazione Completata! 🎉</h3>
             <p className="text-foreground-muted mb-4">
               Il widget è ora attivo sul tuo sito WordPress. Inizia a raccogliere lead.
             </p>

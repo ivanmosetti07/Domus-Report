@@ -338,58 +338,58 @@ export default function HTMLDocsPage() {
 
         {/* Istruzioni Dettagliate */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">✅ Best Practices</CardTitle>
+          <Card className="bg-card border-border">
+            <CardHeader className="border-b border-border">
+              <CardTitle className="text-lg text-foreground">✅ Best Practices</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex gap-2 items-start">
-                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-sm">Posizione corretta</p>
+                  <p className="font-medium text-sm text-foreground">Posizione corretta</p>
                   <p className="text-xs text-foreground-muted">Inserisci lo script prima di &lt;/body&gt; per non rallentare il caricamento della pagina</p>
                 </div>
               </div>
               <div className="flex gap-2 items-start">
-                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-sm">Attributo async</p>
+                  <p className="font-medium text-sm text-foreground">Attributo async</p>
                   <p className="text-xs text-foreground-muted">L'attributo async garantisce che il widget non blocchi il rendering della pagina</p>
                 </div>
               </div>
               <div className="flex gap-2 items-start">
-                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-sm">Una sola volta</p>
+                  <p className="font-medium text-sm text-foreground">Una sola volta</p>
                   <p className="text-xs text-foreground-muted">Inserisci lo script una sola volta per pagina, anche se hai più pagine HTML</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">⚠️ Problemi Comuni</CardTitle>
+          <Card className="bg-card border-border">
+            <CardHeader className="border-b border-border">
+              <CardTitle className="text-lg text-foreground">⚠️ Problemi Comuni</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex gap-2 items-start">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-sm">Widget non appare</p>
+                  <p className="font-medium text-sm text-foreground">Widget non appare</p>
                   <p className="text-xs text-foreground-muted">Verifica di aver sostituito TUO_WIDGET_ID con il tuo Widget ID reale</p>
                 </div>
               </div>
               <div className="flex gap-2 items-start">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-sm">Script nel &lt;head&gt;</p>
+                  <p className="font-medium text-sm text-foreground">Script nel &lt;head&gt;</p>
                   <p className="text-xs text-foreground-muted">Non inserire lo script nell'head, ma prima del &lt;/body&gt;</p>
                 </div>
               </div>
               <div className="flex gap-2 items-start">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-sm">Cache del browser</p>
+                  <p className="font-medium text-sm text-foreground">Cache del browser</p>
                   <p className="text-xs text-foreground-muted">Se hai modificato il codice, svuota la cache (Ctrl+F5) per vedere le modifiche</p>
                 </div>
               </div>
@@ -398,61 +398,61 @@ export default function HTMLDocsPage() {
         </div>
 
         {/* Upload FTP */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Come caricare il file sul server</CardTitle>
-            <CardDescription>Se usi un hosting tradizionale con FTP</CardDescription>
+        <Card className="mb-8 bg-card border-border">
+          <CardHeader className="border-b border-border">
+            <CardTitle className="text-foreground">Come caricare il file sul server</CardTitle>
+            <CardDescription className="text-foreground-muted">Se usi un hosting tradizionale con FTP</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm font-semibold">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-muted text-foreground flex items-center justify-center text-sm font-semibold">
                   1
                 </div>
-                <p className="text-sm">Apri il tuo client FTP (FileZilla, Cyberduck, o il File Manager del tuo hosting)</p>
+                <p className="text-sm text-foreground-muted">Apri il tuo client FTP (FileZilla, Cyberduck, o il File Manager del tuo hosting)</p>
               </div>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm font-semibold">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-muted text-foreground flex items-center justify-center text-sm font-semibold">
                   2
                 </div>
-                <p className="text-sm">Naviga nella cartella del tuo sito (solitamente <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">public_html</code> o <code className="bg-gray-200 px-1.5 py-0.5 rounded text-xs">www</code>)</p>
+                <p className="text-sm text-foreground-muted">Naviga nella cartella del tuo sito (solitamente <code className="bg-surface-2 px-1.5 py-0.5 rounded text-xs text-foreground">public_html</code> o <code className="bg-surface-2 px-1.5 py-0.5 rounded text-xs text-foreground">www</code>)</p>
               </div>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm font-semibold">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-muted text-foreground flex items-center justify-center text-sm font-semibold">
                   3
                 </div>
-                <p className="text-sm">Carica il file HTML modificato (sovrascrivi quello vecchio)</p>
+                <p className="text-sm text-foreground-muted">Carica il file HTML modificato (sovrascrivi quello vecchio)</p>
               </div>
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm font-semibold">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-muted text-foreground flex items-center justify-center text-sm font-semibold">
                   4
                 </div>
-                <p className="text-sm">Visita il tuo sito e verifica che il widget appaia in basso a destra</p>
+                <p className="text-sm text-foreground-muted">Visita il tuo sito e verifica che il widget appaia in basso a destra</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Multiple Pages */}
-        <Card className="mb-8 border-blue-200 bg-blue-50">
+        <Card className="mb-8 border-primary/30 bg-surface-2">
           <CardContent className="p-6 flex gap-3">
-            <Sparkles className="w-6 h-6 text-blue-600 flex-shrink-0" />
+            <Sparkles className="w-6 h-6 text-primary flex-shrink-0" />
             <div>
-              <h3 className="font-semibold text-blue-900 mb-2">Sito con più pagine?</h3>
-              <p className="text-sm text-blue-800 mb-3">
-                Se il tuo sito ha più pagine HTML (es: index.html, about.html, contact.html), devi aggiungere lo script a <strong>ogni file HTML</strong> in cui vuoi che il widget appaia.
+              <h3 className="font-semibold text-foreground mb-2">Sito con più pagine?</h3>
+              <p className="text-sm text-foreground-muted mb-3">
+                Se il tuo sito ha più pagine HTML (es: index.html, about.html, contact.html), devi aggiungere lo script a <strong className="text-foreground">ogni file HTML</strong> in cui vuoi che il widget appaia.
               </p>
-              <p className="text-sm text-blue-800">
-                💡 <strong>Tip:</strong> Se le tue pagine includono un footer comune, aggiungi lo script lì per averlo automaticamente su tutte le pagine.
+              <p className="text-sm text-foreground-muted">
+                💡 <strong className="text-foreground">Tip:</strong> Se le tue pagine includono un footer comune, aggiungi lo script lì per averlo automaticamente su tutte le pagine.
               </p>
             </div>
           </CardContent>
         </Card>
 
         {/* CTA */}
-        <Card className="bg-gradient-to-r from-primary/10 to-blue-500/10 border-primary/20">
+        <Card className="bg-gradient-to-r from-surface via-surface-2 to-surface border-primary/40 shadow-glow-primary">
           <CardContent className="p-8 text-center">
-            <h3 className="text-xl font-bold mb-2">Tutto pronto!</h3>
+            <h3 className="text-xl font-bold mb-2 text-foreground">Tutto pronto!</h3>
             <p className="text-foreground-muted mb-4">
               Il widget è ora attivo sul tuo sito. Inizia a raccogliere lead immediatamente.
             </p>
