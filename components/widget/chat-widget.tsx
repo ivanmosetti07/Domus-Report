@@ -816,7 +816,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     }, 1500)
   }
 
-  // Funzione per scaricare il PDF della valutazione
+  // Funzione per scaricare il PDF della valutazione (stesso PDF dell'agenzia)
   const downloadPDF = async () => {
     if (!savedLeadId) {
       addBotMessage("Errore: impossibile generare il PDF. ID lead non disponibile.")
@@ -833,8 +833,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       }
       setMessages(prev => [...prev, loadingMsg])
 
-      // Chiama l'API per generare il PDF
-      const response = await fetch(`/api/valuation/pdf?leadId=${savedLeadId}`)
+      // Chiama l'API per generare il PDF (stesso endpoint usato dalla dashboard)
+      const response = await fetch(`/api/leads/${savedLeadId}/download-pdf`)
 
       if (!response.ok) {
         throw new Error("Errore nella generazione del PDF")
@@ -845,7 +845,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `valutazione-${collectedData.lastName || "immobile"}-${Date.now()}.pdf`
+      a.download = `valutazione-${collectedData.lastName || "immobile"}.pdf`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
