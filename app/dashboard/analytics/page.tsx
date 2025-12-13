@@ -18,6 +18,7 @@ import {
   Download,
   AlertCircle,
   Lightbulb,
+  Loader2,
 } from "lucide-react"
 import {
   LineChart,
@@ -103,6 +104,7 @@ export default function AnalyticsPage() {
   const [dateRange, setDateRange] = React.useState<DateRange>(() =>
     getDateRange("30days")
   )
+  const [isRefreshing, setIsRefreshing] = React.useState(false)
   const [analyticsData, setAnalyticsData] = React.useState<AnalyticsData | null>(null)
   const [previousAnalyticsData, setPreviousAnalyticsData] = React.useState<AnalyticsData | null>(null)
   const [platformAverage, setPlatformAverage] = React.useState<number | null>(null)
@@ -110,11 +112,14 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
 
-  // Fetch analytics data
-  React.useEffect(() => {
-    const fetchAnalytics = async () => {
-      setLoading(true)
-      setError(null)
+  const fetchAnalytics = React.useCallback(
+    async ({ background = false }: { background?: boolean } = {}) => {
+      if (!background) {
+        setLoading(true)
+        setError(null)
+      } else {
+        setIsRefreshing(true)
+      }
 
       try {
         // Calcola periodo precedente (stessa durata)
@@ -161,14 +166,35 @@ export default function AnalyticsPage() {
           }
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Errore sconosciuto")
+        if (!background) {
+          setError(err instanceof Error ? err.message : "Errore sconosciuto")
+        } else {
+          console.error("Errore aggiornamento analytics (background)", err)
+        }
       } finally {
-        setLoading(false)
+        if (!background) {
+          setLoading(false)
+        } else {
+          setIsRefreshing(false)
+        }
       }
-    }
+    },
+    [datePreset, dateRange.end, dateRange.start]
+  )
 
-    fetchAnalytics()
-  }, [dateRange, datePreset])
+  // Fetch analytics data
+  React.useEffect(() => {
+    fetchAnalytics({ background: false })
+  }, [fetchAnalytics])
+
+  // Aggiornamento automatico periodico per mantenere i dati freschi
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      fetchAnalytics({ background: true })
+    }, 60000)
+
+    return () => clearInterval(interval)
+  }, [fetchAnalytics])
 
   // Handle preset change
   const handlePresetChange = (preset: DatePreset) => {
@@ -350,10 +376,18 @@ export default function AnalyticsPage() {
                 </Button>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={downloadCSV}>
-              <Download className="w-4 h-4 mr-2" />
-              Esporta CSV
-            </Button>
+            <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
+              {isRefreshing && (
+                <span className="flex items-center text-sm text-foreground-muted" style={{ gap: 'var(--space-1)' }}>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Aggiornamento...
+                </span>
+              )}
+              <Button variant="outline" size="sm" onClick={downloadCSV}>
+                <Download className="w-4 h-4 mr-2" />
+                Esporta CSV
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
