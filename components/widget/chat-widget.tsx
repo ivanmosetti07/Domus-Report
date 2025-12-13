@@ -582,7 +582,15 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       case "contacts_phone":
         const phoneRegex = /^(\+39|0039)?[0-9]{9,13}$/
-        const sanitizedPhone = input.replace(/\s/g, "")
+        // Sanitizza il numero nello stesso modo del server per garantire coerenza
+        const sanitizedPhone = input
+          .trim()
+          .replace(/\s/g, "")       // Remove spaces
+          .replace(/-/g, "")        // Remove dashes
+          .replace(/\./g, "")       // Remove dots
+          .replace(/\(/g, "")       // Remove parentheses
+          .replace(/\)/g, "")       // Remove parentheses
+          .replace(/[^\d+]/g, "")   // Remove any other non-digit, non-plus
 
         if (!phoneRegex.test(sanitizedPhone)) {
           addBotMessage("Il numero di telefono non sembra valido. Inserisci un numero italiano valido.")

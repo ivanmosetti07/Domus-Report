@@ -106,8 +106,8 @@ export function validatePhone(phone: string | undefined | null): { valid: boolea
 
   if (!isValid) {
     console.log('[validatePhone] ❌ VALIDATION FAILED - Input does not match Italian phone format')
-    // IMPORTANT: Return error but DON'T return null - validation failed
-    return { valid: false, sanitized: null, error: "Formato telefono non valido. Inserisci un numero italiano valido (es. 333 123 4567 o +39 333 123 4567)" }
+    // IMPORTANT: Preserve sanitized value for logging/debugging even when validation fails
+    return { valid: false, sanitized, error: "Formato telefono non valido. Inserisci un numero italiano valido (es. 333 123 4567 o +39 333 123 4567)" }
   }
 
   console.log('[validatePhone] ✅ SUCCESS - Valid phone number:', JSON.stringify(sanitized))
