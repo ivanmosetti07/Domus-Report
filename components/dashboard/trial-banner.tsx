@@ -39,10 +39,10 @@ export function TrialBanner({
       : 0
 
     return (
-      <Card className={`mb-6 border-2 ${isUrgent ? 'border-warning bg-warning/10' : 'border-primary bg-primary/10'}`}>
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex items-start gap-3 flex-1">
+      <Card className={`border-2 ${isUrgent ? 'border-warning bg-warning/10' : 'border-primary bg-primary/10'}`}>
+        <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between" style={{ gap: 'var(--space-md)' }}>
+            <div className="flex items-start flex-1" style={{ gap: 'var(--space-3)' }}>
               <div className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 ${isUrgent ? 'bg-warning/20' : 'bg-primary/20'}`}>
                 {isUrgent ? (
                   <AlertCircle className={`w-5 h-5 sm:w-6 sm:h-6 ${isUrgent ? 'text-warning' : 'text-primary'}`} />
@@ -51,10 +51,16 @@ export function TrialBanner({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1">
+                <h3 className="font-semibold text-foreground" style={{
+                  fontSize: 'clamp(1rem, 1.125vw, 1.125rem)',
+                  marginBottom: 'var(--space-1)'
+                }}>
                   Prova {planType === 'premium' ? 'Premium' : 'Basic'} Attiva
                 </h3>
-                <p className="text-xs sm:text-sm text-foreground mb-3">
+                <p className="text-foreground" style={{
+                  fontSize: 'clamp(0.75rem, 1vw, 0.875rem)',
+                  marginBottom: 'var(--space-3)'
+                }}>
                   {trialDaysRemaining === 0
                     ? "Il tuo trial scade oggi!"
                     : trialDaysRemaining === 1
@@ -64,7 +70,7 @@ export function TrialBanner({
                 </p>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-surface-2 rounded-full h-2 mb-2">
+                <div className="w-full bg-surface-2 rounded-full h-2" style={{ marginBottom: 'var(--space-2)' }}>
                   <div
                     className={`h-2 rounded-full transition-all ${isUrgent ? 'bg-warning' : 'bg-primary'}`}
                     style={{ width: `${progressPercentage}%` }}
@@ -99,18 +105,23 @@ export function TrialBanner({
   // Trial scaduto
   if (subscriptionStatus === 'expired' || (subscriptionStatus === 'trial' && trialDaysRemaining !== null && trialDaysRemaining < 0)) {
     return (
-      <Card className="mb-6 border-2 border-destructive bg-destructive/10">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex items-start gap-3 flex-1">
+      <Card className="border-2 border-destructive bg-destructive/10">
+        <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between" style={{ gap: 'var(--space-md)' }}>
+            <div className="flex items-start flex-1" style={{ gap: 'var(--space-3)' }}>
               <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-destructive/20 rounded-full flex-shrink-0">
                 <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-destructive" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1">
+                <h3 className="font-semibold text-foreground" style={{
+                  fontSize: 'clamp(1rem, 1.125vw, 1.125rem)',
+                  marginBottom: 'var(--space-1)'
+                }}>
                   Il tuo trial è scaduto
                 </h3>
-                <p className="text-xs sm:text-sm text-foreground">
+                <p className="text-foreground" style={{
+                  fontSize: 'clamp(0.75rem, 1vw, 0.875rem)'
+                }}>
                   Effettua l'upgrade per continuare a usare tutte le funzionalità premium
                 </p>
               </div>
@@ -118,7 +129,7 @@ export function TrialBanner({
 
             <Link href="/dashboard/subscription" className="w-full sm:w-auto">
               <Button variant="destructive" className="w-full sm:w-auto">
-                <Crown className="w-4 h-4 mr-2" />
+                <Crown className="w-4 h-4" style={{ marginRight: 'var(--space-2)' }} />
                 Upgrade Ora
               </Button>
             </Link>
@@ -131,19 +142,24 @@ export function TrialBanner({
   // Piano attivo (premium/basic)
   if (subscriptionStatus === 'active' && planType !== 'free') {
     return (
-      <Card className="mb-6 border-2 border-success bg-success/10">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex items-start gap-3 flex-1">
+      <Card className="border-2 border-success bg-success/10">
+        <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between" style={{ gap: 'var(--space-md)' }}>
+            <div className="flex items-start flex-1" style={{ gap: 'var(--space-3)' }}>
               <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-success/20 rounded-full flex-shrink-0">
                 <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-success" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1">
+                <h3 className="font-semibold text-foreground" style={{
+                  fontSize: 'clamp(1rem, 1.125vw, 1.125rem)',
+                  marginBottom: 'var(--space-1)'
+                }}>
                   Piano {planType === 'premium' ? 'Premium' : 'Basic'} Attivo
                 </h3>
                 {nextBillingDate && mounted && (
-                  <p className="text-xs sm:text-sm text-foreground">
+                  <p className="text-foreground" style={{
+                    fontSize: 'clamp(0.75rem, 1vw, 0.875rem)'
+                  }}>
                     Prossimo rinnovo: {new Date(nextBillingDate).toLocaleDateString('it-IT', {
                       day: 'numeric',
                       month: 'long',
@@ -155,7 +171,9 @@ export function TrialBanner({
             </div>
 
             <Link href="/dashboard/subscription" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full sm:w-auto border-success text-success hover:bg-success/10">
+              <Button variant="outline" className="w-full sm:w-auto border-success text-success hover:bg-success/10" style={{
+                fontSize: 'clamp(0.75rem, 1vw, 0.875rem)'
+              }}>
                 Gestisci Piano
               </Button>
             </Link>

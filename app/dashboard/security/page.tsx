@@ -195,17 +195,32 @@ export default function SecurityPage() {
     }}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center" style={{ gap: 'var(--space-2)' }}>
-            <Shield className="h-8 w-8" />
+          <h1 className="font-bold flex items-center" style={{
+            gap: 'var(--space-2)',
+            fontSize: 'clamp(1.5rem, 3vw, 1.875rem)'
+          }}>
+            <Shield style={{
+              width: 'clamp(1.5rem, 4vw, 2rem)',
+              height: 'clamp(1.5rem, 4vw, 2rem)'
+            }} />
             Sicurezza e Sessioni
           </h1>
-          <p className="text-muted-foreground" style={{ marginTop: 'var(--space-2)' }}>
+          <p className="text-muted-foreground" style={{
+            marginTop: 'var(--space-2)',
+            fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+          }}>
             Gestisci le sessioni attive del tuo account
           </p>
         </div>
         {sessions.length > 1 && (
-          <Button variant="destructive" onClick={revokeAllSessions}>
-            <AlertTriangle className="h-4 w-4" style={{ marginRight: 'var(--space-2)' }} />
+          <Button variant="destructive" onClick={revokeAllSessions} style={{
+            fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+          }}>
+            <AlertTriangle style={{
+              width: 'clamp(0.875rem, 1.5vw, 1rem)',
+              height: 'clamp(0.875rem, 1.5vw, 1rem)',
+              marginRight: 'var(--space-2)'
+            }} />
             Revoca tutte le altre sessioni
           </Button>
         )}
@@ -227,38 +242,56 @@ export default function SecurityPage() {
           ) : (
             sessions.map((session) => (
               <Card key={session.id} className={session.isCurrent ? "border-primary" : ""}>
-                <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
+                <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
                   <div className="flex items-start justify-between">
                     <div className="flex" style={{ gap: 'var(--space-md)' }}>
                       <div style={{ marginTop: 'var(--space-1)' }}>{getDeviceIcon(session.userAgent)}</div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                         <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
-                          <h3 className="font-semibold">
+                          <h3 className="font-semibold" style={{
+                            fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+                          }}>
                             {getBrowserName(session.userAgent)}
                           </h3>
                           {session.isCurrent && (
-                            <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
+                            <span className="bg-primary text-primary-foreground px-2 py-1 rounded" style={{
+                              fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
+                            }}>
                               Sessione corrente
                             </span>
                           )}
                         </div>
 
-                        <div className="text-sm text-muted-foreground" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                        <div className="text-muted-foreground" style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 'var(--space-1)',
+                          fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+                        }}>
                           <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
-                            <MapPin className="h-4 w-4" />
+                            <MapPin style={{
+                              width: 'clamp(0.875rem, 1.5vw, 1rem)',
+                              height: 'clamp(0.875rem, 1.5vw, 1rem)'
+                            }} />
                             <span>IP: {session.ipAddress || "Sconosciuto"}</span>
                           </div>
                           <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
-                            <Clock className="h-4 w-4" />
+                            <Clock style={{
+                              width: 'clamp(0.875rem, 1.5vw, 1rem)',
+                              height: 'clamp(0.875rem, 1.5vw, 1rem)'
+                            }} />
                             <span>Login: {formatDate(session.loginAt)}</span>
                           </div>
                           <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
-                            <Clock className="h-4 w-4" />
+                            <Clock style={{
+                              width: 'clamp(0.875rem, 1.5vw, 1rem)',
+                              height: 'clamp(0.875rem, 1.5vw, 1rem)'
+                            }} />
                             <span>
                               Ultima attività: {getRelativeTime(session.lastActivityAt)}
                             </span>
                           </div>
-                          <div className="text-xs">
+                          <div style={{ fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)' }}>
                             Scadenza: {formatDate(session.expiresAt)}
                           </div>
                         </div>
@@ -270,6 +303,7 @@ export default function SecurityPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => revokeSession(session.id)}
+                        style={{ fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)' }}
                       >
                         Revoca
                       </Button>
@@ -284,18 +318,29 @@ export default function SecurityPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Informazioni di Sicurezza</CardTitle>
+          <CardTitle style={{ fontSize: 'clamp(0.875rem, 1vw, 1rem)' }}>Informazioni di Sicurezza</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+        <CardContent style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-3)',
+          fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+        }}>
           <div className="flex" style={{ gap: 'var(--space-2)' }}>
-            <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
+            <AlertTriangle style={{
+              width: 'clamp(1.125rem, 2vw, 1.25rem)',
+              height: 'clamp(1.125rem, 2vw, 1.25rem)'
+            }} className="text-yellow-600 flex-shrink-0" />
             <div>
               <strong>Sessioni sospette?</strong> Se vedi sessioni che non riconosci, revocale
               immediatamente e cambia la password.
             </div>
           </div>
           <div className="flex" style={{ gap: 'var(--space-2)' }}>
-            <Shield className="h-5 w-5 text-green-600 flex-shrink-0" />
+            <Shield style={{
+              width: 'clamp(1.125rem, 2vw, 1.25rem)',
+              height: 'clamp(1.125rem, 2vw, 1.25rem)'
+            }} className="text-green-600 flex-shrink-0" />
             <div>
               <strong>Protezione automatica:</strong> Le sessioni scadono automaticamente dopo
               7 giorni di inattività.

@@ -119,34 +119,54 @@ export default async function ReportsPage() {
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4" style={{ gap: 'var(--grid-gap-md)' }}>
         <Card>
-          <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
+          <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
             <div className="text-center">
-              <div className="text-3xl font-bold text-foreground">{totalLeads}</div>
-              <div className="text-sm text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>Totale Lead</div>
+              <div className="font-bold text-foreground" style={{
+                fontSize: 'clamp(1.5rem, 3vw, 1.875rem)'
+              }}>{totalLeads}</div>
+              <div className="text-foreground-muted" style={{
+                marginTop: 'var(--space-1)',
+                fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+              }}>Totale Lead</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
+          <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">{leadsThisMonth}</div>
-              <div className="text-sm text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>Questo Mese</div>
+              <div className="font-bold text-primary" style={{
+                fontSize: 'clamp(1.5rem, 3vw, 1.875rem)'
+              }}>{leadsThisMonth}</div>
+              <div className="text-foreground-muted" style={{
+                marginTop: 'var(--space-1)',
+                fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+              }}>Questo Mese</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
+          <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
             <div className="text-center">
-              <div className="text-3xl font-bold text-success">{convertedLeads}</div>
-              <div className="text-sm text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>Convertiti</div>
+              <div className="font-bold text-success" style={{
+                fontSize: 'clamp(1.5rem, 3vw, 1.875rem)'
+              }}>{convertedLeads}</div>
+              <div className="text-foreground-muted" style={{
+                marginTop: 'var(--space-1)',
+                fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+              }}>Convertiti</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
+          <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
             <div className="text-center">
-              <div className="text-3xl font-bold text-warning">{leadsToFollow}</div>
-              <div className="text-sm text-foreground-muted" style={{ marginTop: 'var(--space-1)' }}>Da Ricontattare</div>
+              <div className="font-bold text-warning" style={{
+                fontSize: 'clamp(1.5rem, 3vw, 1.875rem)'
+              }}>{leadsToFollow}</div>
+              <div className="text-foreground-muted" style={{
+                marginTop: 'var(--space-1)',
+                fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+              }}>Da Ricontattare</div>
             </div>
           </CardContent>
         </Card>
@@ -194,12 +214,21 @@ export default async function ReportsPage() {
 
       {/* Info Section */}
       <Card className="bg-primary/5 border-primary/20">
-        <CardContent style={{ paddingTop: 'var(--space-lg)' }}>
+        <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
           <div className="flex items-start" style={{ gap: 'var(--space-md)' }}>
-            <FileText className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+            <FileText style={{
+              width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+              height: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+              marginTop: 'clamp(0.125rem, 0.5vw, 0.25rem)'
+            }} className="text-primary flex-shrink-0" />
             <div>
-              <h3 className="font-semibold text-foreground" style={{ marginBottom: 'var(--space-2)' }}>Come funzionano i report</h3>
-              <p className="text-sm text-foreground-muted">
+              <h3 className="font-semibold text-foreground" style={{
+                marginBottom: 'var(--space-2)',
+                fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+              }}>Come funzionano i report</h3>
+              <p className="text-foreground-muted" style={{
+                fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+              }}>
                 I report vengono generati in formato PDF e includono grafici, tabelle e statistiche dettagliate.
                 Puoi scaricare i report o riceverli via email. I dati vengono aggiornati in tempo reale.
               </p>

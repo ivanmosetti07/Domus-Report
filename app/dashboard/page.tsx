@@ -326,13 +326,26 @@ export default async function DashboardPage() {
         }}>
           <Link href="/dashboard/leads">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex-shrink-0">
-                  <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+              <CardContent className="flex items-center" style={{
+                gap: 'clamp(0.75rem, 2vw, 1rem)',
+                padding: 'clamp(1rem, 2vw, 1.5rem)'
+              }}>
+                <div className="flex items-center justify-center bg-primary rounded-lg flex-shrink-0" style={{
+                  width: 'clamp(2.5rem, 5vw, 3rem)',
+                  height: 'clamp(2.5rem, 5vw, 3rem)'
+                }}>
+                  <Users style={{
+                    width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                    height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+                  }} className="text-primary-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">Gestisci Lead</h3>
-                  <p className="text-xs sm:text-sm text-foreground-muted truncate">
+                  <h3 className="font-semibold text-foreground truncate" style={{
+                    fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+                  }}>Gestisci Lead</h3>
+                  <p className="text-foreground-muted truncate" style={{
+                    fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+                  }}>
                     Visualizza e gestisci tutti i lead
                   </p>
                 </div>
@@ -342,13 +355,26 @@ export default async function DashboardPage() {
 
           <Link href="/dashboard/widgets">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex-shrink-0">
-                  <Code className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+              <CardContent className="flex items-center" style={{
+                gap: 'clamp(0.75rem, 2vw, 1rem)',
+                padding: 'clamp(1rem, 2vw, 1.5rem)'
+              }}>
+                <div className="flex items-center justify-center bg-primary rounded-lg flex-shrink-0" style={{
+                  width: 'clamp(2.5rem, 5vw, 3rem)',
+                  height: 'clamp(2.5rem, 5vw, 3rem)'
+                }}>
+                  <Code style={{
+                    width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                    height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+                  }} className="text-primary-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">Widget</h3>
-                  <p className="text-xs sm:text-sm text-foreground-muted truncate">
+                  <h3 className="font-semibold text-foreground truncate" style={{
+                    fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+                  }}>Widget</h3>
+                  <p className="text-foreground-muted truncate" style={{
+                    fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+                  }}>
                     Configura i tuoi widget
                   </p>
                 </div>
@@ -358,13 +384,26 @@ export default async function DashboardPage() {
 
           <Link href="/docs/html" target="_blank">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full border-2 border-dashed border-border">
-              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
-                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-surface-2 rounded-lg flex-shrink-0">
-                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+              <CardContent className="flex items-center" style={{
+                gap: 'clamp(0.75rem, 2vw, 1rem)',
+                padding: 'clamp(1rem, 2vw, 1.5rem)'
+              }}>
+                <div className="flex items-center justify-center bg-surface-2 rounded-lg flex-shrink-0" style={{
+                  width: 'clamp(2.5rem, 5vw, 3rem)',
+                  height: 'clamp(2.5rem, 5vw, 3rem)'
+                }}>
+                  <BookOpen style={{
+                    width: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                    height: 'clamp(1.25rem, 2.5vw, 1.5rem)'
+                  }} className="text-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">Documentazione</h3>
-                  <p className="text-xs sm:text-sm text-foreground-muted truncate">
+                  <h3 className="font-semibold text-foreground truncate" style={{
+                    fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+                  }}>Documentazione</h3>
+                  <p className="text-foreground-muted truncate" style={{
+                    fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+                  }}>
                     Guida installazione widget
                   </p>
                 </div>
@@ -377,39 +416,70 @@ export default async function DashboardPage() {
       {/* Empty State Hint (shown when no leads) */}
       {stats.totalLeads === 0 && (
         <Card className="bg-surface-2 border-border">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex-shrink-0">
-                <span className="text-xl sm:text-2xl">👋</span>
+          <CardContent style={{ padding: 'clamp(1rem, 2vw, 1.5rem)' }}>
+            <div className="flex flex-col sm:flex-row items-start" style={{
+              gap: 'clamp(0.75rem, 2vw, 1rem)'
+            }}>
+              <div className="flex items-center justify-center bg-primary rounded-full flex-shrink-0" style={{
+                width: 'clamp(2.5rem, 5vw, 3rem)',
+                height: 'clamp(2.5rem, 5vw, 3rem)'
+              }}>
+                <span style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}>👋</span>
               </div>
               <div className="flex-1">
-                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2 sm:mb-3">
+                <h3 className="font-semibold text-foreground" style={{
+                  fontSize: 'clamp(1rem, 1.125vw, 1.125rem)',
+                  marginBottom: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+                }}>
                   Primi passi con DomusReport
                 </h3>
-                <ol className="space-y-2 text-xs sm:text-sm text-foreground">
-                  <li className="flex items-center gap-2">
-                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                <ol className="text-foreground" style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--space-2)',
+                  fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)'
+                }}>
+                  <li className="flex items-center" style={{ gap: 'var(--space-2)' }}>
+                    <span className="flex items-center justify-center bg-primary text-primary-foreground rounded-full font-bold flex-shrink-0" style={{
+                      width: 'clamp(1.25rem, 3vw, 1.5rem)',
+                      height: 'clamp(1.25rem, 3vw, 1.5rem)',
+                      fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
+                    }}>
                       1
                     </span>
                     <span className="flex-1">Configura il tuo primo widget</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                  <li className="flex items-center" style={{ gap: 'var(--space-2)' }}>
+                    <span className="flex items-center justify-center bg-primary text-primary-foreground rounded-full font-bold flex-shrink-0" style={{
+                      width: 'clamp(1.25rem, 3vw, 1.5rem)',
+                      height: 'clamp(1.25rem, 3vw, 1.5rem)',
+                      fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
+                    }}>
                       2
                     </span>
                     <span className="flex-1">Installa il codice sul tuo sito (prima del tag &lt;/body&gt;)</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full text-[10px] sm:text-xs font-bold flex-shrink-0">
+                  <li className="flex items-center" style={{ gap: 'var(--space-2)' }}>
+                    <span className="flex items-center justify-center bg-primary text-primary-foreground rounded-full font-bold flex-shrink-0" style={{
+                      width: 'clamp(1.25rem, 3vw, 1.5rem)',
+                      height: 'clamp(1.25rem, 3vw, 1.5rem)',
+                      fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
+                    }}>
                       3
                     </span>
                     <span className="flex-1">Inizia a ricevere lead qualificati automaticamente!</span>
                   </li>
                 </ol>
-                <div className="mt-3 sm:mt-4">
+                <div style={{ marginTop: 'clamp(0.75rem, 2vw, 1rem)' }}>
                   <Link href="/dashboard/widgets">
-                    <Button className="w-full sm:w-auto">
-                      <Code className="w-4 h-4 mr-2" />
+                    <Button className="w-full sm:w-auto" style={{
+                      fontSize: 'clamp(0.75rem, 1vw, 0.875rem)'
+                    }}>
+                      <Code style={{
+                        width: 'clamp(0.875rem, 1.5vw, 1rem)',
+                        height: 'clamp(0.875rem, 1.5vw, 1rem)',
+                        marginRight: 'var(--space-2)'
+                      }} />
                       Crea il tuo primo widget
                     </Button>
                   </Link>
