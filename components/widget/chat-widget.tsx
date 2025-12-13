@@ -599,9 +599,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           return
         }
 
-        setCollectedData(prev => ({ ...prev, phone: sanitizedPhone }))
-        // DOPO aver raccolto i contatti, calcola la valutazione
-        calculateValuation()
+        // FIX CRITICO: Aggiorna lo stato E usa un callback per garantire
+        // che calculateValuation() usi il nuovo valore
+        setCollectedData(prev => {
+          const updated = { ...prev, phone: sanitizedPhone }
+          // Chiama calculateValuation nel prossimo tick per garantire che lo stato sia aggiornato
+          setTimeout(() => calculateValuation(), 0)
+          return updated
+        })
         break
 
       case "ask_restart":
