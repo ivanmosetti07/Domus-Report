@@ -31,14 +31,31 @@ export async function GET(req: NextRequest) {
     const endDateParam = searchParams.get("endDate")
 
     // Default range: ultimi 30 giorni
-    const endDate = endDateParam ? new Date(endDateParam) : new Date()
-    const startDate = startDateParam
-      ? new Date(startDateParam)
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    const defaultEndDate = new Date()
+    const defaultStartDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 
-    // Normalizza date (inizio e fine giornata)
-    startDate.setHours(0, 0, 0, 0)
-    endDate.setHours(23, 59, 59, 999)
+    // Normalizza date in UTC per evitare shift di fuso orario
+    const normalizeDate = (
+      param: string | null,
+      fallback: Date,
+      endOfDay: boolean = false
+    ) => {
+      const base = param ? new Date(param) : new Date(fallback)
+      if (isNaN(base.getTime())) {
+        return new Date(fallback)
+      }
+
+      const normalized = new Date(base)
+      if (endOfDay) {
+        normalized.setUTCHours(23, 59, 59, 999)
+      } else {
+        normalized.setUTCHours(0, 0, 0, 0)
+      }
+      return normalized
+    }
+
+    const startDate = normalizeDate(startDateParam, defaultStartDate, false)
+    const endDate = normalizeDate(endDateParam, defaultEndDate, true)
 
     // Query analytics daily
     const analyticsData = await prisma.analyticsDaily.findMany({
@@ -152,4 +169,3 @@ function calculateTotals(data: any[]) {
 
   return totals
 }
-

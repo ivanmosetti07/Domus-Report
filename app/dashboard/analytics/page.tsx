@@ -95,6 +95,9 @@ function getDateRange(preset: DatePreset): DateRange {
   }
 }
 
+// Format dates as YYYY-MM-DD to avoid timezone shifts when hitting the API
+const formatDateParam = (date: Date) => format(date, "yyyy-MM-dd")
+
 export default function AnalyticsPage() {
   const [datePreset, setDatePreset] = React.useState<DatePreset>("30days")
   const [dateRange, setDateRange] = React.useState<DateRange>(() =>
@@ -122,10 +125,10 @@ export default function AnalyticsPage() {
         // Fetch dati periodo corrente e precedente in parallelo
         const [currentResponse, previousResponse, platformResponse] = await Promise.all([
           fetch(
-            `/api/analytics?startDate=${dateRange.start.toISOString()}&endDate=${dateRange.end.toISOString()}`
+            `/api/analytics?startDate=${formatDateParam(dateRange.start)}&endDate=${formatDateParam(dateRange.end)}`
           ),
           fetch(
-            `/api/analytics?startDate=${previousStart.toISOString()}&endDate=${previousEnd.toISOString()}`
+            `/api/analytics?startDate=${formatDateParam(previousStart)}&endDate=${formatDateParam(previousEnd)}`
           ),
           fetch("/api/analytics/platform-average"),
         ])
