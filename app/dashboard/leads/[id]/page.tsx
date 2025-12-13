@@ -82,17 +82,17 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
       <div className="mb-6">
         <Link
           href="/dashboard/leads"
-          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-4"
+          className="inline-flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           Torna ai lead
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-foreground">
               {lead.nome} {lead.cognome}
             </h1>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-foreground-muted mt-1">
               Lead ricevuto il {formatDate(lead.dataRichiesta)}
             </p>
           </div>
@@ -133,10 +133,10 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                   Indirizzo Completo
                 </label>
-                <p className="text-sm text-gray-900 mt-1">
+                <p className="text-sm text-foreground mt-1">
                   {lead.property.indirizzo}
                   <br />
                   {lead.property.quartiere && (
@@ -152,7 +152,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                     Tipo
                   </label>
                   <div className="mt-1">
@@ -161,10 +161,10 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                     Superficie
                   </label>
-                  <p className="text-sm font-semibold text-gray-900 mt-1">
+                  <p className="text-sm font-semibold text-foreground mt-1">
                     {lead.property.superficieMq} m²
                   </p>
                 </div>
@@ -174,10 +174,10 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                 <div className="grid grid-cols-2 gap-4">
                   {lead.property.locali && (
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                         Locali
                       </label>
-                      <p className="text-sm text-gray-900 mt-1">
+                      <p className="text-sm text-foreground mt-1">
                         {lead.property.locali} {lead.property.locali === 1 ? 'locale' : 'locali'}
                       </p>
                     </div>
@@ -185,10 +185,10 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
                   {lead.property.bagni && (
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                         Bagni
                       </label>
-                      <p className="text-sm text-gray-900 mt-1">
+                      <p className="text-sm text-foreground mt-1">
                         {lead.property.bagni} {lead.property.bagni === 1 ? 'bagno' : 'bagni'}
                       </p>
                     </div>
@@ -199,7 +199,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               {(lead.property.piano !== null && lead.property.piano !== undefined) || lead.property.tipoPiano ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                       Piano {lead.property.ascensore !== null && '& Ascensore'}
                     </label>
                     {lead.property.tipoPiano ? (
@@ -207,7 +207,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                         <Badge variant="outline">{lead.property.tipoPiano}</Badge>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-900 mt-1">
+                      <p className="text-sm text-foreground mt-1">
                         {lead.property.piano}° piano
                         {lead.property.ascensore !== null && (
                           <Badge
@@ -223,7 +223,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
                   {lead.property.spaziEsterni && (
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                         Spazi Esterni
                       </label>
                       <div className="mt-1">
@@ -237,7 +237,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               {lead.property.postoAuto !== null && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                       Box/Posto Auto
                     </label>
                     <div className="mt-1">
@@ -249,7 +249,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
                   {lead.property.ariaCondizionata !== null && (
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                         Aria Condizionata
                       </label>
                       <div className="mt-1">
@@ -264,7 +264,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                     Stato
                   </label>
                   <div className="mt-1">
@@ -274,7 +274,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
                 {lead.property.riscaldamento && (
                   <div>
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                       Riscaldamento
                     </label>
                     <div className="mt-1">
@@ -288,7 +288,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                 <div className="grid grid-cols-2 gap-4">
                   {lead.property.classeEnergetica && (
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                         Classe Energetica
                       </label>
                       <div className="mt-1">
@@ -299,10 +299,10 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
                   {lead.property.annoCostruzione && (
                     <div>
-                      <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                         Anno Costruzione
                       </label>
-                      <p className="text-sm text-gray-900 mt-1">
+                      <p className="text-sm text-foreground mt-1">
                         {lead.property.annoCostruzione}
                       </p>
                     </div>
@@ -312,7 +312,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
               {(lead.property.statoOccupazione || lead.property.dataScadenza) && (
                 <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                     Disponibilità
                   </label>
                   <div className="mt-1 flex items-center gap-2">
@@ -320,7 +320,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                       {lead.property.statoOccupazione}
                     </Badge>
                     {lead.property.dataScadenza && (
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-foreground-muted">
                         (Scadenza: {lead.property.dataScadenza})
                       </span>
                     )}
@@ -342,17 +342,17 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                   Range di Valore
                 </label>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-foreground-muted mt-1">
                   {formatCurrency(lead.property.valuation.prezzoMinimo)} -{" "}
                   {formatCurrency(lead.property.valuation.prezzoMassimo)}
                 </p>
               </div>
 
               <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                   Prezzo Stimato
                 </label>
                 <p className="text-3xl font-bold text-primary mt-2">
@@ -362,27 +362,27 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Valore OMI base:</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-foreground-muted">Valore OMI base:</span>
+                  <span className="font-medium text-foreground">
                     {formatCurrency(lead.property.valuation.valoreOmiBase)}/m²
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Coeff. piano:</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-foreground-muted">Coeff. piano:</span>
+                  <span className="font-medium text-foreground">
                     {(lead.property.valuation.coefficientePiano * 100).toFixed(0)}%
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Coeff. stato:</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-foreground-muted">Coeff. stato:</span>
+                  <span className="font-medium text-foreground">
                     {(lead.property.valuation.coefficienteStato * 100).toFixed(0)}%
                   </span>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-200">
-                <p className="text-xs text-gray-600">
+              <div className="pt-4 border-t border-border">
+                <p className="text-xs text-foreground-muted">
                   {lead.property.valuation.spiegazione}
                 </p>
               </div>

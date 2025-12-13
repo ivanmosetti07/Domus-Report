@@ -51,18 +51,18 @@ export default function WidgetPage() {
           <CardContent className="space-y-4">
             {/* Code Box */}
             <div className="relative">
-              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+              <pre className="bg-foreground text-background p-4 rounded-lg overflow-x-auto text-sm">
                 <code>{widgetCode}</code>
               </pre>
               <Button
                 size="sm"
                 variant="outline"
-                className="absolute top-2 right-2 bg-white"
+                className="absolute top-2 right-2 bg-card"
                 onClick={handleCopyCode}
               >
                 {copied ? (
                   <>
-                    <Check className="w-4 h-4 mr-2 text-green-600" />
+                    <Check className="w-4 h-4 mr-2 text-success" />
                     Copiato!
                   </>
                 ) : (
@@ -75,13 +75,13 @@ export default function WidgetPage() {
             </div>
 
             {/* Widget ID */}
-            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="p-4 bg-surface rounded-lg border border-border">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  <p className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
                     Il tuo Widget ID
                   </p>
-                  <p className="text-sm font-mono text-gray-900 mt-1">
+                  <p className="text-sm font-mono text-foreground mt-1">
                     {widgetId}
                   </p>
                 </div>
@@ -114,8 +114,8 @@ export default function WidgetPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                   <CardContent className="p-6 text-center">
                     <div className="text-4xl mb-3">📘</div>
-                    <h3 className="font-semibold text-gray-900 mb-2">WordPress</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="font-semibold text-foreground mb-2">WordPress</h3>
+                    <p className="text-sm text-foreground-muted">
                       Installa tramite widget HTML personalizzato
                     </p>
                   </CardContent>
@@ -126,8 +126,8 @@ export default function WidgetPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                   <CardContent className="p-6 text-center">
                     <div className="text-4xl mb-3">🎨</div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Webflow</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="font-semibold text-foreground mb-2">Webflow</h3>
+                    <p className="text-sm text-foreground-muted">
                       Aggiungi tramite Custom Code
                     </p>
                   </CardContent>
@@ -138,8 +138,8 @@ export default function WidgetPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                   <CardContent className="p-6 text-center">
                     <div className="text-4xl mb-3">💻</div>
-                    <h3 className="font-semibold text-gray-900 mb-2">HTML</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="font-semibold text-foreground mb-2">HTML</h3>
+                    <p className="text-sm text-foreground-muted">
                       Incolla prima del tag &lt;/body&gt;
                     </p>
                   </CardContent>
@@ -160,48 +160,48 @@ export default function WidgetPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-5 h-5 text-green-600" />
+                <div className="w-8 h-8 bg-success/10 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-5 h-5 text-success" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-sm">Responsive</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-semibold text-foreground text-sm">Responsive</h4>
+                  <p className="text-sm text-foreground-muted">
                     Si adatta automaticamente a desktop e mobile
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-5 h-5 text-green-600" />
+                <div className="w-8 h-8 bg-success/10 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-5 h-5 text-success" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-sm">Caricamento Asincrono</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-semibold text-foreground text-sm">Caricamento Asincrono</h4>
+                  <p className="text-sm text-foreground-muted">
                     Non rallenta il tuo sito web
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-5 h-5 text-green-600" />
+                <div className="w-8 h-8 bg-success/10 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-5 h-5 text-success" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-sm">Conversazionale</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-semibold text-foreground text-sm">Conversazionale</h4>
+                  <p className="text-sm text-foreground-muted">
                     Esperienza utente simile a WhatsApp
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-5 h-5 text-green-600" />
+                <div className="w-8 h-8 bg-success/10 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-5 h-5 text-success" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-sm">Valutazioni OMI</h4>
-                  <p className="text-sm text-gray-600">
+                  <h4 className="font-semibold text-foreground text-sm">Valutazioni OMI</h4>
+                  <p className="text-sm text-foreground-muted">
                     Basato su dati ufficiali del mercato
                   </p>
                 </div>
@@ -211,17 +211,17 @@ export default function WidgetPage() {
         </Card>
 
         {/* Preview Widget */}
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-6 text-center">
             <Eye className="w-12 h-12 text-primary mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               Vuoi vedere il widget in azione?
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-foreground-muted mb-4">
               Testa il widget in modalità demo sulla landing page
             </p>
             <Link href="/">
-              <Button variant="outline" className="bg-white">
+              <Button variant="outline" className="bg-card">
                 Vai alla Demo
               </Button>
             </Link>

@@ -74,7 +74,7 @@ export default async function ReportsPage() {
       id: 'monthly-performance',
       title: 'Performance Mensile',
       description: `Analisi completa del mese di ${now.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}`,
-      icon: <TrendingUp className="w-8 h-8 text-blue-600" />,
+      icon: <TrendingUp className="w-8 h-8 text-primary" />,
       stats: [
         { label: 'Lead generati', value: leadsThisMonth },
         { label: 'Totale lead', value: totalLeads },
@@ -85,7 +85,7 @@ export default async function ReportsPage() {
       id: 'converted-leads',
       title: 'Lead Convertiti',
       description: 'Report di tutti i lead che hanno completato il processo di conversione',
-      icon: <Users className="w-8 h-8 text-green-600" />,
+      icon: <Users className="w-8 h-8 text-success" />,
       stats: [
         { label: 'Lead convertiti', value: convertedLeads },
         { label: 'Tasso conversione', value: totalLeads > 0 ? `${Math.round((convertedLeads / totalLeads) * 100)}%` : '0%' },
@@ -96,7 +96,7 @@ export default async function ReportsPage() {
       id: 'leads-follow-up',
       title: 'Lead da Ricontattare',
       description: 'Lead interessati che necessitano di follow-up',
-      icon: <Calendar className="w-8 h-8 text-orange-600" />,
+      icon: <Calendar className="w-8 h-8 text-warning" />,
       stats: [
         { label: 'Lead interessati', value: leadsToFollow },
         { label: 'Priorità alta', value: Math.floor(leadsToFollow * 0.3) },
@@ -117,32 +117,32 @@ export default async function ReportsPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">{totalLeads}</div>
-              <div className="text-sm text-gray-600 mt-1">Totale Lead</div>
+              <div className="text-3xl font-bold text-foreground">{totalLeads}</div>
+              <div className="text-sm text-foreground-muted mt-1">Totale Lead</div>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">{leadsThisMonth}</div>
-              <div className="text-sm text-gray-600 mt-1">Questo Mese</div>
+              <div className="text-3xl font-bold text-primary">{leadsThisMonth}</div>
+              <div className="text-sm text-foreground-muted mt-1">Questo Mese</div>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">{convertedLeads}</div>
-              <div className="text-sm text-gray-600 mt-1">Convertiti</div>
+              <div className="text-3xl font-bold text-success">{convertedLeads}</div>
+              <div className="text-sm text-foreground-muted mt-1">Convertiti</div>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-orange-600">{leadsToFollow}</div>
-              <div className="text-sm text-gray-600 mt-1">Da Ricontattare</div>
+              <div className="text-3xl font-bold text-warning">{leadsToFollow}</div>
+              <div className="text-sm text-foreground-muted mt-1">Da Ricontattare</div>
             </div>
           </CardContent>
         </Card>
@@ -168,9 +168,9 @@ export default async function ReportsPage() {
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-4">
                   {report.stats.map((stat, index) => (
-                    <div key={index} className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                      <div className="text-xs text-gray-600 mt-1">{stat.label}</div>
+                    <div key={index} className="bg-surface rounded-lg p-3">
+                      <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+                      <div className="text-xs text-foreground-muted mt-1">{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -189,13 +189,13 @@ export default async function ReportsPage() {
       </div>
 
       {/* Info Section */}
-      <Card className="mt-8 bg-blue-50 border-blue-200">
+      <Card className="mt-8 bg-primary/5 border-primary/20">
         <CardContent className="pt-6">
           <div className="flex items-start gap-4">
-            <FileText className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+            <FileText className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Come funzionano i report</h3>
-              <p className="text-sm text-gray-700">
+              <h3 className="font-semibold text-foreground mb-2">Come funzionano i report</h3>
+              <p className="text-sm text-foreground-muted">
                 I report vengono generati in formato PDF e includono grafici, tabelle e statistiche dettagliate.
                 Puoi scaricare i report o riceverli via email. I dati vengono aggiornati in tempo reale.
               </p>

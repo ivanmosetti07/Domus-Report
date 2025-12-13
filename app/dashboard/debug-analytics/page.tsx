@@ -180,12 +180,12 @@ export default function DebugAnalyticsPage() {
           title="Debug Analytics"
           subtitle="Diagnostica e risoluzione problemi analytics"
         />
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive/20 bg-destructive/5">
           <CardContent className="p-6 flex items-center gap-4">
-            <AlertCircle className="w-8 h-8 text-red-600" />
+            <AlertCircle className="w-8 h-8 text-destructive" />
             <div>
-              <h3 className="font-semibold text-red-900">Errore</h3>
-              <p className="text-sm text-red-700">{error}</p>
+              <h3 className="font-semibold text-destructive">Errore</h3>
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           </CardContent>
         </Card>
@@ -199,9 +199,9 @@ export default function DebugAnalyticsPage() {
 
   const StatusIcon = ({ condition }: { condition: boolean }) =>
     condition ? (
-      <CheckCircle2 className="w-5 h-5 text-green-600" />
+      <CheckCircle2 className="w-5 h-5 text-success" />
     ) : (
-      <XCircle className="w-5 h-5 text-red-600" />
+      <XCircle className="w-5 h-5 text-destructive" />
     )
 
   return (
@@ -221,12 +221,12 @@ export default function DebugAnalyticsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-surface rounded-lg">
               <div className="flex items-center gap-3">
                 <StatusIcon condition={debugData.diagnosis.hasWidgetEvents} />
                 <div>
                   <p className="font-medium">Widget Events</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-foreground-muted">
                     {debugData.counts.totalWidgetEvents} eventi trovati
                   </p>
                 </div>
@@ -236,12 +236,12 @@ export default function DebugAnalyticsPage() {
               </Badge>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-surface rounded-lg">
               <div className="flex items-center gap-3">
                 <StatusIcon condition={debugData.diagnosis.hasAnalyticsRecords} />
                 <div>
                   <p className="font-medium">Analytics Records</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-foreground-muted">
                     {debugData.counts.analyticsDailyRecords} record giornalieri
                   </p>
                 </div>
@@ -253,12 +253,12 @@ export default function DebugAnalyticsPage() {
               </Badge>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-surface rounded-lg">
               <div className="flex items-center gap-3">
                 <StatusIcon condition={debugData.diagnosis.hasLeads} />
                 <div>
                   <p className="font-medium">Leads</p>
-                  <p className="text-sm text-gray-600">{debugData.counts.totalLeads} lead totali</p>
+                  <p className="text-sm text-foreground-muted">{debugData.counts.totalLeads} lead totali</p>
                 </div>
               </div>
               <Badge variant={debugData.diagnosis.hasLeads ? "default" : "secondary"}>
@@ -266,9 +266,9 @@ export default function DebugAnalyticsPage() {
               </Badge>
             </div>
 
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="font-semibold text-blue-900 mb-2">Raccomandazione</h4>
-              <p className="text-sm text-blue-800">{debugData.diagnosis.recommendation}</p>
+            <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+              <h4 className="font-semibold text-foreground mb-2">Raccomandazione</h4>
+              <p className="text-sm text-foreground-muted">{debugData.diagnosis.recommendation}</p>
             </div>
           </div>
         </CardContent>
@@ -285,15 +285,15 @@ export default function DebugAnalyticsPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-gray-600">Nome Agenzia</p>
+              <p className="text-sm text-foreground-muted">Nome Agenzia</p>
               <p className="font-medium">{debugData.agency.name}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">ID Agenzia</p>
+              <p className="text-sm text-foreground-muted">ID Agenzia</p>
               <p className="font-mono text-sm">{debugData.agency.id}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Widget ID</p>
+              <p className="text-sm text-foreground-muted">Widget ID</p>
               <p className="font-mono text-sm">{debugData.agency.widgetId}</p>
             </div>
           </div>
@@ -310,8 +310,8 @@ export default function DebugAnalyticsPage() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {Object.entries(debugData.eventsByType).map(([type, count]) => (
-                <div key={type} className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600">{type}</p>
+                <div key={type} className="p-4 bg-surface rounded-lg">
+                  <p className="text-sm text-foreground-muted">{type}</p>
                   <p className="text-2xl font-bold">{count}</p>
                 </div>
               ))}
@@ -368,11 +368,11 @@ export default function DebugAnalyticsPage() {
 
           {/* Popola dai Lead - opzione alternativa se non ci sono widget events */}
           {!debugData.diagnosis.hasWidgetEvents && debugData.diagnosis.hasLeads && (
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <h4 className="font-semibold text-yellow-900 mb-2">
+            <div className="mt-4 p-4 bg-warning/5 border border-warning/20 rounded-lg">
+              <h4 className="font-semibold text-foreground mb-2">
                 💡 Nessun evento widget tracciato
               </h4>
-              <p className="text-sm text-yellow-800 mb-3">
+              <p className="text-sm text-foreground-muted mb-3">
                 Non sono stati trovati eventi widget, ma hai {debugData.counts.totalLeads} lead nel database.
                 Puoi popolare i dati analytics basandoti sui lead esistenti (le impressioni e i click saranno stime).
               </p>
@@ -394,24 +394,24 @@ export default function DebugAnalyticsPage() {
           )}
 
           {aggregationResult && (
-            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h4 className="font-semibold text-green-900 flex items-center gap-2 mb-3">
+            <div className="mt-4 p-4 bg-success/5 border border-success/20 rounded-lg">
+              <h4 className="font-semibold text-foreground flex items-center gap-2 mb-3">
                 <CheckCircle2 className="w-5 h-5" />
                 {aggregationResult.message || "Aggregazione Completata"}
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 {aggregationResult.aggregation?.widgetEventsFound !== undefined && (
                   <div>
-                    <p className="text-green-700">Eventi Trovati</p>
-                    <p className="text-2xl font-bold text-green-900">
+                    <p className="text-foreground-muted">Eventi Trovati</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {aggregationResult.aggregation.widgetEventsFound}
                     </p>
                   </div>
                 )}
                 {aggregationResult.leadsProcessed !== undefined && (
                   <div>
-                    <p className="text-green-700">Lead Processati</p>
-                    <p className="text-2xl font-bold text-green-900">
+                    <p className="text-foreground-muted">Lead Processati</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {aggregationResult.leadsProcessed}
                     </p>
                   </div>
@@ -419,20 +419,20 @@ export default function DebugAnalyticsPage() {
                 {aggregationResult.totals && (
                   <>
                     <div>
-                      <p className="text-green-700">Impressioni</p>
-                      <p className="text-2xl font-bold text-green-900">
+                      <p className="text-foreground-muted">Impressioni</p>
+                      <p className="text-2xl font-bold text-foreground">
                         {aggregationResult.totals.totalImpressions || aggregationResult.aggregation?.totals?.totalImpressions || 0}
                       </p>
                     </div>
                     <div>
-                      <p className="text-green-700">Lead</p>
-                      <p className="text-2xl font-bold text-green-900">
+                      <p className="text-foreground-muted">Lead</p>
+                      <p className="text-2xl font-bold text-foreground">
                         {aggregationResult.totals.totalLeads || aggregationResult.aggregation?.totals?.totalLeads || 0}
                       </p>
                     </div>
                     <div>
-                      <p className="text-green-700">Valutazioni</p>
-                      <p className="text-2xl font-bold text-green-900">
+                      <p className="text-foreground-muted">Valutazioni</p>
+                      <p className="text-2xl font-bold text-foreground">
                         {aggregationResult.totals.totalValuations || aggregationResult.aggregation?.totals?.totalValuations || 0}
                       </p>
                     </div>
@@ -440,7 +440,7 @@ export default function DebugAnalyticsPage() {
                 )}
               </div>
               {aggregationResult.note && (
-                <p className="text-sm text-green-700 mt-3">
+                <p className="text-sm text-foreground-muted mt-3">
                   ℹ️ {aggregationResult.note}
                 </p>
               )}
@@ -459,15 +459,15 @@ export default function DebugAnalyticsPage() {
           <CardContent>
             <div className="space-y-2">
               {debugData.recentEvents.map((event, idx) => (
-                <div key={idx} className="p-3 bg-gray-50 rounded-lg flex justify-between">
+                <div key={idx} className="p-3 bg-surface rounded-lg flex justify-between">
                   <div>
                     <Badge variant="outline">{event.eventType}</Badge>
-                    <p className="text-xs text-gray-600 mt-1">
+                    <p className="text-xs text-foreground-muted mt-1">
                       {new Date(event.createdAt).toLocaleString("it-IT")}
                     </p>
                   </div>
                   {event.metadata && (
-                    <p className="text-xs text-gray-500 font-mono">
+                    <p className="text-xs text-foreground-muted font-mono">
                       {JSON.stringify(event.metadata).substring(0, 50)}...
                     </p>
                   )}
@@ -491,7 +491,7 @@ export default function DebugAnalyticsPage() {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-surface border-b border-border">
                   <tr>
                     <th className="px-4 py-2 text-left">Data</th>
                     <th className="px-4 py-2 text-right">Impressioni</th>
@@ -501,7 +501,7 @@ export default function DebugAnalyticsPage() {
                     <th className="px-4 py-2 text-right">Conv %</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-border">
                   {debugData.recentAnalytics.map((row, idx) => (
                     <tr key={idx}>
                       <td className="px-4 py-2">
@@ -509,7 +509,7 @@ export default function DebugAnalyticsPage() {
                       </td>
                       <td className="px-4 py-2 text-right">{row.widgetImpressions}</td>
                       <td className="px-4 py-2 text-right">{row.widgetClicks}</td>
-                      <td className="px-4 py-2 text-right font-medium text-green-600">
+                      <td className="px-4 py-2 text-right font-medium text-success">
                         {row.leadsGenerated}
                       </td>
                       <td className="px-4 py-2 text-right">{row.valuationsCompleted}</td>
