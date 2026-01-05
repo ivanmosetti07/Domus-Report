@@ -736,7 +736,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   }
 
   const calculateValuation = async () => {
-    addBotMessage("Perfetto! Sto calcolando la valutazione... ⏳", "calculating")
+    addBotMessage("Perfetto! Sto calcolando la valutazione con AI... ⏳", "calculating")
 
     // DEBUG: Log collectedData PRIMA della chiamata API
     console.log('[calculateValuation] CollectedData BEFORE API call:', {
@@ -751,12 +751,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
 
+      // Invia TUTTI i dati raccolti per un'analisi AI più accurata
       const response = await fetch("/api/valuation", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          // Dati base obbligatori
           address: collectedData.address || "",
           city: collectedData.city || "Milano",
           propertyType: collectedData.type || PropertyType.APARTMENT,
@@ -764,6 +766,18 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           floor: collectedData.floor,
           hasElevator: collectedData.hasElevator,
           condition: collectedData.condition || PropertyCondition.GOOD,
+          // Dati aggiuntivi per analisi AI
+          neighborhood: collectedData.neighborhood,
+          rooms: collectedData.rooms,
+          bathrooms: collectedData.bathrooms,
+          hasParking: collectedData.hasParking,
+          outdoorSpace: collectedData.outdoorSpace,
+          heatingType: collectedData.heatingType,
+          hasAirConditioning: collectedData.hasAirConditioning,
+          energyClass: collectedData.energyClass,
+          buildYear: collectedData.buildYear,
+          // Abilita analisi AI
+          useAI: true,
         }),
         signal: controller.signal,
       })
