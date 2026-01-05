@@ -6,7 +6,7 @@ import { Message } from "./message"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, Send, Building2, Loader2 } from "lucide-react"
-import { Message as MessageType, PropertyType, PropertyCondition, FloorType, OutdoorSpace, HeatingType, EnergyClass, OccupancyStatus } from "@/types"
+import { Message as MessageType, PropertyType, PropertyCondition } from "@/types"
 import { formatCurrency } from "@/lib/utils"
 
 export interface WidgetThemeConfig {
@@ -35,54 +35,30 @@ interface ChatWidgetProps {
   theme?: WidgetThemeConfig
 }
 
-type ConversationStep =
-  | "welcome"
-  | "address"
-  | "neighborhood"
-  | "type"
-  | "surface"
-  | "bedrooms"
-  | "total_rooms"
-  | "bathrooms"
-  | "floor_and_elevator"
-  | "outdoor_space"
-  | "parking"
-  | "condition"
-  | "heating"
-  | "air_conditioning"
-  | "energy_class"
-  | "build_year"
-  | "occupancy"
-  | "occupancy_end_date"
-  | "contacts_first_name"
-  | "contacts_last_name"
-  | "contacts_email"
-  | "contacts_phone"
-  | "calculating"
-  | "valuation"
-  | "completed"
-  | "ask_restart"
+// Modalità conversazione: AI-driven o calculating/completed
+type ConversationMode = "chatting" | "calculating" | "valuation" | "completed" | "ask_restart"
 
 interface CollectedData {
   address?: string
   city?: string
   neighborhood?: string
   type?: PropertyType
+  propertyType?: string // Alias per compatibilità AI
   surfaceSqm?: number
   rooms?: number
   totalRooms?: number
   bathrooms?: number
   floor?: number
   hasElevator?: boolean
-  floorType?: FloorType
-  outdoorSpace?: OutdoorSpace
+  floorType?: string
+  outdoorSpace?: string
   hasParking?: boolean
-  condition?: PropertyCondition
-  heatingType?: HeatingType
+  condition?: PropertyCondition | string
+  heatingType?: string
   hasAirConditioning?: boolean
-  energyClass?: EnergyClass
+  energyClass?: string
   buildYear?: number
-  occupancyStatus?: OccupancyStatus
+  occupancyStatus?: string
   occupancyEndDate?: string
   firstName?: string
   lastName?: string
@@ -132,13 +108,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const [messages, setMessages] = React.useState<MessageType[]>([])
   const [inputValue, setInputValue] = React.useState("")
   const [isTyping, setIsTyping] = React.useState(false)
-  const [currentStep, setCurrentStep] = React.useState<ConversationStep>("welcome")
+  const [conversationMode, setConversationMode] = React.useState<ConversationMode>("chatting")
   const [collectedData, setCollectedData] = React.useState<CollectedData>({})
   const [valuation, setValuation] = React.useState<ValuationResult | null>(null)
   const [savedLeadId, setSavedLeadId] = React.useState<string | null>(null)
   const messagesContainerRef = React.useRef<HTMLDivElement>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [isInitialized, setIsInitialized] = React.useState(false)
+  const [isWaitingForAI, setIsWaitingForAI] = React.useState(false)
 
   // Tracking: Event batching queue
   const eventQueueRef = React.useRef<Array<{
@@ -276,8 +253,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           })))
         }
 
-        if (parsed.currentStep) {
-          setCurrentStep(parsed.currentStep)
+        if (parsed.conversationMode) {
+          setConversationMode(parsed.conversationMode)
         }
 
         if (parsed.collectedData) {
@@ -299,12 +276,16 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     }
   }, [])
 
-  // Initialize conversation
+  // Initialize conversation - ora usa AI
   const initializeConversation = () => {
-    addBotMessage(
-      "Ciao! 👋 Ti aiuto a scoprire quanto vale la tua casa. Dove si trova?",
-      "welcome"
-    )
+    const welcomeMessage: MessageType = {
+      id: `msg_${Date.now()}`,
+      role: "bot",
+      text: "Ciao! 👋 Sono DomusBot, il tuo assistente per la valutazione immobiliare. Dimmi tutto quello che sai sulla tua casa: dove si trova, che tipo di immobile è, quanti metri quadri... Più informazioni mi dai, più precisa sarà la valutazione!",
+      timestamp: new Date()
+    }
+    setMessages([welcomeMessage])
+    setConversationMode("chatting")
     setIsInitialized(true)
   }
 
@@ -315,7 +296,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     try {
       const stateToSave = {
         messages,
-        currentStep,
+        conversationMode,
         collectedData,
         valuation,
         timestamp: new Date().toISOString()
@@ -324,9 +305,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     } catch (error) {
       console.error('Error saving chat state:', error)
     }
-  }, [messages, currentStep, collectedData, valuation, isInitialized, isDemo, storageKey])
+  }, [messages, conversationMode, collectedData, valuation, isInitialized, isDemo, storageKey])
 
-  const addBotMessage = (text: string, step?: ConversationStep, quickReplies?: MessageType['quickReplies']) => {
+  const addBotMessage = (text: string, quickReplies?: MessageType['quickReplies']) => {
     const newMessage: MessageType = {
       id: `msg_${Date.now()}`,
       role: "bot",
@@ -339,8 +320,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setTimeout(() => {
       setMessages(prev => [...prev, newMessage])
       setIsTyping(false)
-      if (step) setCurrentStep(step)
-    }, 800)
+    }, 500)
   }
 
   const addUserMessage = (text: string) => {
@@ -354,389 +334,135 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setInputValue("")
   }
 
+  // Gestisce quick reply (per modalità ask_restart)
   const handleQuickReply = (value: string, label: string) => {
     addUserMessage(label)
-    processInput(value)
+
+    // Gestisci solo le azioni speciali (restart, download_pdf)
+    if (conversationMode === "ask_restart") {
+      if (value === "restart") {
+        addBotMessage("Perfetto! Ricominciamo da capo. 🔄")
+        resetConversation()
+      } else if (value === "download_pdf") {
+        downloadPDF()
+      } else {
+        addBotMessage("Grazie per aver usato il nostro servizio! A presto! 👋")
+        if (mode === 'bubble' && onClose) {
+          setTimeout(() => onClose(), 3000)
+        }
+      }
+    } else {
+      // In modalità chatting, invia alla AI
+      processWithAI(label)
+    }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!inputValue.trim()) return
+    if (!inputValue.trim() || isWaitingForAI) return
 
     // Track MESSAGE event
     trackEvent("MESSAGE", { messageCount: messages.length + 1 })
 
-    addUserMessage(inputValue)
-    processInput(inputValue)
-  }
+    const userInput = inputValue.trim()
+    addUserMessage(userInput)
+    setInputValue("")
 
-  const processInput = (input: string) => {
-    switch (currentStep) {
-      case "welcome":
-        // Extract address
-        setCollectedData(prev => ({
-          ...prev,
-          address: input,
-          city: extractCity(input)
-        }))
-        addBotMessage("Ottimo! In che quartiere/zona si trova? (Se possibile, indica anche via e numero)", "neighborhood")
-        break
-
-      case "neighborhood":
-        setCollectedData(prev => ({ ...prev, neighborhood: input }))
-        addBotMessage(
-          "Che tipo di immobile è?",
-          "type",
-          [
-            { label: "Appartamento", value: PropertyType.APARTMENT },
-            { label: "Attico", value: PropertyType.ATTICO },
-            { label: "Villa", value: PropertyType.VILLA },
-            { label: "Ufficio", value: PropertyType.OFFICE },
-            { label: "Negozio", value: PropertyType.SHOP },
-            { label: "Box", value: PropertyType.BOX },
-            { label: "Terreno", value: PropertyType.LAND },
-            { label: "Altro", value: PropertyType.OTHER }
-          ]
-        )
-        break
-
-      case "type":
-        setCollectedData(prev => ({ ...prev, type: input as PropertyType }))
-        addBotMessage("Quanti metri quadri ha? (Mq commerciali o indicativi)", "surface")
-        break
-
-      case "surface":
-        const surface = parseInt(input)
-        if (isNaN(surface) || surface < 10 || surface > 10000) {
-          addBotMessage("Per favore inserisci un numero valido tra 10 e 10000 m²")
-          return
-        }
-        setCollectedData(prev => ({ ...prev, surfaceSqm: surface }))
-
-        // Ask for bedrooms if it's a residential property
-        if ([PropertyType.APARTMENT, PropertyType.ATTICO, PropertyType.VILLA].includes(collectedData.type as PropertyType)) {
-          addBotMessage("Quante stanze/camere da letto ha? (es. 1, 2, 3, 4+)", "bedrooms")
-        } else {
-          // Skip to floor for offices/shops or to condition for other types
-          askForFloorOrSkip()
-        }
-        break
-
-      case "bedrooms":
-        const bedrooms = parseInt(input.replace('+', ''))
-        if (isNaN(bedrooms) || bedrooms < 0 || bedrooms > 20) {
-          addBotMessage("Per favore inserisci un numero valido (0-20)")
-          return
-        }
-        setCollectedData(prev => ({ ...prev, rooms: bedrooms }))
-        addBotMessage("Quante camere ha in totale? (soggiorno, cucina, camere, studio, etc.)", "total_rooms")
-        break
-
-      case "total_rooms":
-        const totalRooms = parseInt(input.replace('+', ''))
-        if (isNaN(totalRooms) || totalRooms < 1 || totalRooms > 30) {
-          addBotMessage("Per favore inserisci un numero valido (1-30)")
-          return
-        }
-        // Memorizza le camere totali ma non le usiamo per la valutazione
-        setCollectedData(prev => ({ ...prev, totalRooms }))
-        addBotMessage(
-          "Quanti bagni ha?",
-          "bathrooms",
-          [
-            { label: "1", value: "1" },
-            { label: "2", value: "2" },
-            { label: "3+", value: "3" }
-          ]
-        )
-        break
-
-      case "bathrooms":
-        const bathrooms = parseInt(input.replace('+', ''))
-        if (isNaN(bathrooms) || bathrooms < 0 || bathrooms > 10) {
-          addBotMessage("Per favore inserisci un numero valido (0-10)")
-          return
-        }
-        setCollectedData(prev => ({ ...prev, bathrooms }))
-        askForFloorOrSkip()
-        break
-
-      case "floor_and_elevator":
-        setCollectedData(prev => ({ ...prev, floorType: input as FloorType }))
-
-        // Extract floor number and elevator from FloorType
-        if (input.includes("Terra")) {
-          setCollectedData(prev => ({ ...prev, floor: 0, hasElevator: false }))
-        } else if (input.includes("1-2")) {
-          setCollectedData(prev => ({ ...prev, floor: 1, hasElevator: input.includes("con") }))
-        } else if (input.includes("3+")) {
-          setCollectedData(prev => ({ ...prev, floor: 3, hasElevator: input.includes("con") }))
-        } else if (input.includes("Ultimo")) {
-          setCollectedData(prev => ({ ...prev, floor: 5, hasElevator: input.includes("con") }))
-        }
-
-        addBotMessage(
-          "Ha spazi esterni?",
-          "outdoor_space",
-          [
-            { label: "Nessuno", value: OutdoorSpace.NONE },
-            { label: "Balcone", value: OutdoorSpace.BALCONY },
-            { label: "Terrazzo", value: OutdoorSpace.TERRACE },
-            { label: "Giardino", value: OutdoorSpace.GARDEN }
-          ]
-        )
-        break
-
-      case "outdoor_space":
-        setCollectedData(prev => ({ ...prev, outdoorSpace: input as OutdoorSpace }))
-        addBotMessage(
-          "Ha box o posto auto?",
-          "parking",
-          [
-            { label: "Sì", value: "true" },
-            { label: "No", value: "false" }
-          ]
-        )
-        break
-
-      case "parking":
-        setCollectedData(prev => ({ ...prev, hasParking: input === "true" }))
-        askForCondition()
-        break
-
-      case "condition":
-        setCollectedData(prev => ({ ...prev, condition: input as PropertyCondition }))
-        addBotMessage(
-          "Che tipo di riscaldamento ha?",
-          "heating",
-          [
-            { label: "Autonomo", value: HeatingType.AUTONOMOUS },
-            { label: "Centralizzato", value: HeatingType.CENTRALIZED },
-            { label: "Assente", value: HeatingType.NONE }
-          ]
-        )
-        break
-
-      case "heating":
-        setCollectedData(prev => ({ ...prev, heatingType: input as HeatingType }))
-        addBotMessage(
-          "Ha l'aria condizionata?",
-          "air_conditioning",
-          [
-            { label: "Sì", value: "true" },
-            { label: "No", value: "false" }
-          ]
-        )
-        break
-
-      case "air_conditioning":
-        setCollectedData(prev => ({ ...prev, hasAirConditioning: input === "true" }))
-        addBotMessage(
-          "Conosci la classe energetica (APE)?",
-          "energy_class",
-          [
-            { label: "A", value: EnergyClass.A },
-            { label: "B", value: EnergyClass.B },
-            { label: "C", value: EnergyClass.C },
-            { label: "D", value: EnergyClass.D },
-            { label: "E", value: EnergyClass.E },
-            { label: "F", value: EnergyClass.F },
-            { label: "G", value: EnergyClass.G },
-            { label: "Non disponibile", value: EnergyClass.NOT_AVAILABLE },
-            { label: "Non so", value: EnergyClass.UNKNOWN }
-          ]
-        )
-        break
-
-      case "energy_class":
-        setCollectedData(prev => ({ ...prev, energyClass: input as EnergyClass }))
-        addBotMessage("Conosci l'anno di costruzione? (Scrivi l'anno o 'non so')", "build_year")
-        break
-
-      case "build_year":
-        if (input.toLowerCase() === "non so" || input.toLowerCase() === "no") {
-          setCollectedData(prev => ({ ...prev, buildYear: undefined }))
-        } else {
-          const year = parseInt(input)
-          if (isNaN(year) || year < 1800 || year > new Date().getFullYear()) {
-            addBotMessage(`Per favore inserisci un anno valido (1800-${new Date().getFullYear()}) o scrivi 'non so'`)
-            return
-          }
-          setCollectedData(prev => ({ ...prev, buildYear: year }))
-        }
-        addBotMessage(
-          "L'immobile è libero o occupato?",
-          "occupancy",
-          [
-            { label: "Libero", value: OccupancyStatus.FREE },
-            { label: "Occupato", value: OccupancyStatus.OCCUPIED }
-          ]
-        )
-        break
-
-      case "occupancy":
-        setCollectedData(prev => ({ ...prev, occupancyStatus: input as OccupancyStatus }))
-
-        if (input === OccupancyStatus.OCCUPIED) {
-          addBotMessage("Quando scade il contratto? (es. 31/12/2025 o scrivi 'non so')", "occupancy_end_date")
-        } else {
-          // Chiedi contatti PRIMA della valutazione - separati
-          addBotMessage("Perfetto! Per inviarti la valutazione, qual è il tuo nome?", "contacts_first_name")
-        }
-        break
-
-      case "occupancy_end_date":
-        if (input.toLowerCase() !== "non so" && input.toLowerCase() !== "no") {
-          setCollectedData(prev => ({ ...prev, occupancyEndDate: input }))
-        }
-        // Chiedi contatti PRIMA della valutazione - separati
-        addBotMessage("Perfetto! Per inviarti la valutazione, qual è il tuo nome?", "contacts_first_name")
-        break
-
-      case "contacts_first_name":
-        setCollectedData(prev => ({
-          ...prev,
-          firstName: input.trim()
-        }))
-        addBotMessage("E il tuo cognome?", "contacts_last_name")
-        break
-
-      case "contacts_last_name":
-        setCollectedData(prev => ({
-          ...prev,
-          lastName: input.trim()
-        }))
-        addBotMessage("Qual è la tua email?", "contacts_email")
-        break
-
-      case "contacts_email":
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(input)) {
-          addBotMessage("L'email non sembra valida. Puoi inserirla di nuovo?")
-          return
-        }
-        setCollectedData(prev => ({ ...prev, email: input }))
-        addBotMessage("Qual è il tuo numero di telefono?", "contacts_phone")
-        break
-
-      case "contacts_phone":
-        // Regex migliorato: accetta 8-13 cifre per includere tutti i numeri italiani
-        // (mobili 9-10 cifre, fissi 8-11 cifre con prefisso)
-        const phoneRegex = /^(\+39|0039)?[0-9]{8,13}$/
-        // Sanitizza il numero nello stesso modo del server per garantire coerenza
-        const sanitizedPhone = input
-          .trim()
-          .replace(/\s/g, "")       // Remove spaces
-          .replace(/-/g, "")        // Remove dashes
-          .replace(/\./g, "")       // Remove dots
-          .replace(/\(/g, "")       // Remove parentheses
-          .replace(/\)/g, "")       // Remove parentheses
-          .replace(/[^\d+]/g, "")   // Remove any other non-digit, non-plus
-
-        if (!phoneRegex.test(sanitizedPhone)) {
-          addBotMessage("Il numero di telefono non sembra valido. Inserisci un numero italiano valido.")
-          return
-        }
-
-        // FIX CRITICO: Salva il phone sia nello stato che nella ref
-        // La ref garantisce che il valore sia SEMPRE disponibile, anche con React batching
-        console.log('[contacts_phone] Saving phone:', sanitizedPhone)
-        phoneRef.current = sanitizedPhone
-        setCollectedData(prev => ({ ...prev, phone: sanitizedPhone }))
-
-        // Chiama calculateValuation dopo aver salvato il phone
-        calculateValuation()
-        break
-
-      case "ask_restart":
-        if (input === "restart") {
-          addUserMessage("Sì, rifai valutazione")
-          addBotMessage("Perfetto! Ricominciamo da capo. 🔄")
-          resetConversation()
-        } else if (input === "download_pdf") {
-          addUserMessage("📥 Scarica PDF")
-          downloadPDF()
-        } else if (input === "skip_pdf") {
-          addUserMessage("No, grazie")
-          // Non fare nulla, aspetta la prossima domanda
-        } else {
-          addUserMessage("No, grazie")
-          addBotMessage("Grazie per aver usato il nostro servizio! A presto! 👋")
-          // Opzionalmente chiudi il widget dopo qualche secondo se è in modalità bubble
-          if (mode === 'bubble' && onClose) {
-            setTimeout(() => {
-              onClose()
-            }, 3000)
-          }
-        }
-        break
+    // Se siamo in modalità chatting, usa l'AI
+    if (conversationMode === "chatting") {
+      processWithAI(userInput)
     }
   }
 
-  const askForFloorOrSkip = () => {
-    // Ask for floor only for apartments, attics, offices, shops
-    const type = collectedData.type
-    if ([PropertyType.APARTMENT, PropertyType.ATTICO, PropertyType.OFFICE, PropertyType.SHOP].includes(type as PropertyType)) {
-      addBotMessage(
-        "A che piano si trova e c'è l'ascensore?",
-        "floor_and_elevator",
-        [
-          { label: "Terra (senza ascensore)", value: FloorType.GROUND_NO_ELEVATOR },
-          { label: "1-2 senza ascensore", value: FloorType.FLOOR_1_2_NO_ELEVATOR },
-          { label: "1-2 con ascensore", value: FloorType.FLOOR_1_2_WITH_ELEVATOR },
-          { label: "3+ senza ascensore", value: FloorType.FLOOR_3_PLUS_NO_ELEVATOR },
-          { label: "3+ con ascensore", value: FloorType.FLOOR_3_PLUS_WITH_ELEVATOR },
-          { label: "Ultimo piano (senza ascensore)", value: FloorType.TOP_FLOOR_NO_ELEVATOR },
-          { label: "Ultimo piano (con ascensore)", value: FloorType.TOP_FLOOR_WITH_ELEVATOR }
-        ]
-      )
-    } else {
-      // Skip floor question for villas, boxes, lands
-      addBotMessage(
-        "Ha spazi esterni?",
-        "outdoor_space",
-        [
-          { label: "Nessuno", value: OutdoorSpace.NONE },
-          { label: "Balcone", value: OutdoorSpace.BALCONY },
-          { label: "Terrazzo", value: OutdoorSpace.TERRACE },
-          { label: "Giardino", value: OutdoorSpace.GARDEN }
-        ]
-      )
+  // Funzione principale che chiama l'API AI per processare il messaggio
+  const processWithAI = async (userInput: string) => {
+    setIsWaitingForAI(true)
+    setIsTyping(true)
+
+    try {
+      // Prepara i messaggi per l'API (ultimi 20 messaggi per contesto)
+      const recentMessages = messages.slice(-20).map(msg => ({
+        role: msg.role,
+        text: msg.text
+      }))
+
+      // Aggiungi il nuovo messaggio utente
+      recentMessages.push({ role: "user" as const, text: userInput })
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: recentMessages,
+          collectedData,
+          widgetId
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error("Errore nella risposta AI")
+      }
+
+      const data = await response.json()
+
+      // Aggiorna i dati raccolti con quelli estratti dall'AI
+      if (data.extractedData && Object.keys(data.extractedData).length > 0) {
+        setCollectedData(prev => {
+          const updated = { ...prev }
+          // Merge solo i campi non nulli/undefined
+          Object.entries(data.extractedData).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== "") {
+              (updated as any)[key] = value
+            }
+          })
+          return updated
+        })
+      }
+
+      // Mostra la risposta del bot
+      setIsTyping(false)
+      const botMessage: MessageType = {
+        id: `msg_${Date.now()}`,
+        role: "bot",
+        text: data.message,
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, botMessage])
+
+      // Se l'AI dice che siamo pronti per la valutazione, procedi
+      if (data.readyForValuation) {
+        // Aggiorna i dati finali prima di calcolare
+        const finalData = { ...collectedData, ...data.extractedData }
+        // Salva phone nella ref se presente
+        if (finalData.phone) {
+          phoneRef.current = finalData.phone
+        }
+        setCollectedData(finalData)
+
+        // Piccolo delay e poi calcola valutazione
+        setTimeout(() => {
+          calculateValuation()
+        }, 1000)
+      }
+
+    } catch (error) {
+      console.error("Errore AI:", error)
+      setIsTyping(false)
+      const errorMessage: MessageType = {
+        id: `msg_${Date.now()}`,
+        role: "bot",
+        text: "Mi dispiace, ho avuto un problema. Puoi riprovare?",
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsWaitingForAI(false)
     }
-  }
-
-  const extractCity = (address: string): string => {
-    // Extract city from address, removing postal codes and numbers
-    const parts = address.split(",")
-    const lastPart = parts[parts.length - 1]?.trim() || "Milano"
-
-    // Remove postal code (5 digits) if present
-    // Es: "20100 Milano" → "Milano"
-    const withoutPostalCode = lastPart.replace(/^\d{5}\s*/, '')
-
-    // Remove any remaining numbers at the start
-    // Es: "123 Roma" → "Roma"
-    const cityName = withoutPostalCode.replace(/^\d+\s*/, '').trim()
-
-    // If nothing left or too short, use default
-    return cityName.length >= 2 ? cityName : "Milano"
-  }
-
-  const askForCondition = () => {
-    addBotMessage(
-      "In che stato è l'immobile?",
-      "condition",
-      [
-        { label: "Nuovo", value: PropertyCondition.NEW },
-        { label: "Ristrutturato", value: PropertyCondition.RENOVATED },
-        { label: "Buono", value: PropertyCondition.GOOD },
-        { label: "Da ristrutturare", value: PropertyCondition.TO_RENOVATE }
-      ]
-    )
   }
 
   const calculateValuation = async () => {
-    addBotMessage("Perfetto! Sto calcolando la valutazione con AI... ⏳", "calculating")
+    setConversationMode("calculating")
+    addBotMessage("Perfetto! Sto calcolando la valutazione con AI... ⏳")
 
     // DEBUG: Log collectedData PRIMA della chiamata API
     console.log('[calculateValuation] CollectedData BEFORE API call:', {
@@ -811,14 +537,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       console.error("Valuation error:", error)
 
       if (error instanceof Error && error.name === 'AbortError') {
+        setConversationMode("chatting")
         addBotMessage(
-          "Mi dispiace, il calcolo sta richiedendo più tempo del previsto. Riprova tra un momento.",
-          "condition"
+          "Mi dispiace, il calcolo sta richiedendo più tempo del previsto. Riprova tra un momento."
         )
       } else {
+        setConversationMode("chatting")
         addBotMessage(
-          "Mi dispiace, si è verificato un errore nel calcolo. Riprova tra qualche minuto.",
-          "condition"
+          "Mi dispiace, si è verificato un errore nel calcolo. Riprova tra qualche minuto."
         )
       }
     }
@@ -922,7 +648,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     })
 
     // Show loading message
-    addBotMessage("Sto salvando i tuoi dati... ⏳", "completed")
+    addBotMessage("Sto salvando i tuoi dati... ⏳")
 
     try {
       // Determina l'endpoint in base a se è demo o no
@@ -1036,9 +762,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
         // Handle rate limit
         if (response.status === 429) {
+          setConversationMode("completed")
           addBotMessage(
-            `Mi dispiace ${firstName}, hai raggiunto il limite di richieste giornaliere. Riprova domani.`,
-            "completed"
+            `Mi dispiace ${firstName}, hai raggiunto il limite di richieste giornaliere. Riprova domani.`
           )
           return
         }
@@ -1065,14 +791,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         ? `Grazie ${firstName}! 🎉 Questa è una demo. Per ricevere lead reali, registrati gratuitamente!`
         : `Grazie ${firstName}! 🎉 Il report dettagliato ti è stato inviato via email. Sarai ricontattato a breve da un nostro consulente.`
 
-      addBotMessage(successMessage, "completed")
+      setConversationMode("completed")
+      addBotMessage(successMessage)
 
       // Aggiungi opzione download PDF se NON è demo
       if (!isDemo) {
         setTimeout(() => {
           addBotMessage(
             "Vuoi scaricare il PDF della valutazione?",
-            "completed",
             [
               { label: "📥 Scarica PDF", value: "download_pdf" },
               { label: "No, grazie", value: "skip_pdf" }
@@ -1083,9 +809,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       // Ask if user wants to restart instead of closing
       setTimeout(() => {
+        setConversationMode("ask_restart")
         addBotMessage(
           "Vuoi fare una nuova valutazione?",
-          "ask_restart",
           [
             { label: "Sì, rifai valutazione", value: "restart" },
             { label: "No, grazie", value: "done" }
@@ -1105,23 +831,21 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       if (error instanceof Error && error.name === 'AbortError') {
         addBotMessage(
-          `Mi dispiace ${firstName}, il salvataggio sta richiedendo più tempo del previsto. Riprova per favore.`,
-          "completed"
+          `Mi dispiace ${firstName}, il salvataggio sta richiedendo più tempo del previsto. Riprova per favore.`
         )
       } else {
         // Mostra errore reale all'utente
         const errorMessage = error instanceof Error ? error.message : "Errore sconosciuto"
         addBotMessage(
-          `Si è verificato un errore: ${errorMessage}. Riprova o contattaci direttamente.`,
-          "completed"
+          `Si è verificato un errore: ${errorMessage}. Riprova o contattaci direttamente.`
         )
       }
 
       // Ask if user wants to restart even on error
       setTimeout(() => {
+        setConversationMode("ask_restart")
         addBotMessage(
           "Vuoi riprovare con una nuova valutazione?",
-          "ask_restart",
           [
             { label: "Sì, riprova", value: "restart" },
             { label: "No, grazie", value: "done" }
@@ -1137,8 +861,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setMessages([])
     setCollectedData({})
     setValuation(null)
-    setCurrentStep("welcome")
+    setConversationMode("chatting")
     setInputValue("")
+    setSavedLeadId(null)
+    phoneRef.current = undefined
 
     // Clear localStorage
     if (!isDemo) {
@@ -1156,49 +882,12 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   }
 
   const getPlaceholder = (): string => {
-    switch (currentStep) {
-      case "welcome":
-        return "es. Milano"
-      case "neighborhood":
-        return "es. Centro, Via Roma 15"
-      case "type":
-        return "Seleziona il tipo..."
-      case "surface":
-        return "es. 85"
-      case "bedrooms":
-        return "es. 2"
-      case "total_rooms":
-        return "es. 4"
-      case "bathrooms":
-        return "es. 2"
-      case "floor_and_elevator":
-        return "Seleziona..."
-      case "outdoor_space":
-        return "Seleziona..."
-      case "parking":
-        return "Sì o No"
-      case "condition":
-        return "Seleziona..."
-      case "heating":
-        return "Seleziona..."
-      case "air_conditioning":
-        return "Sì o No"
-      case "energy_class":
-        return "Seleziona..."
-      case "build_year":
-        return "es. 1995 o 'non so'"
-      case "occupancy":
-        return "Seleziona..."
-      case "occupancy_end_date":
-        return "es. 31/12/2025"
-      case "contacts_first_name":
-        return "es. Mario"
-      case "contacts_last_name":
-        return "es. Rossi"
-      case "contacts_email":
-        return "tua@email.com"
-      case "contacts_phone":
-        return "es. 3331234567"
+    switch (conversationMode) {
+      case "chatting":
+        return "Scrivi qui..."
+      case "calculating":
+        return "Calcolo in corso..."
+      case "valuation":
       case "completed":
         return "Conversazione completata"
       case "ask_restart":
@@ -1208,7 +897,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     }
   }
 
-  const isInputDisabled = currentStep === "calculating" || currentStep === "completed" || currentStep === "ask_restart" || isTyping
+  const isInputDisabled = conversationMode === "calculating" || conversationMode === "completed" || conversationMode === "ask_restart" || isTyping || isWaitingForAI
 
   // Position class for bubble mode
   const bubblePositionClass = bubblePosition === 'bottom-left' ? 'sm:left-4' : 'sm:right-4'
@@ -1291,7 +980,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             <button
               onClick={() => {
                 // Track CLOSE event
-                trackEvent("CLOSE", { step: currentStep })
+                trackEvent("CLOSE", { mode: conversationMode })
                 // Invia subito gli eventi rimanenti
                 sendEventBatch()
                 // Chiudi widget
@@ -1350,123 +1039,43 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           padding: 'clamp(0.75rem, 2vw, 1rem)'
         }}
       >
-        {currentStep === "contacts_email" ? (
-          <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
-            gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
-          }}>
-            <Input
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={getPlaceholder()}
-              disabled={isInputDisabled}
-              className="flex-1"
-              type="email"
-              style={{
-                borderColor: primaryColor,
-                height: 'clamp(2.5rem, 10vw, 2.75rem)',
-                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
-              }}
-              autoComplete="off"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              data-bwignore="true"
-            />
-            <Button
-              type="submit"
-              size="icon"
-              disabled={isInputDisabled || !inputValue.trim()}
-              style={{
-                backgroundColor: primaryColor,
-                width: 'clamp(2.5rem, 10vw, 2.75rem)',
-                height: 'clamp(2.5rem, 10vw, 2.75rem)'
-              }}
-              aria-label="Invia messaggio"
-            >
-              <Send style={{
-                width: 'clamp(1.125rem, 4vw, 1.25rem)',
-                height: 'clamp(1.125rem, 4vw, 1.25rem)'
-              }} />
-            </Button>
-          </form>
-        ) : currentStep === "contacts_phone" ? (
-          <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
-            gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
-          }}>
-            <Input
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={getPlaceholder()}
-              disabled={isInputDisabled}
-              className="flex-1"
-              type="tel"
-              style={{
-                borderColor: primaryColor,
-                height: 'clamp(2.5rem, 10vw, 2.75rem)',
-                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
-              }}
-              autoComplete="off"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              data-bwignore="true"
-            />
-            <Button
-              type="submit"
-              size="icon"
-              disabled={isInputDisabled || !inputValue.trim()}
-              style={{
-                backgroundColor: primaryColor,
-                width: 'clamp(2.5rem, 10vw, 2.75rem)',
-                height: 'clamp(2.5rem, 10vw, 2.75rem)'
-              }}
-              aria-label="Invia messaggio"
-            >
-              <Send style={{
-                width: 'clamp(1.125rem, 4vw, 1.25rem)',
-                height: 'clamp(1.125rem, 4vw, 1.25rem)'
-              }} />
-            </Button>
-          </form>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
-            gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
-          }}>
-            <Input
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={getPlaceholder()}
-              disabled={isInputDisabled}
-              className="flex-1"
-              style={{
-                borderColor: `${primaryColor}40`,
-                height: 'clamp(2.5rem, 10vw, 2.75rem)',
-                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
-              }}
-              autoComplete="off"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              data-bwignore="true"
-            />
-            <Button
-              type="submit"
-              size="icon"
-              disabled={isInputDisabled || !inputValue.trim()}
-              style={{
-                backgroundColor: primaryColor,
-                width: 'clamp(2.5rem, 10vw, 2.75rem)',
-                height: 'clamp(2.5rem, 10vw, 2.75rem)'
-              }}
-              aria-label="Invia messaggio"
-            >
-              <Send style={{
-                width: 'clamp(1.125rem, 4vw, 1.25rem)',
-                height: 'clamp(1.125rem, 4vw, 1.25rem)'
-              }} />
-            </Button>
-          </form>
-        )}
+        <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
+          gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+        }}>
+          <Input
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder={getPlaceholder()}
+            disabled={isInputDisabled}
+            className="flex-1"
+            style={{
+              borderColor: `${primaryColor}40`,
+              height: 'clamp(2.5rem, 10vw, 2.75rem)',
+              fontSize: 'clamp(0.875rem, 2vw, 1rem)'
+            }}
+            autoComplete="off"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+          />
+          <Button
+            type="submit"
+            size="icon"
+            disabled={isInputDisabled || !inputValue.trim()}
+            style={{
+              backgroundColor: primaryColor,
+              width: 'clamp(2.5rem, 10vw, 2.75rem)',
+              height: 'clamp(2.5rem, 10vw, 2.75rem)'
+            }}
+            aria-label="Invia messaggio"
+          >
+            <Send style={{
+              width: 'clamp(1.125rem, 4vw, 1.25rem)',
+              height: 'clamp(1.125rem, 4vw, 1.25rem)'
+            }} />
+          </Button>
+        </form>
       </div>
     </div>
   )
