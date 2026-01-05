@@ -1,0 +1,488 @@
+{
+  "name": "DomusBot - Valutazione Immobiliare",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## DOMUSBOT WORKFLOW\n### Chatbot AI per Valutazioni Immobiliari\n\n**Versione:** 2.1.0\n**Autore:** DomusReport\n\n---\n\n**Come funziona:**\n1. Il widget invia messaggi via POST\n2. L'AI Agent raccoglie dati in 21 step\n3. Calcola la valutazione con dati OMI\n4. Restituisce la risposta JSON\n\n**Requisiti:**\n- Credenziali Google Gemini API\n- n8n v1.20+",
+        "height": 380,
+        "width": 280,
+        "color": 4
+      },
+      "id": "sticky-intro",
+      "name": "Introduzione",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, 80]
+    },
+    {
+      "parameters": {
+        "content": "## WEBHOOK ENTRY POINTS\n\n**POST /domusbot**\nRiceve i messaggi dal widget.\n\nBody atteso:\n```json\n{\n  \"message\": \"Ciao\",\n  \"sessionId\": \"widget-123\"\n}\n```\n\n**OPTIONS /domusbot**\nGestisce preflight CORS per richieste cross-origin dal widget embeddato.",
+        "height": 280,
+        "width": 320,
+        "color": 6
+      },
+      "id": "sticky-webhook",
+      "name": "Note Webhook",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [180, 420]
+    },
+    {
+      "parameters": {
+        "content": "## VALIDAZIONE INPUT\n\nControlla se il body contiene un messaggio valido.\n\n**True:** Passa all'AI Agent\n**False:** Restituisce messaggio di benvenuto",
+        "height": 160,
+        "width": 240,
+        "color": 3
+      },
+      "id": "sticky-validation",
+      "name": "Note Validazione",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [400, 180]
+    },
+    {
+      "parameters": {
+        "content": "## AI AGENT - CUORE DEL BOT\n\n**Modello:** Google Gemini 1.5 Pro\n**Temperature:** 0.6 (bilanciata)\n**Memory:** 30 messaggi per sessione\n\n### Flusso Conversazione:\n\n**FASE 1 - Dati Immobile (17 domande):**\n1. Citta\n2. Quartiere/zona\n3. Tipo immobile\n4. Metri quadri\n5. Camere da letto\n6. Camere totali\n7. Bagni\n8. Piano + ascensore\n9. Spazi esterni\n10. Box/posto auto\n11. Stato immobile\n12. Riscaldamento\n13. Aria condizionata\n14. Classe energetica\n15. Anno costruzione\n16. Occupazione\n17. Scadenza contratto (se occupato)\n\n**FASE 2 - Dati Contatto (4 domande):**\n18. Nome\n19. Cognome\n20. Email\n21. Telefono\n\n### Database OMI integrato:\nMilano, Roma, Firenze, Venezia,\nBologna, Torino, Napoli, Genova,\nPalermo, Bari + altre 10 citta\n\n### Coefficienti:\n- Piano: 0.92 - 1.08\n- Stato: 0.82 - 1.25\n\n### Formula:\nstimato = OMI x mq x coeff_piano x coeff_stato\nrange = stimato +/- 7%",
+        "height": 720,
+        "width": 360,
+        "color": 1
+      },
+      "id": "sticky-agent",
+      "name": "Note AI Agent",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [560, 80]
+    },
+    {
+      "parameters": {
+        "content": "## FORMAT RESPONSE\n\nTrasforma l'output dell'agent nel formato JSON atteso dal frontend.\n\n**Estrae:**\n- Messaggio testuale\n- Dati valutazione (se presenti)\n- SessionId per tracking\n\n**Output:**\n```json\n{\n  \"success\": true,\n  \"message\": \"...\",\n  \"sessionId\": \"...\",\n  \"hasValuation\": true/false,\n  \"valuation\": {\n    \"minPrice\": 350000,\n    \"maxPrice\": 420000,\n    \"estimatedPrice\": 385000\n  }\n}\n```",
+        "height": 360,
+        "width": 300,
+        "color": 5
+      },
+      "id": "sticky-format",
+      "name": "Note Format Response",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [980, 80]
+    },
+    {
+      "parameters": {
+        "content": "## RISPOSTA FINALE\n\nInvia la risposta JSON al widget con headers CORS.\n\n**Headers:**\n- Access-Control-Allow-Origin: *\n- Content-Type: application/json",
+        "height": 180,
+        "width": 260,
+        "color": 2
+      },
+      "id": "sticky-respond",
+      "name": "Note Respond",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1260, 180]
+    },
+    {
+      "parameters": {
+        "content": "## GESTIONE ERRORI\n\n**Error Trigger:** Cattura errori del workflow\n**Format Error:** Prepara messaggio user-friendly\n**Respond Error:** Invia risposta 500\n\nGli errori non bloccano l'esperienza utente.",
+        "height": 200,
+        "width": 280,
+        "color": 7
+      },
+      "id": "sticky-errors",
+      "name": "Note Errori",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [400, 600]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "domusbot",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-main",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [320, 340],
+      "webhookId": "domusbot-main"
+    },
+    {
+      "parameters": {
+        "httpMethod": "OPTIONS",
+        "path": "domusbot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-cors",
+      "name": "CORS Preflight",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [320, 140],
+      "webhookId": "domusbot-cors"
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {
+          "responseCode": 204,
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" },
+              { "name": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+              { "name": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, X-Session-Id" }
+            ]
+          }
+        }
+      },
+      "id": "cors-response",
+      "name": "CORS Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [560, 140]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "check-message-exists",
+              "leftValue": "={{ $json.body.message }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-has-message",
+      "name": "Has Message?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [540, 340]
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "Sei DomusBot, un assistente esperto in valutazioni immobiliari in Italia per DomusReport. Il tuo compito e raccogliere informazioni sull'immobile dell'utente attraverso una conversazione naturale e poi fornire una stima di valore precisa.\n\n## REGOLE FONDAMENTALI\n1. Fai UNA SOLA DOMANDA alla volta\n2. Conferma brevemente il dato ricevuto prima di passare alla domanda successiva\n3. Usa un tono amichevole ma professionale\n4. Se la risposta e ambigua, chiedi gentilmente di specificare\n5. Valida i dati: email deve contenere @, mq deve essere un numero tra 10 e 10000\n\n## MESSAGGIO INIZIALE\nQuando l'utente saluta o inizia, rispondi con:\n\"Ciao! Ti aiuto a scoprire quanto vale la tua casa. Dove si trova?\"\n\n## ORDINE RACCOLTA DATI (segui esattamente questo ordine)\n\n### FASE 1: Dati Immobile\n1. **Citta** - \"Dove si trova l'immobile?\" (es: Milano)\n2. **Quartiere/zona** - \"In che quartiere o zona? Se possibile indica anche la via\"\n3. **Tipo immobile** - Chiedi scegliendo tra: Appartamento, Attico, Villa, Ufficio, Negozio, Box, Terreno, Altro\n4. **Metri quadri** - Deve essere un numero tra 10 e 10000\n5. **Camere da letto** - Solo per residenziale (Appartamento, Attico, Villa): 1, 2, 3, 4+\n6. **Camere totali** - Solo per residenziale: include soggiorno, cucina, camere, studio\n7. **Bagni** - 1, 2, 3+\n8. **Piano e ascensore** - Chiedi insieme. Opzioni:\n   - Terra (senza ascensore)\n   - 1-2 senza ascensore\n   - 1-2 con ascensore\n   - 3+ senza ascensore\n   - 3+ con ascensore\n   - Ultimo piano (senza ascensore)\n   - Ultimo piano (con ascensore)\n9. **Spazi esterni** - Nessuno, Balcone, Terrazzo, Giardino\n10. **Box/posto auto** - Si o No\n11. **Stato immobile** - Nuovo, Ristrutturato, Buono, Da ristrutturare\n12. **Riscaldamento** - Autonomo, Centralizzato, Assente\n13. **Aria condizionata** - Si o No\n14. **Classe energetica APE** - A, B, C, D, E, F, G, Non disponibile, Non so\n15. **Anno costruzione** - Anno specifico o \"non so\"\n16. **Occupazione** - Libero o Occupato\n17. **Scadenza contratto** - SOLO se occupato/affittato\n\n### FASE 2: Dati Contatto (dopo TUTTI i dati immobile)\n18. **Nome** - \"Per inviarti la valutazione, qual e il tuo nome?\"\n19. **Cognome**\n20. **Email** - Deve contenere @\n21. **Telefono** - Numero italiano valido\n\n## DATABASE OMI (Valori euro/mq per citta e tipologia)\n\n### Appartamento:\nMilano: 4800 | Roma: 3800 | Firenze: 3900 | Venezia: 4200 | Bologna: 3200\nTorino: 2400 | Napoli: 2800 | Genova: 2600 | Palermo: 1800 | Bari: 2000\nCatania: 1600 | Verona: 2900 | Padova: 2700 | Trieste: 2300 | Brescia: 2500\nParma: 2400 | Modena: 2600 | Reggio Emilia: 2300 | Perugia: 2000 | Rimini: 2800\nAltre citta: 2000 (media nazionale)\n\n### Attico:\nMilano: 6000 | Roma: 4800 | Firenze: 5000 | Venezia: 5500 | Bologna: 4200\nTorino: 3200 | Napoli: 3600 | Genova: 3400 | Palermo: 2400 | Bari: 2700\nAltre citta: 2700 (media nazionale)\n\n### Villa:\nMilano: 5500 | Roma: 4500 | Firenze: 4800 | Venezia: 5000 | Bologna: 3800\nTorino: 3200 | Napoli: 3500 | Genova: 3400 | Palermo: 2500 | Bari: 2700\nAltre citta: 2800 (media nazionale)\n\n### Ufficio:\nMilano: 4200 | Roma: 3500 | Firenze: 3400 | Bologna: 2900 | Torino: 2200\nAltre citta: 1800 (media nazionale)\n\n### Negozio:\nMilano: 3800 | Roma: 3200 | Firenze: 3000 | Bologna: 2600 | Torino: 2000\nAltre citta: 1600 (media nazionale)\n\n### Box:\nMilano: 2000 | Roma: 1800 | Firenze: 1700 | Bologna: 1500 | Torino: 1200\nAltre citta: 1000 (media nazionale)\n\n### Terreno:\nMilano: 1200 | Roma: 1000 | Firenze: 900 | Bologna: 800 | Torino: 600\nAltre citta: 500 (media nazionale)\n\n## COEFFICIENTI DI CALCOLO\n\n### Coefficiente Piano (calcolato dal FloorType):\n- Terra (senza ascensore): 0.92\n- Piano 1-2 senza ascensore: 0.97\n- Piano 1-2 con ascensore: 1.00\n- Piano 2 (baseline): 1.00\n- Piano 3 senza ascensore: 0.98 (1.03 - 0.05 penalty)\n- Piano 3 con ascensore: 1.06 (1.03 + 0.03 bonus)\n- Piano 4+ senza ascensore: 1.00 (1.05 - 0.05 penalty)\n- Piano 4+ con ascensore: 1.08 (1.05 + 0.03 bonus)\n- Ultimo piano senza ascensore: 1.00\n- Ultimo piano con ascensore: 1.08\nRange: min 0.85, max 1.15\n\n### Coefficiente Stato:\n- Nuovo: 1.25\n- Ristrutturato: 1.12\n- Buono: 1.00\n- Da ristrutturare: 0.82\n\n## FORMULA VALUTAZIONE\n\nstimato = OMI_base x mq x coeff_piano x coeff_stato\nminimo = stimato x 0.93\nmassimo = stimato x 1.07\n\n## OUTPUT VALUTAZIONE (quando hai TUTTI i dati)\n\nMostra:\n\n\"Ecco la valutazione!\n\nRange: euro[min formattato] - euro[max formattato]\n\nStima: euro[stimato formattato]\n\n[Spiegazione con coefficienti applicati]\"\n\nEsempio spiegazione:\n\"Valutazione basata su dati OMI per Milano (4800 euro/mq). Superficie: 85mq. Immobile al 3 piano con ascensore. Stato: Buono. Coefficiente piano: +6%. Coefficiente stato: 0%.\"\n\nPoi chiedi:\n\"Vuoi scaricare il report PDF completo? Oppure preferisci fare una nuova valutazione?\"\n\n## GESTIONE ERRORI\n- MQ non validi: \"Per favore inserisci un numero valido tra 10 e 10000 mq\"\n- Email non valida: \"L'email non sembra valida. Puoi inserirla di nuovo?\"\n- Telefono non valido: \"Il numero di telefono non sembra valido. Inserisci un numero italiano valido.\"\n- Risposta ambigua: \"Non ho capito bene, puoi specificare meglio?\"\n\n## NOTA IMPORTANTE\nNon procedere MAI al calcolo della valutazione finche non hai raccolto TUTTI i 21 campi richiesti (17 immobile + 4 contatto). Segui rigorosamente l'ordine indicato.",
+          "maxIterations": 40,
+          "returnIntermediateSteps": false
+        }
+      },
+      "id": "ai-agent",
+      "name": "DomusBot Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [760, 340]
+    },
+    {
+      "parameters": {
+        "model": "gemini-1.5-pro",
+        "options": {
+          "temperature": 0.6,
+          "maxOutputTokens": 4096,
+          "topP": 0.9
+        }
+      },
+      "id": "gemini-model",
+      "name": "Google Gemini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [760, 560],
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "YOUR_GEMINI_CREDENTIAL_ID",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.sessionId || $json.body.widgetId || $json.headers['x-session-id'] || 'default-' + Date.now() }}",
+        "contextWindowLength": 30
+      },
+      "id": "chat-memory",
+      "name": "Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [960, 560]
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * FORMAT RESPONSE\n * \n * Questo nodo trasforma l'output dell'AI Agent nel formato JSON\n * atteso dal frontend del widget DomusReport.\n * \n * Input: Output grezzo dall'agent (può essere stringa o oggetto)\n * Output: Oggetto JSON strutturato con:\n *   - success: boolean\n *   - message: stringa con la risposta del bot\n *   - sessionId: ID sessione per tracking\n *   - hasValuation: true se contiene una valutazione\n *   - valuation: oggetto con minPrice, maxPrice, estimatedPrice\n */\n\nconst input = $input.first().json;\n\n// Recupera sessionId dal webhook originale\nconst webhookData = $('Webhook').first().json;\nconst sessionId = webhookData.body?.sessionId || \n                  webhookData.body?.widgetId || \n                  webhookData.headers?.['x-session-id'] || \n                  'default-session';\n\n// Estrai il messaggio dall'output dell'agent\n// L'agent può restituire il messaggio in diversi formati\nlet message = '';\nif (typeof input.output === 'string') {\n  message = input.output;\n} else if (input.text) {\n  message = input.text;\n} else if (input.response) {\n  message = input.response;\n} else if (input.content) {\n  message = input.content;\n} else {\n  message = JSON.stringify(input);\n}\n\n// Verifica se c'e una valutazione completata nel messaggio\n// Cerca keyword tipiche della valutazione finale\nconst hasValuation = message.includes('Stima:') || \n                    message.includes('valutazione') ||\n                    message.includes('Range:') ||\n                    message.includes('EUR');\n\n// Estrai dati valutazione se presenti\nlet valuationData = null;\nif (hasValuation) {\n  // Pattern per estrarre i prezzi\n  // Supporta formati italiani con . come separatore migliaia\n  // Es: \"Range: EUR350.000 - EUR420.000\" o \"Stima: EUR385.000\"\n  const rangeMatch = message.match(/Range:\\s*(?:EUR|euro)?\\s*([\\d.,]+)\\s*-\\s*(?:EUR|euro)?\\s*([\\d.,]+)/i);\n  const stimatoMatch = message.match(/Stima:\\s*(?:EUR|euro)?\\s*([\\d.,]+)/i);\n  \n  // Funzione per parsare i prezzi in formato italiano\n  const parsePrice = (str) => {\n    if (!str) return null;\n    // Rimuovi punti (separatore migliaia) e converti virgola in punto\n    return parseInt(str.replace(/\\./g, '').replace(',', '.'));\n  };\n  \n  if (rangeMatch || stimatoMatch) {\n    valuationData = {\n      minPrice: rangeMatch ? parsePrice(rangeMatch[1]) : null,\n      maxPrice: rangeMatch ? parsePrice(rangeMatch[2]) : null,\n      estimatedPrice: stimatoMatch ? parsePrice(stimatoMatch[1]) : null\n    };\n  }\n}\n\n// Costruisci la risposta nel formato atteso dal frontend\nconst response = {\n  success: true,\n  message: message,\n  sessionId: sessionId,\n  timestamp: new Date().toISOString(),\n  hasValuation: hasValuation && valuationData !== null,\n  valuation: valuationData\n};\n\nreturn response;"
+      },
+      "id": "format-response",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1160, 340]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" },
+              { "name": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+              { "name": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, X-Session-Id" },
+              { "name": "Content-Type", "value": "application/json; charset=utf-8" }
+            ]
+          }
+        }
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1400, 340]
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * HANDLE NO MESSAGE\n * \n * Gestisce il caso in cui la richiesta arriva senza messaggio.\n * Invece di restituire un errore, invia il messaggio di benvenuto\n * per iniziare la conversazione.\n * \n * Questo puo succedere quando:\n * - Il widget viene aperto per la prima volta\n * - La richiesta e malformata\n * - Il campo message e vuoto\n */\n\nconst webhookData = $json;\n\nreturn {\n  success: true, // Cambiato da false a true per UX migliore\n  error: null,\n  message: 'Ciao! Ti aiuto a scoprire quanto vale la tua casa. Dove si trova?',\n  sessionId: webhookData.body?.sessionId || webhookData.body?.widgetId || 'new-session',\n  timestamp: new Date().toISOString(),\n  hasValuation: false,\n  valuation: null\n};"
+      },
+      "id": "handle-no-message",
+      "name": "Handle No Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 520]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" },
+              { "name": "Content-Type", "value": "application/json; charset=utf-8" }
+            ]
+          }
+        }
+      },
+      "id": "respond-no-message",
+      "name": "Respond No Message",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [980, 520]
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $json.error || 'Errore nel processamento della richiesta' }}"
+      },
+      "id": "error-trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [540, 720]
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * FORMAT ERROR\n * \n * Gestisce gli errori del workflow in modo graceful.\n * Invece di mostrare errori tecnici all'utente,\n * restituisce un messaggio user-friendly.\n * \n * L'errore originale viene loggato nei dettagli\n * per il debugging.\n */\n\nconst error = $input.first().json;\n\nreturn {\n  success: false,\n  error: 'internal_error',\n  message: 'Mi dispiace, si e verificato un errore. Riprova tra qualche momento.',\n  details: error.message || 'Errore sconosciuto',\n  timestamp: new Date().toISOString(),\n  hasValuation: false,\n  valuation: null\n};"
+      },
+      "id": "format-error",
+      "name": "Format Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 720]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 500,
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" },
+              { "name": "Content-Type", "value": "application/json; charset=utf-8" }
+            ]
+          }
+        }
+      },
+      "id": "respond-error",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [980, 720]
+    },
+    {
+      "parameters": {
+        "content": "## MEMORIA SESSIONE\n\n**Window Buffer Memory**\nMantiene gli ultimi 30 messaggi per sessione.\n\nIl sessionId viene estratto da:\n1. body.sessionId\n2. body.widgetId\n3. header X-Session-Id\n4. fallback: timestamp\n\nOgni widget/utente ha la sua conversazione separata.",
+        "height": 240,
+        "width": 260,
+        "color": 1
+      },
+      "id": "sticky-memory",
+      "name": "Note Memory",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [940, 680]
+    },
+    {
+      "parameters": {
+        "content": "## CASO NO MESSAGE\n\nSe la richiesta arriva senza messaggio, invece di fallire restituiamo il messaggio di benvenuto.\n\nQuesto migliora la UX quando il widget viene aperto per la prima volta.",
+        "height": 160,
+        "width": 260,
+        "color": 3
+      },
+      "id": "sticky-no-message",
+      "name": "Note No Message",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [740, 400]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Has Message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CORS Preflight": {
+      "main": [
+        [
+          {
+            "node": "CORS Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Message?": {
+      "main": [
+        [
+          {
+            "node": "DomusBot Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle No Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DomusBot Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "DomusBot Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "DomusBot Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle No Message": {
+      "main": [
+        [
+          {
+            "node": "Respond No Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error": {
+      "main": [
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": [
+    { "name": "DomusReport" },
+    { "name": "Chatbot" },
+    { "name": "AI Agent" },
+    { "name": "Valutazione Immobiliare" },
+    { "name": "Gemini" }
+  ],
+  "triggerCount": 2,
+  "pinData": {},
+  "versionId": "2.1.0"
+}

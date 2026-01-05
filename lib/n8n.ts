@@ -231,8 +231,8 @@ export function calculateValuationLocal(
 }
 
 /**
- * Calls n8n webhook for property valuation
- * Falls back to local calculation if n8n is unavailable
+ * Calculates property valuation using local OMI data + coefficients
+ * n8n webhook is disabled - using only local calculation + OpenAI analysis
  * Uses in-memory cache to improve performance
  */
 export async function calculateValuation(
@@ -245,63 +245,10 @@ export async function calculateValuation(
     return cached
   }
 
-  const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL
-
-  // If n8n is not configured, use local calculation
-  if (!n8nWebhookUrl) {
-    logger.warn("N8N_WEBHOOK_URL not configured, using local calculation")
-    const result = calculateValuationLocal(input)
-    setCachedValuation(input, result)
-    return result
-  }
-
-  try {
-    // Call n8n webhook
-    const response = await fetch(n8nWebhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(input),
-      // Timeout after 30 seconds
-      signal: AbortSignal.timeout(30000),
-    })
-
-    if (!response.ok) {
-      throw new Error(`n8n webhook error: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-
-    // Validate response
-    if (
-      !data.estimatedPrice ||
-      !data.minPrice ||
-      !data.maxPrice ||
-      !data.baseOMIValue
-    ) {
-      throw new Error("Invalid response from n8n webhook")
-    }
-
-    const result = {
-      minPrice: data.minPrice,
-      maxPrice: data.maxPrice,
-      estimatedPrice: data.estimatedPrice,
-      baseOMIValue: data.baseOMIValue,
-      floorCoefficient: data.floorCoefficient || 1.0,
-      conditionCoefficient: data.conditionCoefficient || 1.0,
-      explanation: data.explanation || generateValuationExplanation(input, data),
-    }
-
-    // Cache the result
-    setCachedValuation(input, result)
-    return result
-  } catch (error) {
-    logger.error("n8n webhook error, falling back to local calculation", error)
-    // Fallback to local calculation
-    const result = calculateValuationLocal(input)
-    // Cache the fallback result too
-    setCachedValuation(input, result)
-    return result
-  }
+  // Use local calculation (OMI database + coefficients)
+  // OpenAI analysis is handled separately in the API route
+  logger.info("Calculating valuation locally", { city: input.city, type: input.propertyType })
+  const result = calculateValuationLocal(input)
+  setCachedValuation(input, result)
+  return result
 }

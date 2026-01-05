@@ -63,6 +63,15 @@ export async function POST(request: NextRequest) {
     // Calculate base valuation (OMI + coefficients)
     const baseValuation = await calculateValuation(body)
 
+    // Verifica che la valutazione base sia valida
+    if (!baseValuation.estimatedPrice || baseValuation.estimatedPrice <= 0) {
+      console.error("Invalid base valuation:", baseValuation)
+      return NextResponse.json(
+        { error: "Errore nel calcolo della valutazione base" },
+        { status: 500 }
+      )
+    }
+
     // Prepara dati per l'analisi AI
     const aiInput: PropertyValuationData = {
       address: body.address,
