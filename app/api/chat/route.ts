@@ -333,14 +333,19 @@ export async function POST(request: NextRequest) {
     const content = result.choices[0]?.message?.content
 
     if (!content) {
+      console.error("[Chat API] Empty content from OpenAI")
       throw new Error("Risposta vuota da OpenAI")
     }
+
+    console.log("[Chat API] Raw OpenAI response:", content.substring(0, 200))
 
     // Parse della risposta JSON
     let parsed
     try {
       parsed = JSON.parse(content)
-    } catch {
+      console.log("[Chat API] Parsed successfully, message:", parsed.message?.substring(0, 100))
+    } catch (parseError) {
+      console.error("[Chat API] JSON parse failed:", parseError)
       // Se il parsing fallisce, usa la risposta come messaggio semplice
       parsed = {
         message: content,
@@ -356,9 +361,18 @@ export async function POST(request: NextRequest) {
     // IMPORTANTE: Valida che il messaggio non sia vuoto
     // Se l'AI non fornisce un messaggio valido, usa un fallback
     let finalMessage = parsed.message || ""
+    console.log("[Chat API] Message validation - original:", {
+      hasMessage: !!parsed.message,
+      messageType: typeof parsed.message,
+      messageValue: parsed.message,
+      afterOr: finalMessage
+    })
+
     if (typeof finalMessage === "string") {
       finalMessage = finalMessage.trim()
     }
+
+    console.log("[Chat API] After trim:", { finalMessage, length: finalMessage.length })
 
     if (!finalMessage || finalMessage.length === 0) {
       finalMessage = "Mi dispiace, non ho capito bene. Puoi ripetere?"
