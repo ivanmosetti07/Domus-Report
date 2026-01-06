@@ -478,6 +478,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
 
       // Invia TUTTI i dati raccolti per un'analisi AI più accurata
+      // L'AI popola propertyType, ma per compatibilità controlliamo anche type
+      const propertyType = collectedData.propertyType || collectedData.type || PropertyType.APARTMENT
+      const condition = collectedData.condition || PropertyCondition.GOOD
+
       const response = await fetch("/api/valuation", {
         method: "POST",
         headers: {
@@ -487,11 +491,11 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           // Dati base obbligatori
           address: collectedData.address || "",
           city: collectedData.city || "Milano",
-          propertyType: collectedData.type || PropertyType.APARTMENT,
+          propertyType: propertyType,
           surfaceSqm: collectedData.surfaceSqm || 100,
           floor: collectedData.floor,
           hasElevator: collectedData.hasElevator,
-          condition: collectedData.condition || PropertyCondition.GOOD,
+          condition: condition,
           // Dati aggiuntivi per analisi AI
           neighborhood: collectedData.neighborhood,
           rooms: collectedData.rooms,

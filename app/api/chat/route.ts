@@ -4,6 +4,7 @@ import { Message } from "@/types"
 export const runtime = "edge"
 
 // System prompt per il chatbot immobiliare AI conversazionale
+// IMPORTANTE: I valori degli enum devono essere ESATTAMENTE in italiano come definiti nel database
 const CHAT_SYSTEM_PROMPT = `Sei DomusBot, un assistente immobiliare esperto e amichevole. Il tuo obiettivo è raccogliere informazioni sull'immobile dell'utente per fornire una valutazione.
 
 DATI DA RACCOGLIERE (in ordine flessibile):
@@ -31,7 +32,7 @@ REGOLE DI CONVERSAZIONE:
 4. Conferma i dati ricevuti in modo naturale
 5. Se un dato non è chiaro, chiedi gentilmente di specificare
 6. Adatta le domande al tipo di immobile (es: no piano per ville)
-7. Quando hai TUTTI i dati obbligatori + contatti, rispondi con "VALUTAZIONE_PRONTA"
+7. Quando hai TUTTI i dati obbligatori + contatti, imposta readyForValuation: true
 
 FORMATO RISPOSTA:
 Rispondi SEMPRE in JSON con questa struttura:
@@ -39,22 +40,22 @@ Rispondi SEMPRE in JSON con questa struttura:
   "message": "Il tuo messaggio all'utente",
   "extractedData": {
     "city": "città se menzionata",
-    "address": "indirizzo se menzionato",
+    "address": "indirizzo completo se menzionato",
     "neighborhood": "quartiere se menzionato",
-    "propertyType": "APARTMENT|ATTICO|VILLA|OFFICE|SHOP|BOX|LAND|OTHER se menzionato",
+    "propertyType": "Appartamento|Attico|Villa|Ufficio|Negozio|Box|Terreno|Altro",
     "surfaceSqm": numero se menzionato,
     "rooms": numero camere se menzionato,
     "bathrooms": numero bagni se menzionato,
     "floor": numero piano se menzionato,
     "hasElevator": true/false se menzionato,
-    "outdoorSpace": "NONE|BALCONY|TERRACE|GARDEN" se menzionato,
+    "outdoorSpace": "Nessuno|Balcone|Terrazzo|Giardino",
     "hasParking": true/false se menzionato,
-    "condition": "NEW|RENOVATED|GOOD|TO_RENOVATE" se menzionato,
-    "heatingType": "AUTONOMOUS|CENTRALIZED|NONE" se menzionato,
+    "condition": "Nuovo|Ristrutturato|Buono|Da ristrutturare",
+    "heatingType": "Autonomo|Centralizzato|Assente",
     "hasAirConditioning": true/false se menzionato,
-    "energyClass": "A|B|C|D|E|F|G|UNKNOWN" se menzionato,
+    "energyClass": "A|B|C|D|E|F|G|Non so",
     "buildYear": anno se menzionato,
-    "occupancyStatus": "FREE|OCCUPIED" se menzionato,
+    "occupancyStatus": "Libero|Occupato",
     "firstName": "nome" se menzionato,
     "lastName": "cognome" se menzionato,
     "email": "email" se menzionata,
@@ -64,6 +65,13 @@ Rispondi SEMPRE in JSON con questa struttura:
   "missingRequired": ["lista campi obbligatori mancanti"]
 }
 
+IMPORTANTE - VALORI ESATTI:
+- propertyType DEVE essere uno di: "Appartamento", "Attico", "Villa", "Ufficio", "Negozio", "Box", "Terreno", "Altro"
+- condition DEVE essere uno di: "Nuovo", "Ristrutturato", "Buono", "Da ristrutturare"
+- outdoorSpace DEVE essere uno di: "Nessuno", "Balcone", "Terrazzo", "Giardino"
+- heatingType DEVE essere uno di: "Autonomo", "Centralizzato", "Assente"
+- occupancyStatus DEVE essere uno di: "Libero", "Occupato"
+
 ESEMPIO:
 Utente: "Ho un appartamento a Milano in zona Navigli, 85mq"
 {
@@ -71,12 +79,105 @@ Utente: "Ho un appartamento a Milano in zona Navigli, 85mq"
   "extractedData": {
     "city": "Milano",
     "neighborhood": "Navigli",
-    "propertyType": "APARTMENT",
+    "propertyType": "Appartamento",
     "surfaceSqm": 85
   },
   "readyForValuation": false,
   "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
 }`
+
+// Mappatura per normalizzare i valori AI ai valori enum del database
+const PROPERTY_TYPE_MAP: Record<string, string> = {
+  "APARTMENT": "Appartamento",
+  "ATTICO": "Attico",
+  "VILLA": "Villa",
+  "OFFICE": "Ufficio",
+  "SHOP": "Negozio",
+  "BOX": "Box",
+  "LAND": "Terreno",
+  "OTHER": "Altro",
+  // Valori già corretti
+  "Appartamento": "Appartamento",
+  "Attico": "Attico",
+  "Villa": "Villa",
+  "Ufficio": "Ufficio",
+  "Negozio": "Negozio",
+  "Box": "Box",
+  "Terreno": "Terreno",
+  "Altro": "Altro"
+}
+
+const CONDITION_MAP: Record<string, string> = {
+  "NEW": "Nuovo",
+  "RENOVATED": "Ristrutturato",
+  "GOOD": "Buono",
+  "TO_RENOVATE": "Da ristrutturare",
+  // Valori già corretti
+  "Nuovo": "Nuovo",
+  "Ristrutturato": "Ristrutturato",
+  "Buono": "Buono",
+  "Da ristrutturare": "Da ristrutturare",
+  // Varianti comuni
+  "buono": "Buono",
+  "nuovo": "Nuovo",
+  "ristrutturato": "Ristrutturato",
+  "da ristrutturare": "Da ristrutturare",
+  "Buono stato": "Buono"
+}
+
+const OUTDOOR_SPACE_MAP: Record<string, string> = {
+  "NONE": "Nessuno",
+  "BALCONY": "Balcone",
+  "TERRACE": "Terrazzo",
+  "GARDEN": "Giardino",
+  "Nessuno": "Nessuno",
+  "Balcone": "Balcone",
+  "Terrazzo": "Terrazzo",
+  "Giardino": "Giardino"
+}
+
+const HEATING_TYPE_MAP: Record<string, string> = {
+  "AUTONOMOUS": "Autonomo",
+  "CENTRALIZED": "Centralizzato",
+  "NONE": "Assente",
+  "Autonomo": "Autonomo",
+  "Centralizzato": "Centralizzato",
+  "Assente": "Assente"
+}
+
+const OCCUPANCY_MAP: Record<string, string> = {
+  "FREE": "Libero",
+  "OCCUPIED": "Occupato",
+  "Libero": "Libero",
+  "Occupato": "Occupato"
+}
+
+// Funzione per normalizzare i dati estratti dall'AI
+function normalizeExtractedData(data: CollectedData): CollectedData {
+  const normalized = { ...data }
+
+  if (data.propertyType) {
+    normalized.propertyType = PROPERTY_TYPE_MAP[data.propertyType] || data.propertyType
+  }
+
+  if (data.condition) {
+    normalized.condition = CONDITION_MAP[data.condition] || data.condition
+  }
+
+  if (data.outdoorSpace) {
+    normalized.outdoorSpace = OUTDOOR_SPACE_MAP[data.outdoorSpace] || data.outdoorSpace
+  }
+
+  if (data.heatingType) {
+    normalized.heatingType = HEATING_TYPE_MAP[data.heatingType] || data.heatingType
+  }
+
+  if (data.occupancyStatus) {
+    normalized.occupancyStatus = OCCUPANCY_MAP[data.occupancyStatus] || data.occupancyStatus
+  }
+
+  return normalized
+}
 
 interface ChatMessage {
   role: "user" | "bot"
@@ -188,10 +289,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Normalizza i dati estratti per assicurarsi che i valori siano quelli corretti degli enum
+    const normalizedData = normalizeExtractedData(parsed.extractedData || {})
+
     return NextResponse.json({
       success: true,
       message: parsed.message || "Mi dispiace, non ho capito. Puoi ripetere?",
-      extractedData: parsed.extractedData || {},
+      extractedData: normalizedData,
       readyForValuation: parsed.readyForValuation || false,
       missingRequired: parsed.missingRequired || []
     })
