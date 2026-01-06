@@ -405,6 +405,11 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       const data = await response.json()
 
+      // Se l'API restituisce success: false, tratta come errore
+      if (data.success === false) {
+        throw new Error(data.error || "Errore nella risposta AI")
+      }
+
       // Aggiorna i dati raccolti con quelli estratti dall'AI
       if (data.extractedData && Object.keys(data.extractedData).length > 0) {
         setCollectedData(prev => {
@@ -421,10 +426,23 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       // Mostra la risposta del bot
       setIsTyping(false)
+
+      // IMPORTANTE: Valida che il messaggio non sia vuoto
+      // Se l'API restituisce un messaggio vuoto, usa un fallback
+      let messageText = data.message || ""
+      if (typeof messageText === "string") {
+        messageText = messageText.trim()
+      }
+
+      if (!messageText || messageText.length === 0) {
+        messageText = "Mi dispiace, non ho capito bene. Puoi ripetere?"
+        console.warn("[ChatWidget] Empty message from API, using fallback")
+      }
+
       const botMessage: MessageType = {
         id: `msg_${Date.now()}`,
         role: "bot",
-        text: data.message,
+        text: messageText,
         timestamp: new Date()
       }
       setMessages(prev => [...prev, botMessage])

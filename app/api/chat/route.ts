@@ -353,9 +353,21 @@ export async function POST(request: NextRequest) {
     // Normalizza i dati estratti per assicurarsi che i valori siano quelli corretti degli enum
     const normalizedData = normalizeExtractedData(parsed.extractedData || {})
 
+    // IMPORTANTE: Valida che il messaggio non sia vuoto
+    // Se l'AI non fornisce un messaggio valido, usa un fallback
+    let finalMessage = parsed.message || ""
+    if (typeof finalMessage === "string") {
+      finalMessage = finalMessage.trim()
+    }
+
+    if (!finalMessage || finalMessage.length === 0) {
+      finalMessage = "Mi dispiace, non ho capito bene. Puoi ripetere?"
+      console.warn("[Chat API] Empty or invalid message from AI, using fallback")
+    }
+
     return NextResponse.json({
       success: true,
-      message: parsed.message || "Mi dispiace, non ho capito. Puoi ripetere?",
+      message: finalMessage,
       extractedData: normalizedData,
       readyForValuation: parsed.readyForValuation || false,
       missingRequired: parsed.missingRequired || []
