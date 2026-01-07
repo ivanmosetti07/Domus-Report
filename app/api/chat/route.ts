@@ -10,23 +10,25 @@ const CHAT_SYSTEM_PROMPT = `Sei DomusBot, un assistente immobiliare esperto e am
 DATI DA RACCOGLIERE (in ordine flessibile):
 1. Città/Località (obbligatorio)
 2. Indirizzo/Quartiere (obbligatorio)
-3. Tipo immobile: Appartamento, Attico, Villa, Ufficio, Negozio, Box, Terreno, Altro (obbligatorio)
-4. Superficie in m² (obbligatorio)
-5. Numero camere da letto (per residenziale)
-6. Numero bagni
-7. Piano e presenza ascensore (per appartamenti)
-8. Spazi esterni: Nessuno, Balcone, Terrazzo, Giardino
-9. Box/Posto auto: Sì/No
-10. Stato: Nuovo, Ristrutturato, Buono, Da ristrutturare (obbligatorio)
-11. Riscaldamento: Autonomo, Centralizzato, Assente
-12. Aria condizionata: Sì/No
-13. Classe energetica: A, B, C, D, E, F, G, Non so
-14. Anno costruzione
-15. Occupato o Libero
-16. Nome (obbligatorio - chiedi separatamente)
-17. Cognome (obbligatorio - chiedi separatamente)
-18. Email (obbligatorio - chiedi separatamente)
-19. Telefono (obbligatorio - chiedi separatamente)
+3. CAP - Codice Avviamento Postale (raccogli se possibile per valutazione precisa)
+4. Tipo immobile: Appartamento, Attico, Villa, Ufficio, Negozio, Box, Terreno, Altro (obbligatorio)
+5. Categoria OMI (solo per residenziale): Abitazioni signorili, Abitazioni civili, Abitazioni economiche, Ville e villini (chiedi se tipo è Appartamento/Attico/Villa)
+6. Superficie in m² (obbligatorio)
+7. Numero camere da letto (per residenziale)
+8. Numero bagni
+9. Piano e presenza ascensore (per appartamenti)
+10. Spazi esterni: Nessuno, Balcone, Terrazzo, Giardino
+11. Box/Posto auto: Sì/No
+12. Stato: Nuovo, Ristrutturato, Buono, Da ristrutturare (obbligatorio)
+13. Riscaldamento: Autonomo, Centralizzato, Assente
+14. Aria condizionata: Sì/No
+15. Classe energetica: A, B, C, D, E, F, G, Non so
+16. Anno costruzione
+17. Occupato o Libero
+18. Nome (obbligatorio - chiedi separatamente)
+19. Cognome (obbligatorio - chiedi separatamente)
+20. Email (obbligatorio - chiedi separatamente)
+21. Telefono (obbligatorio - chiedi separatamente)
 
 REGOLE DI CONVERSAZIONE:
 1. Sii cordiale, usa il "tu", e occasionalmente emoji
@@ -47,7 +49,7 @@ REGOLE DI CONVERSAZIONE:
 
 IMPORTANTE - FLUSSO RECAP E CONFERMA:
 - Quando hai raccolto telefono (ultimo dato contatto), fai un RECAP COMPLETO
-- Il recap deve includere: tipo immobile, città/quartiere, superficie, camere, stato, nome completo, email, telefono
+- Il recap deve includere: tipo immobile, città/quartiere/CAP, categoria OMI (se residenziale), superficie, camere, stato, nome completo, email, telefono
 - Formatta il recap in modo chiaro e leggibile con emoji
 - Chiedi esplicitamente: "I dati sono corretti?"
 - Se l'utente conferma (sì/corretto/va bene/ok), SOLO ALLORA imposta readyForValuation: true
@@ -61,7 +63,9 @@ Rispondi SEMPRE in JSON con questa struttura:
     "city": "città se menzionata",
     "address": "indirizzo completo se menzionato",
     "neighborhood": "quartiere se menzionato",
+    "postalCode": "CAP se menzionato (5 cifre)",
     "propertyType": "Appartamento|Attico|Villa|Ufficio|Negozio|Box|Terreno|Altro",
+    "omiCategory": "Abitazioni signorili|Abitazioni civili|Abitazioni economiche|Ville e villini (solo se residenziale)",
     "surfaceSqm": numero se menzionato,
     "rooms": numero camere se menzionato,
     "bathrooms": numero bagni se menzionato,
@@ -86,10 +90,12 @@ Rispondi SEMPRE in JSON con questa struttura:
 
 IMPORTANTE - VALORI ESATTI:
 - propertyType DEVE essere uno di: "Appartamento", "Attico", "Villa", "Ufficio", "Negozio", "Box", "Terreno", "Altro"
+- omiCategory DEVE essere uno di: "Abitazioni signorili", "Abitazioni civili", "Abitazioni economiche", "Ville e villini"
 - condition DEVE essere uno di: "Nuovo", "Ristrutturato", "Buono", "Da ristrutturare"
 - outdoorSpace DEVE essere uno di: "Nessuno", "Balcone", "Terrazzo", "Giardino"
 - heatingType DEVE essere uno di: "Autonomo", "Centralizzato", "Assente"
 - occupancyStatus DEVE essere uno di: "Libero", "Occupato"
+- postalCode DEVE essere 5 cifre (es: "00100")
 
 ESEMPI:
 
@@ -270,6 +276,20 @@ const OCCUPANCY_MAP: Record<string, string> = {
   "Occupato": "Occupato"
 }
 
+const OMI_CATEGORY_MAP: Record<string, string> = {
+  // Valori già corretti
+  "Abitazioni signorili": "Abitazioni signorili",
+  "Abitazioni civili": "Abitazioni civili",
+  "Abitazioni economiche": "Abitazioni economiche",
+  "Ville e villini": "Ville e villini",
+  // Varianti comuni
+  "signorili": "Abitazioni signorili",
+  "civili": "Abitazioni civili",
+  "economiche": "Abitazioni economiche",
+  "ville": "Ville e villini",
+  "villini": "Ville e villini"
+}
+
 // Funzione per normalizzare i dati estratti dall'AI
 function normalizeExtractedData(data: CollectedData): CollectedData {
   const normalized = { ...data }
@@ -294,6 +314,10 @@ function normalizeExtractedData(data: CollectedData): CollectedData {
     normalized.occupancyStatus = OCCUPANCY_MAP[data.occupancyStatus] || data.occupancyStatus
   }
 
+  if (data.omiCategory) {
+    normalized.omiCategory = OMI_CATEGORY_MAP[data.omiCategory] || data.omiCategory
+  }
+
   return normalized
 }
 
@@ -306,7 +330,9 @@ interface CollectedData {
   city?: string
   address?: string
   neighborhood?: string
+  postalCode?: string
   propertyType?: string
+  omiCategory?: string
   surfaceSqm?: number
   rooms?: number
   bathrooms?: number

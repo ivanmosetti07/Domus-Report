@@ -6,6 +6,7 @@
 
 import { PropertyType, PropertyCondition } from "@/types"
 import { getOMIValue } from "./omi"
+import { getOMIValueByZone, mapPropertyTypeToOMI } from "./omi-advanced"
 import { createLogger } from "./logger"
 
 const logger = createLogger('n8n')
@@ -70,10 +71,12 @@ function setCachedValuation(input: ValuationInput, result: ValuationResult): voi
 export interface ValuationInput {
   address: string
   city: string
+  neighborhood?: string
   postalCode?: string
   latitude?: number
   longitude?: number
   propertyType: PropertyType
+  omiCategory?: string
   surfaceSqm: number
   floor?: number
   hasElevator?: boolean
@@ -190,13 +193,76 @@ export function generateValuationExplanation(
 /**
  * Calculates property valuation (local fallback)
  * This is used when n8n is not available or as a backup
+ * Now integrated with OMI Advanced for zone-specific valuations
  */
-export function calculateValuationLocal(
+export async function calculateValuationLocal(
   input: ValuationInput
-): ValuationResult {
-  // Get OMI base value
+): Promise<ValuationResult> {
+  // Try to get advanced OMI data first
+  const tipoImmobile = mapPropertyTypeToOMI(input.propertyType)
+  let baseOMIValue: number
+  let minPrice: number
+  let maxPrice: number
+  let estimatedPrice: number
+
+  try {
+    const omiAdvanced = await getOMIValueByZone(
+      input.city,
+      input.neighborhood,
+      input.postalCode,
+      tipoImmobile,
+      input.omiCategory
+    )
+
+    if (omiAdvanced) {
+      // Use advanced OMI data with min/max ranges
+      logger.info("Using OMI Advanced data", {
+        city: input.city,
+        zona: omiAdvanced.zona,
+        categoria: input.omiCategory,
+      })
+
+      baseOMIValue = omiAdvanced.valoreMedioMq
+
+      // Calculate coefficients
+      const floorCoefficient = calculateFloorCoefficient(
+        input.floor,
+        input.hasElevator
+      )
+      const conditionCoefficient = calculateConditionCoefficient(input.condition)
+
+      // Calculate prices using OMI min/max ranges + coefficients
+      estimatedPrice = Math.round(
+        baseOMIValue * input.surfaceSqm * floorCoefficient * conditionCoefficient
+      )
+      minPrice = Math.round(
+        omiAdvanced.valoreMinMq * input.surfaceSqm * floorCoefficient * conditionCoefficient
+      )
+      maxPrice = Math.round(
+        omiAdvanced.valoreMaxMq * input.surfaceSqm * floorCoefficient * conditionCoefficient
+      )
+
+      const result: ValuationResult = {
+        minPrice,
+        maxPrice,
+        estimatedPrice,
+        baseOMIValue,
+        floorCoefficient,
+        conditionCoefficient,
+        explanation: "",
+      }
+
+      result.explanation = generateValuationExplanation(input, result)
+      return result
+    }
+  } catch (error) {
+    logger.warn("OMI Advanced lookup failed, falling back to basic OMI", { error: error instanceof Error ? error.message : String(error) })
+  }
+
+  // Fallback to basic OMI calculation
+  logger.info("Using basic OMI data (fallback)", { city: input.city })
   const omiData = getOMIValue(input.city, input.propertyType)
-  const baseOMIValue = omiData.value
+  baseOMIValue = omiData.value
 
   // Calculate coefficients
   const floorCoefficient = calculateFloorCoefficient(
@@ -206,13 +272,13 @@ export function calculateValuationLocal(
   const conditionCoefficient = calculateConditionCoefficient(input.condition)
 
   // Calculate estimated price
-  const estimatedPrice = Math.round(
+  estimatedPrice = Math.round(
     baseOMIValue * input.surfaceSqm * floorCoefficient * conditionCoefficient
   )
 
   // Calculate price range (±7%)
-  const minPrice = Math.round(estimatedPrice * 0.93)
-  const maxPrice = Math.round(estimatedPrice * 1.07)
+  minPrice = Math.round(estimatedPrice * 0.93)
+  maxPrice = Math.round(estimatedPrice * 1.07)
 
   const result: ValuationResult = {
     minPrice,
@@ -248,7 +314,7 @@ export async function calculateValuation(
   // Use local calculation (OMI database + coefficients)
   // OpenAI analysis is handled separately in the API route
   logger.info("Calculating valuation locally", { city: input.city, type: input.propertyType })
-  const result = calculateValuationLocal(input)
+  const result = await calculateValuationLocal(input)
   setCachedValuation(input, result)
   return result
 }

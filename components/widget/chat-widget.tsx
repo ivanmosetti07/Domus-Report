@@ -42,8 +42,10 @@ interface CollectedData {
   address?: string
   city?: string
   neighborhood?: string
+  postalCode?: string
   type?: PropertyType
   propertyType?: string // Alias per compatibilità AI
+  omiCategory?: string
   surfaceSqm?: number
   rooms?: number
   totalRooms?: number
@@ -516,6 +518,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           condition: condition,
           // Dati aggiuntivi per analisi AI
           neighborhood: collectedData.neighborhood,
+          postalCode: collectedData.postalCode,
+          omiCategory: collectedData.omiCategory,
           rooms: collectedData.rooms,
           bathrooms: collectedData.bathrooms,
           hasParking: collectedData.hasParking,

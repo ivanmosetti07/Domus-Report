@@ -164,7 +164,8 @@ export async function getOMIValueByZone(
   citta: string,
   zona?: string,
   cap?: string,
-  tipoImmobile: string = "residenziale"
+  tipoImmobile: string = "residenziale",
+  categoria?: string
 ): Promise<{
   valoreMinMq: number
   valoreMaxMq: number
@@ -177,72 +178,100 @@ export async function getOMIValueByZone(
   // Normalizza città
   const cittaNormalized = citta.trim()
 
-  // Cerca prima per zona specifica
+  // Cerca prima per zona specifica (con categoria se fornita)
   if (zona) {
-    const omiValue = await prisma.oMIValue.findFirst({
-      where: {
-        citta: {
-          equals: cittaNormalized,
-          mode: "insensitive",
-        },
-        zona: {
-          equals: zona,
-          mode: "insensitive",
-        },
-        tipoImmobile,
-      },
-      orderBy: [{ anno: "desc" }, { semestre: "desc" }],
-    })
-
-    if (omiValue) {
-      return {
-        valoreMinMq: parseFloat(omiValue.valoreMinMq.toString()),
-        valoreMaxMq: parseFloat(omiValue.valoreMaxMq.toString()),
-        valoreMedioMq: parseFloat(omiValue.valoreMedioMq.toString()),
-        zona: omiValue.zona,
-        fonte: omiValue.fonte,
-        semestre: omiValue.semestre,
-        anno: omiValue.anno,
-      }
-    }
-  }
-
-  // Cerca per CAP
-  if (cap) {
-    const omiValue = await prisma.oMIValue.findFirst({
-      where: {
-        citta: {
-          equals: cittaNormalized,
-          mode: "insensitive",
-        },
-        cap,
-        tipoImmobile,
-      },
-      orderBy: [{ anno: "desc" }, { semestre: "desc" }],
-    })
-
-    if (omiValue) {
-      return {
-        valoreMinMq: parseFloat(omiValue.valoreMinMq.toString()),
-        valoreMaxMq: parseFloat(omiValue.valoreMaxMq.toString()),
-        valoreMedioMq: parseFloat(omiValue.valoreMedioMq.toString()),
-        zona: omiValue.zona,
-        fonte: omiValue.fonte,
-        semestre: omiValue.semestre,
-        anno: omiValue.anno,
-      }
-    }
-  }
-
-  // Fallback: media città
-  const avgValues = await prisma.oMIValue.findMany({
-    where: {
+    const whereClause: any = {
       citta: {
         equals: cittaNormalized,
         mode: "insensitive",
       },
+      zona: {
+        equals: zona,
+        mode: "insensitive",
+      },
       tipoImmobile,
+    }
+
+    // Aggiungi filtro categoria se fornito (case-insensitive)
+    if (categoria) {
+      whereClause.categoria = {
+        equals: categoria,
+        mode: "insensitive",
+      }
+    }
+
+    const omiValue = await prisma.oMIValue.findFirst({
+      where: whereClause,
+      orderBy: [{ anno: "desc" }, { semestre: "desc" }],
+    })
+
+    if (omiValue) {
+      return {
+        valoreMinMq: parseFloat(omiValue.valoreMinMq.toString()),
+        valoreMaxMq: parseFloat(omiValue.valoreMaxMq.toString()),
+        valoreMedioMq: parseFloat(omiValue.valoreMedioMq.toString()),
+        zona: omiValue.zona,
+        fonte: omiValue.fonte,
+        semestre: omiValue.semestre,
+        anno: omiValue.anno,
+      }
+    }
+  }
+
+  // Cerca per CAP (con categoria se fornita)
+  if (cap) {
+    const whereClause: any = {
+      citta: {
+        equals: cittaNormalized,
+        mode: "insensitive",
+      },
+      cap,
+      tipoImmobile,
+    }
+
+    if (categoria) {
+      whereClause.categoria = {
+        equals: categoria,
+        mode: "insensitive",
+      }
+    }
+
+    const omiValue = await prisma.oMIValue.findFirst({
+      where: whereClause,
+      orderBy: [{ anno: "desc" }, { semestre: "desc" }],
+    })
+
+    if (omiValue) {
+      return {
+        valoreMinMq: parseFloat(omiValue.valoreMinMq.toString()),
+        valoreMaxMq: parseFloat(omiValue.valoreMaxMq.toString()),
+        valoreMedioMq: parseFloat(omiValue.valoreMedioMq.toString()),
+        zona: omiValue.zona,
+        fonte: omiValue.fonte,
+        semestre: omiValue.semestre,
+        anno: omiValue.anno,
+      }
+    }
+  }
+
+  // Fallback: media città (con categoria se fornita)
+  const avgWhereClause: any = {
+    citta: {
+      equals: cittaNormalized,
+      mode: "insensitive",
     },
+    tipoImmobile,
+  }
+
+  if (categoria) {
+    avgWhereClause.categoria = {
+      equals: categoria,
+      mode: "insensitive",
+    }
+  }
+
+  const avgValues = await prisma.oMIValue.findMany({
+    where: avgWhereClause,
     orderBy: [{ anno: "desc" }, { semestre: "desc" }],
   })
 

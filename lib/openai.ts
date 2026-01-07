@@ -9,7 +9,9 @@ export interface PropertyValuationData {
   address: string
   city: string
   neighborhood?: string
+  postalCode?: string
   propertyType: PropertyType
+  omiCategory?: string
   surfaceSqm: number
   floor?: number
   hasElevator?: boolean
