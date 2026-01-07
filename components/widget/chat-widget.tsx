@@ -975,15 +975,15 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               }}
             >
               {logoUrl ? (
-                <img src={logoUrl} alt="Logo" className="object-contain" style={{
-                  width: 'clamp(1.25rem, 5vw, 1.5rem)',
-                  height: 'clamp(1.25rem, 5vw, 1.5rem)'
+                <img src={logoUrl} alt="Logo" className="object-cover rounded-full" style={{
+                  width: '100%',
+                  height: '100%'
                 }} />
               ) : (
                 <Building2 style={{
                   color: primaryColor,
-                  width: 'clamp(1.125rem, 4vw, 1.25rem)',
-                  height: 'clamp(1.125rem, 4vw, 1.25rem)'
+                  width: 'clamp(1.5rem, 6vw, 1.75rem)',
+                  height: 'clamp(1.5rem, 6vw, 1.75rem)'
                 }} />
               )}
             </div>
