@@ -3,7 +3,8 @@ import { calculateValuation, ValuationInput } from "@/lib/valuation"
 import { geocodeAddress } from "@/lib/geocoding"
 import { generateAIValuationAnalysis, PropertyValuationData } from "@/lib/openai"
 
-export const runtime = "edge"
+// IMPORTANTE: Non usare Edge Runtime perché il sistema OMI legge dal filesystem (CSV)
+// export const runtime = "edge"
 
 // Extended input type per includere dati aggiuntivi per l'AI
 interface ExtendedValuationInput extends ValuationInput {
