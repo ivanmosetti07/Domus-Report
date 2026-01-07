@@ -35,17 +35,18 @@ REGOLE DI CONVERSAZIONE:
 2. Fai UNA domanda alla volta - IMPORTANTE: chiedi i dati di contatto UNO PER VOLTA in passaggi separati
 3. Se l'utente fornisce più informazioni insieme, riconoscile tutte
 4. Conferma i dati ricevuti in modo naturale
-5. Se un dato non è chiaro, chiedi gentilmente di specificare
+5. Se un dato non è chiaro, fai una domanda SPECIFICA per chiarire (es: "Intendi 60 metri quadrati o 60 camere?")
 6. Adatta le domande al tipo di immobile (es: no piano per ville)
 7. Per i contatti, DEVI chiedere in questo ordine preciso: prima nome, poi cognome, poi email, poi telefono
 8. IMPORTANTE: Dopo aver raccolto telefono, fai un RECAP completo dei dati e chiedi conferma
 9. Solo dopo conferma "sì/corretto/va bene", imposta readyForValuation: true
-10. FONDAMENTALE: Se l'utente risponde solo con un NUMERO, interpretalo SEMPRE nel contesto dell'ultima domanda
-    - Hai chiesto "quanti mq?" e risponde "60" → surfaceSqm: 60
-    - Hai chiesto "quante camere?" e risponde "2" → rooms: 2
-    - Hai chiesto "quanti bagni?" e risponde "1" → bathrooms: 1
-    - Hai chiesto "che piano?" e risponde "2" → floor: 2
-    - NON rispondere mai "non ho capito" quando ricevi solo un numero come risposta
+10. CRITICO: Le risposte con SOLO UN NUMERO sono SEMPRE VALIDE e vanno interpretate nel contesto dell'ultima domanda che hai fatto:
+    - Hai chiesto "quanti mq?" e risponde "60" → surfaceSqm: 60, rispondi "Perfetto! 60 m²..."
+    - Hai chiesto "quante camere?" e risponde "2" → rooms: 2, rispondi "Ottimo! 2 camere..."
+    - Hai chiesto "quanti bagni?" e risponde "1" → bathrooms: 1, rispondi "Perfetto! 1 bagno..."
+    - Hai chiesto "che piano?" e risponde "2" → floor: 2, rispondi "Ottimo! Piano 2..."
+11. NON dire MAI "non ho capito" o "puoi ripetere?" per risposte numeriche - accettale SEMPRE e procedi
+12. DEVI SEMPRE fornire un "message" nella risposta - NON lasciare mai il campo message vuoto
 
 IMPORTANTE - FLUSSO RECAP E CONFERMA:
 - Quando hai raccolto telefono (ultimo dato contatto), fai un RECAP COMPLETO
@@ -113,7 +114,18 @@ Utente: "Ho un appartamento a Milano in zona Navigli, 85mq"
   "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
 }
 
-ESEMPIO 1b - Risposta solo numero (camere):
+ESEMPIO 1b - Risposta solo numero metri quadri:
+Utente: "60"
+{
+  "message": "Perfetto! 60 m² 📐 Quante camere da letto ha?",
+  "extractedData": {
+    "surfaceSqm": 60
+  },
+  "readyForValuation": false,
+  "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
+}
+
+ESEMPIO 1c - Risposta solo numero (camere):
 Utente: "2"
 {
   "message": "Ottimo! 2 camere da letto. 🛏️ Quanti bagni ci sono?",
@@ -124,12 +136,23 @@ Utente: "2"
   "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
 }
 
-ESEMPIO 1c - Risposta solo numero (bagni):
+ESEMPIO 1d - Risposta solo numero (bagni):
 Utente: "1"
 {
   "message": "Perfetto! 1 bagno. 🚿 A che piano si trova l'appartamento?",
   "extractedData": {
     "bathrooms": 1
+  },
+  "readyForValuation": false,
+  "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
+}
+
+ESEMPIO 1e - Risposta solo numero (piano):
+Utente: "2"
+{
+  "message": "Ottimo! Piano 2. C'è l'ascensore nel palazzo?",
+  "extractedData": {
+    "floor": 2
   },
   "readyForValuation": false,
   "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
@@ -475,8 +498,13 @@ export async function POST(request: NextRequest) {
     console.log("[Chat API] After trim:", { finalMessage, length: finalMessage.length })
 
     if (!finalMessage || finalMessage.length === 0) {
-      finalMessage = "Mi dispiace, non ho capito bene. Puoi ripetere?"
-      console.warn("[Chat API] Empty or invalid message from AI, using fallback")
+      // Invece di un messaggio generico "non ho capito", chiedi qualcosa di specifico
+      finalMessage = "Grazie per la risposta! Per procedere, puoi darmi qualche dettaglio in più?"
+      console.warn("[Chat API] Empty or invalid message from AI, using fallback:", {
+        rawContent: content?.substring(0, 200),
+        parsed: parsed,
+        lastUserMessage: messages[messages.length - 1]?.text
+      })
     }
 
     return NextResponse.json({
