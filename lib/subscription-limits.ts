@@ -45,6 +45,31 @@ export async function checkWidgetLimit(agencyId: string): Promise<{
     return { allowed: false, current: 0, limit: 0, message: 'Agenzia non trovata' }
   }
 
+  // Verifica se il trial è scaduto
+  const subscription = agency.subscription
+  if (subscription?.status === 'trial' && subscription.trialEndsAt) {
+    if (new Date() > subscription.trialEndsAt) {
+      // Trial scaduto - usa limiti del piano free
+      const freeLimits = getPlanLimits('free')
+      const currentWidgets = agency.widgetConfigs.length
+
+      if (currentWidgets >= freeLimits.widgets) {
+        return {
+          allowed: false,
+          current: currentWidgets,
+          limit: freeLimits.widgets,
+          message: `Il tuo trial è scaduto. Limite widget raggiunto (${currentWidgets}/${freeLimits.widgets}). Effettua l'upgrade per creare più widget.`
+        }
+      }
+
+      return {
+        allowed: true,
+        current: currentWidgets,
+        limit: freeLimits.widgets
+      }
+    }
+  }
+
   const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
   const limits = getPlanLimits(planType)
   const currentWidgets = agency.widgetConfigs.length
@@ -82,8 +107,6 @@ export async function checkValuationLimit(agencyId: string): Promise<{
     return { allowed: false, current: 0, limit: 0, extra: 0, message: 'Agenzia non trovata' }
   }
 
-  const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
-  const limits = getPlanLimits(planType)
   const subscription = agency.subscription
 
   // Reset mensile se necessario
@@ -109,16 +132,36 @@ export async function checkValuationLimit(agencyId: string): Promise<{
     })
   }
 
+  // Verifica se il trial è scaduto
+  let planType: PlanType
+  if (subscription?.status === 'trial' && subscription.trialEndsAt) {
+    if (now > subscription.trialEndsAt) {
+      // Trial scaduto - usa limiti del piano free
+      planType = 'free'
+    } else {
+      // Trial ancora attivo
+      planType = (subscription.planType || 'free') as PlanType
+    }
+  } else {
+    planType = (subscription?.planType || agency.piano || 'free') as PlanType
+  }
+
+  const limits = getPlanLimits(planType)
+
   // Limite totale = limite piano + valutazioni extra acquistate
   const totalLimit = limits.valuationsPerMonth + extraValuations
 
   if (valuationsUsed >= totalLimit) {
+    const message = planType === 'free' && subscription?.status === 'trial'
+      ? `Il tuo trial è scaduto. Limite valutazioni mensili raggiunto (${valuationsUsed}/${totalLimit}). Effettua l'upgrade per ottenere più valutazioni.`
+      : `Limite valutazioni mensili raggiunto (${valuationsUsed}/${totalLimit}). Acquista valutazioni extra o passa a un piano superiore.`
+
     return {
       allowed: false,
       current: valuationsUsed,
       limit: limits.valuationsPerMonth,
       extra: extraValuations,
-      message: `Limite valutazioni mensili raggiunto (${valuationsUsed}/${totalLimit}). Acquista valutazioni extra o passa a un piano superiore.`
+      message
     }
   }
 
@@ -191,6 +234,15 @@ export async function checkAnalyticsAccess(agencyId: string): Promise<boolean> {
 
   if (!agency) return false
 
+  // Verifica se il trial è scaduto
+  const subscription = agency.subscription
+  if (subscription?.status === 'trial' && subscription.trialEndsAt) {
+    if (new Date() > subscription.trialEndsAt) {
+      // Trial scaduto - nessun accesso analytics
+      return false
+    }
+  }
+
   const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
   const limits = getPlanLimits(planType)
   return limits.analytics
@@ -204,6 +256,15 @@ export async function checkWhiteLabelAccess(agencyId: string): Promise<boolean> 
   })
 
   if (!agency) return false
+
+  // Verifica se il trial è scaduto
+  const subscription = agency.subscription
+  if (subscription?.status === 'trial' && subscription.trialEndsAt) {
+    if (new Date() > subscription.trialEndsAt) {
+      // Trial scaduto - nessun accesso white-label
+      return false
+    }
+  }
 
   const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
   const limits = getPlanLimits(planType)

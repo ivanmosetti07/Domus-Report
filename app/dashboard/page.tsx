@@ -126,13 +126,27 @@ export default async function DashboardPage() {
     })
   ])
 
-  // Calculate trial days remaining
+  // Calculate trial days remaining e auto-downgrade se scaduto
   let trialDaysRemaining = null
   if (subscription?.status === 'trial' && subscription.trialEndsAt) {
     const now = new Date()
     const trialEnd = new Date(subscription.trialEndsAt)
     const diffTime = trialEnd.getTime() - now.getTime()
     trialDaysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    // Se il trial è scaduto, aggiorna lo status nel database
+    if (now > trialEnd) {
+      await prisma.subscription.update({
+        where: { agencyId: agency.agencyId },
+        data: {
+          status: 'active',
+          planType: 'free'
+        }
+      })
+      // Aggiorna l'oggetto subscription locale per il render corretto
+      subscription.status = 'active'
+      subscription.planType = 'free'
+    }
   }
 
   // Collect widgetIds for analytics (support multi-widget + legacy field)
