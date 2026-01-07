@@ -269,6 +269,7 @@
   }
 
   .landing-section {
+    width: 100%;
     padding-top: var(--space-2xl);
     padding-bottom: var(--space-2xl);
   }
