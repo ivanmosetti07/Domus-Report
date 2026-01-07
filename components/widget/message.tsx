@@ -3,6 +3,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Message as MessageType } from "@/types"
+import { Bot } from "lucide-react"
 
 interface MessageProps {
   message: MessageType
@@ -35,7 +36,7 @@ export function Message({ message, onQuickReply, primaryColor = '#2563eb' }: Mes
               className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
               style={{ backgroundColor: primaryColor }}
             >
-              <span className="text-xs text-white">🤖</span>
+              <Bot className="w-4 h-4 text-white" />
             </div>
             <span className="text-xs font-medium text-gray-600">
               Assistente
