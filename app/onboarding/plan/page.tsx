@@ -83,8 +83,8 @@ export default function OnboardingPlanPage() {
       <div className="container max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-            <Building2 className="w-8 h-8 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/20 rounded-full mb-4 border-2 border-primary/30 shadow-glow-primary">
+            <Building2 className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-3">
             Scegli il piano perfetto per te
@@ -175,31 +175,31 @@ export default function OnboardingPlanPage() {
 
       {/* Dialogo conferma trial */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent>
+        <DialogContent className="border-2 border-primary/30">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-foreground">
               Hai scelto il piano {selectedPlan === 'basic' ? 'Basic' : 'Premium'}
             </DialogTitle>
             <DialogDescription className="space-y-3 pt-4">
               <p className="text-base text-foreground">
                 Inizia la tua prova gratuita di 7 giorni.
               </p>
-              <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+              <div className="bg-primary/15 border-2 border-primary/30 rounded-lg p-4 shadow-soft">
                 <ul className="space-y-2 text-sm text-foreground">
                   <li className="flex items-start gap-2">
-                    <span className="text-primary font-bold">✓</span>
+                    <span className="text-primary font-bold text-base">✓</span>
                     <span>Non ti chiederemo la carta di credito ora</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-primary font-bold">✓</span>
+                    <span className="text-primary font-bold text-base">✓</span>
                     <span>Accesso completo a tutte le funzionalità del piano</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-primary font-bold">✓</span>
+                    <span className="text-primary font-bold text-base">✓</span>
                     <span>Al termine dei 7 giorni potrai decidere se continuare</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-primary font-bold">✓</span>
+                    <span className="text-primary font-bold text-base">✓</span>
                     <span>Puoi annullare in qualsiasi momento</span>
                   </li>
                 </ul>
@@ -214,12 +214,14 @@ export default function OnboardingPlanPage() {
               variant="outline"
               onClick={() => setShowConfirmDialog(false)}
               disabled={isLoading}
+              className="border-border hover:border-primary/50 hover:bg-surface-2"
             >
               Annulla
             </Button>
             <Button
               onClick={handleConfirmTrial}
               disabled={isLoading}
+              className="bg-primary hover:bg-primary-hover text-primary-foreground shadow-soft hover:shadow-glow-primary transition-all duration-240"
             >
               {isLoading ? 'Attivazione...' : 'Attiva Prova Gratuita'}
             </Button>

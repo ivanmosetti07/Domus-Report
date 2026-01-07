@@ -69,29 +69,29 @@ export function WelcomeChecklist({
 
   return (
     <div className="max-w-4xl mx-auto">
-      <Card className="border-2 border-primary/20">
+      <Card className="border-2 border-primary/30 shadow-glow-primary">
         <CardHeader className="text-center pb-6">
           <div className="mb-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/20 rounded-full mb-4 border-2 border-primary/30">
               <CheckCircle2 className="w-8 h-8 text-primary" />
             </div>
           </div>
 
-          <CardTitle className="text-3xl font-bold text-gray-900 mb-2">
+          <CardTitle className="text-3xl font-bold text-foreground mb-2">
             Benvenuto in DomusReport, {agencyName}!
           </CardTitle>
 
-          <p className="text-gray-600 mb-4">
+          <p className="text-foreground-muted mb-4">
             Il tuo piano <span className="font-semibold text-primary">{planName}</span> è attivo
             {trialDaysRemaining !== undefined && trialDaysRemaining > 0 && (
-              <span className="text-green-600 font-semibold">
+              <span className="text-primary font-semibold">
                 {' '}con {trialDaysRemaining} giorni di prova gratuita
               </span>
             )}
           </p>
 
           {trialEndsAt && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-foreground-subtle">
               Trial scade il: {new Date(trialEndsAt).toLocaleDateString('it-IT', {
                 day: 'numeric',
                 month: 'long',
@@ -101,13 +101,13 @@ export function WelcomeChecklist({
           )}
 
           <div className="mt-6">
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-surface-2 rounded-full h-2 border border-border">
               <div
-                className="bg-primary h-2 rounded-full transition-all duration-500"
+                className="bg-primary h-2 rounded-full transition-all duration-500 shadow-glow-primary"
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-foreground-muted mt-2">
               {completedCount} di {items.length} passaggi completati
             </p>
           </div>
@@ -118,32 +118,32 @@ export function WelcomeChecklist({
             {items.map((item, index) => (
               <div
                 key={item.id}
-                className={`flex items-center gap-4 p-4 rounded-lg border transition-all ${
+                className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-240 ${
                   item.completed
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-white border-gray-200 hover:border-primary/50'
+                    ? 'bg-primary/10 border-primary/30 shadow-soft'
+                    : 'bg-surface border-border hover:border-primary/50 hover:bg-surface-2'
                 }`}
               >
                 <div className="flex-shrink-0">
                   {item.completed ? (
-                    <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    <CheckCircle2 className="w-6 h-6 text-primary" />
                   ) : (
-                    <Circle className="w-6 h-6 text-gray-400" />
+                    <Circle className="w-6 h-6 text-foreground-subtle" />
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <h4 className={`font-semibold ${
-                    item.completed ? 'text-green-900' : 'text-gray-900'
+                    item.completed ? 'text-primary' : 'text-foreground'
                   }`}>
                     {item.title}
                   </h4>
-                  <p className="text-sm text-gray-600">{item.description}</p>
+                  <p className="text-sm text-foreground-muted">{item.description}</p>
                 </div>
 
                 {!item.completed && item.href && (
                   <Link href={item.href}>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="border-border hover:border-primary hover:bg-primary/10 hover:text-primary transition-all duration-240">
                       <span className="hidden sm:inline">Inizia</span>
                       <ChevronRight className="w-4 h-4 sm:ml-1" />
                     </Button>

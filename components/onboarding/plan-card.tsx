@@ -37,16 +37,16 @@ export function PlanCard({
   isSelected
 }: PlanCardProps) {
   return (
-    <Card className={`relative h-full flex flex-col ${
+    <Card className={`relative h-full flex flex-col transition-all duration-240 ${
       recommended
-        ? 'border-2 border-primary shadow-lg'
+        ? 'border-2 border-primary shadow-glow-primary'
         : isSelected
-        ? 'border-2 border-green-500'
-        : 'border border-gray-200'
+        ? 'border-2 border-primary'
+        : 'border border-border hover:border-border-hover'
     }`}>
       {recommended && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <div className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+          <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1 shadow-soft">
             <Sparkles className="w-3 h-3" />
             Consigliato
           </div>
@@ -58,18 +58,18 @@ export function PlanCard({
           {name === 'Premium' && <Crown className="w-10 h-10 mx-auto text-primary" />}
         </div>
 
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">{name}</h3>
-        <p className="text-sm text-gray-600 mb-4">{description}</p>
+        <h3 className="text-2xl font-bold text-foreground mb-2">{name}</h3>
+        <p className="text-sm text-foreground-muted mb-4">{description}</p>
 
         <div className="mb-2">
-          <span className="text-4xl font-bold text-gray-900">{price}</span>
+          <span className="text-4xl font-bold text-foreground">{price}</span>
           {priceSubtext && (
-            <span className="text-gray-600 ml-2">{priceSubtext}</span>
+            <span className="text-foreground-muted ml-2">{priceSubtext}</span>
           )}
         </div>
 
         {trialDays && trialDays > 0 && (
-          <div className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold mt-2">
+          <div className="inline-block bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-semibold mt-2 border border-primary/30">
             {trialDays} giorni gratis
           </div>
         )}
@@ -82,14 +82,14 @@ export function PlanCard({
               <Check
                 className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
                   feature.included
-                    ? 'text-green-600'
-                    : 'text-gray-300'
+                    ? 'text-primary'
+                    : 'text-foreground-subtle'
                 }`}
               />
               <span className={`text-sm ${
                 feature.included
-                  ? 'text-gray-700'
-                  : 'text-gray-400'
+                  ? 'text-foreground'
+                  : 'text-foreground-subtle line-through'
               }`}>
                 {feature.text}
               </span>
@@ -100,12 +100,12 @@ export function PlanCard({
         <Button
           onClick={onSelect}
           disabled={isLoading}
-          className={`w-full ${
+          className={`w-full transition-all duration-240 ${
             recommended
-              ? 'bg-primary hover:bg-primary/90'
+              ? 'bg-primary hover:bg-primary-hover text-primary-foreground shadow-soft hover:shadow-glow-primary'
               : isSelected
-              ? 'bg-green-600 hover:bg-green-700'
-              : 'bg-gray-900 hover:bg-gray-800'
+              ? 'bg-primary hover:bg-primary-hover text-primary-foreground'
+              : 'bg-surface-2 hover:bg-card-hover text-foreground border border-border hover:border-primary/50'
           }`}
           size="lg"
         >
