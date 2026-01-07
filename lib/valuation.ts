@@ -191,9 +191,9 @@ export function generateValuationExplanation(
 }
 
 /**
- * Calculates property valuation (local fallback)
- * This is used when n8n is not available or as a backup
- * Now integrated with OMI Advanced for zone-specific valuations
+ * Calculates property valuation using OMI data
+ * Integrated with OMI Advanced for zone-specific valuations
+ * Falls back to basic OMI data if zone/CAP not found
  */
 export async function calculateValuationLocal(
   input: ValuationInput
