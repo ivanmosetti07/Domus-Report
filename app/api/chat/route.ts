@@ -14,7 +14,7 @@ DATI DA RACCOGLIERE (in ordine flessibile):
 4. Tipo immobile: Appartamento, Attico, Villa, Ufficio, Negozio, Box, Terreno, Altro (obbligatorio)
    NOTA: "villetta" o "villa" → usa "Villa"
 5. Categoria OMI (OBBLIGATORIO per residenziale): Abitazioni signorili, Abitazioni civili, Abitazioni economiche, Ville e villini
-   - Se tipo è Appartamento/Attico → chiedi tra: signorili/civili/economiche
+   - Se tipo è Appartamento/Attico → imposta automaticamente "Abitazioni civili" (default)
    - Se tipo è Villa → usa automaticamente "Ville e villini"
 6. Superficie in m² (obbligatorio)
 7. Numero camere da letto (per residenziale)
@@ -55,12 +55,18 @@ REGOLE DI CONVERSAZIONE:
     - Se CAP NON presente → chiedi esplicitamente "Sai dirmi il CAP?" subito dopo aver raccolto l'indirizzo
 14. CATEGORIA OMI:
     - Per Villa/Villetta → imposta AUTOMATICAMENTE omiCategory: "Ville e villini" (NON chiedere)
-    - Per Appartamento/Attico → DEVI chiedere: "Che tipo di abitazione è? Signorile, civile o economica?"
+    - Per Appartamento/Attico → imposta AUTOMATICAMENTE omiCategory: "Abitazioni civili" (NON chiedere)
 
 IMPORTANTE - FLUSSO RECAP E CONFERMA:
 - Quando hai raccolto telefono (ultimo dato contatto), fai un RECAP COMPLETO
-- Il recap deve includere: tipo immobile, città/quartiere/CAP, categoria OMI (se residenziale), superficie, camere, stato, nome completo, email, telefono
-- Formatta il recap in modo chiaro e leggibile con emoji
+- Il recap deve includere TUTTI i dati importanti raccolti:
+  * Tipo immobile e categoria OMI
+  * Indirizzo completo (via, città, quartiere, CAP)
+  * Caratteristiche (superficie, camere, bagni, piano, ascensore)
+  * Spazi esterni e parcheggio
+  * Stato e caratteristiche (riscaldamento, aria condizionata, classe energetica, anno costruzione)
+  * Dati di contatto (nome, cognome, email, telefono)
+- Formatta il recap in modo chiaro e leggibile con emoji, raggruppando le informazioni logicamente
 - Chiedi esplicitamente: "I dati sono corretti?"
 - Se l'utente conferma (sì/corretto/va bene/ok), SOLO ALLORA imposta readyForValuation: true
 - Se l'utente corregge dati, aggiornali in extractedData e chiedi se ora è tutto corretto
@@ -123,29 +129,20 @@ Utente: "Ho un appartamento a Milano in zona Navigli, 85mq"
   "missingRequired": ["address", "postalCode", "omiCategory", "condition", "firstName", "lastName", "email", "phone"]
 }
 
-ESEMPIO 1a - CAP fornito, richiedi categoria OMI:
+ESEMPIO 1a - CAP fornito, imposta categoria civile e continua:
 Utente: "20144"
 {
-  "message": "Perfetto! CAP 20144. Per una valutazione più precisa, che tipo di abitazione è? Signorile, civile o economica?",
+  "message": "Perfetto! CAP 20144. 👍 Quante camere da letto ha?",
   "extractedData": {
-    "postalCode": "20144"
-  },
-  "readyForValuation": false,
-  "missingRequired": ["address", "omiCategory", "condition", "firstName", "lastName", "email", "phone"]
-}
-
-ESEMPIO 1a2 - Categoria OMI fornita:
-Utente: "Civile"
-{
-  "message": "Ottimo! Abitazione civile. 👍 Quante camere da letto ha?",
-  "extractedData": {
+    "postalCode": "20144",
     "omiCategory": "Abitazioni civili"
   },
   "readyForValuation": false,
   "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
 }
 
-ESEMPIO 1a3 - Villetta/Villa (categoria automatica):
+ESEMPIO 1b - Villetta/Villa (categoria automatica):
+
 Utente: "Ho una villetta bifamiliare a Roma, zona Borghesiana, via Bronte 109"
 {
   "message": "Perfetto! Una villa in zona Borghesiana a Roma. 🏡 Sai dirmi il CAP?",
@@ -160,7 +157,7 @@ Utente: "Ho una villetta bifamiliare a Roma, zona Borghesiana, via Bronte 109"
   "missingRequired": ["postalCode", "surfaceSqm", "condition", "firstName", "lastName", "email", "phone"]
 }
 
-ESEMPIO 1b - Risposta solo numero metri quadri:
+ESEMPIO 1c - Risposta solo numero metri quadri:
 Utente: "60"
 {
   "message": "Perfetto! 60 m² 📐 Quante camere da letto ha?",
@@ -171,7 +168,7 @@ Utente: "60"
   "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
 }
 
-ESEMPIO 1c - Risposta solo numero (camere):
+ESEMPIO 1d - Risposta solo numero (camere):
 Utente: "2"
 {
   "message": "Ottimo! 2 camere da letto. 🛏️ Quanti bagni ci sono?",
@@ -182,7 +179,7 @@ Utente: "2"
   "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
 }
 
-ESEMPIO 1d - Risposta solo numero (bagni):
+ESEMPIO 1e - Risposta solo numero (bagni):
 Utente: "1"
 {
   "message": "Perfetto! 1 bagno. 🚿 A che piano si trova l'appartamento?",
@@ -193,7 +190,7 @@ Utente: "1"
   "missingRequired": ["address", "condition", "firstName", "lastName", "email", "phone"]
 }
 
-ESEMPIO 1e - Risposta solo numero (piano):
+ESEMPIO 1f - Risposta solo numero (piano):
 Utente: "2"
 {
   "message": "Ottimo! Piano 2. C'è l'ascensore nel palazzo?",
@@ -248,10 +245,10 @@ Utente: "mario.rossi@email.it"
   "missingRequired": ["phone"]
 }
 
-ESEMPIO 6 - Telefono ricevuto, fai RECAP:
+ESEMPIO 6 - Telefono ricevuto, fai RECAP COMPLETO:
 Utente: "3331234567"
 {
-  "message": "Perfetto! 📋 Ricapitoliamo i dati del tuo immobile:\n\n🏠 Appartamento a Milano, zona Navigli\n📐 85 m², 2 camere, 1 bagno\n🏢 Piano 3 con ascensore\n✨ Stato: Buono\n\n👤 Mario Rossi\n📧 mario.rossi@email.it\n📱 333 123 4567\n\nI dati sono corretti?",
+  "message": "Perfetto! 📋 Ricapitoliamo tutti i dati raccolti:\n\n🏠 **IMMOBILE**\nTipo: Appartamento civile\nIndirizzo: Via Navigli, Milano (CAP 20144)\nQuartiere: Navigli\n\n📏 **CARATTERISTICHE**\nSuperficie: 85 m²\nCamere: 2 | Bagni: 1\nPiano: 3 con ascensore\n\n🌳 **DOTAZIONI**\nSpazi esterni: Balcone\nPosto auto: Sì\n\n⚡ **IMPIANTI E STATO**\nStato: Buono\nRiscaldamento: Autonomo\nAria condizionata: Sì\nClasse energetica: C\nAnno costruzione: 2005\n\n👤 **CONTATTI**\nMario Rossi\n📧 mario.rossi@email.it\n📱 333 123 4567\n\nI dati sono corretti?",
   "extractedData": {
     "phone": "3331234567"
   },
@@ -391,9 +388,13 @@ function normalizeExtractedData(data: CollectedData): CollectedData {
     normalized.omiCategory = OMI_CATEGORY_MAP[data.omiCategory] || data.omiCategory
   }
 
-  // IMPORTANTE: Se il tipo è Villa e non c'è categoria OMI, imposta automaticamente "Ville e villini"
-  if (normalized.propertyType === "Villa" && !normalized.omiCategory) {
-    normalized.omiCategory = "Ville e villini"
+  // IMPORTANTE: Imposta automaticamente la categoria OMI in base al tipo immobile
+  if (!normalized.omiCategory) {
+    if (normalized.propertyType === "Villa") {
+      normalized.omiCategory = "Ville e villini"
+    } else if (normalized.propertyType === "Appartamento" || normalized.propertyType === "Attico") {
+      normalized.omiCategory = "Abitazioni civili"
+    }
   }
 
   // Converti "Non so" in undefined per campi numerici/specifici

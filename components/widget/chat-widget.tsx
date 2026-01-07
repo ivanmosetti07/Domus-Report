@@ -825,7 +825,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       // Messaggio diverso per demo vs reale
       const successMessage = isDemo
         ? `Grazie ${firstName}! 🎉 Questa è una demo. Per ricevere lead reali, registrati gratuitamente!`
-        : `Grazie ${firstName}! 🎉 Il report dettagliato ti è stato inviato via email. Sarai ricontattato a breve da un nostro consulente.`
+        : `Grazie ${firstName}! 🎉 Sarai ricontattato a breve da un nostro consulente.`
 
       setConversationMode("completed")
       addBotMessage(successMessage)
