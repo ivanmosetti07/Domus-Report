@@ -563,14 +563,22 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       console.error("Valuation error:", error)
 
       if (error instanceof Error && error.name === 'AbortError') {
-        setConversationMode("chatting")
+        setConversationMode("ask_restart")
         addBotMessage(
-          "Mi dispiace, il calcolo sta richiedendo più tempo del previsto. Riprova tra un momento."
+          "Mi dispiace, il calcolo sta richiedendo più tempo del previsto. Vuoi riprovare?",
+          [
+            { label: "Sì, riprova", value: "restart" },
+            { label: "No, grazie", value: "done" }
+          ]
         )
       } else {
-        setConversationMode("chatting")
+        setConversationMode("ask_restart")
         addBotMessage(
-          "Mi dispiace, si è verificato un errore nel calcolo. Riprova tra qualche minuto."
+          "Mi dispiace, si è verificato un errore nel calcolo. Vuoi fare una nuova valutazione?",
+          [
+            { label: "Sì, nuova valutazione", value: "restart" },
+            { label: "No, grazie", value: "done" }
+          ]
         )
       }
     }
