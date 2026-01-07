@@ -59,7 +59,7 @@ interface CollectedData {
   heatingType?: string
   hasAirConditioning?: boolean
   energyClass?: string
-  buildYear?: number
+  buildYear?: number | string // L'AI potrebbe restituire stringa
   occupancyStatus?: string
   occupancyEndDate?: string
   firstName?: string
@@ -713,8 +713,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         condition: collectedData.condition,
         heatingType: collectedData.heatingType,
         hasAirConditioning: collectedData.hasAirConditioning,
-        energyClass: collectedData.energyClass,
-        buildYear: collectedData.buildYear,
+        energyClass: collectedData.energyClass && !collectedData.energyClass.toLowerCase().includes('non') ? collectedData.energyClass : undefined,
+        buildYear: typeof collectedData.buildYear === 'number' ? collectedData.buildYear :
+                   (typeof collectedData.buildYear === 'string' && !collectedData.buildYear.toLowerCase().includes('non') ?
+                    parseInt(collectedData.buildYear, 10) : undefined),
         occupancyStatus: collectedData.occupancyStatus,
         occupancyEndDate: collectedData.occupancyEndDate,
         // Valuation data

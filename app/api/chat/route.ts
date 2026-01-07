@@ -318,6 +318,23 @@ function normalizeExtractedData(data: CollectedData): CollectedData {
     normalized.omiCategory = OMI_CATEGORY_MAP[data.omiCategory] || data.omiCategory
   }
 
+  // Converti "Non so" in undefined per campi numerici/specifici
+  if (data.buildYear && typeof data.buildYear === 'string') {
+    if (data.buildYear.toLowerCase().includes('non')) {
+      normalized.buildYear = undefined
+    } else {
+      // Prova a convertire la stringa in numero
+      const year = parseInt(data.buildYear, 10)
+      if (!isNaN(year)) {
+        normalized.buildYear = year
+      }
+    }
+  }
+
+  if (data.energyClass && typeof data.energyClass === 'string' && data.energyClass.toLowerCase().includes('non')) {
+    normalized.energyClass = undefined
+  }
+
   return normalized
 }
 
@@ -344,7 +361,7 @@ interface CollectedData {
   heatingType?: string
   hasAirConditioning?: boolean
   energyClass?: string
-  buildYear?: number
+  buildYear?: number | string // L'AI potrebbe restituire stringa
   occupancyStatus?: string
   firstName?: string
   lastName?: string
