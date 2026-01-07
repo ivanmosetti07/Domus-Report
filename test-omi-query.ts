@@ -68,6 +68,26 @@ async function testOMIQuery() {
         tipoImmobile: 'residenziale',
         categoria: 'Ville e villini'
       }
+    },
+    {
+      name: 'Test 6: Case-insensitive - "abitazioni civili" (minuscolo)',
+      params: {
+        citta: 'Bologna',
+        zona: 'Centro Storico',
+        cap: '40126',
+        tipoImmobile: 'residenziale',
+        categoria: 'abitazioni civili' // minuscolo
+      }
+    },
+    {
+      name: 'Test 7: Case-insensitive - "ABITAZIONI CIVILI" (maiuscolo)',
+      params: {
+        citta: 'Bologna',
+        zona: 'Centro Storico',
+        cap: '40126',
+        tipoImmobile: 'residenziale',
+        categoria: 'ABITAZIONI CIVILI' // maiuscolo
+      }
     }
   ]
 

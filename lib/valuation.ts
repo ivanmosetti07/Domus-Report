@@ -5,7 +5,6 @@
  */
 
 import { PropertyType, PropertyCondition } from "@/types"
-import { getOMIValue } from "./omi"
 import { getOMIValueByZone, mapPropertyTypeToOMI } from "./omi-advanced"
 import { createLogger } from "./logger"
 
@@ -205,64 +204,36 @@ export async function calculateValuationLocal(
   let maxPrice: number
   let estimatedPrice: number
 
-  try {
-    const omiAdvanced = await getOMIValueByZone(
-      input.city,
-      input.neighborhood,
-      input.postalCode,
+  // Get OMI Advanced data (REQUIRED - no fallback)
+  const omiAdvanced = await getOMIValueByZone(
+    input.city,
+    input.neighborhood,
+    input.postalCode,
+    tipoImmobile,
+    input.omiCategory
+  )
+
+  if (!omiAdvanced) {
+    const errorMsg = `Dati OMI non disponibili per: città=${input.city}, zona=${input.neighborhood || 'N/A'}, CAP=${input.postalCode || 'N/A'}, categoria=${input.omiCategory || 'N/A'}`
+    logger.error("OMI Advanced data not found - valuation cannot proceed", {
+      city: input.city,
+      neighborhood: input.neighborhood,
+      postalCode: input.postalCode,
       tipoImmobile,
-      input.omiCategory
-    )
-
-    if (omiAdvanced) {
-      // Use advanced OMI data with min/max ranges
-      logger.info("Using OMI Advanced data", {
-        city: input.city,
-        zona: omiAdvanced.zona,
-        categoria: input.omiCategory,
-      })
-
-      baseOMIValue = omiAdvanced.valoreMedioMq
-
-      // Calculate coefficients
-      const floorCoefficient = calculateFloorCoefficient(
-        input.floor,
-        input.hasElevator
-      )
-      const conditionCoefficient = calculateConditionCoefficient(input.condition)
-
-      // Calculate prices using OMI min/max ranges + coefficients
-      estimatedPrice = Math.round(
-        baseOMIValue * input.surfaceSqm * floorCoefficient * conditionCoefficient
-      )
-      minPrice = Math.round(
-        omiAdvanced.valoreMinMq * input.surfaceSqm * floorCoefficient * conditionCoefficient
-      )
-      maxPrice = Math.round(
-        omiAdvanced.valoreMaxMq * input.surfaceSqm * floorCoefficient * conditionCoefficient
-      )
-
-      const result: ValuationResult = {
-        minPrice,
-        maxPrice,
-        estimatedPrice,
-        baseOMIValue,
-        floorCoefficient,
-        conditionCoefficient,
-        explanation: "",
-      }
-
-      result.explanation = generateValuationExplanation(input, result)
-      return result
-    }
-  } catch (error) {
-    logger.warn("OMI Advanced lookup failed, falling back to basic OMI", { error: error instanceof Error ? error.message : String(error) })
+      omiCategory: input.omiCategory,
+    })
+    throw new Error(errorMsg)
   }
 
-  // Fallback to basic OMI calculation
-  logger.info("Using basic OMI data (fallback)", { city: input.city })
-  const omiData = getOMIValue(input.city, input.propertyType)
-  baseOMIValue = omiData.value
+  // Use OMI Advanced data with min/max ranges
+  logger.info("Using OMI Advanced data", {
+    city: input.city,
+    zona: omiAdvanced.zona,
+    categoria: input.omiCategory,
+    valoreMedioMq: omiAdvanced.valoreMedioMq,
+  })
+
+  baseOMIValue = omiAdvanced.valoreMedioMq
 
   // Calculate coefficients
   const floorCoefficient = calculateFloorCoefficient(
@@ -271,14 +242,16 @@ export async function calculateValuationLocal(
   )
   const conditionCoefficient = calculateConditionCoefficient(input.condition)
 
-  // Calculate estimated price
+  // Calculate prices using OMI min/max ranges + coefficients
   estimatedPrice = Math.round(
     baseOMIValue * input.surfaceSqm * floorCoefficient * conditionCoefficient
   )
-
-  // Calculate price range (±7%)
-  minPrice = Math.round(estimatedPrice * 0.93)
-  maxPrice = Math.round(estimatedPrice * 1.07)
+  minPrice = Math.round(
+    omiAdvanced.valoreMinMq * input.surfaceSqm * floorCoefficient * conditionCoefficient
+  )
+  maxPrice = Math.round(
+    omiAdvanced.valoreMaxMq * input.surfaceSqm * floorCoefficient * conditionCoefficient
+  )
 
   const result: ValuationResult = {
     minPrice,
@@ -290,9 +263,7 @@ export async function calculateValuationLocal(
     explanation: "",
   }
 
-  // Generate explanation
   result.explanation = generateValuationExplanation(input, result)
-
   return result
 }
 
