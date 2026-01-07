@@ -1,4 +1,297 @@
 citta,zona,cap,tipoImmobile,categoria,valoreMinMq,valoreMaxMq,valoreMedioMq,semestre,anno,fonte
+Milano,Centro Storico,20121,residenziale,abitazioni civili,8700,11000,9850,1,2025,OMI
+Milano,Centro Storico,20121,residenziale,abitazioni signorili,9300,12900,11100,1,2025,OMI
+Milano,Centro Storico,20121,residenziale,abitazioni signorili ottimo,13000,20000,16500,1,2025,OMI
+Milano,Centro Storico,20121,commerciale,negozi,9000,15000,12000,1,2025,OMI
+Milano,Centro Storico,20121,commerciale,negozi ottimo,15100,29000,22050,1,2025,OMI
+Milano,Centro Storico,20121,uffici,uffici,8500,13500,11000,1,2025,OMI
+Milano,Porta Garibaldi,20121,residenziale,abitazioni civili,9000,11400,10200,1,2025,OMI
+Milano,Porta Garibaldi,20121,residenziale,abitazioni signorili,9500,13000,11250,1,2025,OMI
+Milano,Porta Garibaldi,20121,commerciale,negozi,6800,10800,8800,1,2025,OMI
+Milano,Porta Garibaldi,20121,uffici,uffici,6200,10500,8350,1,2025,OMI
+Milano,Porta Romana,20136,residenziale,abitazioni civili,5800,7800,6800,1,2025,OMI
+Milano,Porta Romana,20136,residenziale,abitazioni signorili,7500,9300,8400,1,2025,OMI
+Milano,Porta Romana,20136,commerciale,negozi,4400,5600,5000,1,2025,OMI
+Milano,Porta Romana,20136,uffici,uffici,4500,7000,5750,1,2025,OMI
+Milano,Isola,20124,residenziale,abitazioni civili,6500,8700,7600,1,2025,OMI
+Milano,Isola,20124,commerciale,negozi,4600,7900,6250,1,2025,OMI
+Milano,Isola,20124,uffici,uffici,5000,7500,6250,1,2025,OMI
+Milano,Navigli,20144,residenziale,abitazioni civili,6000,8700,7350,1,2025,OMI
+Milano,Navigli,20144,residenziale,abitazioni signorili,9400,12000,10700,1,2025,OMI
+Milano,Navigli,20144,commerciale,negozi,4000,6400,5200,1,2025,OMI
+Milano,Navigli,20144,uffici,uffici,5000,8000,6500,1,2025,OMI
+Milano,Brera,20121,residenziale,abitazioni civili,7000,9000,8000,1,2025,OMI
+Milano,Brera,20121,residenziale,abitazioni signorili,7600,10500,9050,1,2025,OMI
+Milano,Brera,20121,commerciale,negozi,4000,7900,5950,1,2025,OMI
+Milano,Città Studi,20131,residenziale,abitazioni civili,5200,7200,6200,1,2025,OMI
+Milano,Città Studi,20131,commerciale,negozi,3500,4900,4200,1,2025,OMI
+Milano,Città Studi,20131,uffici,uffici,3300,5700,4500,1,2025,OMI
+Milano,Loreto,20131,residenziale,abitazioni civili,5000,7300,6150,1,2025,OMI
+Milano,Loreto,20131,commerciale,negozi,3300,4500,3900,1,2025,OMI
+Milano,Loreto,20131,uffici,uffici,3200,5000,4100,1,2025,OMI
+Milano,Sempione,20154,residenziale,abitazioni civili,4400,6500,5450,1,2025,OMI
+Milano,Sempione,20154,commerciale,negozi,2500,4500,3500,1,2025,OMI
+Milano,Sempione,20154,uffici,uffici,3000,4500,3750,1,2025,OMI
+Milano,Bicocca,20126,residenziale,abitazioni civili,3900,6000,4950,1,2025,OMI
+Milano,Bicocca,20126,commerciale,negozi,2700,3800,3250,1,2025,OMI
+Milano,Bicocca,20126,uffici,uffici,2600,3500,3050,1,2025,OMI
+Milano,Lambrate,20134,residenziale,abitazioni civili,4000,6000,5000,1,2025,OMI
+Milano,Lambrate,20134,residenziale,ville e villini,3500,5400,4450,1,2025,OMI
+Milano,Lambrate,20134,commerciale,negozi,2200,3000,2600,1,2025,OMI
+Milano,Lambrate,20134,uffici,uffici,3000,4700,3850,1,2025,OMI
+Milano,Corvetto,20134,residenziale,abitazioni civili,3600,5700,4650,1,2025,OMI
+Milano,Corvetto,20134,commerciale,negozi,2300,3000,2650,1,2025,OMI
+Milano,Corvetto,20134,uffici,uffici,2300,3700,3000,1,2025,OMI
+Milano,Porta Genova,20144,residenziale,abitazioni civili,5400,6900,6150,1,2025,OMI
+Milano,Porta Genova,20144,commerciale,negozi,3900,5400,4650,1,2025,OMI
+Milano,Porta Genova,20144,uffici,uffici,4800,6500,5650,1,2025,OMI
+Milano,Forlanini,20134,residenziale,abitazioni civili,4300,6000,5150,1,2025,OMI
+Milano,Forlanini,20134,commerciale,negozi,2500,4500,3500,1,2025,OMI
+Milano,Forlanini,20134,uffici,uffici,3000,4500,3750,1,2025,OMI
+Milano,Vigentino,20142,residenziale,abitazioni civili,4400,6000,5200,1,2025,OMI
+Milano,Vigentino,20142,commerciale,negozi,2700,3800,3250,1,2025,OMI
+Milano,Vigentino,20142,uffici,uffici,2600,4300,3450,1,2025,OMI
+Milano,Gratosoglio,20142,residenziale,abitazioni civili,3500,4800,4150,1,2025,OMI
+Milano,Gratosoglio,20142,commerciale,negozi,2700,3800,3250,1,2025,OMI
+Milano,Gratosoglio,20142,uffici,uffici,2600,3500,3050,1,2025,OMI
+Milano,Rogoredo,20138,residenziale,abitazioni civili,4400,6500,5450,1,2025,OMI
+Milano,Rogoredo,20138,commerciale,negozi,2900,3500,3200,1,2025,OMI
+Milano,Rogoredo,20138,uffici,uffici,3300,5000,4150,1,2025,OMI
+Milano,Certosa,20156,residenziale,abitazioni civili,3200,4800,4000,1,2025,OMI
+Milano,Certosa,20156,commerciale,negozi,1800,2600,2200,1,2025,OMI
+Milano,Certosa,20156,uffici,uffici,2200,3200,2700,1,2025,OMI
+Milano,Quarto Oggiaro,20152,residenziale,abitazioni civili,2900,4000,3450,1,2025,OMI
+Milano,Quarto Oggiaro,20152,commerciale,negozi,1700,2600,2150,1,2025,OMI
+Milano,Quarto Oggiaro,20152,uffici,uffici,1750,2650,2200,1,2025,OMI
+Milano,Niguarda,20162,residenziale,abitazioni civili,3600,4800,4200,1,2025,OMI
+Milano,Niguarda,20162,commerciale,negozi,2200,3100,2650,1,2025,OMI
+Milano,Niguarda,20162,uffici,uffici,2300,3300,2800,1,2025,OMI
+Roma,Centro Storico,00186,residenziale,abitazioni civili,5800,8500,7150,1,2025,OMI
+Roma,Centro Storico,00186,residenziale,abitazioni signorili,6500,9500,8000,1,2025,OMI
+Roma,Centro Storico,00186,commerciale,negozi,4300,6100,5200,1,2025,OMI
+Roma,Centro Storico,00186,uffici,uffici,4700,6700,5700,1,2025,OMI
+Roma,Parioli,00197,residenziale,abitazioni civili,6000,8300,7150,1,2025,OMI
+Roma,Parioli,00197,residenziale,abitazioni signorili,6700,9300,8000,1,2025,OMI
+Roma,Parioli,00197,commerciale,negozi,4900,6600,5750,1,2025,OMI
+Roma,Parioli,00197,uffici,uffici,4600,6900,5750,1,2025,OMI
+Roma,Prati,00192,residenziale,abitazioni civili,5100,7100,6100,1,2025,OMI
+Roma,Prati,00192,residenziale,abitazioni signorili,5700,7900,6800,1,2025,OMI
+Roma,Prati,00192,commerciale,negozi,3400,4800,4100,1,2025,OMI
+Roma,Prati,00192,uffici,uffici,3900,5800,4850,1,2025,OMI
+Roma,Trastevere,00153,residenziale,abitazioni civili,4900,6800,5850,1,2025,OMI
+Roma,Trastevere,00153,residenziale,abitazioni signorili,5500,7600,6550,1,2025,OMI
+Roma,Trastevere,00153,commerciale,negozi,3900,5000,4450,1,2025,OMI
+Roma,Trastevere,00153,uffici,uffici,3100,4600,3850,1,2025,OMI
+Roma,Testaccio,00153,residenziale,abitazioni civili,4700,6700,5700,1,2025,OMI
+Roma,Testaccio,00153,residenziale,abitazioni signorili,5300,7500,6400,1,2025,OMI
+Roma,Testaccio,00153,commerciale,negozi,2800,4100,3450,1,2025,OMI
+Roma,Testaccio,00153,uffici,uffici,2800,4100,3450,1,2025,OMI
+Roma,Monti,00184,residenziale,abitazioni civili,4600,6500,5550,1,2025,OMI
+Roma,Monti,00184,residenziale,abitazioni signorili,5200,7300,6250,1,2025,OMI
+Roma,Monti,00184,commerciale,negozi,2600,3800,3200,1,2025,OMI
+Roma,Monti,00184,uffici,uffici,3100,4500,3800,1,2025,OMI
+Roma,Trieste,00198,residenziale,abitazioni civili,4500,6400,5450,1,2025,OMI
+Roma,Trieste,00198,residenziale,abitazioni signorili,5000,7200,6100,1,2025,OMI
+Roma,Trieste,00198,commerciale,negozi,2800,4100,3450,1,2025,OMI
+Roma,Trieste,00198,uffici,uffici,3700,5500,4600,1,2025,OMI
+Roma,Salario,00198,residenziale,abitazioni civili,4300,5900,5100,1,2025,OMI
+Roma,Salario,00198,residenziale,abitazioni signorili,4800,6600,5700,1,2025,OMI
+Roma,Salario,00198,commerciale,negozi,3200,4800,4000,1,2025,OMI
+Roma,Salario,00198,uffici,uffici,3200,4800,4000,1,2025,OMI
+Roma,Flaminio,00196,residenziale,abitazioni civili,4200,5900,5050,1,2025,OMI
+Roma,Flaminio,00196,residenziale,abitazioni signorili,4700,6600,5650,1,2025,OMI
+Roma,Flaminio,00196,commerciale,negozi,2400,3400,2900,1,2025,OMI
+Roma,Flaminio,00196,uffici,uffici,2600,3900,3250,1,2025,OMI
+Roma,EUR,00144,residenziale,abitazioni civili,4000,5900,4950,1,2025,OMI
+Roma,EUR,00144,residenziale,abitazioni signorili,4500,6600,5550,1,2025,OMI
+Roma,EUR,00144,commerciale,negozi,2600,3700,3150,1,2025,OMI
+Roma,EUR,00144,uffici,uffici,3100,4500,3800,1,2025,OMI
+Roma,San Giovanni,00183,residenziale,abitazioni civili,3600,4900,4250,1,2025,OMI
+Roma,San Giovanni,00183,residenziale,abitazioni signorili,4000,5500,4750,1,2025,OMI
+Roma,San Giovanni,00183,commerciale,negozi,3300,4900,4100,1,2025,OMI
+Roma,San Giovanni,00183,uffici,uffici,3300,4900,4100,1,2025,OMI
+Roma,Appio Latino,00179,residenziale,abitazioni civili,3500,4800,4150,1,2025,OMI
+Roma,Appio Latino,00179,residenziale,abitazioni civili economico,3100,4300,3700,1,2025,OMI
+Roma,Appio Latino,00179,commerciale,negozi,1950,2900,2425,1,2025,OMI
+Roma,Appio Latino,00179,uffici,uffici,2400,3300,2850,1,2025,OMI
+Roma,Ostiense,00154,residenziale,abitazioni civili,3200,4800,4000,1,2025,OMI
+Roma,Ostiense,00154,residenziale,abitazioni civili economico,2950,4400,3675,1,2025,OMI
+Roma,Ostiense,00154,commerciale,negozi,2000,3000,2500,1,2025,OMI
+Roma,Ostiense,00154,uffici,uffici,2450,3600,3025,1,2025,OMI
+Roma,San Lorenzo,00185,residenziale,abitazioni civili,3200,4600,3900,1,2025,OMI
+Roma,San Lorenzo,00185,residenziale,abitazioni civili economico,2850,4200,3525,1,2025,OMI
+Roma,San Lorenzo,00185,commerciale,negozi,1650,2400,2025,1,2025,OMI
+Roma,San Lorenzo,00185,uffici,uffici,2600,3800,3200,1,2025,OMI
+Roma,Tuscolano,00181,residenziale,abitazioni civili,3200,4600,3900,1,2025,OMI
+Roma,Tuscolano,00181,residenziale,abitazioni signorili,3600,5200,4400,1,2025,OMI
+Roma,Tuscolano,00181,commerciale,negozi,2800,4000,3400,1,2025,OMI
+Roma,Tuscolano,00181,uffici,uffici,2250,3300,2775,1,2025,OMI
+Roma,Pigneto,00176,residenziale,abitazioni civili,3400,4800,4100,1,2025,OMI
+Roma,Pigneto,00176,residenziale,abitazioni civili economico,3000,4300,3650,1,2025,OMI
+Roma,Pigneto,00176,commerciale,negozi,2200,3100,2650,1,2025,OMI
+Roma,Pigneto,00176,uffici,uffici,2300,3300,2800,1,2025,OMI
+Roma,Casilino,00176,residenziale,abitazioni civili,3000,4200,3600,1,2025,OMI
+Roma,Casilino,00176,residenziale,abitazioni civili economico,2700,3900,3300,1,2025,OMI
+Roma,Casilino,00176,commerciale,negozi,2300,3400,2850,1,2025,OMI
+Roma,Casilino,00176,uffici,uffici,2900,4200,3550,1,2025,OMI
+Roma,Nomentano,00162,residenziale,abitazioni civili,3600,4800,4200,1,2025,OMI
+Roma,Nomentano,00162,residenziale,abitazioni signorili,4000,5400,4700,1,2025,OMI
+Roma,Nomentano,00162,commerciale,negozi,1950,2800,2375,1,2025,OMI
+Roma,Nomentano,00162,uffici,uffici,2000,3000,2500,1,2025,OMI
+Roma,Tiburtino,00159,residenziale,abitazioni civili,2900,4000,3450,1,2025,OMI
+Roma,Tiburtino,00159,residenziale,abitazioni civili economico,2600,3700,3150,1,2025,OMI
+Roma,Tiburtino,00159,commerciale,negozi,1950,2900,2425,1,2025,OMI
+Roma,Tiburtino,00159,uffici,uffici,1900,2700,2300,1,2025,OMI
+Roma,Aurelio,00167,residenziale,abitazioni civili,3400,5000,4200,1,2025,OMI
+Roma,Aurelio,00167,residenziale,abitazioni civili economico,3200,4500,3850,1,2025,OMI
+Roma,Aurelio,00167,commerciale,negozi,1800,2600,2200,1,2025,OMI
+Roma,Aurelio,00167,uffici,uffici,2200,3200,2700,1,2025,OMI
+Torino,Centro,10121,residenziale,abitazioni civili,2900,4400,3650,1,2025,OMI
+Torino,Centro,10121,residenziale,abitazioni signorili,3100,4600,3850,1,2025,OMI
+Torino,Centro,10121,residenziale,abitazioni signorili ottimo,4400,6600,5500,1,2025,OMI
+Torino,Centro,10121,commerciale,negozi,2550,5100,3825,1,2025,OMI
+Torino,Centro,10121,uffici,uffici,2450,4900,3675,1,2025,OMI
+Torino,Crocetta,10138,residenziale,abitazioni civili,2700,4100,3400,1,2025,OMI
+Torino,Crocetta,10138,residenziale,abitazioni signorili,2500,3700,3100,1,2025,OMI
+Torino,Crocetta,10138,commerciale,negozi,1300,2600,1950,1,2025,OMI
+Torino,Crocetta,10138,uffici,uffici,1700,3400,2550,1,2025,OMI
+Torino,San Salvario,10125,residenziale,abitazioni civili,2000,3000,2500,1,2025,OMI
+Torino,San Salvario,10125,residenziale,abitazioni civili economico,1750,2600,2175,1,2025,OMI
+Torino,San Salvario,10125,commerciale,negozi,1000,2000,1500,1,2025,OMI
+Torino,San Salvario,10125,uffici,uffici,1200,2400,1800,1,2025,OMI
+Torino,Vanchiglia,10124,residenziale,abitazioni civili,1850,2800,2325,1,2025,OMI
+Torino,Vanchiglia,10124,residenziale,abitazioni signorili,2750,4100,3425,1,2025,OMI
+Torino,Vanchiglia,10124,commerciale,negozi,1100,2150,1625,1,2025,OMI
+Torino,Vanchiglia,10124,uffici,uffici,1200,2400,1800,1,2025,OMI
+Torino,Lingotto,10126,residenziale,abitazioni civili,2150,3200,2675,1,2025,OMI
+Torino,Lingotto,10126,residenziale,abitazioni civili economico,1900,2850,2375,1,2025,OMI
+Torino,Lingotto,10126,commerciale,negozi,1050,2100,1575,1,2025,OMI
+Torino,Lingotto,10126,uffici,uffici,1300,2550,1925,1,2025,OMI
+Torino,Santa Rita,10126,residenziale,abitazioni civili,2000,3000,2500,1,2025,OMI
+Torino,Santa Rita,10126,residenziale,abitazioni civili economico,1750,2600,2175,1,2025,OMI
+Torino,Santa Rita,10126,commerciale,negozi,1000,2000,1500,1,2025,OMI
+Torino,Santa Rita,10126,uffici,uffici,1200,2400,1800,1,2025,OMI
+Torino,Mirafiori,10126,residenziale,abitazioni civili,2300,3400,2850,1,2025,OMI
+Torino,Mirafiori,10126,residenziale,abitazioni signorili,2400,3600,3000,1,2025,OMI
+Torino,Mirafiori,10126,commerciale,negozi,1250,2500,1875,1,2025,OMI
+Torino,Mirafiori,10126,uffici,uffici,1650,3300,2475,1,2025,OMI
+Torino,Barriera di Milano,10137,residenziale,abitazioni civili,2700,4000,3350,1,2025,OMI
+Torino,Barriera di Milano,10137,residenziale,abitazioni signorili,3600,5300,4450,1,2025,OMI
+Torino,Barriera di Milano,10137,commerciale,negozi,2100,4200,3150,1,2025,OMI
+Torino,Barriera di Milano,10137,uffici,uffici,1200,2400,1800,1,2025,OMI
+Firenze,Centro Storico,50122,residenziale,abitazioni civili,3600,5100,4350,1,2025,OMI
+Firenze,Centro Storico,50122,residenziale,abitazioni civili economico,3100,4300,3700,1,2025,OMI
+Firenze,Centro Storico,50122,commerciale,negozi,3500,7000,5250,1,2025,OMI
+Firenze,Centro Storico,50122,uffici,uffici,3000,4900,3950,1,2025,OMI
+Firenze,Oltrarno,50125,residenziale,abitazioni civili,3000,4500,3750,1,2025,OMI
+Firenze,Oltrarno,50125,residenziale,abitazioni civili economico,2500,3700,3100,1,2025,OMI
+Firenze,Oltrarno,50125,commerciale,negozi,2200,4400,3300,1,2025,OMI
+Firenze,Oltrarno,50125,uffici,uffici,2550,4200,3375,1,2025,OMI
+Firenze,Campo di Marte,50136,residenziale,abitazioni civili,3200,4200,3700,1,2025,OMI
+Firenze,Campo di Marte,50136,residenziale,abitazioni civili economico,2800,3700,3250,1,2025,OMI
+Firenze,Campo di Marte,50136,commerciale,negozi,2300,4000,3150,1,2025,OMI
+Firenze,Campo di Marte,50136,uffici,uffici,2150,4100,3125,1,2025,OMI
+Firenze,Rifredi,50141,residenziale,abitazioni civili,2700,4000,3350,1,2025,OMI
+Firenze,Rifredi,50141,residenziale,abitazioni civili economico,2000,2700,2350,1,2025,OMI
+Firenze,Rifredi,50141,commerciale,negozi,1500,2500,2000,1,2025,OMI
+Firenze,Rifredi,50141,uffici,uffici,1400,2600,2000,1,2025,OMI
+Firenze,Isolotto,50143,residenziale,abitazioni civili,2600,3400,3000,1,2025,OMI
+Firenze,Isolotto,50143,residenziale,abitazioni civili economico,2000,2700,2350,1,2025,OMI
+Firenze,Isolotto,50143,commerciale,negozi,1350,2100,1725,1,2025,OMI
+Firenze,Isolotto,50143,uffici,uffici,1600,2700,2150,1,2025,OMI
+Firenze,Novoli,50127,residenziale,abitazioni civili,2350,3100,2725,1,2025,OMI
+Firenze,Novoli,50127,residenziale,abitazioni civili economico,1950,2550,2250,1,2025,OMI
+Firenze,Novoli,50127,commerciale,negozi,1300,2200,1750,1,2025,OMI
+Firenze,Novoli,50127,uffici,uffici,1600,2800,2200,1,2025,OMI
+Firenze,Gavinana,50126,residenziale,abitazioni civili,2450,3100,2775,1,2025,OMI
+Firenze,Gavinana,50126,residenziale,abitazioni civili economico,2050,2600,2325,1,2025,OMI
+Firenze,Gavinana,50126,commerciale,negozi,1250,2400,1825,1,2025,OMI
+Firenze,Gavinana,50126,uffici,uffici,1500,2400,1950,1,2025,OMI
+Firenze,Coverciano,50135,residenziale,abitazioni civili,2550,3100,2825,1,2025,OMI
+Firenze,Coverciano,50135,residenziale,abitazioni civili economico,2000,2800,2400,1,2025,OMI
+Firenze,Coverciano,50135,commerciale,negozi,1350,2300,1825,1,2025,OMI
+Firenze,Coverciano,50135,uffici,uffici,1500,2700,2100,1,2025,OMI
+Firenze,Le Cure,50139,residenziale,abitazioni civili,2700,3400,3050,1,2025,OMI
+Firenze,Le Cure,50139,residenziale,abitazioni civili economico,2200,2850,2525,1,2025,OMI
+Firenze,Le Cure,50139,commerciale,negozi,1400,2600,2000,1,2025,OMI
+Firenze,Le Cure,50139,uffici,uffici,1700,2800,2250,1,2025,OMI
+Firenze,Settignano,50135,residenziale,abitazioni civili,2800,4300,3550,1,2025,OMI
+Firenze,Settignano,50135,residenziale,ville e villini,3400,5100,4250,1,2025,OMI
+Firenze,Settignano,50135,commerciale,negozi,2200,4400,3300,1,2025,OMI
+Firenze,Settignano,50135,uffici,uffici,2550,4200,3375,1,2025,OMI
+Napoli,Centro Storico,80138,residenziale,abitazioni civili,2600,3700,3150,1,2025,OMI
+Napoli,Centro Storico,80138,commerciale,negozi,2100,3500,2800,1,2025,OMI
+Napoli,Centro Storico,80138,uffici,uffici,2200,3400,2800,1,2025,OMI
+Napoli,Vomero,80127,residenziale,abitazioni civili,2950,4300,3625,1,2025,OMI
+Napoli,Vomero,80127,commerciale,negozi,2500,4200,3350,1,2025,OMI
+Napoli,Vomero,80127,uffici,uffici,2600,4000,3300,1,2025,OMI
+Napoli,Posillipo,80123,residenziale,abitazioni signorili,3700,5700,4700,1,2025,OMI
+Napoli,Posillipo,80123,commerciale,negozi,2800,4600,3700,1,2025,OMI
+Napoli,Posillipo,80123,uffici,uffici,2900,4500,3700,1,2025,OMI
+Napoli,Chiaia,80121,residenziale,abitazioni civili,3150,4650,3900,1,2025,OMI
+Napoli,Chiaia,80121,commerciale,negozi,2600,4200,3400,1,2025,OMI
+Napoli,Chiaia,80121,uffici,uffici,2700,4100,3400,1,2025,OMI
+Bologna,Centro Storico,40126,residenziale,abitazioni civili,3150,4600,3875,1,2025,OMI
+Bologna,Centro Storico,40126,residenziale,abitazioni signorili,4200,6200,5200,1,2025,OMI
+Bologna,Centro Storico,40126,commerciale,negozi,2600,4300,3450,1,2025,OMI
+Bologna,Centro Storico,40126,uffici,uffici,2800,4200,3500,1,2025,OMI
+Bologna,Saragozza,40123,residenziale,abitazioni civili,2950,4150,3550,1,2025,OMI
+Bologna,Saragozza,40123,commerciale,negozi,2400,3800,3100,1,2025,OMI
+Bologna,Saragozza,40123,uffici,uffici,2500,3750,3125,1,2025,OMI
+Bologna,Irnerio,40126,residenziale,abitazioni civili,2750,3950,3350,1,2025,OMI
+Bologna,Irnerio,40126,commerciale,negozi,2200,3500,2850,1,2025,OMI
+Bologna,Irnerio,40126,uffici,uffici,2300,3400,2850,1,2025,OMI
+Genova,Centro Storico,16123,residenziale,abitazioni civili,2100,3650,2875,1,2025,OMI
+Genova,Centro Storico,16123,commerciale,negozi,1800,3200,2500,1,2025,OMI
+Genova,Centro Storico,16123,uffici,uffici,1900,3100,2500,1,2025,OMI
+Genova,Albaro,16146,residenziale,abitazioni civili,2650,4150,3400,1,2025,OMI
+Genova,Albaro,16146,commerciale,negozi,2200,3600,2900,1,2025,OMI
+Genova,Albaro,16146,uffici,uffici,2300,3700,3000,1,2025,OMI
+Genova,Carignano,16123,residenziale,abitazioni signorili,3150,5150,4150,1,2025,OMI
+Genova,Carignano,16123,commerciale,negozi,2500,4100,3300,1,2025,OMI
+Genova,Carignano,16123,uffici,uffici,2600,4200,3400,1,2025,OMI
+Verona,Centro Storico,37121,residenziale,abitazioni civili,2650,4150,3400,1,2025,OMI
+Verona,Centro Storico,37121,commerciale,negozi,2200,3700,2950,1,2025,OMI
+Verona,Centro Storico,37121,uffici,uffici,2300,3600,2950,1,2025,OMI
+Verona,Borgo Trento,37126,residenziale,abitazioni civili,2350,3650,3000,1,2025,OMI
+Verona,Borgo Trento,37126,commerciale,negozi,1900,3200,2550,1,2025,OMI
+Verona,Borgo Trento,37126,uffici,uffici,2000,3100,2550,1,2025,OMI
+Venezia,Centro Storico,30124,residenziale,abitazioni civili,3700,6200,4950,1,2025,OMI
+Venezia,Centro Storico,30124,commerciale,negozi,3100,5300,4200,1,2025,OMI
+Venezia,Centro Storico,30124,uffici,uffici,3200,5100,4150,1,2025,OMI
+Venezia,Cannaregio,30121,residenziale,abitazioni civili,3150,5150,4150,1,2025,OMI
+Venezia,Cannaregio,30121,commerciale,negozi,2600,4400,3500,1,2025,OMI
+Venezia,Cannaregio,30121,uffici,uffici,2700,4200,3450,1,2025,OMI
+Padova,Centro,35122,residenziale,abitazioni civili,2350,3650,3000,1,2025,OMI
+Padova,Centro,35122,commerciale,negozi,1950,3300,2625,1,2025,OMI
+Padova,Centro,35122,uffici,uffici,2050,3200,2625,1,2025,OMI
+Padova,Arcella,35129,residenziale,abitazioni civili,1900,2900,2400,1,2025,OMI
+Padova,Arcella,35129,commerciale,negozi,1600,2700,2150,1,2025,OMI
+Padova,Arcella,35129,uffici,uffici,1700,2600,2150,1,2025,OMI
+Brescia,Centro,25121,residenziale,abitazioni civili,2100,3300,2700,1,2025,OMI
+Brescia,Centro,25121,commerciale,negozi,1750,2950,2350,1,2025,OMI
+Brescia,Centro,25121,uffici,uffici,1850,2900,2375,1,2025,OMI
+Brescia,Zona Nord,25125,residenziale,abitazioni civili,1800,2800,2300,1,2025,OMI
+Brescia,Zona Nord,25125,commerciale,negozi,1500,2500,2000,1,2025,OMI
+Brescia,Zona Nord,25125,uffici,uffici,1600,2400,2000,1,2025,OMI
+Parma,Centro,43121,residenziale,abitazioni civili,2350,3550,2950,1,2025,OMI
+Parma,Centro,43121,commerciale,negozi,1950,3300,2625,1,2025,OMI
+Parma,Centro,43121,uffici,uffici,2050,3200,2625,1,2025,OMI
+Modena,Centro,41121,residenziale,abitazioni civili,2450,3650,3050,1,2025,OMI
+Modena,Centro,41121,commerciale,negozi,2050,3450,2750,1,2025,OMI
+Modena,Centro,41121,uffici,uffici,2150,3350,2750,1,2025,OMI
+Bari,Centro,70122,residenziale,abitazioni civili,1900,3100,2500,1,2025,OMI
+Bari,Centro,70122,commerciale,negozi,1600,2700,2150,1,2025,OMI
+Bari,Centro,70122,uffici,uffici,1700,2600,2150,1,2025,OMI
+Bari,Murat,70122,residenziale,abitazioni civili,2100,3400,2750,1,2025,OMI
+Bari,Murat,70122,commerciale,negozi,1750,3000,2375,1,2025,OMI
+Bari,Murat,70122,uffici,uffici,1850,2900,2375,1,2025,OMI
+Catania,Centro,95124,residenziale,abitazioni civili,1600,2600,2100,1,2025,OMI
+Catania,Centro,95124,commerciale,negozi,1350,2250,1800,1,2025,OMI
+Catania,Centro,95124,uffici,uffici,1400,2200,1800,1,2025,OMI
+Palermo,Centro,90133,residenziale,abitazioni civili,1700,2900,2300,1,2025,OMI
+Palermo,Centro,90133,commerciale,negozi,1450,2450,1950,1,2025,OMI
+Palermo,Centro,90133,uffici,uffici,1500,2400,1950,1,2025,OMI
 Milano,Centro Storico,20121,residenziale,abitazioni civili,4500,6500,5500,2,2024,OMI
 Milano,Centro Storico,20121,residenziale,abitazioni signorili,6000,9000,7500,2,2024,OMI
 Milano,Porta Romana,20136,residenziale,abitazioni civili,3500,5000,4250,2,2024,OMI
@@ -49,34 +342,163 @@ Bari,Centro,70122,residenziale,abitazioni civili,1800,3000,2400,2,2024,OMI
 Bari,Murat,70122,residenziale,abitazioni civili,2000,3300,2650,2,2024,OMI
 Catania,Centro,95124,residenziale,abitazioni civili,1500,2500,2000,2,2024,OMI
 Palermo,Centro,90133,residenziale,abitazioni civili,1600,2800,2200,2,2024,OMI
-Milano,Centro Storico,20121,residenziale,abitazioni civili,4300,6200,5250,1,2024,OMI
-Milano,Porta Romana,20136,residenziale,abitazioni civili,3400,4900,4150,1,2024,OMI
-Roma,Centro Storico,00186,residenziale,abitazioni civili,3900,5900,4900,1,2024,OMI
-Roma,Parioli,00197,residenziale,abitazioni civili,4100,6100,5100,1,2024,OMI
-Torino,Centro,10121,residenziale,abitazioni civili,2400,3700,3050,1,2024,OMI
-Firenze,Centro Storico,50122,residenziale,abitazioni civili,3700,5700,4700,1,2024,OMI
-Milano,Centro Storico,20121,residenziale,abitazioni civili,4200,6000,5100,2,2023,OMI
-Milano,Porta Romana,20136,residenziale,abitazioni civili,3300,4800,4050,2,2023,OMI
-Roma,Centro Storico,00186,residenziale,abitazioni civili,3800,5800,4800,2,2023,OMI
-Roma,Parioli,00197,residenziale,abitazioni civili,4000,6000,5000,2,2023,OMI
-Torino,Centro,10121,residenziale,abitazioni civili,2350,3650,3000,2,2023,OMI
-Firenze,Centro Storico,50122,residenziale,abitazioni civili,3600,5600,4600,2,2023,OMI
-Milano,Centro Storico,20121,residenziale,abitazioni civili,4100,5900,5000,1,2023,OMI
-Milano,Porta Romana,20136,residenziale,abitazioni civili,3200,4700,3950,1,2023,OMI
-Roma,Centro Storico,00186,residenziale,abitazioni civili,3700,5700,4700,1,2023,OMI
-Roma,Parioli,00197,residenziale,abitazioni civili,3900,5900,4900,1,2023,OMI
-Torino,Centro,10121,residenziale,abitazioni civili,2300,3600,2950,1,2023,OMI
-Firenze,Centro Storico,50122,residenziale,abitazioni civili,3500,5500,4500,1,2023,OMI
-Milano,Centro Storico,20121,residenziale,abitazioni civili,4000,5800,4900,2,2022,OMI
-Milano,Porta Romana,20136,residenziale,abitazioni civili,3100,4600,3850,2,2022,OMI
-Roma,Centro Storico,00186,residenziale,abitazioni civili,3600,5600,4600,2,2022,OMI
-Roma,Parioli,00197,residenziale,abitazioni civili,3800,5800,4800,2,2022,OMI
-Torino,Centro,10121,residenziale,abitazioni civili,2250,3550,2900,2,2022,OMI
-Firenze,Centro Storico,50122,residenziale,abitazioni civili,3400,5400,4400,2,2022,OMI
-Milano,Centro Storico,20121,commerciale,negozi,5000,8000,6500,2,2024,OMI
-Milano,Porta Romana,20136,commerciale,negozi,3500,6000,4750,2,2024,OMI
-Roma,Centro Storico,00186,commerciale,negozi,4500,7500,6000,2,2024,OMI
-Torino,Centro,10121,commerciale,negozi,2800,5000,3900,2,2024,OMI
-Firenze,Centro Storico,50122,commerciale,negozi,4000,7000,5500,2,2024,OMI
-Milano,Centro Storico,20121,uffici,uffici,4000,6000,5000,2,2024,OMI
-Roma,Centro Storico,00186,uffici,uffici,3500,5500,4500,2,2024,OMI
+Bergamo,Centro,24121,residenziale,abitazioni civili,1900,2750,2325,1,2025,OMI
+Bergamo,Centro,24121,residenziale,abitazioni civili ottimo,2800,3300,3050,1,2025,OMI
+Bergamo,Centro,24121,commerciale,negozi,2450,3800,3125,1,2025,OMI
+Bergamo,Centro,24121,uffici,uffici,1650,2200,1925,1,2025,OMI
+Bergamo,Zona Stazione,24122,residenziale,abitazioni civili,2000,2750,2375,1,2025,OMI
+Bergamo,Zona Stazione,24122,commerciale,negozi,2500,3600,3050,1,2025,OMI
+Bergamo,Zona Stazione,24122,uffici,uffici,1550,2100,1825,1,2025,OMI
+Bergamo,Zona Nord,24126,residenziale,abitazioni civili,1700,2350,2025,1,2025,OMI
+Bergamo,Zona Nord,24126,commerciale,negozi,1900,2900,2400,1,2025,OMI
+Bergamo,Zona Nord,24126,uffici,uffici,1400,1850,1625,1,2025,OMI
+Como,Centro,22100,residenziale,abitazioni civili,2700,3800,3250,1,2025,OMI
+Como,Centro,22100,residenziale,abitazioni signorili,2800,4000,3400,1,2025,OMI
+Como,Centro,22100,commerciale,negozi,2700,5000,3850,1,2025,OMI
+Como,Centro,22100,uffici,uffici,1800,2600,2200,1,2025,OMI
+Como,Zona Lago,22100,residenziale,abitazioni civili,2600,3400,3000,1,2025,OMI
+Como,Zona Lago,22100,commerciale,negozi,1500,2500,2000,1,2025,OMI
+Como,Zona Lago,22100,uffici,uffici,1500,2600,2050,1,2025,OMI
+Monza,Centro,20900,residenziale,abitazioni civili,2500,3500,3000,1,2025,OMI
+Monza,Centro,20900,commerciale,negozi,2200,3600,2900,1,2025,OMI
+Monza,Centro,20900,uffici,uffici,1900,2800,2350,1,2025,OMI
+Varese,Centro,21100,residenziale,abitazioni civili,2100,3100,2600,1,2025,OMI
+Varese,Centro,21100,commerciale,negozi,1800,2900,2350,1,2025,OMI
+Varese,Centro,21100,uffici,uffici,1600,2400,2000,1,2025,OMI
+Trieste,Centro,34100,residenziale,abitazioni civili,1500,1950,1725,1,2025,OMI
+Trieste,Centro,34100,commerciale,negozi,750,1300,1025,1,2025,OMI
+Trieste,Centro,34100,uffici,uffici,1000,1550,1275,1,2025,OMI
+Trieste,Zona Porto,34100,residenziale,abitazioni civili,2050,2900,2475,1,2025,OMI
+Trieste,Zona Porto,34100,commerciale,negozi,950,1900,1425,1,2025,OMI
+Trieste,Zona Porto,34100,uffici,uffici,1200,2400,1800,1,2025,OMI
+Udine,Centro,33100,residenziale,abitazioni civili,1800,2600,2200,1,2025,OMI
+Udine,Centro,33100,commerciale,negozi,1500,2500,2000,1,2025,OMI
+Udine,Centro,33100,uffici,uffici,1300,2000,1650,1,2025,OMI
+Pordenone,Centro,33170,residenziale,abitazioni civili,1300,1900,1600,1,2025,OMI
+Pordenone,Centro,33170,commerciale,negozi,3000,4300,3650,1,2025,OMI
+Pordenone,Centro,33170,uffici,uffici,1250,1700,1475,1,2025,OMI
+Trento,Centro,38100,residenziale,abitazioni civili,3000,3500,3250,1,2025,OMI
+Trento,Centro,38100,residenziale,abitazioni civili ottimo,4200,5000,4600,1,2025,OMI
+Trento,Centro,38100,commerciale,negozi,3200,6000,4600,1,2025,OMI
+Trento,Centro,38100,uffici,uffici,2400,2900,2650,1,2025,OMI
+Bolzano,Centro,39100,residenziale,abitazioni civili,3500,4500,4000,1,2025,OMI
+Bolzano,Centro,39100,commerciale,negozi,3000,5000,4000,1,2025,OMI
+Bolzano,Centro,39100,uffici,uffici,2800,3800,3300,1,2025,OMI
+Pisa,Centro,56100,residenziale,abitazioni civili,2400,3400,2900,1,2025,OMI
+Pisa,Centro,56100,commerciale,negozi,2000,3200,2600,1,2025,OMI
+Pisa,Centro,56100,uffici,uffici,1800,2800,2300,1,2025,OMI
+Lucca,Centro,55100,residenziale,abitazioni civili,2300,3300,2800,1,2025,OMI
+Lucca,Centro,55100,commerciale,negozi,1900,3100,2500,1,2025,OMI
+Lucca,Centro,55100,uffici,uffici,1700,2700,2200,1,2025,OMI
+Livorno,Centro,57100,residenziale,abitazioni civili,2000,2900,2450,1,2025,OMI
+Livorno,Centro,57100,commerciale,negozi,1700,2700,2200,1,2025,OMI
+Livorno,Centro,57100,uffici,uffici,1500,2400,1950,1,2025,OMI
+Siena,Centro,53100,residenziale,abitazioni civili,2500,3600,3050,1,2025,OMI
+Siena,Centro,53100,commerciale,negozi,2100,3500,2800,1,2025,OMI
+Siena,Centro,53100,uffici,uffici,1900,3000,2450,1,2025,OMI
+Arezzo,Centro,52100,residenziale,abitazioni civili,1600,2000,1800,1,2025,OMI
+Arezzo,Centro,52100,residenziale,abitazioni civili ottimo,2500,2850,2675,1,2025,OMI
+Arezzo,Centro,52100,commerciale,negozi,1900,3300,2600,1,2025,OMI
+Arezzo,Centro,52100,uffici,uffici,1300,1800,1550,1,2025,OMI
+Grosseto,Centro,58100,residenziale,abitazioni civili,1550,2050,1800,1,2025,OMI
+Grosseto,Centro,58100,residenziale,abitazioni civili ottimo,2100,2850,2475,1,2025,OMI
+Grosseto,Centro,58100,commerciale,negozi,1150,1800,1475,1,2025,OMI
+Grosseto,Centro,58100,uffici,uffici,1200,1800,1500,1,2025,OMI
+Prato,Centro,59100,residenziale,abitazioni civili,2200,3100,2650,1,2025,OMI
+Prato,Centro,59100,commerciale,negozi,1900,3000,2450,1,2025,OMI
+Prato,Centro,59100,uffici,uffici,1700,2600,2150,1,2025,OMI
+Pistoia,Centro,51100,residenziale,abitazioni civili,2000,2900,2450,1,2025,OMI
+Pistoia,Centro,51100,commerciale,negozi,1700,2700,2200,1,2025,OMI
+Pistoia,Centro,51100,uffici,uffici,1500,2400,1950,1,2025,OMI
+Perugia,Centro,06100,residenziale,abitazioni civili,1100,1500,1300,1,2025,OMI
+Perugia,Centro,06100,residenziale,abitazioni signorili,1400,2100,1750,1,2025,OMI
+Perugia,Centro,06100,commerciale,negozi,1150,1950,1550,1,2025,OMI
+Perugia,Centro,06100,uffici,uffici,990,1450,1220,1,2025,OMI
+Perugia,Zona Universitaria,06100,residenziale,abitazioni civili,1700,2500,2100,1,2025,OMI
+Perugia,Zona Universitaria,06100,commerciale,negozi,1750,3200,2475,1,2025,OMI
+Perugia,Zona Universitaria,06100,uffici,uffici,1250,2050,1650,1,2025,OMI
+Terni,Centro,05100,residenziale,abitazioni civili,1000,1400,1200,1,2025,OMI
+Terni,Centro,05100,commerciale,negozi,900,1500,1200,1,2025,OMI
+Terni,Centro,05100,uffici,uffici,800,1300,1050,1,2025,OMI
+Ancona,Centro,60100,residenziale,abitazioni civili,1800,2600,2200,1,2025,OMI
+Ancona,Centro,60100,commerciale,negozi,1500,2500,2000,1,2025,OMI
+Ancona,Centro,60100,uffici,uffici,1400,2200,1800,1,2025,OMI
+Pesaro,Centro,61100,residenziale,abitazioni civili,1700,2500,2100,1,2025,OMI
+Pesaro,Centro,61100,commerciale,negozi,1400,2400,1900,1,2025,OMI
+Pesaro,Centro,61100,uffici,uffici,1300,2100,1700,1,2025,OMI
+Salerno,Centro,84100,residenziale,abitazioni civili,1800,2600,2200,1,2025,OMI
+Salerno,Centro,84100,commerciale,negozi,1500,2500,2000,1,2025,OMI
+Salerno,Centro,84100,uffici,uffici,1400,2200,1800,1,2025,OMI
+Caserta,Centro,81100,residenziale,abitazioni civili,1400,2000,1700,1,2025,OMI
+Caserta,Centro,81100,commerciale,negozi,1200,1900,1550,1,2025,OMI
+Caserta,Centro,81100,uffici,uffici,1100,1700,1400,1,2025,OMI
+Avellino,Centro,83100,residenziale,abitazioni civili,1500,1900,1700,1,2025,OMI
+Avellino,Centro,83100,residenziale,abitazioni civili ottimo,1800,2300,2050,1,2025,OMI
+Avellino,Centro,83100,commerciale,negozi,2000,3100,2550,1,2025,OMI
+Avellino,Centro,83100,uffici,uffici,1200,1750,1475,1,2025,OMI
+Benevento,Centro,82100,residenziale,abitazioni civili,750,1100,925,1,2025,OMI
+Benevento,Centro,82100,commerciale,negozi,1100,1600,1350,1,2025,OMI
+Benevento,Centro,82100,uffici,uffici,950,1350,1150,1,2025,OMI
+Foggia,Centro,71100,residenziale,abitazioni civili,1200,1800,1500,1,2025,OMI
+Foggia,Centro,71100,commerciale,negozi,1000,1700,1350,1,2025,OMI
+Foggia,Centro,71100,uffici,uffici,950,1500,1225,1,2025,OMI
+Lecce,Centro,73100,residenziale,abitazioni civili,1400,2100,1750,1,2025,OMI
+Lecce,Centro,73100,commerciale,negozi,1200,2000,1600,1,2025,OMI
+Lecce,Centro,73100,uffici,uffici,1100,1800,1450,1,2025,OMI
+Taranto,Centro,74100,residenziale,abitazioni civili,1100,1700,1400,1,2025,OMI
+Taranto,Centro,74100,commerciale,negozi,950,1600,1275,1,2025,OMI
+Taranto,Centro,74100,uffici,uffici,900,1450,1175,1,2025,OMI
+Brindisi,Centro,72100,residenziale,abitazioni civili,1200,1800,1500,1,2025,OMI
+Brindisi,Centro,72100,commerciale,negozi,1000,1700,1350,1,2025,OMI
+Brindisi,Centro,72100,uffici,uffici,950,1550,1250,1,2025,OMI
+Cagliari,Centro,09100,residenziale,abitazioni civili,1900,2800,2350,1,2025,OMI
+Cagliari,Centro,09100,commerciale,negozi,1600,2700,2150,1,2025,OMI
+Cagliari,Centro,09100,uffici,uffici,1500,2400,1950,1,2025,OMI
+Sassari,Centro,07100,residenziale,abitazioni civili,1500,2200,1850,1,2025,OMI
+Sassari,Centro,07100,commerciale,negozi,1300,2100,1700,1,2025,OMI
+Sassari,Centro,07100,uffici,uffici,1200,1900,1550,1,2025,OMI
+Messina,Centro,98100,residenziale,abitazioni civili,1150,1600,1375,1,2025,OMI
+Messina,Centro,98100,commerciale,negozi,1150,2000,1575,1,2025,OMI
+Messina,Centro,98100,uffici,uffici,1250,1850,1550,1,2025,OMI
+Siracusa,Centro,96100,residenziale,abitazioni civili,1300,1900,1600,1,2025,OMI
+Siracusa,Centro,96100,commerciale,negozi,1100,1800,1450,1,2025,OMI
+Siracusa,Centro,96100,uffici,uffici,1050,1650,1350,1,2025,OMI
+Ragusa,Centro,97100,residenziale,abitazioni civili,550,810,680,1,2025,OMI
+Ragusa,Centro,97100,commerciale,negozi,490,970,730,1,2025,OMI
+Ragusa,Centro,97100,uffici,uffici,630,920,775,1,2025,OMI
+Trapani,Centro,91100,residenziale,abitazioni civili,1000,1500,1250,1,2025,OMI
+Trapani,Centro,91100,commerciale,negozi,850,1450,1150,1,2025,OMI
+Trapani,Centro,91100,uffici,uffici,800,1350,1075,1,2025,OMI
+Reggio Calabria,Centro,89100,residenziale,abitazioni civili,1100,1700,1400,1,2025,OMI
+Reggio Calabria,89100,commerciale,negozi,950,1600,1275,1,2025,OMI
+Reggio Calabria,Centro,89100,uffici,uffici,900,1500,1200,1,2025,OMI
+Cosenza,Centro,87100,residenziale,abitazioni civili,1000,1500,1250,1,2025,OMI
+Cosenza,Centro,87100,commerciale,negozi,900,1500,1200,1,2025,OMI
+Cosenza,Centro,87100,uffici,uffici,850,1400,1125,1,2025,OMI
+Catanzaro,Centro,88100,residenziale,abitazioni civili,950,1450,1200,1,2025,OMI
+Catanzaro,Centro,88100,commerciale,negozi,850,1450,1150,1,2025,OMI
+Catanzaro,Centro,88100,uffici,uffici,800,1350,1075,1,2025,OMI
+Potenza,Centro,85100,residenziale,abitazioni civili,900,1350,1125,1,2025,OMI
+Potenza,Centro,85100,commerciale,negozi,800,1350,1075,1,2025,OMI
+Potenza,Centro,85100,uffici,uffici,750,1250,1000,1,2025,OMI
+Matera,Centro,75100,residenziale,abitazioni civili,1100,1700,1400,1,2025,OMI
+Matera,Centro,75100,commerciale,negozi,950,1650,1300,1,2025,OMI
+Matera,Centro,75100,uffici,uffici,900,1550,1225,1,2025,OMI
+L'Aquila,Centro,67100,residenziale,abitazioni civili,1200,1800,1500,1,2025,OMI
+L'Aquila,Centro,67100,commerciale,negozi,1000,1700,1350,1,2025,OMI
+L'Aquila,Centro,67100,uffici,uffici,950,1600,1275,1,2025,OMI
+Pescara,Centro,65100,residenziale,abitazioni civili,1600,2400,2000,1,2025,OMI
+Pescara,Centro,65100,commerciale,negozi,1400,2300,1850,1,2025,OMI
+Pescara,Centro,65100,uffici,uffici,1300,2100,1700,1,2025,OMI
+Chieti,Centro,66100,residenziale,abitazioni civili,1200,1800,1500,1,2025,OMI
+Chieti,Centro,66100,commerciale,negozi,1000,1700,1350,1,2025,OMI
+Chieti,Centro,66100,uffici,uffici,950,1600,1275,1,2025,OMI
+Teramo,Centro,64100,residenziale,abitazioni civili,1100,1700,1400,1,2025,OMI
+Teramo,Centro,64100,commerciale,negozi,950,1650,1300,1,2025,OMI
+Teramo,Centro,64100,uffici,uffici,900,1550,1225,1,2025,OMI
+Campobasso,Centro,86100,residenziale,abitazioni civili,900,1400,1150,1,2025,OMI
+Campobasso,Centro,86100,commerciale,negozi,800,1400,1100,1,2025,OMI
+Campobasso,Centro,86100,uffici,uffici,750,1300,1025,1,2025,OMI
+Aosta,Centro,11100,residenziale,abitazioni civili,2200,3200,2700,1,2025,OMI
+Aosta,Centro,11100,commerciale,negozi,1900,3100,2500,1,2025,OMI
+Aosta,Centro,11100,uffici,uffici,1800,2900,2350,1,2025,OMI
