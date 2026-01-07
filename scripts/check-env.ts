@@ -53,16 +53,6 @@ const requiredEnvVars = {
     },
   },
 
-  // N8N (opzionale per MVP)
-  N8N_WEBHOOK_URL: {
-    required: false,
-    description: 'n8n webhook URL (opzionale)',
-    validation: (val: string) => {
-      if (!val.startsWith('http')) return 'Deve iniziare con http:// o https://'
-      return null
-    },
-  },
-
   // Public URLs
   NEXT_PUBLIC_APP_URL: {
     required: true,

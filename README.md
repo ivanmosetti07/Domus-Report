@@ -18,10 +18,10 @@ DomusReport è una piattaforma full-stack production-ready che combina intellige
 
 ### 💰 Valutazioni Immobiliari Automatiche
 - Algoritmo di valutazione basato su dati OMI (Osservatorio Mercato Immobiliare)
+- Database OMI granulare con oltre 133.000 valori per zone, CAP e categorie
 - Calcolo coefficienti per piano, presenza ascensore e stato di conservazione
 - Range di valutazione (min-max-stimato) con spiegazione dettagliata
-- Integrazione esterna per calcoli complessi (supporto n8n workflow)
-- Fallback locale in caso di indisponibilità servizi esterni
+- Analisi AI opzionale con OpenAI per valutazioni contestuali avanzate
 
 ### 📊 Dashboard CRM Completa
 - **Vista Lead**: lista completa con filtri, ordinamento e ricerca
@@ -67,9 +67,8 @@ DomusReport è una piattaforma full-stack production-ready che combina intellige
 - **jose** - JWT management
 
 ### AI & Integrazioni
-- **OpenAI GPT-4** - Conversational AI
-- **Google Maps API / Nominatim** - Geocoding
-- **n8n Webhook** (opzionale) - Calcolo valutazioni esterno
+- **OpenAI GPT-4** - Conversational AI e analisi valutazioni
+- **Google Maps API / Nominatim** - Geocoding indirizzi
 
 ### DevOps & Monitoring
 - **Vercel** - Deployment platform
@@ -134,10 +133,11 @@ Domus-Report/
 │   │   └── ConversationView.tsx  # ✅ Visualizzatore chat
 │   └── ui/                       # Shadcn UI components
 ├── lib/
-│   ├── openai.ts                 # ✅ Client OpenAI
+│   ├── openai.ts                 # ✅ Client OpenAI per chat e analisi
 │   ├── geocoding.ts              # ✅ Google Maps/Nominatim
-│   ├── omi.ts                    # ✅ Database valori OMI
-│   ├── valuation.ts              # ✅ Algoritmo calcolo
+│   ├── omi.ts                    # ✅ Database valori OMI base (fallback)
+│   ├── omi-advanced.ts           # ✅ Sistema OMI avanzato con CSV
+│   ├── valuation.ts              # ✅ Algoritmo calcolo valutazioni
 │   ├── auth.ts                   # ✅ JWT utilities
 │   └── prisma.ts                 # ✅ Prisma client singleton
 ├── prisma/
@@ -302,10 +302,7 @@ OPENAI_API_KEY="sk-proj-..."
 JWT_SECRET="generate-strong-secret-key-here"
 NEXTAUTH_URL="https://domusreport.mainstream.agency"
 
-# Opzionale: n8n Webhook
-N8N_WEBHOOK_URL="https://n8n.example.com/webhook/valuation"
-
-# Opzionale: Geocoding
+# Geocoding
 GOOGLE_MAPS_API_KEY="AIza..."
 ```
 

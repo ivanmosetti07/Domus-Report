@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { calculateValuation, ValuationInput } from "@/lib/n8n"
+import { calculateValuation, ValuationInput } from "@/lib/valuation"
 import { geocodeAddress } from "@/lib/geocoding"
 import { generateAIValuationAnalysis, PropertyValuationData } from "@/lib/openai"
 
