@@ -10,7 +10,7 @@ console.log("🧪 TEST VALUTAZIONE API\n")
 
 // Dati esattamente come li invia il chatbot
 const testInput = {
-  address: "via Cammarata, 8",
+  address: "via cammarata 8",
   city: "Roma",
   postalCode: "00133",
   propertyType: PropertyType.APARTMENT,
