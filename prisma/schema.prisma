@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
@@ -11,134 +8,116 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modello Agenzia
 model Agency {
-  id            String   @id @default(cuid())
-  nome          String
-  email         String   @unique
-  password      String
-  citta         String
-  widgetId      String   @unique @map("widget_id")
-  piano         String   @default("free") // free, basic, premium
-  attiva        Boolean  @default(true)
-  dataCreazione DateTime @default(now()) @map("data_creazione")
-
-  // Campi profilo avanzato
-  logoUrl       String?  @map("logo_url")
-  telefono      String?
-  indirizzo     String?
-  sitoWeb       String?  @map("sito_web")
-  partitaIva    String?  @map("partita_iva")
-
-  // Relazioni
-  leads          Lead[]
+  id             String           @id @default(cuid())
+  nome           String
+  email          String           @unique
+  password       String
+  citta          String
+  widgetId       String           @unique @map("widget_id")
+  piano          String           @default("free")
+  attiva         Boolean          @default(true)
+  dataCreazione  DateTime         @default(now()) @map("data_creazione")
+  indirizzo      String?
+  logoUrl        String?          @map("logo_url")
+  partitaIva     String?          @map("partita_iva")
+  sitoWeb        String?          @map("sito_web")
+  telefono       String?
   sessions       AgencySession[]
-  leadStatuses   LeadStatus[]
-  subscription   Subscription?
-  auditLogs      AuditLog[]
   settings       AgencySetting?
-  notifications  Notification[]
   analytics      AnalyticsDaily[]
+  auditLogs      AuditLog[]
   emailTemplates EmailTemplate[]
+  leadStatuses   LeadStatus[]
+  leads          Lead[]
+  notifications  Notification[]
+  subscription   Subscription?
   widgetConfigs  WidgetConfig[]
 
   @@map("agencies")
 }
 
-// Modello Lead
 model Lead {
-  id            String   @id @default(cuid())
-  agenziaId     String   @map("agenzia_id")
+  id            String         @id @default(cuid())
+  agenziaId     String         @map("agenzia_id")
   nome          String
   cognome       String
   email         String
   telefono      String?
-  dataRichiesta DateTime @default(now()) @map("data_richiesta")
-
-  // Relazioni
-  agenzia       Agency         @relation(fields: [agenziaId], references: [id], onDelete: Cascade)
-  property      Property?
+  dataRichiesta DateTime       @default(now()) @map("data_richiesta")
   conversation  Conversation?
   statuses      LeadStatus[]
+  agenzia       Agency         @relation(fields: [agenziaId], references: [id], onDelete: Cascade)
   notifications Notification[]
+  property      Property?
 
   @@index([agenziaId])
   @@index([dataRichiesta])
   @@map("leads")
 }
 
-// Modello Immobile
 model Property {
-  id                String   @id @default(cuid())
-  leadId            String   @unique @map("lead_id")
-  indirizzo         String
-  citta             String
-  quartiere         String?  // Neighborhood
-  cap               String?
-  latitudine        Float?
-  longitudine       Float?
-  tipo              String   // Appartamento, Attico, Villa, Ufficio, Negozio, Box, Terreno, Altro
-  superficieMq      Int      @map("superficie_mq")
-  locali            Int?     // Number of rooms
-  bagni             Int?     // Number of bathrooms
-  piano             Int?
-  ascensore         Boolean?
-  tipoPiano         String?  @map("tipo_piano") // FloorType enum value
-  spaziEsterni      String?  @map("spazi_esterni") // OutdoorSpace enum value
-  postoAuto         Boolean? @map("posto_auto") // Has parking
-  stato             String   // Nuovo, Ristrutturato, Buono, Da ristrutturare
-  riscaldamento     String?  // HeatingType enum value
-  ariaCondizionata  Boolean? @map("aria_condizionata")
-  classeEnergetica  String?  @map("classe_energetica") // EnergyClass enum value
-  annoCostruzione   Int?     @map("anno_costruzione")
-  statoOccupazione  String?  @map("stato_occupazione") // OccupancyStatus enum value
-  dataScadenza      String?  @map("data_scadenza") // Lease end date if occupied
-
-  // Relazioni
-  lead         Lead                 @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  valuation    Valuation?
-  attachments  PropertyAttachment[]
+  id               String               @id @default(cuid())
+  leadId           String               @unique @map("lead_id")
+  indirizzo        String
+  citta            String
+  cap              String?
+  latitudine       Float?
+  longitudine      Float?
+  tipo             String
+  superficieMq     Int                  @map("superficie_mq")
+  piano            Int?
+  ascensore        Boolean?
+  stato            String
+  quartiere        String?
+  locali           Int?
+  bagni            Int?
+  tipoPiano        String?              @map("tipo_piano")
+  spaziEsterni     String?              @map("spazi_esterni")
+  postoAuto        Boolean?             @map("posto_auto")
+  riscaldamento    String?
+  ariaCondizionata Boolean?             @map("aria_condizionata")
+  classeEnergetica String?              @map("classe_energetica")
+  annoCostruzione  Int?                 @map("anno_costruzione")
+  statoOccupazione String?              @map("stato_occupazione")
+  dataScadenza     String?              @map("data_scadenza")
+  lead             Lead                 @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  attachments      PropertyAttachment[]
+  valuation        Valuation?
 
   @@index([leadId])
   @@map("properties")
 }
 
-// Modello Valutazione
 model Valuation {
-  id                     String   @id @default(cuid())
-  immobileId             String   @unique @map("immobile_id")
-  prezzoMinimo           Int      @map("prezzo_minimo")
-  prezzoMassimo          Int      @map("prezzo_massimo")
-  prezzoStimato          Int      @map("prezzo_stimato")
-  valoreOmiBase          Int      @map("valore_omi_base")
-  coefficientePiano      Float    @map("coefficiente_piano")
-  coefficienteStato      Float    @map("coefficiente_stato")
-  spiegazione            String   @db.Text
-  dataCalcolo            DateTime @default(now()) @map("data_calcolo")
-
-  // Relazioni
-  property               Property @relation(fields: [immobileId], references: [id], onDelete: Cascade)
+  id                String   @id @default(cuid())
+  immobileId        String   @unique @map("immobile_id")
+  prezzoMinimo      Int      @map("prezzo_minimo")
+  prezzoMassimo     Int      @map("prezzo_massimo")
+  prezzoStimato     Int      @map("prezzo_stimato")
+  valoreOmiBase     Int      @map("valore_omi_base")
+  coefficientePiano Float    @map("coefficiente_piano")
+  coefficienteStato Float    @map("coefficiente_stato")
+  spiegazione       String
+  dataCalcolo       DateTime @default(now()) @map("data_calcolo")
+  property          Property @relation(fields: [immobileId], references: [id], onDelete: Cascade)
 
   @@index([immobileId])
   @@map("valuations")
 }
 
-// Modello Conversazione
 model Conversation {
   id        String   @id @default(cuid())
   leadId    String   @unique @map("lead_id")
-  messaggi  Json     // Array di messaggi: [{id, role, text, timestamp, quickReplies}]
+  messaggi  Json
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relazioni
   lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
   @@index([leadId])
   @@map("conversations")
 }
 
-// Modello Demo Lead - Per widget demo landing page
 model DemoLead {
   id            String   @id @default(cuid())
   nome          String
@@ -155,7 +134,7 @@ model DemoLead {
   prezzoMinimo  Int      @map("prezzo_minimo")
   prezzoMassimo Int      @map("prezzo_massimo")
   prezzoStimato Int      @map("prezzo_stimato")
-  messaggi      Json     // Conversazione completa
+  messaggi      Json
   dataRichiesta DateTime @default(now()) @map("data_richiesta")
 
   @@index([dataRichiesta])
@@ -163,24 +142,17 @@ model DemoLead {
   @@map("demo_leads")
 }
 
-// ============================================================================
-// NUOVI MODELLI - PRIORITÀ ALTA
-// ============================================================================
-
-// Modello Sessione Agenzia - Gestione JWT e logout
 model AgencySession {
-  id              String    @id @default(cuid())
-  agencyId        String    @map("agency_id")
-  tokenHash       String    @map("token_hash")
-  ipAddress       String?   @map("ip_address")
-  userAgent       String?   @map("user_agent")
-  loginAt         DateTime  @default(now()) @map("login_at")
-  expiresAt       DateTime  @map("expires_at")
-  lastActivityAt  DateTime  @default(now()) @map("last_activity_at")
-  revokedAt       DateTime? @map("revoked_at")
-
-  // Relazioni
-  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  id             String    @id @default(cuid())
+  agencyId       String    @map("agency_id")
+  tokenHash      String    @map("token_hash")
+  ipAddress      String?   @map("ip_address")
+  userAgent      String?   @map("user_agent")
+  loginAt        DateTime  @default(now()) @map("login_at")
+  expiresAt      DateTime  @map("expires_at")
+  lastActivityAt DateTime  @default(now()) @map("last_activity_at")
+  revokedAt      DateTime? @map("revoked_at")
+  agency         Agency    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@index([agencyId])
   @@index([tokenHash])
@@ -188,51 +160,42 @@ model AgencySession {
   @@map("agency_sessions")
 }
 
-// Modello Status Lead - CRM tracking
 model LeadStatus {
   id                String   @id @default(cuid())
   leadId            String   @map("lead_id")
-  status            String   @default("NEW") // NEW, CONTACTED, INTERESTED, CONVERTED, LOST
+  status            String   @default("NEW")
   note              String?
   createdByAgencyId String   @map("created_by_agency_id")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
-
-  // Relazioni
-  lead      Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  createdBy Agency @relation(fields: [createdByAgencyId], references: [id], onDelete: Cascade)
+  createdBy         Agency   @relation(fields: [createdByAgencyId], references: [id], onDelete: Cascade)
+  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
   @@index([leadId])
   @@index([status])
   @@map("lead_statuses")
 }
 
-// Modello Subscription - Piano e Billing
 model Subscription {
-  id                   String    @id @default(cuid())
-  agencyId             String    @unique @map("agency_id")
-  planType             String    @default("free") @map("plan_type") // free, basic, premium
-  status               String    @default("active") // active, cancelled, expired, trial, past_due
-  trialEndsAt          DateTime? @map("trial_ends_at")
-  trialDays            Int?      @map("trial_days") // Giorni trial scelti (0-7)
-  onboardingCompletedAt DateTime? @map("onboarding_completed_at")
-  nextBillingDate      DateTime? @map("next_billing_date")
-  cancelledAt          DateTime? @map("cancelled_at")
-  paymentMethodId      String?   @map("payment_method_id")
-  stripeCustomerId     String?   @unique @map("stripe_customer_id")
-  stripeSubscriptionId String?   @unique @map("stripe_subscription_id")
-  stripePriceId        String?   @map("stripe_price_id")
-
-  // Tracking valutazioni mensili
-  valuationsUsedThisMonth   Int       @default(0) @map("valuations_used_this_month")
-  extraValuationsPurchased  Int       @default(0) @map("extra_valuations_purchased")
-  valuationsResetDate       DateTime? @map("valuations_reset_date") // Data ultimo reset contatore
-
-  createdAt            DateTime  @default(now()) @map("created_at")
-  updatedAt            DateTime  @updatedAt @map("updated_at")
-
-  // Relazioni
-  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  id                       String    @id @default(cuid())
+  agencyId                 String    @unique @map("agency_id")
+  planType                 String    @default("free") @map("plan_type")
+  status                   String    @default("active")
+  trialEndsAt              DateTime? @map("trial_ends_at")
+  nextBillingDate          DateTime? @map("next_billing_date")
+  cancelledAt              DateTime? @map("cancelled_at")
+  paymentMethodId          String?   @map("payment_method_id")
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
+  stripeCustomerId         String?   @unique @map("stripe_customer_id")
+  stripePriceId            String?   @map("stripe_price_id")
+  stripeSubscriptionId     String?   @unique @map("stripe_subscription_id")
+  extraValuationsPurchased Int       @default(0) @map("extra_valuations_purchased")
+  valuationsResetDate      DateTime? @map("valuations_reset_date")
+  valuationsUsedThisMonth  Int       @default(0) @map("valuations_used_this_month")
+  onboardingCompletedAt    DateTime? @map("onboarding_completed_at")
+  trialDays                Int?      @map("trial_days")
+  agency                   Agency    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([nextBillingDate])
@@ -240,7 +203,6 @@ model Subscription {
   @@map("subscriptions")
 }
 
-// Modello Promo Code - Codici promozionali
 model PromoCode {
   id              String    @id @default(cuid())
   code            String    @unique
@@ -257,25 +219,18 @@ model PromoCode {
   @@map("promo_codes")
 }
 
-// ============================================================================
-// NUOVI MODELLI - PRIORITÀ MEDIA
-// ============================================================================
-
-// Modello Audit Log - GDPR e tracking azioni
 model AuditLog {
   id         String   @id @default(cuid())
   agencyId   String?  @map("agency_id")
-  action     String // LOGIN, LOGOUT, CREATE_LEAD, UPDATE_LEAD, DELETE_LEAD, etc.
-  entityType String   @map("entity_type") // Lead, Property, Agency, etc.
+  action     String
+  entityType String   @map("entity_type")
   entityId   String?  @map("entity_id")
   oldValue   Json?    @map("old_value")
   newValue   Json?    @map("new_value")
   ipAddress  String?  @map("ip_address")
   userAgent  String?  @map("user_agent")
   createdAt  DateTime @default(now()) @map("created_at")
-
-  // Relazioni
-  agency Agency? @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+  agency     Agency?  @relation(fields: [agencyId], references: [id])
 
   @@index([agencyId])
   @@index([entityType])
@@ -283,7 +238,6 @@ model AuditLog {
   @@map("audit_logs")
 }
 
-// Modello Settings Agenzia - Configurazione personalizzata
 model AgencySetting {
   id                 String   @id @default(cuid())
   agencyId           String   @unique @map("agency_id")
@@ -293,59 +247,42 @@ model AgencySetting {
   language           String   @default("it")
   widgetTheme        String   @default("default") @map("widget_theme")
   customCss          String?  @map("custom_css")
-
-  // Brand colors
-  brandColors        Json?    @map("brand_colors") // {primary, secondary, accent}
-
-  // Preferenze
-  dateFormat         String   @default("DD/MM/YYYY") @map("date_format")
-
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
-
-  // Relazioni
-  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  brandColors        Json?    @map("brand_colors")
+  dateFormat         String   @default("DD/MM/YYYY") @map("date_format")
+  agency             Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@map("agency_settings")
 }
 
-// Modello Allegati Property - Upload file
 model PropertyAttachment {
   id         String   @id @default(cuid())
   propertyId String   @map("property_id")
   fileName   String   @map("file_name")
   fileUrl    String   @map("file_url")
-  fileType   String   @map("file_type") // image/jpeg, application/pdf, etc.
+  fileType   String   @map("file_type")
   fileSize   Int      @map("file_size")
-  purpose    String // PROPERTY_PHOTO, DOCUMENT, PLANIMETRIA, etc.
+  purpose    String
   uploadedAt DateTime @default(now()) @map("uploaded_at")
-
-  // Relazioni
-  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId])
   @@map("property_attachments")
 }
 
-// ============================================================================
-// NUOVI MODELLI - PRIORITÀ BASSA
-// ============================================================================
-
-// Modello Notifiche - Sistema notifiche in-app
 model Notification {
   id        String    @id @default(cuid())
   agencyId  String    @map("agency_id")
-  type      String // NEW_LEAD, VALUATION_ERROR, SUBSCRIPTION_EXPIRING, etc.
+  type      String
   leadId    String?   @map("lead_id")
   title     String
   message   String
   isRead    Boolean   @default(false) @map("is_read")
   createdAt DateTime  @default(now()) @map("created_at")
   readAt    DateTime? @map("read_at")
-
-  // Relazioni
-  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-  lead   Lead?  @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  agency    Agency    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  lead      Lead?     @relation(fields: [leadId], references: [id])
 
   @@index([agencyId])
   @@index([isRead])
@@ -353,32 +290,28 @@ model Notification {
   @@map("notifications")
 }
 
-// Modello Analytics - Metriche giornaliere
 model AnalyticsDaily {
-  id                   String   @id @default(cuid())
-  agencyId             String   @map("agency_id")
-  date                 DateTime @db.Date
-  widgetImpressions    Int      @default(0) @map("widget_impressions")
-  widgetClicks         Int      @default(0) @map("widget_clicks")
-  leadsGenerated       Int      @default(0) @map("leads_generated")
-  valuationsCompleted  Int      @default(0) @map("valuations_completed")
-  conversionRate       Float    @default(0) @map("conversion_rate")
-  createdAt            DateTime @default(now()) @map("created_at")
-
-  // Relazioni
-  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  id                  String   @id @default(cuid())
+  agencyId            String   @map("agency_id")
+  date                DateTime @db.Date
+  widgetImpressions   Int      @default(0) @map("widget_impressions")
+  widgetClicks        Int      @default(0) @map("widget_clicks")
+  leadsGenerated      Int      @default(0) @map("leads_generated")
+  valuationsCompleted Int      @default(0) @map("valuations_completed")
+  conversionRate      Float    @default(0) @map("conversion_rate")
+  createdAt           DateTime @default(now()) @map("created_at")
+  agency              Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@unique([agencyId, date])
   @@index([date])
   @@map("analytics_daily")
 }
 
-// Modello Widget Events - Tracking eventi widget
 model WidgetEvent {
   id        String   @id @default(cuid())
   widgetId  String   @map("widget_id")
   leadId    String?  @map("lead_id")
-  eventType String   @map("event_type") // OPEN, CLOSE, MESSAGE, VALUATION_VIEW, etc.
+  eventType String   @map("event_type")
   metadata  Json?
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -388,78 +321,55 @@ model WidgetEvent {
   @@map("widget_events")
 }
 
-// Modello Email Templates - Template email automazione
 model EmailTemplate {
   id        String   @id @default(cuid())
   agencyId  String?  @map("agency_id")
   name      String
   subject   String
-  htmlBody  String   @map("html_body") @db.Text
-  textBody  String   @map("text_body") @db.Text
-  variables Json? // Array di variabili disponibili nel template
-  type      String // NEW_LEAD, WELCOME, RESET_PASSWORD, etc.
+  htmlBody  String   @map("html_body")
+  textBody  String   @map("text_body")
+  variables Json?
+  type      String
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relazioni
-  agency Agency? @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agency    Agency?  @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@index([agencyId])
   @@index([type])
   @@map("email_templates")
 }
 
-// ============================================================================
-// WIDGET CONFIGURATION - Multi-widget per agenzia
-// ============================================================================
-
-// Modello Widget Config - Configurazioni widget per agenzia
 model WidgetConfig {
   id              String   @id @default(cuid())
   agencyId        String   @map("agency_id")
-  widgetId        String   @unique @map("widget_id") // ID pubblico univoco per embed
-  name            String   // "Widget Homepage", "Widget Listini", etc.
-  mode            String   @default("bubble") // bubble, inline
+  widgetId        String   @unique @map("widget_id")
+  name            String
+  mode            String   @default("bubble")
   isActive        Boolean  @default(true) @map("is_active")
-  isDefault       Boolean  @default(false) @map("is_default") // Widget principale
-
-  // Theme settings
-  themeName       String   @default("default") @map("theme_name") // default, minimal, modern, custom
+  isDefault       Boolean  @default(false) @map("is_default")
+  themeName       String   @default("default") @map("theme_name")
   primaryColor    String   @default("#2563eb") @map("primary_color")
   secondaryColor  String?  @map("secondary_color")
   backgroundColor String   @default("#ffffff") @map("background_color")
   textColor       String   @default("#1f2937") @map("text_color")
   fontFamily      String   @default("system-ui") @map("font_family")
   borderRadius    String   @default("8px") @map("border_radius")
-  buttonStyle     String   @default("rounded") @map("button_style") // flat, rounded, pill
-
-  // Bubble-specific settings
-  bubblePosition  String   @default("bottom-right") @map("bubble_position") // bottom-right, bottom-left, bottom-center
-  bubbleIcon      String?  @map("bubble_icon") // URL to custom icon
+  buttonStyle     String   @default("rounded") @map("button_style")
+  bubblePosition  String   @default("bottom-right") @map("bubble_position")
+  bubbleIcon      String?  @map("bubble_icon")
   showBadge       Boolean  @default(true) @map("show_badge")
-  bubbleAnimation String   @default("pulse") @map("bubble_animation") // pulse, bounce, none
-
-  // Inline-specific settings
+  bubbleAnimation String   @default("pulse") @map("bubble_animation")
   inlineHeight    String   @default("600px") @map("inline_height")
   showHeader      Boolean  @default(true) @map("show_header")
   showBorder      Boolean  @default(true) @map("show_border")
-
-  // Custom CSS
-  customCss       String?  @map("custom_css") @db.Text
-
-  // Logo
+  customCss       String?  @map("custom_css")
   logoUrl         String?  @map("logo_url")
-
-  // Analytics
   impressions     Int      @default(0)
   leadsGenerated  Int      @default(0) @map("leads_generated")
-
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
-
-  // Relazioni
-  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agency          Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@index([agencyId])
   @@index([widgetId])
@@ -467,27 +377,22 @@ model WidgetConfig {
   @@map("widget_configs")
 }
 
-// ============================================================================
-// FASE 8: DATA ENRICHMENT AVANZATO
-// ============================================================================
-
-// Modello Valori OMI - Dati dettagliati Osservatorio Mercato Immobiliare
 model OMIValue {
-  id              String   @id @default(cuid())
-  citta           String
-  zona            String
-  cap             String?
-  tipoImmobile    String   @map("tipo_immobile") // residenziale, commerciale, uffici, etc.
-  categoria       String? // abitazioni civili, abitazioni economiche, ville/villini, etc.
-  valoreMinMq     Decimal  @map("valore_min_mq") @db.Decimal(10, 2)
-  valoreMaxMq     Decimal  @map("valore_max_mq") @db.Decimal(10, 2)
-  valoreMedioMq   Decimal  @map("valore_medio_mq") @db.Decimal(10, 2)
-  semestre        Int // 1 o 2
-  anno            Int
-  fonte           String   @default("OMI") // OMI, CSV, API, etc.
+  id                String   @id @default(cuid())
+  citta             String
+  zona              String
+  cap               String?
+  tipoImmobile      String   @map("tipo_immobile")
+  categoria         String?
+  valoreMinMq       Decimal  @map("valore_min_mq") @db.Decimal(10, 2)
+  valoreMaxMq       Decimal  @map("valore_max_mq") @db.Decimal(10, 2)
+  valoreMedioMq     Decimal  @map("valore_medio_mq") @db.Decimal(10, 2)
+  semestre          Int
+  anno              Int
+  fonte             String   @default("OMI")
   dataAggiornamento DateTime @default(now()) @map("data_aggiornamento")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
   @@unique([citta, zona, tipoImmobile, categoria, anno, semestre], name: "OMIValue_unique")
   @@index([citta, zona])
@@ -496,23 +401,22 @@ model OMIValue {
   @@map("omi_values")
 }
 
-// Modello Storico Prezzi - Trend prezzi zona nel tempo
 model PriceHistory {
-  id                    String   @id @default(cuid())
-  citta                 String
-  zona                  String
-  cap                   String?
-  tipoImmobile          String   @map("tipo_immobile")
-  valoreMinMq           Decimal  @map("valore_min_mq") @db.Decimal(10, 2)
-  valoreMaxMq           Decimal  @map("valore_max_mq") @db.Decimal(10, 2)
-  valoreMedioMq         Decimal  @map("valore_medio_mq") @db.Decimal(10, 2)
-  semestre              Int // 1 o 2
-  anno                  Int
-  variazionePrecedente  Decimal? @map("variazione_precedente") @db.Decimal(5, 2) // % variazione
-  numeroTransazioni     Int?     @map("numero_transazioni")
-  fonte                 String   @default("OMI")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id                   String   @id @default(cuid())
+  citta                String
+  zona                 String
+  cap                  String?
+  tipoImmobile         String   @map("tipo_immobile")
+  valoreMinMq          Decimal  @map("valore_min_mq") @db.Decimal(10, 2)
+  valoreMaxMq          Decimal  @map("valore_max_mq") @db.Decimal(10, 2)
+  valoreMedioMq        Decimal  @map("valore_medio_mq") @db.Decimal(10, 2)
+  semestre             Int
+  anno                 Int
+  variazionePrecedente Decimal? @map("variazione_precedente") @db.Decimal(5, 2)
+  numeroTransazioni    Int?     @map("numero_transazioni")
+  fonte                String   @default("OMI")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
 
   @@unique([citta, zona, tipoImmobile, anno, semestre], name: "PriceHistory_unique")
   @@index([citta, zona])
@@ -521,21 +425,20 @@ model PriceHistory {
   @@map("price_history")
 }
 
-// Modello Insights Zona - Analisi automatiche trend mercato
 model ZoneInsight {
-  id                      String   @id @default(cuid())
-  citta                   String
-  zona                    String
-  cap                     String?
-  trend                   String // 'crescita', 'stabile', 'decrescita'
-  variazioneAnnuale       Decimal  @map("variazione_annuale") @db.Decimal(5, 2) // %
-  variazioneUltimoSemestre Decimal? @map("variazione_ultimo_semestre") @db.Decimal(5, 2) // %
-  prezzoMedioAttuale      Decimal  @map("prezzo_medio_attuale") @db.Decimal(10, 2)
-  descrizione             String?  @db.Text
-  icona                   String? // emoji o icon name
-  dataCalcolo             DateTime @default(now()) @map("data_calcolo")
-  createdAt               DateTime @default(now()) @map("created_at")
-  updatedAt               DateTime @updatedAt @map("updated_at")
+  id                       String   @id @default(cuid())
+  citta                    String
+  zona                     String
+  cap                      String?
+  trend                    String
+  variazioneAnnuale        Decimal  @map("variazione_annuale") @db.Decimal(5, 2)
+  variazioneUltimoSemestre Decimal? @map("variazione_ultimo_semestre") @db.Decimal(5, 2)
+  prezzoMedioAttuale       Decimal  @map("prezzo_medio_attuale") @db.Decimal(10, 2)
+  descrizione              String?
+  icona                    String?
+  dataCalcolo              DateTime @default(now()) @map("data_calcolo")
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
 
   @@unique([citta, zona, dataCalcolo], name: "ZoneInsight_unique")
   @@index([citta, zona])
