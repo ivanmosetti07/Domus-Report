@@ -44,15 +44,22 @@ export async function POST(request: NextRequest) {
     let geocodeData = null
     if (!body.latitude || !body.longitude) {
       try {
-        geocodeData = await geocodeAddress(body.address)
+        // IMPORTANTE: Passa la città al geocoding per evitare ambiguità
+        // (es. "via Cammarata" esiste sia a Roma che a Siracusa)
+        const fullAddress = `${body.address}, ${body.city}${body.postalCode ? ', ' + body.postalCode : ''}`
+        geocodeData = await geocodeAddress(fullAddress)
+
         if (geocodeData) {
           body.latitude = geocodeData.latitude
           body.longitude = geocodeData.longitude
-          // Update city with geocoded city if more accurate
-          if (geocodeData.city) {
+
+          // NON sovrascrivere città e CAP forniti dall'utente!
+          // Il geocoding potrebbe trovare un indirizzo sbagliato in un'altra città.
+          // Solo aggiorna se l'utente NON ha fornito questi dati.
+          if (!body.city && geocodeData.city) {
             body.city = geocodeData.city
           }
-          if (geocodeData.postalCode) {
+          if (!body.postalCode && geocodeData.postalCode) {
             body.postalCode = geocodeData.postalCode
           }
         }
