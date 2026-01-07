@@ -1,21 +1,39 @@
 /**
  * OMI Advanced - Sistema avanzato per dati Osservatorio Mercato Immobiliare
  * Supporta:
- * - Caricamento dati da CSV
+ * - Lettura diretta dati da CSV
  * - Ricerca per zona specifica
  * - Storico prezzi
  * - Calcolo trend automatico
+ * - Cache in-memory per performance
  */
 
 import { PropertyType } from "@/types"
-import { prisma } from "@/lib/prisma"
 import fs from "fs"
 import path from "path"
 import { parse } from "csv-parse/sync"
 import { createLogger } from "./logger"
-import type { Prisma } from "@prisma/client"
 
 const logger = createLogger('omi-advanced')
+
+// Cache in-memory per i dati CSV
+let csvCache: OMICSVRecord[] | null = null
+let csvCacheTimestamp: number | null = null
+const CACHE_TTL = 1000 * 60 * 30 // 30 minuti
+
+interface OMICSVRecord {
+  citta: string
+  zona: string
+  cap: string
+  tipoImmobile: string
+  categoria: string
+  valoreMinMq: number
+  valoreMaxMq: number
+  valoreMedioMq: number
+  semestre: number
+  anno: number
+  fonte: string
+}
 
 export interface OMIValueDetailed {
   citta: string
@@ -47,16 +65,25 @@ export interface ZoneTrend {
 }
 
 /**
- * Carica dati OMI dal CSV nel database
- * Da eseguire una volta per inizializzare il database
+ * Carica e cachea i dati OMI dal CSV
+ * Usa cache in-memory per evitare letture ripetute del file
  */
-export async function loadOMIDataFromCSV(): Promise<number> {
+function loadOMIDataFromCSV(): OMICSVRecord[] {
+  // Controlla se la cache è valida
+  const now = Date.now()
+  if (csvCache && csvCacheTimestamp && (now - csvCacheTimestamp) < CACHE_TTL) {
+    logger.info("Using cached CSV data")
+    return csvCache
+  }
+
   const csvPath = path.join(process.cwd(), "data", "omi-values.csv")
 
   if (!fs.existsSync(csvPath)) {
     logger.warn("CSV file not found", { path: csvPath })
-    return 0
+    return []
   }
+
+  logger.info("Loading OMI data from CSV", { path: csvPath })
 
   const fileContent = fs.readFileSync(csvPath, "utf-8")
   const records = parse(fileContent, {
@@ -76,97 +103,39 @@ export async function loadOMIDataFromCSV(): Promise<number> {
     fonte: string
   }>
 
-  let count = 0
+  // Converti in formato tipizzato
+  csvCache = records.map(record => ({
+    citta: record.citta,
+    zona: record.zona,
+    cap: record.cap || "",
+    tipoImmobile: record.tipoImmobile,
+    categoria: record.categoria || "",
+    valoreMinMq: parseFloat(record.valoreMinMq),
+    valoreMaxMq: parseFloat(record.valoreMaxMq),
+    valoreMedioMq: parseFloat(record.valoreMedioMq),
+    semestre: parseInt(record.semestre),
+    anno: parseInt(record.anno),
+    fonte: record.fonte,
+  }))
 
-  for (const record of records) {
-    try {
-      // Inserisci in OMIValue
-      await prisma.oMIValue.upsert({
-        where: {
-          OMIValue_unique: {
-            citta: record.citta,
-            zona: record.zona,
-            tipoImmobile: record.tipoImmobile,
-            categoria: record.categoria || "",
-            anno: parseInt(record.anno),
-            semestre: parseInt(record.semestre),
-          },
-        },
-        update: {
-          valoreMinMq: parseFloat(record.valoreMinMq),
-          valoreMaxMq: parseFloat(record.valoreMaxMq),
-          valoreMedioMq: parseFloat(record.valoreMedioMq),
-          cap: record.cap || null,
-          fonte: record.fonte,
-          dataAggiornamento: new Date(),
-        },
-        create: {
-          citta: record.citta,
-          zona: record.zona,
-          cap: record.cap || null,
-          tipoImmobile: record.tipoImmobile,
-          categoria: record.categoria || null,
-          valoreMinMq: parseFloat(record.valoreMinMq),
-          valoreMaxMq: parseFloat(record.valoreMaxMq),
-          valoreMedioMq: parseFloat(record.valoreMedioMq),
-          semestre: parseInt(record.semestre),
-          anno: parseInt(record.anno),
-          fonte: record.fonte,
-        },
-      })
+  csvCacheTimestamp = now
+  logger.info("CSV data loaded and cached", { recordCount: csvCache.length })
 
-      // Inserisci anche in PriceHistory
-      await prisma.priceHistory.upsert({
-        where: {
-          PriceHistory_unique: {
-            citta: record.citta,
-            zona: record.zona,
-            tipoImmobile: record.tipoImmobile,
-            anno: parseInt(record.anno),
-            semestre: parseInt(record.semestre),
-          },
-        },
-        update: {
-          valoreMinMq: parseFloat(record.valoreMinMq),
-          valoreMaxMq: parseFloat(record.valoreMaxMq),
-          valoreMedioMq: parseFloat(record.valoreMedioMq),
-          cap: record.cap || null,
-          fonte: record.fonte,
-        },
-        create: {
-          citta: record.citta,
-          zona: record.zona,
-          cap: record.cap || null,
-          tipoImmobile: record.tipoImmobile,
-          valoreMinMq: parseFloat(record.valoreMinMq),
-          valoreMaxMq: parseFloat(record.valoreMaxMq),
-          valoreMedioMq: parseFloat(record.valoreMedioMq),
-          semestre: parseInt(record.semestre),
-          anno: parseInt(record.anno),
-          fonte: record.fonte,
-        },
-      })
-
-      count++
-    } catch (error) {
-      logger.error("Error loading OMI record", error, { record })
-    }
-  }
-
-  return count
+  return csvCache
 }
 
 /**
  * Ottiene valore OMI per una specifica zona
  * Se la zona non è trovata, cerca il valore medio della città
+ * Legge i dati direttamente dal CSV
  */
-export async function getOMIValueByZone(
+export function getOMIValueByZone(
   citta: string,
   zona?: string,
   cap?: string,
   tipoImmobile: string = "residenziale",
   categoria?: string
-): Promise<{
+): {
   valoreMinMq: number
   valoreMaxMq: number
   valoreMedioMq: number
@@ -174,131 +143,118 @@ export async function getOMIValueByZone(
   fonte: string
   semestre: number
   anno: number
-} | null> {
-  // Normalizza città
-  const cittaNormalized = citta.trim()
+} | null {
+  // Carica dati dal CSV (con cache)
+  const allData = loadOMIDataFromCSV()
 
-  // Cerca prima per zona specifica (con categoria se fornita)
-  if (zona) {
-    const whereClause: any = {
-      citta: {
-        equals: cittaNormalized,
-        mode: "insensitive",
-      },
-      zona: {
-        equals: zona,
-        mode: "insensitive",
-      },
-      tipoImmobile,
-    }
-
-    // Aggiungi filtro categoria se fornito (case-insensitive)
-    if (categoria) {
-      whereClause.categoria = {
-        equals: categoria,
-        mode: "insensitive",
-      }
-    }
-
-    const omiValue = await prisma.oMIValue.findFirst({
-      where: whereClause,
-      orderBy: [{ anno: "desc" }, { semestre: "desc" }],
-    })
-
-    if (omiValue) {
-      return {
-        valoreMinMq: parseFloat(omiValue.valoreMinMq.toString()),
-        valoreMaxMq: parseFloat(omiValue.valoreMaxMq.toString()),
-        valoreMedioMq: parseFloat(omiValue.valoreMedioMq.toString()),
-        zona: omiValue.zona,
-        fonte: omiValue.fonte,
-        semestre: omiValue.semestre,
-        anno: omiValue.anno,
-      }
-    }
-  }
-
-  // Cerca per CAP (con categoria se fornita)
-  if (cap) {
-    const whereClause: any = {
-      citta: {
-        equals: cittaNormalized,
-        mode: "insensitive",
-      },
-      cap,
-      tipoImmobile,
-    }
-
-    if (categoria) {
-      whereClause.categoria = {
-        equals: categoria,
-        mode: "insensitive",
-      }
-    }
-
-    const omiValue = await prisma.oMIValue.findFirst({
-      where: whereClause,
-      orderBy: [{ anno: "desc" }, { semestre: "desc" }],
-    })
-
-    if (omiValue) {
-      return {
-        valoreMinMq: parseFloat(omiValue.valoreMinMq.toString()),
-        valoreMaxMq: parseFloat(omiValue.valoreMaxMq.toString()),
-        valoreMedioMq: parseFloat(omiValue.valoreMedioMq.toString()),
-        zona: omiValue.zona,
-        fonte: omiValue.fonte,
-        semestre: omiValue.semestre,
-        anno: omiValue.anno,
-      }
-    }
-  }
-
-  // Fallback: media città (con categoria se fornita)
-  const avgWhereClause: any = {
-    citta: {
-      equals: cittaNormalized,
-      mode: "insensitive",
-    },
-    tipoImmobile,
-  }
-
-  if (categoria) {
-    avgWhereClause.categoria = {
-      equals: categoria,
-      mode: "insensitive",
-    }
-  }
-
-  const avgValues = await prisma.oMIValue.findMany({
-    where: avgWhereClause,
-    orderBy: [{ anno: "desc" }, { semestre: "desc" }],
-  })
-
-  if (avgValues.length === 0) {
+  if (allData.length === 0) {
+    logger.warn("No OMI data available in CSV")
     return null
   }
 
-  // Calcola media dei valori più recenti
-  const recentValues = avgValues.slice(0, Math.min(5, avgValues.length))
+  // Normalizza città
+  const cittaNormalized = citta.trim().toLowerCase()
 
-  type OMIValueType = Prisma.OMIValueGetPayload<{
-    select: {
-      valoreMinMq: true
-      valoreMaxMq: true
-      valoreMedioMq: true
+  // Helper per confronto case-insensitive
+  const matchesCaseInsensitive = (a: string, b: string) =>
+    a.toLowerCase() === b.toLowerCase()
+
+  // 1. Cerca prima per ZONA specifica (con categoria se fornita)
+  if (zona) {
+    let filtered = allData.filter(record =>
+      matchesCaseInsensitive(record.citta, cittaNormalized) &&
+      matchesCaseInsensitive(record.zona, zona) &&
+      record.tipoImmobile === tipoImmobile
+    )
+
+    // Aggiungi filtro categoria se fornito
+    if (categoria) {
+      filtered = filtered.filter(record =>
+        matchesCaseInsensitive(record.categoria, categoria)
+      )
     }
-  }>
 
-  const avgMin =
-    recentValues.reduce((sum: number, v: OMIValueType) => sum + parseFloat(v.valoreMinMq.toString()), 0) /
-    recentValues.length
-  const avgMax =
-    recentValues.reduce((sum: number, v: OMIValueType) => sum + parseFloat(v.valoreMaxMq.toString()), 0) /
-    recentValues.length
-  const avgMedio =
-    recentValues.reduce((sum: number, v: OMIValueType) => sum + parseFloat(v.valoreMedioMq.toString()), 0) /
-    recentValues.length
+    if (filtered.length > 0) {
+      // Ordina per anno e semestre decrescente, prendi il più recente
+      filtered.sort((a, b) => {
+        if (a.anno !== b.anno) return b.anno - a.anno
+        return b.semestre - a.semestre
+      })
+
+      const latest = filtered[0]
+      return {
+        valoreMinMq: latest.valoreMinMq,
+        valoreMaxMq: latest.valoreMaxMq,
+        valoreMedioMq: latest.valoreMedioMq,
+        zona: latest.zona,
+        fonte: latest.fonte,
+        semestre: latest.semestre,
+        anno: latest.anno,
+      }
+    }
+  }
+
+  // 2. Cerca per CAP (con categoria se fornita)
+  if (cap) {
+    let filtered = allData.filter(record =>
+      matchesCaseInsensitive(record.citta, cittaNormalized) &&
+      record.cap === cap &&
+      record.tipoImmobile === tipoImmobile
+    )
+
+    if (categoria) {
+      filtered = filtered.filter(record =>
+        matchesCaseInsensitive(record.categoria, categoria)
+      )
+    }
+
+    if (filtered.length > 0) {
+      filtered.sort((a, b) => {
+        if (a.anno !== b.anno) return b.anno - a.anno
+        return b.semestre - a.semestre
+      })
+
+      const latest = filtered[0]
+      return {
+        valoreMinMq: latest.valoreMinMq,
+        valoreMaxMq: latest.valoreMaxMq,
+        valoreMedioMq: latest.valoreMedioMq,
+        zona: latest.zona,
+        fonte: latest.fonte,
+        semestre: latest.semestre,
+        anno: latest.anno,
+      }
+    }
+  }
+
+  // 3. Fallback: MEDIA CITTÀ (con categoria se fornita)
+  let cityFiltered = allData.filter(record =>
+    matchesCaseInsensitive(record.citta, cittaNormalized) &&
+    record.tipoImmobile === tipoImmobile
+  )
+
+  if (categoria) {
+    cityFiltered = cityFiltered.filter(record =>
+      matchesCaseInsensitive(record.categoria, categoria)
+    )
+  }
+
+  if (cityFiltered.length === 0) {
+    return null
+  }
+
+  // Ordina e prendi i 5 più recenti
+  cityFiltered.sort((a, b) => {
+    if (a.anno !== b.anno) return b.anno - a.anno
+    return b.semestre - a.semestre
+  })
+
+  const recentValues = cityFiltered.slice(0, Math.min(5, cityFiltered.length))
+
+  // Calcola medie
+  const avgMin = recentValues.reduce((sum, v) => sum + v.valoreMinMq, 0) / recentValues.length
+  const avgMax = recentValues.reduce((sum, v) => sum + v.valoreMaxMq, 0) / recentValues.length
+  const avgMedio = recentValues.reduce((sum, v) => sum + v.valoreMedioMq, 0) / recentValues.length
 
   return {
     valoreMinMq: Math.round(avgMin),
@@ -314,28 +270,34 @@ export async function getOMIValueByZone(
 /**
  * Ottiene storico prezzi per una zona
  * Restituisce gli ultimi N semestri
+ * Legge i dati direttamente dal CSV
  */
-export async function getPriceHistory(
+export function getPriceHistory(
   citta: string,
   zona: string,
   tipoImmobile: string = "residenziale",
   numSemestri: number = 6
-): Promise<PriceHistoryEntry[]> {
-  const history = await prisma.priceHistory.findMany({
-    where: {
-      citta: {
-        equals: citta,
-        mode: "insensitive",
-      },
-      zona: {
-        equals: zona,
-        mode: "insensitive",
-      },
-      tipoImmobile,
-    },
-    orderBy: [{ anno: "desc" }, { semestre: "desc" }],
-    take: numSemestri,
+): PriceHistoryEntry[] {
+  const allData = loadOMIDataFromCSV()
+
+  const matchesCaseInsensitive = (a: string, b: string) =>
+    a.toLowerCase() === b.toLowerCase()
+
+  // Filtra per città, zona e tipo immobile
+  let history = allData.filter(record =>
+    matchesCaseInsensitive(record.citta, citta) &&
+    matchesCaseInsensitive(record.zona, zona) &&
+    record.tipoImmobile === tipoImmobile
+  )
+
+  // Ordina per anno e semestre decrescente
+  history.sort((a, b) => {
+    if (a.anno !== b.anno) return b.anno - a.anno
+    return b.semestre - a.semestre
   })
+
+  // Prendi solo i primi N
+  history = history.slice(0, numSemestri)
 
   // Calcola variazioni
   const result: PriceHistoryEntry[] = []
@@ -343,11 +305,11 @@ export async function getPriceHistory(
     const current = history[i]
     const previous = history[i + 1]
 
-    const valoreMedioMq = parseFloat(current.valoreMedioMq.toString())
+    const valoreMedioMq = current.valoreMedioMq
     let variazione: number | undefined
 
     if (previous) {
-      const prevValue = parseFloat(previous.valoreMedioMq.toString())
+      const prevValue = previous.valoreMedioMq
       variazione = ((valoreMedioMq - prevValue) / prevValue) * 100
     }
 
@@ -363,13 +325,14 @@ export async function getPriceHistory(
 
 /**
  * Calcola trend automatico per una zona
+ * Legge i dati direttamente dal CSV
  */
-export async function calculateZoneTrend(
+export function calculateZoneTrend(
   citta: string,
   zona: string,
   tipoImmobile: string = "residenziale"
-): Promise<ZoneTrend | null> {
-  const history = await getPriceHistory(citta, zona, tipoImmobile, 4) // ultimi 2 anni
+): ZoneTrend | null {
+  const history = getPriceHistory(citta, zona, tipoImmobile, 4) // ultimi 2 anni
 
   if (history.length < 2) {
     return null
@@ -408,35 +371,6 @@ export async function calculateZoneTrend(
     descrizione = `Zona stabile (${variazioneAnnuale >= 0 ? "+" : ""}${variazioneAnnuale.toFixed(1)}% annuo)`
   }
 
-  // Salva insight nel database
-  await prisma.zoneInsight.upsert({
-    where: {
-      ZoneInsight_unique: {
-        citta,
-        zona,
-        dataCalcolo: new Date(),
-      },
-    },
-    update: {
-      trend,
-      variazioneAnnuale,
-      variazioneUltimoSemestre,
-      prezzoMedioAttuale: current.valoreMedioMq,
-      descrizione,
-      icona,
-    },
-    create: {
-      citta,
-      zona,
-      trend,
-      variazioneAnnuale,
-      variazioneUltimoSemestre,
-      prezzoMedioAttuale: current.valoreMedioMq,
-      descrizione,
-      icona,
-    },
-  })
-
   return {
     trend,
     variazioneAnnuale,
@@ -449,37 +383,47 @@ export async function calculateZoneTrend(
 
 /**
  * Ottiene tutte le zone disponibili per una città
+ * Legge i dati direttamente dal CSV
  */
-export async function getZonesByCity(citta: string): Promise<
-  Array<{
-    zona: string
-    cap?: string
-    numeroValori: number
-  }>
-> {
-  const zones = await prisma.oMIValue.groupBy({
-    by: ["zona", "cap"],
-    where: {
-      citta: {
-        equals: citta,
-        mode: "insensitive",
-      },
-    },
-    _count: {
-      id: true,
-    },
-    orderBy: {
-      zona: "asc",
-    },
+export function getZonesByCity(citta: string): Array<{
+  zona: string
+  cap?: string
+  numeroValori: number
+}> {
+  const allData = loadOMIDataFromCSV()
+
+  const matchesCaseInsensitive = (a: string, b: string) =>
+    a.toLowerCase() === b.toLowerCase()
+
+  // Filtra per città
+  const cityData = allData.filter(record =>
+    matchesCaseInsensitive(record.citta, citta)
+  )
+
+  // Raggruppa per zona e CAP
+  const grouped = new Map<string, { zona: string; cap: string; count: number }>()
+
+  cityData.forEach(record => {
+    const key = `${record.zona}_${record.cap}`
+    if (grouped.has(key)) {
+      grouped.get(key)!.count++
+    } else {
+      grouped.set(key, {
+        zona: record.zona,
+        cap: record.cap,
+        count: 1,
+      })
+    }
   })
 
-  type ZoneType = typeof zones[number]
-
-  return zones.map((z: ZoneType) => ({
-    zona: z.zona,
-    cap: z.cap || undefined,
-    numeroValori: z._count.id,
-  }))
+  // Converti in array e ordina per zona
+  return Array.from(grouped.values())
+    .map(g => ({
+      zona: g.zona,
+      cap: g.cap || undefined,
+      numeroValori: g.count,
+    }))
+    .sort((a, b) => a.zona.localeCompare(b.zona))
 }
 
 /**

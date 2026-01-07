@@ -194,9 +194,9 @@ export function generateValuationExplanation(
  * Integrated with OMI Advanced for zone-specific valuations
  * Falls back to basic OMI data if zone/CAP not found
  */
-export async function calculateValuationLocal(
+export function calculateValuationLocal(
   input: ValuationInput
-): Promise<ValuationResult> {
+): ValuationResult {
   // Try to get advanced OMI data first
   const tipoImmobile = mapPropertyTypeToOMI(input.propertyType)
   let baseOMIValue: number
@@ -204,8 +204,8 @@ export async function calculateValuationLocal(
   let maxPrice: number
   let estimatedPrice: number
 
-  // Get OMI Advanced data (REQUIRED - no fallback)
-  const omiAdvanced = await getOMIValueByZone(
+  // Get OMI Advanced data (with fallback if not available)
+  const omiAdvanced = getOMIValueByZone(
     input.city,
     input.neighborhood,
     input.postalCode,
@@ -214,15 +214,59 @@ export async function calculateValuationLocal(
   )
 
   if (!omiAdvanced) {
-    const errorMsg = `Dati OMI non disponibili per: città=${input.city}, zona=${input.neighborhood || 'N/A'}, CAP=${input.postalCode || 'N/A'}, categoria=${input.omiCategory || 'N/A'}`
-    logger.error("OMI Advanced data not found - valuation cannot proceed", {
+    // FALLBACK: Se i dati OMI avanzati non sono disponibili, usa valori medi generici
+    // Questo evita che il chatbot si blocchi quando i dati OMI non sono ancora caricati nel database
+    logger.warn("OMI Advanced data not found - using generic fallback values", {
       city: input.city,
       neighborhood: input.neighborhood,
       postalCode: input.postalCode,
       tipoImmobile,
       omiCategory: input.omiCategory,
     })
-    throw new Error(errorMsg)
+
+    // Valori medi generici per tipo di immobile (€/m²)
+    const fallbackValues: Record<string, { min: number; medio: number; max: number }> = {
+      residenziale: { min: 2000, medio: 3500, max: 5000 },
+      box: { min: 1000, medio: 1500, max: 2000 },
+      commerciale: { min: 1500, medio: 2500, max: 3500 },
+      uffici: { min: 2000, medio: 3000, max: 4000 },
+      altro: { min: 1500, medio: 2500, max: 3500 },
+    }
+
+    const fallback = fallbackValues[tipoImmobile] || fallbackValues.altro
+    baseOMIValue = fallback.medio
+
+    // Calculate coefficients
+    const floorCoefficient = calculateFloorCoefficient(
+      input.floor,
+      input.hasElevator
+    )
+    const conditionCoefficient = calculateConditionCoefficient(input.condition)
+
+    // Calculate prices using fallback values + coefficients
+    estimatedPrice = Math.round(
+      fallback.medio * input.surfaceSqm * floorCoefficient * conditionCoefficient
+    )
+    minPrice = Math.round(
+      fallback.min * input.surfaceSqm * floorCoefficient * conditionCoefficient
+    )
+    maxPrice = Math.round(
+      fallback.max * input.surfaceSqm * floorCoefficient * conditionCoefficient
+    )
+
+    const result: ValuationResult = {
+      minPrice,
+      maxPrice,
+      estimatedPrice,
+      baseOMIValue,
+      floorCoefficient,
+      conditionCoefficient,
+      explanation: "",
+    }
+
+    result.explanation = generateValuationExplanation(input, result) +
+      " NOTA: Valutazione basata su dati medi generici. Per una stima più precisa, contatta un professionista."
+    return result
   }
 
   // Use OMI Advanced data with min/max ranges
@@ -282,10 +326,10 @@ export async function calculateValuation(
     return cached
   }
 
-  // Calculate valuation using OMI database + coefficients
+  // Calculate valuation using OMI CSV + coefficients
   // OpenAI analysis is handled separately in the API route
   logger.info("Calculating valuation", { city: input.city, type: input.propertyType })
-  const result = await calculateValuationLocal(input)
+  const result = calculateValuationLocal(input)
   setCachedValuation(input, result)
   return result
 }
