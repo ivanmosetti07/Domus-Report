@@ -1,53 +1,37 @@
 import { NextRequest, NextResponse } from "next/server"
-import { loadOMIDataFromCSV } from "@/lib/omi-advanced"
 
 /**
- * POST /api/admin/load-omi-data
- * Carica i dati OMI dal file CSV nel database
+ * DEPRECATO: Questa API non è più necessaria
  *
- * NOTA: Questa API dovrebbe essere protetta in produzione
- * Per ora è accessibile solo durante lo sviluppo
+ * Il sistema OMI ora legge i dati direttamente dal file CSV (data/omi-values.csv)
+ * utilizzando una cache in-memory. Non è più necessario caricare i dati in un database.
+ *
+ * Il caricamento avviene automaticamente alla prima richiesta di valutazione.
  */
+
 export async function POST(request: NextRequest) {
-  try {
-    // In produzione, aggiungi qui controllo autenticazione admin
-    // const session = await getServerSession()
-    // if (!session?.user?.isAdmin) {
-    //   return NextResponse.json({ error: "Non autorizzato" }, { status: 403 })
-    // }
-
-    console.log("Inizio caricamento dati OMI dal CSV...")
-
-    const count = await loadOMIDataFromCSV()
-
-    console.log(`Caricamento completato: ${count} record inseriti/aggiornati`)
-
-    return NextResponse.json({
-      success: true,
-      message: `Dati OMI caricati con successo`,
-      recordsLoaded: count,
-    })
-  } catch (error) {
-    console.error("Load OMI data error:", error)
-
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Errore interno del server",
-        success: false,
-      },
-      { status: 500 }
-    )
-  }
+  return NextResponse.json({
+    success: false,
+    error: "Questa API è deprecata",
+    message: "Il sistema OMI ora legge i dati direttamente dal CSV. Non è più necessario caricare i dati manualmente.",
+    info: "I dati vengono caricati automaticamente in cache alla prima richiesta di valutazione."
+  }, { status: 410 }) // 410 Gone
 }
 
 /**
  * GET /api/admin/load-omi-data
- * Mostra informazioni sul caricamento dati
+ * Mostra informazioni sul sistema OMI
  */
 export async function GET(request: NextRequest) {
   return NextResponse.json({
-    message: "Usa il metodo POST per caricare i dati OMI dal CSV",
-    info: "Questa operazione leggerà il file data/omi-values.csv e lo caricherà nel database",
-    endpoint: "POST /api/admin/load-omi-data",
+    deprecated: true,
+    message: "Questa API è deprecata. Il sistema OMI ora legge direttamente dal CSV.",
+    info: {
+      file: "data/omi-values.csv",
+      records: "~133.000 record",
+      cache: "In-memory con TTL di 30 minuti",
+      loadingTime: "~350ms al primo caricamento, <5ms successivamente"
+    },
+    migration: "Non è necessaria alcuna azione. Il sistema funziona automaticamente."
   })
 }
