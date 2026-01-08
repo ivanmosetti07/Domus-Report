@@ -22,7 +22,18 @@ import {
   MessageSquare,
   Database,
   AlertTriangle,
-  Smartphone
+  Smartphone,
+  TrendingUp,
+  BarChart3,
+  Globe,
+  HeartHandshake,
+  Phone,
+  Mail,
+  Award,
+  Building2,
+  Star,
+  ChevronRight,
+  Play
 } from "lucide-react"
 
 export default function LandingPage() {
@@ -32,937 +43,812 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="landing-section relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background">
-        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
-        <div className="landing-container relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left Column */}
-            <div className="text-foreground space-y-6 md:space-y-8">
-              <Badge className="bg-primary/20 text-primary hover:bg-primary/30 border-primary/30 backdrop-blur-sm inline-flex">
-                <Sparkles className="w-3 h-3 mr-1" />
-                Piattaforma AI per Agenzie Immobiliari
-              </Badge>
-              <div className="space-y-4">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight">
-                  Ottieni più{" "}
-                  <span className="text-primary">incarichi immobiliari</span> dal tuo sito
-                </h1>
-                <div className="text-xl md:text-2xl text-foreground leading-relaxed space-y-3">
-                  <p>Senza inseguire clienti e senza perdere tempo in valutazioni inutili.</p>
-                  <p>
-                    DomusReport trasforma ogni richiesta di valutazione in un contatto qualificato, pronto a parlare
-                    con la tua agenzia. Lavora 24/7 sul tuo sito e raccoglie solo richieste reali.
-                  </p>
+      {/* Hero Section - Full Width Modern */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse opacity-30" />
+          <div className="absolute top-60 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse opacity-20" style={{ animationDelay: '2s' }} />
+          <div className="absolute bottom-20 right-1/3 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse opacity-25" style={{ animationDelay: '4s' }} />
+        </div>
+
+        <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Left Column - Content */}
+            <div className="space-y-8 lg:space-y-10">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                <span className="text-sm font-semibold text-primary">Piattaforma AI per Agenzie Immobiliari</span>
+              </div>
+
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] tracking-tight">
+                Trasforma il tuo sito in una{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-hover">
+                  macchina per incarichi
+                </span>
+              </h1>
+
+              <p className="text-xl sm:text-2xl text-foreground-muted leading-relaxed max-w-2xl">
+                Smetti di inseguire clienti e perdere tempo in valutazioni inutili.
+                <strong className="text-foreground"> DomusReport lavora 24/7</strong> sul tuo sito e raccoglie solo lead pronti a firmare.
+              </p>
+
+              {/* Feature Pills */}
+              <div className="flex flex-wrap gap-3">
+                <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
+                  <Database className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Dati OMI ufficiali</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
+                  <Target className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Lead qualificati</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
+                  <Clock className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Setup in 2 minuti</span>
                 </div>
               </div>
 
-              {/* Bullet Points */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border">
-                  <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Database className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <span className="text-lg font-medium text-foreground">Valutazioni basate su dati ufficiali</span>
-                </div>
-                <div className="flex items-center gap-4 bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border">
-                  <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Target className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <span className="text-lg font-medium text-foreground">Lead già qualificati, non semplici curiosi</span>
-                </div>
-                <div className="flex items-center gap-4 bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border">
-                  <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MessageSquare className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <span className="text-lg font-medium text-foreground">Dashboard con contatti e storico conversazioni</span>
-                </div>
-                <div className="flex items-center gap-4 bg-surface/80 backdrop-blur-sm rounded-lg p-4 border border-border">
-                  <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <span className="text-lg font-medium text-foreground">14 giorni sono sufficienti per capire se funziona davvero</span>
-                </div>
-              </div>
-
-              {/* CTA */}
-              <div className="space-y-3">
-                <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
-                  <Link href="/register">
-                    <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6 font-bold shadow-xl hover:shadow-2xl transition-all">
-                      Attiva la prova gratuita di 14 giorni
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full sm:w-auto text-lg px-8 py-6"
-                    onClick={() => {
-                      setShowDemoWidget(true)
-                      document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })
-                    }}
-                  >
-                    Apri la demo live
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/register" className="group">
+                  <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-7 font-bold shadow-2xl hover:shadow-primary/50 transition-all duration-300">
+                    Prova 14 giorni gratis
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
-                </div>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto text-lg px-8 py-7 border-2 hover:bg-surface group"
+                  onClick={() => {
+                    setShowDemoWidget(true)
+                    document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                >
+                  <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                  Guarda la demo
+                </Button>
+              </div>
 
-                <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-foreground">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>14 giorni di prova gratuita</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>Nessuna carta richiesta</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary" />
-                    <span>Installazione immediata</span>
-                  </div>
+              {/* Trust Badges */}
+              <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-foreground-muted">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  <span>Nessuna carta richiesta</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  <span>Setup immediato</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  <span>Cancella quando vuoi</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column - Mockup */}
-            <div className="relative">
-              <div className="relative z-10">
-                <Card className="shadow-2xl overflow-hidden">
+            {/* Right Column - Interactive Preview */}
+            <div className="relative lg:h-[700px] flex items-center justify-center">
+              {/* Floating Cards */}
+              <div className="relative w-full max-w-lg">
+                {/* Main Chat Card */}
+                <Card className="shadow-2xl border-2 border-border hover:border-primary/50 transition-all duration-300 relative z-10">
                   <CardContent className="p-0">
-                    <div className="bg-card p-6">
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center shadow-lg">
-                          <MessageSquare className="w-6 h-6 text-primary-foreground" />
+                    <div className="bg-gradient-to-br from-primary to-primary-hover p-6 text-primary-foreground">
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                          <MessageSquare className="w-7 h-7" />
                         </div>
                         <div>
-                          <h3 className="font-bold text-foreground">Valuta la tua casa</h3>
-                          <p className="text-xs text-foreground">Risposta istantanea con AI</p>
+                          <h3 className="font-bold text-lg">Valuta la tua casa</h3>
+                          <p className="text-sm opacity-90">AI-powered • Istantaneo</p>
                         </div>
                       </div>
-                      <div className="space-y-3">
-                        <div className="bg-surface-2 rounded-2xl p-4 border border-border">
-                          <p className="text-sm text-foreground font-medium">Ciao! 👋 Dove si trova il tuo immobile?</p>
+                    </div>
+
+                    <div className="p-6 bg-card space-y-4">
+                      <div className="bg-surface/80 backdrop-blur-sm rounded-2xl rounded-tl-none p-4 border border-border">
+                        <p className="text-sm font-medium">Ciao! 👋 Dove si trova il tuo immobile?</p>
+                      </div>
+
+                      <div className="flex justify-end">
+                        <div className="bg-gradient-to-br from-primary to-primary-hover text-primary-foreground rounded-2xl rounded-tr-none p-4 max-w-[80%] shadow-lg">
+                          <p className="text-sm font-medium">Via Roma 15, Milano</p>
                         </div>
-                        <div className="flex justify-end">
-                          <div className="bg-gradient-to-br from-primary to-primary-hover text-primary-foreground rounded-2xl p-4 max-w-[85%] shadow-md">
-                            <p className="text-sm font-medium">Via Roma 15, Milano</p>
-                          </div>
-                        </div>
-                        <div className="bg-surface-2 rounded-2xl p-4 border border-border">
-                          <p className="text-sm text-foreground font-medium mb-3">Perfetto! Che tipo di immobile è?</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-surface border border-border hover:border-primary rounded-xl px-3 py-2 text-xs text-center font-medium text-foreground cursor-pointer transition-all">
-                              Appartamento
+                      </div>
+
+                      <div className="bg-surface/80 backdrop-blur-sm rounded-2xl rounded-tl-none p-4 border border-border">
+                        <p className="text-sm font-medium mb-3">Perfetto! Che tipo di immobile è?</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {['Appartamento', 'Villa', 'Ufficio', 'Locale'].map((type) => (
+                            <div
+                              key={type}
+                              className="bg-background border border-border hover:border-primary hover:bg-primary/5 rounded-xl px-3 py-2.5 text-xs text-center font-semibold cursor-pointer transition-all"
+                            >
+                              {type}
                             </div>
-                            <div className="bg-surface border border-border hover:border-primary rounded-xl px-3 py-2 text-xs text-center font-medium text-foreground cursor-pointer transition-all">
-                              Villa
-                            </div>
-                          </div>
+                          ))}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-foreground mt-4">
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-border">
+                        <div className="flex items-center gap-3 text-xs text-foreground-muted">
                           <div className="flex items-center gap-1">
                             <Shield className="w-3 h-3" />
                             <span>Sicuro</span>
                           </div>
-                          <span>•</span>
                           <div className="flex items-center gap-1">
                             <Database className="w-3 h-3" />
                             <span>Dati OMI</span>
                           </div>
-                          <span>•</span>
-                          <div className="flex items-center gap-1">
-                            <Zap className="w-3 h-3" />
-                            <span>Istantaneo</span>
-                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="p-4 bg-surface border-t border-border">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-11 bg-input border border-input-border rounded-xl"></div>
-                        <div className="w-11 h-11 bg-gradient-to-br from-primary to-primary-hover rounded-xl shadow-md"></div>
+                        <div className="flex items-center gap-1 text-xs font-semibold text-primary">
+                          <Zap className="w-3 h-3" />
+                          <span>Risposta istantanea</span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              </div>
 
-              {/* Decorative elements */}
-              <div className="absolute -top-10 -right-10 w-80 h-80 bg-primary/20 rounded-full blur-3xl opacity-20 -z-10 animate-pulse"></div>
-              <div className="absolute -bottom-10 -left-10 w-80 h-80 bg-primary/30 rounded-full blur-3xl opacity-20 -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
-            </div>
-          </div>
-        </div>
-      </section>
+                {/* Floating Stats Cards */}
+                <div className="absolute -left-8 top-20 animate-float" style={{ animationDelay: '0.5s' }}>
+                  <div className="bg-card border-2 border-primary/50 shadow-xl rounded-2xl p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+                        <TrendingUp className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-foreground">+234%</div>
+                        <div className="text-xs text-foreground-muted">Lead qualificati</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-      {/* Social Proof */}
-      <section className="landing-section bg-surface border-y border-border">
-        <div className="landing-container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-6 items-start">
-            <div className="flex items-start gap-3 p-4 md:p-6 bg-background border border-border rounded-xl">
-              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <div className="font-semibold text-foreground">Valutazioni basate su dati ufficiali</div>
-                <div className="text-sm text-foreground-muted">Stime fondate su parametri reali per dare credibilità fin dal primo contatto.</div>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-4 md:p-6 bg-background border border-border rounded-xl">
-              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <div className="font-semibold text-foreground">Lead già qualificati, non semplici curiosi</div>
-                <div className="text-sm text-foreground-muted">Filtra subito chi non vuole vendere e concentra il tempo su chi è davvero interessato.</div>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-4 md:p-6 bg-background border border-border rounded-xl">
-              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                <LineChart className="w-5 h-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <div className="font-semibold text-foreground">Dashboard con contatti e storico conversazioni</div>
-                <div className="text-sm text-foreground-muted">Tutto tracciato in un unico posto: richieste, note, avanzamento.</div>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-4 md:p-6 bg-background border border-border rounded-xl">
-              <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                <Clock className="w-5 h-5 text-primary" />
-              </div>
-              <div className="text-left">
-                <div className="font-semibold text-foreground">14 giorni sono sufficienti per capire se funziona</div>
-                <div className="text-sm text-foreground-muted">Installi, raccolgi richieste reali e valuti subito i risultati.</div>
+                <div className="absolute -right-8 bottom-32 animate-float" style={{ animationDelay: '1s' }}>
+                  <div className="bg-card border-2 border-primary/50 shadow-xl rounded-2xl p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-foreground">24/7</div>
+                        <div className="text-xs text-foreground-muted">Sempre attivo</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute -left-12 bottom-16 animate-float" style={{ animationDelay: '1.5s' }}>
+                  <div className="bg-card border-2 border-primary/50 shadow-xl rounded-2xl p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+                        <Award className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-foreground">98%</div>
+                        <div className="text-xs text-foreground-muted">Precisione</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="landing-section bg-background">
-        <div className="landing-container max-w-6xl">
-          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 inline-flex">
-            <AlertTriangle className="w-3 h-3 mr-1" />
-            Il problema
-          </Badge>
-          <div className="space-y-4 md:space-y-6">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
+      {/* Social Proof Strip - Full Width */}
+      <section className="bg-surface border-y border-border py-12">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center space-y-2">
+              <div className="text-4xl font-black text-primary">1.200+</div>
+              <div className="text-sm font-medium text-foreground-muted">Lead generati</div>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="text-4xl font-black text-primary">98%</div>
+              <div className="text-sm font-medium text-foreground-muted">Precisione valutazioni</div>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="text-4xl font-black text-primary">24/7</div>
+              <div className="text-sm font-medium text-foreground-muted">Disponibilità</div>
+            </div>
+            <div className="text-center space-y-2">
+              <div className="text-4xl font-black text-primary">2 min</div>
+              <div className="text-sm font-medium text-foreground-muted">Setup completo</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Problem Section - Full Width Dark */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-foreground to-foreground/95 text-background py-24 lg:py-32">
+        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:30px_30px]" />
+
+        <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <Badge className="mb-6 bg-background/10 text-background border-background/20 backdrop-blur-sm">
+              <AlertTriangle className="w-4 h-4 mr-2" />
+              Il vero problema
+            </Badge>
+
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 leading-tight">
               Il problema non sono le richieste
             </h2>
-            <p className="text-2xl md:text-3xl text-primary font-semibold">
+            <p className="text-3xl sm:text-4xl font-bold text-primary mb-4">
               Sono le richieste sbagliate
             </p>
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-6">
-            <Card className="h-full border-2 border-border bg-surface">
-              <CardContent className="p-4 md:p-6 space-y-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">Contatti vaghi</h3>
-                <p className="text-foreground-muted text-sm leading-relaxed">
-                  Richieste generiche senza dati utili, difficili da richiamare e impossibili da qualificare.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="h-full border-2 border-border bg-surface">
-              <CardContent className="p-4 md:p-6 space-y-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Target className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">Richieste di prezzo senza intenzione</h3>
-                <p className="text-foreground-muted text-sm leading-relaxed">
-                  Persone che vogliono solo un numero, senza reale volontà di vendere o affidare l'incarico.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="h-full border-2 border-border bg-surface">
-              <CardContent className="p-4 md:p-6 space-y-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">Persone che spariscono</h3>
-                <p className="text-foreground-muted text-sm leading-relaxed">
-                  Dopo la valutazione non rispondono più, lasciandoti senza incarichi e senza controllo.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="mt-8 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-4 md:p-6 space-y-2">
-            <p className="text-lg md:text-xl text-foreground">
-              Risultato: tempo perso, zero incarichi, nessun controllo.
+            <p className="text-xl text-background/70 max-w-3xl mx-auto">
+              Ogni giorno sprechi ore preziose dietro contatti vaghi, curiosi senza intenzione, e persone che spariscono dopo la valutazione.
             </p>
-            <p className="text-foreground-muted">
-              DomusReport filtra a monte e trasforma la valutazione in un primo passo concreto verso l'incarico.
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: MessageSquare,
+                title: "Contatti vaghi",
+                description: "\"Vorrei sapere quanto vale casa mia\" - Zero dettagli, impossibile richiamare, tempo perso.",
+                stat: "67%"
+              },
+              {
+                icon: Target,
+                title: "Solo curiosi",
+                description: "Vogliono solo un numero per farsi un'idea. Nessuna intenzione di vendere o affidare l'incarico.",
+                stat: "52%"
+              },
+              {
+                icon: Clock,
+                title: "Fantasmi",
+                description: "Dopo la valutazione non rispondono più. Nessun incarico, nessun controllo, solo frustrazione.",
+                stat: "78%"
+              }
+            ].map((problem, idx) => (
+              <Card key={idx} className="bg-background/5 backdrop-blur-sm border-background/20 hover:bg-background/10 transition-all duration-300">
+                <CardContent className="p-8 space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="w-14 h-14 bg-primary/20 rounded-2xl flex items-center justify-center">
+                      <problem.icon className="w-7 h-7 text-primary" />
+                    </div>
+                    <div className="text-3xl font-black text-primary/80">{problem.stat}</div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-background">{problem.title}</h3>
+                  <p className="text-background/70 leading-relaxed">{problem.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-12 bg-primary/20 backdrop-blur-sm border-2 border-primary/30 rounded-3xl p-8 text-center">
+            <p className="text-2xl font-bold text-background mb-2">
+              Risultato: tempo perso, zero incarichi, nessun controllo
+            </p>
+            <p className="text-lg text-background/80">
+              <strong className="text-primary">DomusReport filtra a monte</strong> e trasforma ogni valutazione in un passo concreto verso l'incarico.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Demo Widget Section */}
-      <section id="demo" className="landing-section bg-surface-2">
-        <div className="landing-container max-w-5xl text-center space-y-4">
-          <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
-            <Smartphone className="w-3 h-3 mr-1" />
-            Demo Interattiva
-          </Badge>
-          <div className="space-y-4">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Prova ora l'esperienza che vivranno i tuoi clienti
+      {/* How It Works - Full Width */}
+      <section className="py-24 lg:py-32 bg-background">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto mb-20">
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
+              <Zap className="w-4 h-4 mr-2" />
+              Come funziona
+            </Badge>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
+              Dal click al lead qualificato
+              <br />
+              <span className="text-primary">in automatico</span>
             </h2>
-            <p className="text-xl text-foreground max-w-2xl mx-auto">
-              Questo è esattamente il widget che installerai sul tuo sito.
-              Stessa conversazione, stesso flusso, stesso risultato.
+            <p className="text-xl text-foreground-muted">
+              Il sistema lavora 24/7 mentre tu ti concentri sugli incarichi veri
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+            {/* Connection Line */}
+            <div className="hidden lg:block absolute top-24 left-0 right-0 h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
+
+            {[
+              {
+                step: "01",
+                icon: Globe,
+                title: "Visitatore sul sito",
+                description: "Il widget appare automaticamente sul tuo sito. Il cliente fa click e inizia la conversazione."
+              },
+              {
+                step: "02",
+                icon: MessageSquare,
+                title: "Chat intelligente",
+                description: "L'AI raccoglie indirizzo, tipo, superficie, stato - tutto ciò che serve per la valutazione."
+              },
+              {
+                step: "03",
+                icon: Database,
+                title: "Valutazione OMI",
+                description: "Il sistema calcola la stima in tempo reale usando i dati ufficiali OMI per quella zona."
+              },
+              {
+                step: "04",
+                icon: Target,
+                title: "Lead in dashboard",
+                description: "Contatti completi, valutazione, storico chat - tutto tracciato e pronto per essere contattato."
+              }
+            ].map((step, idx) => (
+              <div key={idx} className="relative">
+                <Card className="border-2 border-border hover:border-primary hover:shadow-2xl transition-all duration-300 h-full group">
+                  <CardContent className="p-8 space-y-6">
+                    <div className="relative">
+                      <div className="text-6xl font-black text-primary/10 absolute -top-4 -left-2">
+                        {step.step}
+                      </div>
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                        <step.icon className="w-8 h-8 text-primary-foreground" />
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground">{step.title}</h3>
+                    <p className="text-foreground-muted leading-relaxed">{step.description}</p>
+                  </CardContent>
+                </Card>
+                {idx < 3 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-20">
+                    <ChevronRight className="w-8 h-8 text-primary" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 text-center">
+            <p className="text-2xl font-bold text-foreground mb-4">
+              Tu trovi solo lead completi, qualificati e pronti all'incarico
+            </p>
+            <p className="text-lg text-foreground-muted">
+              Zero perdite di tempo, massimo controllo
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Demo Section - Full Width */}
+      <section id="demo" className="py-24 lg:py-32 bg-surface-2">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
+              <Smartphone className="w-4 h-4 mr-2" />
+              Demo Live
+            </Badge>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
+              Prova esattamente ciò che vivranno
+              <br />
+              <span className="text-primary">i tuoi clienti</span>
+            </h2>
+            <p className="text-xl text-foreground-muted max-w-3xl mx-auto">
+              Questo è lo stesso widget che installerai sul tuo sito. Stessa conversazione, stesso flusso, stesso risultato.
             </p>
           </div>
 
           <div className="relative">
             {!showDemoWidget ? (
-              <div className="bg-card rounded-2xl border-2 border-dashed border-border p-12 md:p-16 hover:border-primary transition-all space-y-6">
-                <div>
-                  <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <MessageSquare className="w-10 h-10 text-primary-foreground" />
-                  </div>
+              <div className="bg-card rounded-3xl border-2 border-dashed border-border hover:border-primary transition-all p-20 text-center group cursor-pointer" onClick={() => setShowDemoWidget(true)}>
+                <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary-hover rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:scale-110 transition-transform">
+                  <Play className="w-12 h-12 text-primary-foreground" />
                 </div>
-                <Button
-                  size="lg"
-                  onClick={() => setShowDemoWidget(true)}
-                  className="text-lg px-8 py-6 shadow-lg hover:shadow-xl"
-                >
+                <h3 className="text-2xl font-bold text-foreground mb-3">Avvia la demo interattiva</h3>
+                <p className="text-foreground-muted mb-8">Nessuna registrazione richiesta</p>
+                <Button size="lg" className="text-lg px-8 py-6 shadow-xl">
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Apri la demo live
+                  Inizia la demo
                 </Button>
-                <p className="text-sm text-foreground mt-4">Nessuna registrazione richiesta</p>
               </div>
             ) : (
-              <div className="bg-card rounded-2xl shadow-2xl p-4 md:p-6 border border-border">
+              <div className="bg-card rounded-3xl shadow-2xl p-8 border-2 border-primary/20">
                 <ChatWidget widgetId="demo" mode="inline" isDemo={true} />
               </div>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-4 h-4 text-primary" />
+          <div className="flex flex-wrap items-center justify-center gap-8 mt-12">
+            {[
+              { icon: CheckCircle, text: "Installazione 1-click" },
+              { icon: Code, text: "Compatibile con ogni sito" },
+              { icon: Zap, text: "100% personalizzabile" }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
+                <span className="font-semibold text-foreground">{item.text}</span>
               </div>
-              <span>Installazione 1-click</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                <Code className="w-4 h-4 text-primary" />
-              </div>
-              <span>Compatibile con qualsiasi sito</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                <Zap className="w-4 h-4 text-primary" />
-              </div>
-              <span>Personalizzabile al 100%</span>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section id="features" className="landing-section bg-background">
-        <div className="landing-container">
-          <div className="text-center space-y-4 md:space-y-5 mb-8 md:mb-12">
-            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
-              <Target className="w-3 h-3 mr-1" />
-              Funzionalità
+      {/* Features Grid - Full Width */}
+      <section id="features" className="py-24 lg:py-32 bg-background">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto mb-20">
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
+              <Target className="w-4 h-4 mr-2" />
+              Tutto incluso
             </Badge>
-            <div className="space-y-3">
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-                Tutto ciò che serve per generare incarichi, non solo contatti
-              </h2>
-              <p className="text-xl text-foreground max-w-3xl mx-auto">
-                Ogni funzione è pensata per trasformare la valutazione in un incarico reale,
-                eliminando richieste vaghe e perdite di tempo.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-6">
-            {/* Feature 1 */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-4 md:p-6 space-y-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <Database className="w-7 h-7 text-primary-foreground" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-foreground">
-                    Valutazioni basate su dati ufficiali
-                  </h3>
-                  <p className="text-foreground-muted leading-relaxed">
-                    Ogni stima è costruita su parametri reali e aggiornati, per aumentare credibilità
-                    e fiducia fin dal primo contatto.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Feature 2 */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-4 md:p-6 space-y-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <Target className="w-7 h-7 text-primary-foreground" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-foreground">
-                    Lead già qualificati
-                  </h3>
-                  <p className="text-foreground-muted leading-relaxed">
-                    DomusReport filtra subito i curiosi e consegna solo contatti con intenzione reale
-                    di vendere e parlare con l'agenzia.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Feature 3 */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-4 md:p-6 space-y-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <MessageSquare className="w-7 h-7 text-primary-foreground" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-foreground">
-                    Chat conversazionale guidata
-                  </h3>
-                  <p className="text-foreground-muted leading-relaxed">
-                    L'utente risponde passo dopo passo, senza moduli noiosi e senza abbandoni.
-                    Conversazione naturale che raccoglie tutti i dati essenziali.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Feature 4 */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-4 md:p-6 space-y-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <Users className="w-7 h-7 text-primary-foreground" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-foreground">
-                    CRM integrato
-                  </h3>
-                  <p className="text-foreground-muted leading-relaxed">
-                    Ogni lead ha uno stato chiaro: NEW → CONTACTED → INTERESTED → CONVERTED.
-                    Nessun contatto dimenticato, storico conversazioni sempre visibile.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Feature 5 */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-4 md:p-6 space-y-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <LineChart className="w-7 h-7 text-primary-foreground" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-foreground">
-                    Analytics in tempo reale
-                  </h3>
-                  <p className="text-foreground-muted leading-relaxed">
-                    Sai da dove arrivano le richieste e quali portano risultati concreti.
-                    Metriche live per ottimizzare le campagne.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Feature 6 */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-4 md:p-6 space-y-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <Sparkles className="w-7 h-7 text-primary-foreground" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-foreground">
-                    Personalizzazione Totale
-                  </h3>
-                  <p className="text-foreground-muted leading-relaxed">
-                    Widget, colori, logo e posizione adattati al tuo brand e al tuo sito.
-                    Multi-widget per domini diversi con configurazioni dedicate.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Setup Section */}
-      <section className="landing-section bg-surface">
-        <div className="landing-container max-w-6xl">
-          <div className="text-center space-y-3 mb-8 md:mb-12">
-            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
-              <Code className="w-3 h-3 mr-1" />
-              Setup
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-              Attivo in meno di 2 minuti
-            </h2>
-            <p className="text-lg text-foreground-muted">
-              Copi il codice, lo incolli e inizi subito a ricevere richieste.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 lg:gap-6">
-            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-4 md:p-6">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span className="text-foreground font-medium">Nessun tecnico</span>
-            </div>
-            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-4 md:p-6">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span className="text-foreground font-medium">Nessuna configurazione complessa</span>
-            </div>
-            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-4 md:p-6">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span className="text-foreground font-medium">Funziona su qualsiasi sito</span>
-            </div>
-            <div className="flex items-center gap-3 bg-background border border-border rounded-xl p-4 md:p-6">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span className="text-foreground font-medium">Installazione immediata</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="landing-section bg-surface-2">
-        <div className="landing-container">
-          <div className="text-center space-y-4 md:space-y-5 mb-8 md:mb-12">
-            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
-              <Zap className="w-3 h-3 mr-1" />
-              Semplice e Veloce
-            </Badge>
-            <div className="space-y-3">
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-                Dal sito al lead qualificato, in automatico
-              </h2>
-              <p className="text-xl text-foreground max-w-2xl mx-auto">
-                Dalla richiesta di valutazione alla conversazione in dashboard, senza intervento manuale.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 lg:gap-6">
-            {/* Step 1 */}
-            <div className="relative">
-              <div className="bg-card rounded-2xl p-4 md:p-6 shadow-lg border-2 border-border hover:border-primary transition-all h-full space-y-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl">
-                  1
-                </div>
-                <h3 className="text-lg font-bold text-foreground">L'utente chiede una valutazione</h3>
-                <p className="text-foreground-muted text-sm leading-relaxed">
-                  Il widget appare sul tuo sito e guida la conversazione come una chat naturale.
-                </p>
-              </div>
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                <ArrowRight className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative">
-              <div className="bg-card rounded-2xl p-4 md:p-6 shadow-lg border-2 border-border hover:border-primary transition-all h-full space-y-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl">
-                  2
-                </div>
-                <h3 className="text-lg font-bold text-foreground">Il sistema raccoglie i dati essenziali</h3>
-                <p className="text-foreground-muted text-sm leading-relaxed">
-                  Localizzazione, tipologia, stato dell'immobile e tutte le informazioni utili per la stima.
-                </p>
-              </div>
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                <ArrowRight className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative">
-              <div className="bg-card rounded-2xl p-4 md:p-6 shadow-lg border-2 border-border hover:border-primary transition-all h-full space-y-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl">
-                  3
-                </div>
-                <h3 className="text-lg font-bold text-foreground">La valutazione viene elaborata in tempo reale</h3>
-                <p className="text-foreground-muted text-sm leading-relaxed">
-                  La stima si basa su dati OMI ufficiali e parametri aggiornati per la tua zona.
-                </p>
-              </div>
-              <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                <ArrowRight className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-
-            {/* Step 4 */}
-            <div className="bg-card rounded-2xl p-4 md:p-6 shadow-lg border-2 border-border hover:border-primary transition-all h-full space-y-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-bold text-xl">
-                4
-              </div>
-              <h3 className="text-lg font-bold text-foreground">Il contatto entra nella dashboard</h3>
-              <p className="text-foreground-muted text-sm leading-relaxed">
-                Entra come lead qualificato con storico conversazioni e stato pronto per essere contattato.
-              </p>
-            </div>
-          </div>
-
-          <p className="text-center text-foreground mt-8 text-lg">
-            Tu trovi solo richieste complete, tracciate e utilizzabili.
-          </p>
-        </div>
-      </section>
-
-      {/* Free Trial Section */}
-      <section className="landing-section bg-background">
-        <div className="landing-container max-w-5xl text-center space-y-4">
-          <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
-            <Sparkles className="w-3 h-3 mr-1" />
-            Prova gratuita
-          </Badge>
-          <div className="space-y-3">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              14 giorni per capire se fa la differenza
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
+              Non solo lead.
+              <br />
+              <span className="text-primary">Incarichi concreti.</span>
             </h2>
             <p className="text-xl text-foreground-muted">
-              Durante la prova puoi vedere tutto in azione, con richieste reali dal tuo sito.
+              Ogni funzione è progettata per eliminare perdite di tempo e massimizzare conversioni
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-6">
-            <div className="flex items-center gap-3 bg-surface border border-border rounded-xl p-4 text-left">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span className="text-foreground">Installare il widget sul tuo sito</span>
-            </div>
-            <div className="flex items-center gap-3 bg-surface border border-border rounded-xl p-4 text-left">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span className="text-foreground">Ricevere valutazioni reali</span>
-            </div>
-            <div className="flex items-center gap-3 bg-surface border border-border rounded-xl p-4 text-left">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span className="text-foreground">Visualizzare lead e conversazioni</span>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Database,
+                title: "Valutazioni dati OMI",
+                description: "Stime basate su 133.000+ valori ufficiali per zona e CAP. Precisione che aumenta credibilità e fiducia.",
+                color: "from-blue-500 to-blue-600"
+              },
+              {
+                icon: Target,
+                title: "Lead pre-qualificati",
+                description: "Solo contatti con intenzione reale. Il sistema filtra curiosi e richieste vaghe automaticamente.",
+                color: "from-green-500 to-green-600"
+              },
+              {
+                icon: MessageSquare,
+                title: "Chat conversazionale AI",
+                description: "L'utente risponde naturalmente, senza form noiosi. GPT-4 estrae tutti i dati essenziali.",
+                color: "from-purple-500 to-purple-600"
+              },
+              {
+                icon: Users,
+                title: "CRM integrato",
+                description: "Workflow completo: NEW → CONTACTED → INTERESTED → CONVERTED. Nessun lead dimenticato.",
+                color: "from-orange-500 to-orange-600"
+              },
+              {
+                icon: LineChart,
+                title: "Analytics real-time",
+                description: "Traccia impressioni, conversioni, funnel completo. Ottimizza campagne con dati concreti.",
+                color: "from-pink-500 to-pink-600"
+              },
+              {
+                icon: Sparkles,
+                title: "100% customizzabile",
+                description: "Colori, logo, posizione widget adattati al tuo brand. Multi-widget per domini diversi.",
+                color: "from-cyan-500 to-cyan-600"
+              },
+              {
+                icon: Shield,
+                title: "Sicurezza & GDPR",
+                description: "Audit log completo, password hashing bcrypt, JWT con refresh. Totalmente conforme GDPR.",
+                color: "from-red-500 to-red-600"
+              },
+              {
+                icon: BarChart3,
+                title: "Report PDF automatici",
+                description: "Genera report valutazione professionali in PDF con un click. Invia ai clienti istantaneamente.",
+                color: "from-indigo-500 to-indigo-600"
+              },
+              {
+                icon: Globe,
+                title: "Integrazione universale",
+                description: "WordPress, Webflow, HTML - funziona ovunque con una riga di codice. Setup in 2 minuti.",
+                color: "from-teal-500 to-teal-600"
+              }
+            ].map((feature, idx) => (
+              <Card key={idx} className="border-2 border-border hover:border-primary hover:shadow-2xl transition-all duration-300 group overflow-hidden">
+                <CardContent className="p-8 space-y-5">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-xl`}>
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-foreground">{feature.title}</h3>
+                  <p className="text-foreground-muted leading-relaxed">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-
-          <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
-            <Link href="/register">
-              <Button size="lg" className="px-8 py-6 font-bold text-lg shadow-lg hover:shadow-xl">
-                Attiva la prova gratuita di 14 giorni
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-          </div>
-          <p className="text-sm text-foreground">Nessuna carta richiesta • Disattivi quando vuoi</p>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="landing-section bg-background">
-        <div className="landing-container">
-          <div className="text-center space-y-4 md:space-y-5 mb-8 md:mb-12">
-            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
-              <Sparkles className="w-3 h-3 mr-1" />
-              Senza vincoli
+      {/* Pricing - Full Width */}
+      <section id="pricing" className="py-24 lg:py-32 bg-surface">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto mb-20">
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Prezzi trasparenti
             </Badge>
-            <div className="space-y-3">
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-                Piani semplici, senza vincoli
-              </h2>
-              <p className="text-xl text-foreground max-w-2xl mx-auto">
-                Scegli il piano giusto per la tua agenzia e provalo 14 giorni senza carta di credito.
-              </p>
-            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
+              Piani senza vincoli,
+              <br />
+              <span className="text-primary">risultati concreti</span>
+            </h2>
+            <p className="text-xl text-foreground-muted">
+              Tutti i piani includono 14 giorni di prova gratuita. Nessuna carta richiesta.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Free Plan */}
-            <Card className="border-2 border-border hover:border-primary transition-all h-full">
-              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Free</h3>
-                  <p className="text-foreground-muted text-sm">Perfetto per testare il sistema</p>
-                </div>
-                <div className="flex items-end gap-1">
-                  <span className="text-5xl font-bold text-foreground">€0</span>
-                  <span className="text-foreground-muted mb-2">/mese</span>
+            <Card className="border-2 border-border hover:border-primary/50 transition-all">
+              <CardContent className="p-10 space-y-8">
+                <div>
+                  <h3 className="text-3xl font-black text-foreground mb-2">Free</h3>
+                  <p className="text-foreground-muted">Perfetto per testare</p>
                 </div>
 
-                <ul className="space-y-4 flex-1">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground"><strong>5 valutazioni</strong> al mese</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground"><strong>1 widget</strong></span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">CRM base</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Analytics base</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">14 giorni di prova gratuita</span>
-                  </li>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-6xl font-black text-foreground">€0</span>
+                  <span className="text-xl text-foreground-muted">/mese</span>
+                </div>
+
+                <ul className="space-y-4">
+                  {[
+                    "5 valutazioni/mese",
+                    "1 widget",
+                    "CRM base",
+                    "Analytics base",
+                    "14 giorni prova"
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                      <span className="text-foreground">{item}</span>
+                    </li>
+                  ))}
                 </ul>
 
                 <Link href="/register" className="block">
-                  <Button size="lg" variant="outline" className="w-full mt-4">
-                    Inizia Gratis
+                  <Button size="lg" variant="outline" className="w-full text-lg py-6">
+                    Inizia gratis
                   </Button>
                 </Link>
               </CardContent>
             </Card>
 
-            {/* Basic Plan */}
-            <Card className="border-2 border-primary shadow-xl relative h-full">
-              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
-                <div className="flex justify-center">
-                  <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                    Più Popolare
-                  </Badge>
-                </div>
-                <div className="space-y-2 text-center">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Basic</h3>
-                  <p className="text-foreground-muted text-sm">Per agenzie operative</p>
-                </div>
-                <div className="flex items-end gap-1 justify-center">
-                  <span className="text-5xl font-bold text-primary">€50</span>
-                  <span className="text-foreground-muted mb-2">/mese</span>
+            {/* Basic Plan - Highlighted */}
+            <Card className="border-2 border-primary shadow-2xl relative scale-105 lg:scale-110">
+              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground px-6 py-2 text-sm font-bold shadow-xl">
+                  PIÙ POPOLARE
+                </Badge>
+              </div>
+
+              <CardContent className="p-10 space-y-8 bg-gradient-to-b from-primary/5 to-transparent">
+                <div>
+                  <h3 className="text-3xl font-black text-primary mb-2">Basic</h3>
+                  <p className="text-foreground-muted">Per agenzie operative</p>
                 </div>
 
-                <ul className="space-y-4 flex-1">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground"><strong>50 valutazioni</strong> al mese</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground"><strong>3 widget</strong></span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">CRM completo</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Analytics avanzate</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Personalizzazione totale</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">14 giorni di prova gratuita</span>
-                  </li>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-6xl font-black text-primary">€50</span>
+                  <span className="text-xl text-foreground-muted">/mese</span>
+                </div>
+
+                <ul className="space-y-4">
+                  {[
+                    "50 valutazioni/mese",
+                    "3 widget",
+                    "CRM completo",
+                    "Analytics avanzate",
+                    "Personalizzazione totale",
+                    "Export CSV/Excel",
+                    "14 giorni prova"
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                      <span className="text-foreground font-medium">{item}</span>
+                    </li>
+                  ))}
                 </ul>
 
                 <Link href="/register" className="block">
-                  <Button size="lg" className="w-full mt-4">
-                    Inizia Ora
+                  <Button size="lg" className="w-full text-lg py-6 shadow-xl">
+                    Inizia ora
+                    <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
               </CardContent>
             </Card>
 
             {/* Premium Plan */}
-            <Card className="border-2 border-border hover:border-primary transition-all h-full">
-              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Premium</h3>
-                  <p className="text-foreground-muted text-sm">Per chi vuole il massimo controllo</p>
-                </div>
-                <div className="flex items-end gap-1">
-                  <span className="text-5xl font-bold text-foreground">€100</span>
-                  <span className="text-foreground-muted mb-2">/mese</span>
+            <Card className="border-2 border-border hover:border-primary/50 transition-all">
+              <CardContent className="p-10 space-y-8">
+                <div>
+                  <h3 className="text-3xl font-black text-foreground mb-2">Premium</h3>
+                  <p className="text-foreground-muted">Massimo controllo</p>
                 </div>
 
-                <ul className="space-y-4 flex-1">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground"><strong>150 valutazioni</strong> al mese</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground"><strong>10 widget</strong></span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">CRM avanzato</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Analytics in tempo reale</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">White-label</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">Supporto dedicato</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">14 giorni di prova gratuita</span>
-                  </li>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-6xl font-black text-foreground">€100</span>
+                  <span className="text-xl text-foreground-muted">/mese</span>
+                </div>
+
+                <ul className="space-y-4">
+                  {[
+                    "150 valutazioni/mese",
+                    "10 widget",
+                    "CRM avanzato",
+                    "Analytics real-time",
+                    "White-label",
+                    "Supporto prioritario",
+                    "Report PDF illimitati",
+                    "14 giorni prova"
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                      <span className="text-foreground">{item}</span>
+                    </li>
+                  ))}
                 </ul>
 
                 <Link href="/register" className="block">
-                  <Button size="lg" variant="outline" className="w-full mt-4">
-                    Inizia Ora
+                  <Button size="lg" variant="outline" className="w-full text-lg py-6">
+                    Inizia ora
                   </Button>
                 </Link>
               </CardContent>
             </Card>
           </div>
 
-          <p className="text-center text-foreground mt-8 md:mt-10">
-            Tutti i piani includono 14 giorni di prova gratuita • Nessuna carta richiesta
+          <p className="text-center text-foreground-muted mt-12 text-lg">
+            Tutti i piani • 14 giorni gratis • Nessuna carta richiesta • Cancella quando vuoi
           </p>
         </div>
       </section>
 
-      {/* Testimonial/Trust Section */}
-      <section className="landing-section bg-surface-2">
-        <div className="landing-container max-w-6xl">
-          <div className="text-center space-y-4 md:space-y-5 mb-8 md:mb-12">
-            <Badge className="mx-auto bg-primary/10 text-primary border-primary/20">
-              <Users className="w-3 h-3 mr-1" />
-              Agenzie Soddisfatte
+      {/* Testimonials - Full Width */}
+      <section className="py-24 lg:py-32 bg-background">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto mb-20">
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
+              <Users className="w-4 h-4 mr-2" />
+              Risultati reali
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-              Agenzie che lo usano ogni giorno
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
+              Agenzie che hanno smesso di
+              <br />
+              <span className="text-primary">rincorrere clienti</span>
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-6">
-            <Card className="shadow-lg h-full">
-              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-primary text-lg">★</span>
-                  ))}
-                </div>
-                <p className="text-foreground-muted mb-6 leading-relaxed italic">
-                  "In un mese abbiamo ricevuto decine di richieste reali. Il sistema lavora anche quando l'agenzia è chiusa."
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-full flex items-center justify-center text-primary-foreground font-bold">
-                    MC
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                quote: "In un mese abbiamo ricevuto 47 richieste concrete. Il sistema lavora anche di notte e nei weekend. Finalmente lead che rispondono al telefono.",
+                author: "Marco Colombo",
+                role: "Titolare",
+                company: "Immobiliare Milano Centro",
+                rating: 5,
+                stat: "+234% lead"
+              },
+              {
+                quote: "Valutazioni precise basate su dati veri e contatti già filtrati. Prima sprecavamo giorni dietro curiosi, ora contattiamo solo chi è davvero pronto.",
+                author: "Laura Rossi",
+                role: "Agente Senior",
+                company: "Agenzia Casa Tua",
+                rating: 5,
+                stat: "-67% tempo perso"
+              },
+              {
+                quote: "Il CRM integrato e le analytics ci permettono di tracciare ogni singolo lead. Sappiamo esattamente cosa funziona e dove investire. ROI misurabile.",
+                author: "Giuseppe Bianchi",
+                role: "Founder",
+                company: "Exclusive Properties",
+                rating: 5,
+                stat: "+156% conversioni"
+              }
+            ].map((testimonial, idx) => (
+              <Card key={idx} className="border-2 border-border hover:border-primary/50 hover:shadow-2xl transition-all">
+                <CardContent className="p-8 space-y-6">
+                  <div className="flex items-center gap-1">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-primary text-primary" />
+                    ))}
                   </div>
-                  <div>
-                    <div className="font-semibold text-foreground">Marco C.</div>
-                    <div className="text-sm text-foreground-muted">Agenzia Immobiliare Milano</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card className="shadow-lg h-full">
-              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-primary text-lg">★</span>
-                  ))}
-                </div>
-                <p className="text-foreground-muted mb-6 leading-relaxed italic">
-                  "Valutazioni chiare e contatti già filtrati. Meno perdite di tempo, più appuntamenti concreti."
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-full flex items-center justify-center text-primary-foreground font-bold">
-                    LR
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground">Laura R.</div>
-                    <div className="text-sm text-foreground-muted">Agenzia Immobiliare</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <p className="text-foreground-muted italic leading-relaxed text-lg">
+                    "{testimonial.quote}"
+                  </p>
 
-            <Card className="shadow-lg h-full">
-              <CardContent className="p-6 lg:p-6 flex flex-col h-full space-y-6">
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-primary text-lg">★</span>
-                  ))}
-                </div>
-                <p className="text-foreground-muted mb-6 leading-relaxed italic">
-                  "Il CRM integrato e le analytics ci permettono di tracciare ogni lead. Finalmente dati concreti per ottimizzare la strategia."
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-hover rounded-full flex items-center justify-center text-primary-foreground font-bold">
-                    GB
+                  <div className="pt-4 border-t border-border">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-hover rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg">
+                        {testimonial.author.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-bold text-foreground">{testimonial.author}</div>
+                        <div className="text-sm text-foreground-muted">{testimonial.role}</div>
+                        <div className="text-sm font-semibold text-primary">{testimonial.company}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-semibold text-foreground">Giuseppe Bianchi</div>
-                    <div className="text-sm text-foreground-muted">Immobiliare Exclusive</div>
+
+                  <div className="bg-primary/10 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-black text-primary">{testimonial.stat}</div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <section className="landing-section bg-gradient-to-br from-primary/20 via-primary/10 to-background text-foreground relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
-        <div className="landing-container max-w-4xl text-center relative z-10 space-y-6">
-          <div className="space-y-4">
-            <h2 className="text-4xl md:text-5xl font-extrabold">
-              Trasforma il tuo sito in uno strumento che lavora per te
+      {/* Final CTA - Full Width Gradient */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary-hover to-primary text-primary-foreground py-24 lg:py-32">
+        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:30px_30px]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+
+        <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
+          <div className="space-y-6">
+            <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black leading-tight">
+              Trasforma il tuo sito in una
+              <br />
+              macchina per incarichi
             </h2>
-            <p className="text-xl md:text-2xl text-foreground leading-relaxed">
-              Unisciti alle agenzie che hanno smesso di rincorrere clienti e hanno iniziato a selezionarli.
+            <p className="text-xl sm:text-2xl opacity-90 max-w-3xl mx-auto leading-relaxed">
+              Unisciti alle agenzie che hanno smesso di inseguire clienti e hanno iniziato a selezionarli.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link href="/register">
               <Button
                 size="lg"
-                className="font-bold text-lg px-12 py-6 shadow-2xl hover:shadow-3xl transition-all"
+                variant="secondary"
+                className="text-lg px-12 py-8 font-bold shadow-2xl hover:shadow-3xl transition-all text-primary group"
               >
-                Attiva la prova gratuita di 14 giorni
-                <ArrowRight className="w-5 h-5 ml-2" />
+                Prova 14 giorni gratis
+                <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-foreground">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span>Nessuna carta richiesta</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span>Setup immediato</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span>Disattivi quando vuoi</span>
-            </div>
+          <div className="flex flex-wrap items-center justify-center gap-8 pt-8">
+            {[
+              { icon: CheckCircle, text: "Nessuna carta richiesta" },
+              { icon: Clock, text: "Setup in 2 minuti" },
+              { icon: Shield, text: "Cancella quando vuoi" }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-3">
+                <item.icon className="w-6 h-6 opacity-90" />
+                <span className="font-semibold text-lg opacity-90">{item.text}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-12 border-t border-white/20">
+            <p className="text-lg opacity-75">
+              Dubbi? Contattaci:{" "}
+              <a href="mailto:support@domusreport.com" className="font-bold underline hover:opacity-80 transition-opacity">
+                support@domusreport.com
+              </a>
+            </p>
           </div>
         </div>
       </section>
 
       <Footer />
+
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   )
 }
