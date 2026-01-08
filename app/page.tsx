@@ -26,11 +26,7 @@ import {
   TrendingUp,
   BarChart3,
   Globe,
-  HeartHandshake,
-  Phone,
-  Mail,
   Award,
-  Building2,
   Star,
   ChevronRight,
   Play
@@ -44,7 +40,7 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero Section - Full Width Modern */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background">
+      <section className="relative w-full overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse opacity-30" />
@@ -52,25 +48,25 @@ export default function LandingPage() {
           <div className="absolute bottom-20 right-1/3 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse opacity-25" style={{ animationDelay: '4s' }} />
         </div>
 
-        <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="relative w-full px-4 sm:px-6 lg:px-12 xl:px-20 py-16 sm:py-20 lg:py-28 xl:py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 xl:gap-20 items-center max-w-[1800px] mx-auto">
             {/* Left Column - Content */}
-            <div className="space-y-8 lg:space-y-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
-                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-                <span className="text-sm font-semibold text-primary">Piattaforma AI per Agenzie Immobiliari</span>
+            <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-primary/10 border border-primary/20 rounded-full">
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary animate-pulse" />
+                <span className="text-xs sm:text-sm font-semibold text-primary">Piattaforma AI per Agenzie Immobiliari</span>
               </div>
 
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] tracking-tight">
-                Trasforma il tuo sito in una{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-hover">
-                  macchina per incarichi
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] tracking-tight">
+                Trasforma il tuo sito<br className="hidden sm:block" /> in una{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-hover inline-block">
+                  macchina<br className="sm:hidden" /> per incarichi
                 </span>
               </h1>
 
-              <p className="text-xl sm:text-2xl text-foreground-muted leading-relaxed max-w-2xl">
-                Smetti di inseguire clienti e perdere tempo in valutazioni inutili.
-                <strong className="text-foreground"> DomusReport lavora 24/7</strong> sul tuo sito e raccoglie solo lead pronti a firmare.
+              <p className="text-lg sm:text-xl lg:text-2xl text-foreground-muted leading-relaxed">
+                Smetti di inseguire clienti e perdere tempo in valutazioni inutili.{" "}
+                <strong className="text-foreground">DomusReport lavora 24/7</strong> sul tuo sito e raccoglie solo lead pronti a firmare.
               </p>
 
               {/* Feature Pills */}
@@ -93,7 +89,7 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/register" className="group">
                   <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-7 font-bold shadow-2xl hover:shadow-primary/50 transition-all duration-300">
-                    Prova 14 giorni gratis
+                    Prova 7 giorni gratis
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
@@ -241,52 +237,52 @@ export default function LandingPage() {
       </section>
 
       {/* Social Proof Strip - Full Width */}
-      <section className="bg-surface border-y border-border py-12">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center space-y-2">
-              <div className="text-4xl font-black text-primary">1.200+</div>
-              <div className="text-sm font-medium text-foreground-muted">Lead generati</div>
+      <section className="w-full bg-surface border-y border-border py-8 sm:py-10 lg:py-12">
+        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 max-w-[1800px] mx-auto">
+            <div className="text-center space-y-1 sm:space-y-2">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary">1.200+</div>
+              <div className="text-xs sm:text-sm font-medium text-foreground-muted">Lead generati</div>
             </div>
-            <div className="text-center space-y-2">
-              <div className="text-4xl font-black text-primary">98%</div>
-              <div className="text-sm font-medium text-foreground-muted">Precisione valutazioni</div>
+            <div className="text-center space-y-1 sm:space-y-2">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary">98%</div>
+              <div className="text-xs sm:text-sm font-medium text-foreground-muted">Precisione valutazioni</div>
             </div>
-            <div className="text-center space-y-2">
-              <div className="text-4xl font-black text-primary">24/7</div>
-              <div className="text-sm font-medium text-foreground-muted">Disponibilità</div>
+            <div className="text-center space-y-1 sm:space-y-2">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary">24/7</div>
+              <div className="text-xs sm:text-sm font-medium text-foreground-muted">Disponibilità</div>
             </div>
-            <div className="text-center space-y-2">
-              <div className="text-4xl font-black text-primary">2 min</div>
-              <div className="text-sm font-medium text-foreground-muted">Setup completo</div>
+            <div className="text-center space-y-1 sm:space-y-2">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary">2 min</div>
+              <div className="text-xs sm:text-sm font-medium text-foreground-muted">Setup completo</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Problem Section - Full Width Dark */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-foreground to-foreground/95 text-background py-24 lg:py-32">
+      <section className="relative w-full overflow-hidden bg-gradient-to-br from-foreground to-foreground/95 text-background py-16 sm:py-20 lg:py-24 xl:py-32">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:30px_30px]" />
 
-        <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1800px] mx-auto">
           <div className="text-center max-w-4xl mx-auto mb-16">
             <Badge className="mb-6 bg-background/10 text-background border-background/20 backdrop-blur-sm">
               <AlertTriangle className="w-4 h-4 mr-2" />
               Il vero problema
             </Badge>
 
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 leading-tight">
-              Il problema non sono le richieste
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 leading-tight">
+              Il problema non sono<br className="hidden sm:block" /> le richieste
             </h2>
-            <p className="text-3xl sm:text-4xl font-bold text-primary mb-4">
+            <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 sm:mb-4">
               Sono le richieste sbagliate
             </p>
-            <p className="text-xl text-background/70 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-background/70 max-w-3xl mx-auto px-4">
               Ogni giorno sprechi ore preziose dietro contatti vaghi, curiosi senza intenzione, e persone che spariscono dopo la valutazione.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {[
               {
                 icon: MessageSquare,
@@ -334,24 +330,23 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works - Full Width */}
-      <section className="py-24 lg:py-32 bg-background">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-background">
+        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1800px] mx-auto">
           <div className="text-center max-w-4xl mx-auto mb-20">
             <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
               <Zap className="w-4 h-4 mr-2" />
               Come funziona
             </Badge>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
-              Dal click al lead qualificato
-              <br />
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
+              Dal click al lead qualificato<br className="hidden sm:block" />{" "}
               <span className="text-primary">in automatico</span>
             </h2>
-            <p className="text-xl text-foreground-muted">
+            <p className="text-lg sm:text-xl text-foreground-muted px-4">
               Il sistema lavora 24/7 mentre tu ti concentri sugli incarichi veri
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 relative">
             {/* Connection Line */}
             <div className="hidden lg:block absolute top-24 left-0 right-0 h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
 
@@ -417,19 +412,18 @@ export default function LandingPage() {
       </section>
 
       {/* Demo Section - Full Width */}
-      <section id="demo" className="py-24 lg:py-32 bg-surface-2">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="demo" className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-surface-2">
+        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1400px] mx-auto">
           <div className="text-center mb-16">
             <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
               <Smartphone className="w-4 h-4 mr-2" />
               Demo Live
             </Badge>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
-              Prova esattamente ciò che vivranno
-              <br />
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
+              Prova esattamente ciò<br className="hidden sm:block" /> che vivranno{" "}
               <span className="text-primary">i tuoi clienti</span>
             </h2>
-            <p className="text-xl text-foreground-muted max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-foreground-muted max-w-3xl mx-auto px-4">
               Questo è lo stesso widget che installerai sul tuo sito. Stessa conversazione, stesso flusso, stesso risultato.
             </p>
           </div>
@@ -472,24 +466,23 @@ export default function LandingPage() {
       </section>
 
       {/* Features Grid - Full Width */}
-      <section id="features" className="py-24 lg:py-32 bg-background">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="features" className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-background">
+        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1800px] mx-auto">
           <div className="text-center max-w-4xl mx-auto mb-20">
             <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
               <Target className="w-4 h-4 mr-2" />
               Tutto incluso
             </Badge>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
-              Non solo lead.
-              <br />
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
+              Non solo lead.<br className="hidden sm:block" />{" "}
               <span className="text-primary">Incarichi concreti.</span>
             </h2>
-            <p className="text-xl text-foreground-muted">
+            <p className="text-lg sm:text-xl text-foreground-muted px-4">
               Ogni funzione è progettata per eliminare perdite di tempo e massimizzare conversioni
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
                 icon: Database,
@@ -547,7 +540,7 @@ export default function LandingPage() {
               }
             ].map((feature, idx) => (
               <Card key={idx} className="border-2 border-border hover:border-primary hover:shadow-2xl transition-all duration-300 group overflow-hidden">
-                <CardContent className="p-8 space-y-5">
+                <CardContent className="p-6 sm:p-8 space-y-4 sm:space-y-5">
                   <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-xl`}>
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
@@ -561,27 +554,26 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing - Full Width */}
-      <section id="pricing" className="py-24 lg:py-32 bg-surface">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="pricing" className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-surface">
+        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1600px] mx-auto">
           <div className="text-center max-w-4xl mx-auto mb-20">
             <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
               <Sparkles className="w-4 h-4 mr-2" />
               Prezzi trasparenti
             </Badge>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
-              Piani senza vincoli,
-              <br />
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
+              Piani senza vincoli,<br className="hidden sm:block" />{" "}
               <span className="text-primary">risultati concreti</span>
             </h2>
-            <p className="text-xl text-foreground-muted">
-              Tutti i piani includono 14 giorni di prova gratuita. Nessuna carta richiesta.
+            <p className="text-lg sm:text-xl text-foreground-muted px-4">
+              Tutti i piani includono 7 giorni di prova gratuita. Nessuna carta richiesta.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Free Plan */}
             <Card className="border-2 border-border hover:border-primary/50 transition-all">
-              <CardContent className="p-10 space-y-8">
+              <CardContent className="p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8">
                 <div>
                   <h3 className="text-3xl font-black text-foreground mb-2">Free</h3>
                   <p className="text-foreground-muted">Perfetto per testare</p>
@@ -598,7 +590,7 @@ export default function LandingPage() {
                     "1 widget",
                     "CRM base",
                     "Analytics base",
-                    "14 giorni prova"
+                    "7 giorni prova"
                   ].map((item, idx) => (
                     <li key={idx} className="flex items-center gap-3">
                       <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
@@ -616,14 +608,14 @@ export default function LandingPage() {
             </Card>
 
             {/* Basic Plan - Highlighted */}
-            <Card className="border-2 border-primary shadow-2xl relative scale-105 lg:scale-110">
-              <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground px-6 py-2 text-sm font-bold shadow-xl">
+            <Card className="border-2 border-primary shadow-2xl relative lg:scale-105">
+              <div className="absolute -top-4 sm:-top-5 left-1/2 transform -translate-x-1/2">
+                <Badge className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-bold shadow-xl">
                   PIÙ POPOLARE
                 </Badge>
               </div>
 
-              <CardContent className="p-10 space-y-8 bg-gradient-to-b from-primary/5 to-transparent">
+              <CardContent className="p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8 bg-gradient-to-b from-primary/5 to-transparent pt-8 sm:pt-10">
                 <div>
                   <h3 className="text-3xl font-black text-primary mb-2">Basic</h3>
                   <p className="text-foreground-muted">Per agenzie operative</p>
@@ -642,7 +634,7 @@ export default function LandingPage() {
                     "Analytics avanzate",
                     "Personalizzazione totale",
                     "Export CSV/Excel",
-                    "14 giorni prova"
+                    "7 giorni prova"
                   ].map((item, idx) => (
                     <li key={idx} className="flex items-center gap-3">
                       <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
@@ -662,7 +654,7 @@ export default function LandingPage() {
 
             {/* Premium Plan */}
             <Card className="border-2 border-border hover:border-primary/50 transition-all">
-              <CardContent className="p-10 space-y-8">
+              <CardContent className="p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8">
                 <div>
                   <h3 className="text-3xl font-black text-foreground mb-2">Premium</h3>
                   <p className="text-foreground-muted">Massimo controllo</p>
@@ -682,7 +674,7 @@ export default function LandingPage() {
                     "White-label",
                     "Supporto prioritario",
                     "Report PDF illimitati",
-                    "14 giorni prova"
+                    "7 giorni prova"
                   ].map((item, idx) => (
                     <li key={idx} className="flex items-center gap-3">
                       <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
@@ -701,27 +693,26 @@ export default function LandingPage() {
           </div>
 
           <p className="text-center text-foreground-muted mt-12 text-lg">
-            Tutti i piani • 14 giorni gratis • Nessuna carta richiesta • Cancella quando vuoi
+            Tutti i piani • 7 giorni gratis • Nessuna carta richiesta • Cancella quando vuoi
           </p>
         </div>
       </section>
 
       {/* Testimonials - Full Width */}
-      <section className="py-24 lg:py-32 bg-background">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-background">
+        <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1800px] mx-auto">
           <div className="text-center max-w-4xl mx-auto mb-20">
             <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
               <Users className="w-4 h-4 mr-2" />
               Risultati reali
             </Badge>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6">
-              Agenzie che hanno smesso di
-              <br />
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
+              Agenzie che hanno smesso<br className="hidden sm:block" /> di{" "}
               <span className="text-primary">rincorrere clienti</span>
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
                 quote: "In un mese abbiamo ricevuto 47 richieste concrete. Il sistema lavora anche di notte e nei weekend. Finalmente lead che rispondono al telefono.",
@@ -749,7 +740,7 @@ export default function LandingPage() {
               }
             ].map((testimonial, idx) => (
               <Card key={idx} className="border-2 border-border hover:border-primary/50 hover:shadow-2xl transition-all">
-                <CardContent className="p-8 space-y-6">
+                <CardContent className="p-6 sm:p-8 space-y-5 sm:space-y-6">
                   <div className="flex items-center gap-1">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="w-5 h-5 fill-primary text-primary" />
@@ -784,30 +775,28 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA - Full Width Gradient */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary-hover to-primary text-primary-foreground py-24 lg:py-32">
+      <section className="relative w-full overflow-hidden bg-gradient-to-br from-primary via-primary-hover to-primary text-primary-foreground py-16 sm:py-20 lg:py-24 xl:py-32">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:30px_30px]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
 
-        <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
-          <div className="space-y-6">
-            <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black leading-tight">
-              Trasforma il tuo sito in una
-              <br />
-              macchina per incarichi
+        <div className="relative w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1400px] mx-auto text-center space-y-8 sm:space-y-10 lg:space-y-12">
+          <div className="space-y-4 sm:space-y-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
+              Trasforma il tuo sito<br className="hidden sm:block" /> in una macchina<br className="hidden sm:block" /> per incarichi
             </h2>
-            <p className="text-xl sm:text-2xl opacity-90 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl lg:text-2xl opacity-90 max-w-3xl mx-auto leading-relaxed px-4">
               Unisciti alle agenzie che hanno smesso di inseguire clienti e hanno iniziato a selezionarli.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
             <Link href="/register">
               <Button
                 size="lg"
                 variant="secondary"
                 className="text-lg px-12 py-8 font-bold shadow-2xl hover:shadow-3xl transition-all text-primary group"
               >
-                Prova 14 giorni gratis
+                Prova 7 giorni gratis
                 <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
