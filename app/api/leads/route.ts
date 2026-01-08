@@ -200,6 +200,22 @@ export async function POST(request: NextRequest) {
     // 2. Il CAP esiste nel database
     // 3. La città dedotta dal CAP CORRISPONDE alla città fornita dall'utente (case-insensitive)
     const cityFromCAP = body.postalCode ? getCityFromPostalCode(body.postalCode) : null
+
+    // Debug dettagliato per capire perché userDataReliable potrebbe essere false
+    console.log('[POST /api/leads] UserDataReliable debug:', {
+      hasCity: !!body.city,
+      cityValue: body.city,
+      cityType: typeof body.city,
+      hasPostalCode: !!body.postalCode,
+      postalCodeValue: body.postalCode,
+      postalCodeType: typeof body.postalCode,
+      hasCityFromCAP: !!cityFromCAP,
+      cityFromCAPValue: cityFromCAP,
+      normalizedUserCity: body.city?.toLowerCase().trim(),
+      normalizedCAPCity: cityFromCAP?.toLowerCase().trim(),
+      citiesMatch: body.city && cityFromCAP ? body.city.toLowerCase().trim() === cityFromCAP.toLowerCase().trim() : false
+    })
+
     const userDataReliable = body.city &&
                             body.postalCode &&
                             cityFromCAP &&
@@ -366,7 +382,14 @@ export async function POST(request: NextRequest) {
       telefonoType: typeof phoneValidation.sanitized,
       telefonoIsNull: phoneValidation.sanitized === null,
       telefonoIsEmptyString: phoneValidation.sanitized === "",
-      telefonoValue: JSON.stringify(phoneValidation.sanitized)
+      telefonoValue: JSON.stringify(phoneValidation.sanitized),
+      finalAddress,
+      finalCity,
+      finalPostalCode,
+      finalNeighborhood,
+      finalLatitude,
+      finalLongitude,
+      addressSource: userDataReliable ? 'USER_DATA' : 'GEOCODING'
     })
 
     // Create lead with related data in a transaction
