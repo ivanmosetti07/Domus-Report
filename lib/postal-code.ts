@@ -14,7 +14,7 @@ interface PostalCodeRange {
 const POSTAL_CODE_RANGES: PostalCodeRange[] = [
   // Lazio - Area metropolitana Roma (CAP specifici prima dei range generici)
   // Castelli Romani e Litorale
-  { min: "00040", max: "00040", city: "Ariccia", province: "RM" },
+  { min: "00040", max: "00040", city: "Ardea", province: "RM" },
   { min: "00041", max: "00041", city: "Albano Laziale", province: "RM" },
   { min: "00042", max: "00042", city: "Anzio", province: "RM" },
   { min: "00043", max: "00043", city: "Ciampino", province: "RM" },

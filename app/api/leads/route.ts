@@ -13,6 +13,7 @@ import {
 } from "@/lib/validation"
 import { geocodeAddress } from "@/lib/geocoding"
 import { incrementValuationCount, checkValuationLimit } from "@/lib/subscription-limits"
+import { inferCity, getCityFromPostalCode } from "@/lib/postal-code"
 
 export interface CreateLeadRequest {
   widgetId: string
@@ -181,11 +182,36 @@ export async function POST(request: NextRequest) {
       hasCoordinates: !!(geocodeResult.latitude && geocodeResult.longitude)
     })
 
-    // Use geocoded data (fallback to user input if geocoding didn't provide everything)
-    const finalAddress = geocodeResult.formattedAddress || addressInput
-    const finalCity = geocodeResult.city || body.city
-    const finalPostalCode = geocodeResult.postalCode || body.postalCode
-    const finalNeighborhood = geocodeResult.neighborhood || body.neighborhood
+    // MIGLIORA LOGICA: Non fidarsi ciecamente del geocoding
+    // Se l'utente ha fornito città + CAP, e il CAP è corretto per quella città,
+    // allora MANTIENI i dati dell'utente e NON sovrascrivere con il geocoding
+    // (che può essere sbagliato per indirizzi ambigui come "via Chioggia" che esiste in più città)
+
+    // Deduce la città corretta dal CAP se fornito
+    const inferredCity = inferCity({
+      city: body.city,
+      postalCode: body.postalCode,
+      address: body.address,
+      neighborhood: body.neighborhood
+    })
+
+    // Verifica se i dati dell'utente sono affidabili
+    const userDataReliable = body.city && body.postalCode && getCityFromPostalCode(body.postalCode)
+
+    console.log('[POST /api/leads] City inference:', {
+      userCity: body.city,
+      userPostalCode: body.postalCode,
+      inferredCity,
+      geocodedCity: geocodeResult.city,
+      userDataReliable,
+      willUse: userDataReliable ? inferredCity : geocodeResult.city
+    })
+
+    // Use user data se affidabile, altrimenti geocoded data (fallback to user input if geocoding didn't provide everything)
+    const finalAddress = userDataReliable ? addressInput : (geocodeResult.formattedAddress || addressInput)
+    const finalCity = userDataReliable ? (inferredCity || body.city) : (geocodeResult.city || body.city)
+    const finalPostalCode = body.postalCode || geocodeResult.postalCode
+    const finalNeighborhood = body.neighborhood || geocodeResult.neighborhood
     const finalLatitude = geocodeResult.latitude
     const finalLongitude = geocodeResult.longitude
 
