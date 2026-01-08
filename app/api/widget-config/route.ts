@@ -94,6 +94,8 @@ export async function POST(request: Request) {
       showBorder,
       customCss,
       logoUrl,
+      sendButtonColor,
+      sendButtonIconColor,
     } = body
 
     // Validazioni
@@ -158,6 +160,8 @@ export async function POST(request: Request) {
         showBorder: showBorder !== undefined ? showBorder : true,
         customCss: customCss ? sanitizeCSS(customCss) : undefined,
         logoUrl: logoUrl || undefined,
+        sendButtonColor: sendButtonColor || undefined,
+        sendButtonIconColor: sendButtonIconColor || undefined,
       },
     })
 

@@ -58,6 +58,8 @@ interface WidgetConfig {
   showBorder: boolean
   customCss?: string
   logoUrl?: string
+  sendButtonColor?: string
+  sendButtonIconColor?: string
 }
 
 interface WidgetConfigModalProps {
@@ -84,6 +86,8 @@ const defaultConfig: Omit<WidgetConfig, 'id' | 'widgetId'> = {
   inlineHeight: '600px',
   showHeader: true,
   showBorder: true,
+  sendButtonColor: '#2563eb',
+  sendButtonIconColor: '#ffffff',
 }
 
 export function WidgetConfigModal({
@@ -469,6 +473,48 @@ export function WidgetConfigModal({
                         value={config.textColor || '#1f2937'}
                         onChange={(e) => setConfig({ ...config, textColor: e.target.value })}
                         placeholder="#1f2937"
+                        className="font-mono"
+                        disabled={!canBrand}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sendButtonColor">Colore Pulsante Invio</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="sendButtonColor"
+                        type="color"
+                        value={config.sendButtonColor || config.primaryColor || '#2563eb'}
+                        onChange={(e) => setConfig({ ...config, sendButtonColor: e.target.value })}
+                        className="w-12 h-10 p-1 cursor-pointer"
+                        disabled={!canBrand}
+                      />
+                      <Input
+                        value={config.sendButtonColor || config.primaryColor || '#2563eb'}
+                        onChange={(e) => setConfig({ ...config, sendButtonColor: e.target.value })}
+                        placeholder="#2563eb"
+                        className="font-mono"
+                        disabled={!canBrand}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="sendButtonIconColor">Colore Icona Invio</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="sendButtonIconColor"
+                        type="color"
+                        value={config.sendButtonIconColor || '#ffffff'}
+                        onChange={(e) => setConfig({ ...config, sendButtonIconColor: e.target.value })}
+                        className="w-12 h-10 p-1 cursor-pointer"
+                        disabled={!canBrand}
+                      />
+                      <Input
+                        value={config.sendButtonIconColor || '#ffffff'}
+                        onChange={(e) => setConfig({ ...config, sendButtonIconColor: e.target.value })}
+                        placeholder="#ffffff"
                         className="font-mono"
                         disabled={!canBrand}
                       />

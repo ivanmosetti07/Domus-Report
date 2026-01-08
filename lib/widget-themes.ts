@@ -13,6 +13,8 @@ export interface WidgetTheme {
   buttonStyle: 'flat' | 'rounded' | 'pill'
   bubblePosition: 'bottom-right' | 'bottom-left' | 'bottom-center'
   bubbleAnimation: 'pulse' | 'bounce' | 'none'
+  sendButtonColor?: string
+  sendButtonIconColor?: string
 }
 
 export const themes: Record<string, WidgetTheme> = {
@@ -28,6 +30,8 @@ export const themes: Record<string, WidgetTheme> = {
     buttonStyle: 'rounded',
     bubblePosition: 'bottom-right',
     bubbleAnimation: 'pulse',
+    sendButtonColor: '#2563eb',
+    sendButtonIconColor: '#ffffff',
   },
   minimal: {
     name: 'minimal',
@@ -41,6 +45,8 @@ export const themes: Record<string, WidgetTheme> = {
     buttonStyle: 'flat',
     bubblePosition: 'bottom-right',
     bubbleAnimation: 'none',
+    sendButtonColor: '#000000',
+    sendButtonIconColor: '#ffffff',
   },
   modern: {
     name: 'modern',
@@ -54,6 +60,8 @@ export const themes: Record<string, WidgetTheme> = {
     buttonStyle: 'pill',
     bubblePosition: 'bottom-right',
     bubbleAnimation: 'bounce',
+    sendButtonColor: '#7c3aed',
+    sendButtonIconColor: '#ffffff',
   },
   elegant: {
     name: 'elegant',
@@ -67,6 +75,8 @@ export const themes: Record<string, WidgetTheme> = {
     buttonStyle: 'rounded',
     bubblePosition: 'bottom-right',
     bubbleAnimation: 'pulse',
+    sendButtonColor: '#0f766e',
+    sendButtonIconColor: '#ffffff',
   },
   dark: {
     name: 'dark',
@@ -80,6 +90,8 @@ export const themes: Record<string, WidgetTheme> = {
     buttonStyle: 'rounded',
     bubblePosition: 'bottom-right',
     bubbleAnimation: 'pulse',
+    sendButtonColor: '#3b82f6',
+    sendButtonIconColor: '#ffffff',
   },
 }
 

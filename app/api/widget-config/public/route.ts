@@ -41,6 +41,8 @@ export async function GET(request: Request) {
         showBorder: true,
         customCss: null,
         logoUrl: null,
+        sendButtonColor: '#3b82f6',
+        sendButtonIconColor: '#ffffff',
       }
       return NextResponse.json({ widgetConfig: demoConfig })
     }
@@ -71,6 +73,8 @@ export async function GET(request: Request) {
         showBorder: true,
         customCss: true,
         logoUrl: true,
+        sendButtonColor: true,
+        sendButtonIconColor: true,
         // Non esponiamo agencyId per privacy
       },
     })

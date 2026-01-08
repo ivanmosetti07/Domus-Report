@@ -25,6 +25,8 @@ export interface WidgetThemeConfig {
   showHeader?: boolean
   showBorder?: boolean
   inlineHeight?: string
+  sendButtonColor?: string
+  sendButtonIconColor?: string
 }
 
 interface ChatWidgetProps {
@@ -92,6 +94,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     showBorder = true,
     inlineHeight = '600px',
     bubblePosition = 'bottom-right',
+    sendButtonColor,
+    sendButtonIconColor = '#ffffff',
   } = theme
 
   // CSS variables for theming
@@ -1100,13 +1104,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             size="icon"
             disabled={isInputDisabled || !inputValue.trim()}
             style={{
-              backgroundColor: primaryColor,
+              backgroundColor: sendButtonColor || primaryColor,
               width: 'clamp(2.5rem, 10vw, 2.75rem)',
               height: 'clamp(2.5rem, 10vw, 2.75rem)'
             }}
             aria-label="Invia messaggio"
           >
             <Send style={{
+              color: sendButtonIconColor,
               width: 'clamp(1.125rem, 4vw, 1.25rem)',
               height: 'clamp(1.125rem, 4vw, 1.25rem)'
             }} />
