@@ -72,7 +72,7 @@ export default function LandingPage() {
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
                   <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">AI Conversazionale GPT-4</span>
+                  <span className="text-sm font-medium">AI Conversazionale Avanzata</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
                   <Zap className="w-4 h-4 text-primary" />
@@ -137,7 +137,7 @@ export default function LandingPage() {
                         </div>
                         <div>
                           <h3 className="font-bold text-lg">AI Assistant Immobiliare</h3>
-                          <p className="text-sm opacity-90">GPT-4 • Valutazione Real-Time</p>
+                          <p className="text-sm opacity-90">Intelligenza Artificiale • Valutazione Real-Time</p>
                         </div>
                       </div>
                     </div>
@@ -360,7 +360,7 @@ export default function LandingPage() {
                 step: "02",
                 icon: MessageSquare,
                 title: "AI qualifica conversando",
-                description: "GPT-4 fa domande intelligenti, estrae indirizzo, tipologia, mq, piano, stato - tutto dialogando."
+                description: "L'AI fa domande intelligenti, estrae indirizzo, tipologia, mq, piano, stato - tutto dialogando."
               },
               {
                 step: "03",
@@ -485,7 +485,7 @@ export default function LandingPage() {
             {[
               {
                 icon: Sparkles,
-                title: "AI Conversazionale GPT-4",
+                title: "AI Conversazionale Avanzata",
                 description: "Chatbot che dialoga naturalmente, fa domande intelligenti ed estrae tutti i dati necessari senza form.",
                 color: "from-purple-500 to-purple-600"
               },
@@ -803,7 +803,7 @@ export default function LandingPage() {
 
           <div className="flex flex-wrap items-center justify-center gap-8 pt-8">
             {[
-              { icon: Sparkles, text: "AI GPT-4 inclusa" },
+              { icon: Sparkles, text: "AI Avanzata inclusa" },
               { icon: Zap, text: "Valutazioni real-time" },
               { icon: CheckCircle, text: "7 giorni gratis" }
             ].map((item, idx) => (
