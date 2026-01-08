@@ -53,7 +53,7 @@ export default function LandingPage() {
             <div className="space-y-6 sm:space-y-8 lg:space-y-10">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-primary/10 border border-primary/20 rounded-full">
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary animate-pulse" />
-                <span className="text-xs sm:text-sm font-semibold text-primary">Piattaforma AI per Agenzie Immobiliari</span>
+                <span className="text-xs sm:text-sm font-semibold text-primary">Il Primo Chatbot AI Conversazionale per Agenti Immobiliari</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] tracking-tight">
