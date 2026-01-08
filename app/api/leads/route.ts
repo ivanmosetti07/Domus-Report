@@ -156,7 +156,9 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Sanitize and validate property data using geocoding
+    // IMPORTANTE: L'indirizzo serve SOLO per PDF e database, NON per la valutazione OMI
+    // La valutazione OMI si basa esclusivamente su: CAP + città + superficie + caratteristiche immobile
+    // Il geocoding serve SOLO per ottenere coordinate opzionali (mappa) - NON è bloccante se città+CAP sono corretti
     const addressInput = sanitizeString(body.address || "")
 
     if (!addressInput) {
@@ -167,6 +169,7 @@ export async function POST(request: NextRequest) {
     }
 
     // STEP 1: Verifica affidabilità dati utente PRIMA del geocoding
+    // Se città+CAP sono coerenti, i dati sono sufficienti per la valutazione OMI
     // Deduce la città corretta dal CAP se fornito
     const inferredCity = inferCity({
       city: body.city,
@@ -238,24 +241,32 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Gestione fallimento geocoding
+    // STEP 3: Gestione fallimento geocoding
+    // IMPORTANTE: Il geocoding NON è bloccante quando città+CAP sono corretti
+    // perché la valutazione OMI si basa su città+CAP, NON sull'indirizzo specifico
     if (!geocodeResult) {
       if (userDataReliable) {
-        // Se dati utente sono affidabili, permetti il salvataggio senza coordinate
-        console.log('[POST /api/leads] ⚠️ Geocoding failed but user data is reliable. Proceeding without coordinates.')
+        // ✅ Dati città+CAP corretti → PROCEDI anche senza coordinate
+        // L'indirizzo verrà salvato come fornito dall'utente (per PDF/database)
+        // La valutazione OMI funzionerà normalmente con città+CAP
+        console.log('[POST /api/leads] ⚠️ Geocoding failed but user data is reliable (city+CAP valid).')
+        console.log('[POST /api/leads] ✅ Proceeding without coordinates - valuation will work with city+CAP')
+
         // Crea un geocodeResult fittizio con i dati utente
         geocodeResult = {
           address: addressInput,
           city: inferredCity || body.city || '',
           neighborhood: body.neighborhood,
           postalCode: body.postalCode,
-          latitude: 0, // Coordinate nulle - verranno gestite dopo
+          latitude: 0, // Coordinate nulle - verranno salvate come null
           longitude: 0,
           formattedAddress: `${addressInput}, ${inferredCity || body.city}, ${body.postalCode || ''}`
         }
       } else {
-        // Dati utente non affidabili E geocoding fallito = errore
-        console.log('[POST /api/leads] ❌ Geocoding failed and user data not reliable. Rejecting.')
+        // ❌ Dati città+CAP NON corretti E geocoding fallito → BLOCCA
+        // In questo caso il geocoding è necessario per validare l'indirizzo
+        console.log('[POST /api/leads] ❌ Geocoding failed and user data not reliable (city+CAP invalid or missing).')
+        console.log('[POST /api/leads] ❌ Cannot proceed - need either valid city+CAP or successful geocoding')
         return NextResponse.json(
           { error: "Indirizzo non trovato. Verifica che sia corretto e riprova." },
           { status: 400 }
