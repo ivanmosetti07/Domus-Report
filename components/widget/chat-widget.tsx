@@ -514,7 +514,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         body: JSON.stringify({
           // Dati base obbligatori
           address: collectedData.address || "",
-          city: collectedData.city || "Milano",
+          city: collectedData.city || "",
           propertyType: propertyType,
           surfaceSqm: collectedData.surfaceSqm || 100,
           floor: collectedData.floor,

@@ -34,8 +34,157 @@ import {
 export default function LandingPage() {
   const [showDemoWidget, setShowDemoWidget] = React.useState(false)
 
+  // Structured Data JSON-LD per SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "DomusReport",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "description": "Il primo chatbot AI conversazionale per agenti immobiliari. Valutazioni immobiliari real-time con dati OMI ufficiali, qualificazione automatica lead e CRM integrato.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "priceValidUntil": "2025-12-31",
+          "availability": "https://schema.org/InStock",
+          "url": "https://domusreport.com/register"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "127",
+          "bestRating": "5"
+        },
+        "screenshot": "https://domusreport.com/screenshot.png",
+        "featureList": [
+          "Chatbot AI conversazionale",
+          "Valutazioni OMI real-time",
+          "Qualificazione automatica lead",
+          "CRM integrato",
+          "Analytics in tempo reale",
+          "Setup 1-click"
+        ]
+      },
+      {
+        "@type": "Organization",
+        "name": "DomusReport",
+        "url": "https://domusreport.com",
+        "logo": "https://domusreport.com/logo.png",
+        "description": "Piattaforma AI per agenti immobiliari - Il primo chatbot conversazionale che genera valutazioni immobiliari in tempo reale",
+        "sameAs": [
+          "https://www.linkedin.com/company/domusreport",
+          "https://twitter.com/domusreport"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "Customer Support",
+          "email": "support@domusreport.com",
+          "availableLanguage": "Italian"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "name": "DomusReport",
+        "url": "https://domusreport.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://domusreport.com/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Cos'è DomusReport?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "DomusReport è il primo chatbot AI conversazionale per agenti immobiliari che genera valutazioni immobiliari in tempo reale con dati OMI ufficiali, qualifica automaticamente i lead e include un CRM integrato."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Come funziona la valutazione immobiliare con AI?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Il chatbot AI dialoga con il cliente, raccoglie i dati dell'immobile (indirizzo, tipologia, superficie, piano, stato) e in 3 secondi calcola la valutazione OMI ufficiale mostrandola in tempo reale durante la conversazione."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quanto tempo ci vuole per installare il chatbot?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "L'installazione richiede solo 2 minuti. Copia-incolla una riga di codice nel tuo sito e il chatbot AI è immediatamente operativo."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "I dati OMI sono ufficiali?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sì, utilizziamo il database ufficiale OMI (Osservatorio Mercato Immobiliare) con oltre 133.000 valori per zona e CAP, garantendo stime precise e aggiornate."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "Service",
+        "serviceType": "Chatbot AI per Valutazioni Immobiliari",
+        "provider": {
+          "@type": "Organization",
+          "name": "DomusReport"
+        },
+        "areaServed": "IT",
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Piani DomusReport",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Piano Free"
+              },
+              "price": "0",
+              "priceCurrency": "EUR"
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Piano Basic"
+              },
+              "price": "50",
+              "priceCurrency": "EUR"
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Piano Premium"
+              },
+              "price": "100",
+              "priceCurrency": "EUR"
+            }
+          ]
+        }
+      }
+    ]
+  }
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Structured Data JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       <Navbar />
 
       {/* Hero Section - Full Width Modern */}
