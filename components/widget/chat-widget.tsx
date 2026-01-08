@@ -743,6 +743,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         address: collectedData.address,
         city: inferredCity || collectedData.city,
         neighborhood: collectedData.neighborhood,
+        postalCode: collectedData.postalCode, // CRITICO: Include CAP per validazione città/geocoding
         type: collectedData.propertyType || collectedData.type,
         surfaceSqm: collectedData.surfaceSqm,
         rooms: collectedData.rooms,
