@@ -25,7 +25,6 @@ import {
   Smartphone,
   TrendingUp,
   BarChart3,
-  Globe,
   Award,
   Star,
   ChevronRight,
@@ -58,30 +57,30 @@ export default function LandingPage() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] tracking-tight">
-                Trasforma il tuo sito<br className="hidden sm:block" /> in una{" "}
+                Il chatbot AI che valuta<br className="hidden sm:block" /> immobili in{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-hover inline-block">
-                  macchina<br className="sm:hidden" /> per incarichi
+                  tempo<br className="sm:hidden" /> reale
                 </span>
               </h1>
 
               <p className="text-lg sm:text-xl lg:text-2xl text-foreground-muted leading-relaxed">
-                Smetti di inseguire clienti e perdere tempo in valutazioni inutili.{" "}
-                <strong className="text-foreground">DomusReport lavora 24/7</strong> sul tuo sito e raccoglie solo lead pronti a firmare.
+                <strong className="text-foreground">Conversazione AI + Valutazione istantanea.</strong>{" "}
+                Il tuo chatbot qualifica lead con stime OMI precise mentre parla con i clienti. Zero form, solo dialogo naturale.
               </p>
 
               {/* Feature Pills */}
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">AI Conversazionale GPT-4</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
+                  <Zap className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Valutazione Real-Time</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
                   <Database className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Dati OMI ufficiali</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
-                  <Target className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Lead qualificati</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full">
-                  <Clock className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Setup in 2 minuti</span>
+                  <span className="text-sm font-medium">Dati OMI Ufficiali</span>
                 </div>
               </div>
 
@@ -89,7 +88,7 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/register" className="group">
                   <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-7 font-bold shadow-2xl hover:shadow-primary/50 transition-all duration-300">
-                    Prova 7 giorni gratis
+                    Attiva il tuo AI Agent
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
@@ -103,7 +102,7 @@ export default function LandingPage() {
                   }}
                 >
                   <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                  Guarda la demo
+                  Vedi chatbot in azione
                 </Button>
               </div>
 
@@ -134,11 +133,11 @@ export default function LandingPage() {
                     <div className="bg-gradient-to-br from-primary to-primary-hover p-6 text-primary-foreground">
                       <div className="flex items-center gap-4">
                         <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                          <MessageSquare className="w-7 h-7" />
+                          <Sparkles className="w-7 h-7" />
                         </div>
                         <div>
-                          <h3 className="font-bold text-lg">Valuta la tua casa</h3>
-                          <p className="text-sm opacity-90">AI-powered • Istantaneo</p>
+                          <h3 className="font-bold text-lg">AI Assistant Immobiliare</h3>
+                          <p className="text-sm opacity-90">GPT-4 • Valutazione Real-Time</p>
                         </div>
                       </div>
                     </div>
@@ -272,13 +271,13 @@ export default function LandingPage() {
             </Badge>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 leading-tight">
-              Il problema non sono<br className="hidden sm:block" /> le richieste
+              I form non qualificano.<br className="hidden sm:block" /> L'AI sì.
             </h2>
             <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 sm:mb-4">
-              Sono le richieste sbagliate
+              La conversazione fa la differenza
             </p>
             <p className="text-base sm:text-lg md:text-xl text-background/70 max-w-3xl mx-auto px-4">
-              Ogni giorno sprechi ore preziose dietro contatti vaghi, curiosi senza intenzione, e persone che spariscono dopo la valutazione.
+              I form statici raccolgono dati vaghi. Il chatbot AI conversa, qualifica in tempo reale e genera valutazioni precise mentre parla.
             </p>
           </div>
 
@@ -286,20 +285,20 @@ export default function LandingPage() {
             {[
               {
                 icon: MessageSquare,
-                title: "Contatti vaghi",
-                description: "\"Vorrei sapere quanto vale casa mia\" - Zero dettagli, impossibile richiamare, tempo perso.",
+                title: "Form statici inutili",
+                description: "\"Nome, email, indirizzo\" - Dati superficiali senza contesto. L'AI invece dialoga e scopre l'intenzione reale.",
                 stat: "67%"
               },
               {
                 icon: Target,
-                title: "Solo curiosi",
-                description: "Vogliono solo un numero per farsi un'idea. Nessuna intenzione di vendere o affidare l'incarico.",
+                title: "Zero qualificazione",
+                description: "I form non filtrano curiosi da venditori seri. L'AI fa domande intelligenti e qualifica automaticamente.",
                 stat: "52%"
               },
               {
                 icon: Clock,
-                title: "Fantasmi",
-                description: "Dopo la valutazione non rispondono più. Nessun incarico, nessun controllo, solo frustrazione.",
+                title: "Valutazioni manuali",
+                description: "Ore perse a calcolare stime per ogni richiesta. L'AI valuta in 3 secondi con dati OMI mentre conversa.",
                 stat: "78%"
               }
             ].map((problem, idx) => (
@@ -320,10 +319,10 @@ export default function LandingPage() {
 
           <div className="mt-12 bg-primary/20 backdrop-blur-sm border-2 border-primary/30 rounded-3xl p-8 text-center">
             <p className="text-2xl font-bold text-background mb-2">
-              Risultato: tempo perso, zero incarichi, nessun controllo
+              Risultato: dati inutili, stime manuali, zero qualificazione
             </p>
             <p className="text-lg text-background/80">
-              <strong className="text-primary">DomusReport filtra a monte</strong> e trasforma ogni valutazione in un passo concreto verso l'incarico.
+              <strong className="text-primary">Il chatbot AI conversa, qualifica e valuta in automatico.</strong> Ogni lead arriva con valutazione OMI real-time e storico completo.
             </p>
           </div>
         </div>
@@ -338,11 +337,11 @@ export default function LandingPage() {
               Come funziona
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
-              Dal click al lead qualificato<br className="hidden sm:block" />{" "}
-              <span className="text-primary">in automatico</span>
+              Conversazione AI.<br className="hidden sm:block" /> Valutazione istantanea.{" "}
+              <span className="text-primary">Lead qualificato.</span>
             </h2>
             <p className="text-lg sm:text-xl text-foreground-muted px-4">
-              Il sistema lavora 24/7 mentre tu ti concentri sugli incarichi veri
+              Il chatbot dialoga, raccoglie dati, calcola la stima OMI e qualifica - tutto in una conversazione
             </p>
           </div>
 
@@ -353,27 +352,27 @@ export default function LandingPage() {
             {[
               {
                 step: "01",
-                icon: Globe,
-                title: "Visitatore sul sito",
-                description: "Il widget appare automaticamente sul tuo sito. Il cliente fa click e inizia la conversazione."
+                icon: Sparkles,
+                title: "Chatbot si attiva",
+                description: "Il cliente clicca e inizia una conversazione naturale con l'AI. Nessun form, solo dialogo."
               },
               {
                 step: "02",
                 icon: MessageSquare,
-                title: "Chat intelligente",
-                description: "L'AI raccoglie indirizzo, tipo, superficie, stato - tutto ciò che serve per la valutazione."
+                title: "AI qualifica conversando",
+                description: "GPT-4 fa domande intelligenti, estrae indirizzo, tipologia, mq, piano, stato - tutto dialogando."
               },
               {
                 step: "03",
-                icon: Database,
-                title: "Valutazione OMI",
-                description: "Il sistema calcola la stima in tempo reale usando i dati ufficiali OMI per quella zona."
+                icon: Zap,
+                title: "Valutazione real-time",
+                description: "In 3 secondi l'AI calcola la stima OMI ufficiale e la mostra al cliente durante la chat."
               },
               {
                 step: "04",
                 icon: Target,
-                title: "Lead in dashboard",
-                description: "Contatti completi, valutazione, storico chat - tutto tracciato e pronto per essere contattato."
+                title: "Lead + Valutazione",
+                description: "Ricevi contatto qualificato con stima già calcolata, storico conversazione completo e intenzione chiara."
               }
             ].map((step, idx) => (
               <div key={idx} className="relative">
@@ -402,10 +401,10 @@ export default function LandingPage() {
 
           <div className="mt-16 text-center">
             <p className="text-2xl font-bold text-foreground mb-4">
-              Tu trovi solo lead completi, qualificati e pronti all'incarico
+              L'AI fa il lavoro pesante. Tu chiudi gli incarichi.
             </p>
             <p className="text-lg text-foreground-muted">
-              Zero perdite di tempo, massimo controllo
+              Conversazione + Qualificazione + Valutazione = Lead pronto in 60 secondi
             </p>
           </div>
         </div>
@@ -420,11 +419,11 @@ export default function LandingPage() {
               Demo Live
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
-              Prova esattamente ciò<br className="hidden sm:block" /> che vivranno{" "}
-              <span className="text-primary">i tuoi clienti</span>
+              Chatta con l'AI.<br className="hidden sm:block" /> Guarda la{" "}
+              <span className="text-primary">valutazione real-time</span>
             </h2>
             <p className="text-lg sm:text-xl text-foreground-muted max-w-3xl mx-auto px-4">
-              Questo è lo stesso widget che installerai sul tuo sito. Stessa conversazione, stesso flusso, stesso risultato.
+              Questo chatbot conversazionale è identico a quello che installerai. Prova la conversazione AI e vedi la stima OMI generarsi in tempo reale.
             </p>
           </div>
 
@@ -474,68 +473,68 @@ export default function LandingPage() {
               Tutto incluso
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
-              Non solo lead.<br className="hidden sm:block" />{" "}
-              <span className="text-primary">Incarichi concreti.</span>
+              Chatbot AI.<br className="hidden sm:block" /> Valutazioni real-time.{" "}
+              <span className="text-primary">Incarichi automatici.</span>
             </h2>
             <p className="text-lg sm:text-xl text-foreground-muted px-4">
-              Ogni funzione è progettata per eliminare perdite di tempo e massimizzare conversioni
+              L'intelligenza artificiale che converte visitatori in lead qualificati con valutazione OMI inclusa
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
-                icon: Database,
-                title: "Valutazioni dati OMI",
-                description: "Stime basate su 133.000+ valori ufficiali per zona e CAP. Precisione che aumenta credibilità e fiducia.",
+                icon: Sparkles,
+                title: "AI Conversazionale GPT-4",
+                description: "Chatbot che dialoga naturalmente, fa domande intelligenti ed estrae tutti i dati necessari senza form.",
+                color: "from-purple-500 to-purple-600"
+              },
+              {
+                icon: Zap,
+                title: "Valutazione Real-Time",
+                description: "Stima OMI calcolata in 3 secondi durante la conversazione. Il cliente vede il prezzo mentre chatta con l'AI.",
                 color: "from-blue-500 to-blue-600"
               },
               {
+                icon: Database,
+                title: "133.000+ Dati OMI",
+                description: "Database ufficiale completo per zona e CAP. Stime precise basate su valori di mercato verificati.",
+                color: "from-cyan-500 to-cyan-600"
+              },
+              {
                 icon: Target,
-                title: "Lead pre-qualificati",
-                description: "Solo contatti con intenzione reale. Il sistema filtra curiosi e richieste vaghe automaticamente.",
+                title: "Qualificazione Automatica",
+                description: "L'AI filtra curiosi da venditori seri. Ricevi solo contatti con intenzione reale e dati completi.",
                 color: "from-green-500 to-green-600"
               },
               {
                 icon: MessageSquare,
-                title: "Chat conversazionale AI",
-                description: "L'utente risponde naturalmente, senza form noiosi. GPT-4 estrae tutti i dati essenziali.",
-                color: "from-purple-500 to-purple-600"
-              },
-              {
-                icon: Users,
-                title: "CRM integrato",
-                description: "Workflow completo: NEW → CONTACTED → INTERESTED → CONVERTED. Nessun lead dimenticato.",
+                title: "Storico Conversazione",
+                description: "Vedi esattamente cosa ha detto il cliente all'AI. Ogni parola della chat salvata e consultabile.",
                 color: "from-orange-500 to-orange-600"
               },
               {
                 icon: LineChart,
-                title: "Analytics real-time",
-                description: "Traccia impressioni, conversioni, funnel completo. Ottimizza campagne con dati concreti.",
+                title: "Analytics AI-Powered",
+                description: "Traccia performance chatbot: tasso risposta, tempo conversazione, valutazioni generate, conversioni.",
                 color: "from-pink-500 to-pink-600"
               },
               {
-                icon: Sparkles,
-                title: "100% customizzabile",
-                description: "Colori, logo, posizione widget adattati al tuo brand. Multi-widget per domini diversi.",
-                color: "from-cyan-500 to-cyan-600"
-              },
-              {
-                icon: Shield,
-                title: "Sicurezza & GDPR",
-                description: "Audit log completo, password hashing bcrypt, JWT con refresh. Totalmente conforme GDPR.",
-                color: "from-red-500 to-red-600"
-              },
-              {
-                icon: BarChart3,
-                title: "Report PDF automatici",
-                description: "Genera report valutazione professionali in PDF con un click. Invia ai clienti istantaneamente.",
+                icon: Users,
+                title: "CRM con AI Context",
+                description: "Workflow lead completo con storico AI. Vedi conversazione, valutazione e prossima azione suggerita.",
                 color: "from-indigo-500 to-indigo-600"
               },
               {
-                icon: Globe,
-                title: "Integrazione universale",
-                description: "WordPress, Webflow, HTML - funziona ovunque con una riga di codice. Setup in 2 minuti.",
+                icon: BarChart3,
+                title: "Report Auto-Generati",
+                description: "L'AI crea report PDF professionali con valutazione, dati immobile e confronto mercato. Un click.",
+                color: "from-red-500 to-red-600"
+              },
+              {
+                icon: Code,
+                title: "Setup 1-Click",
+                description: "Copia-incolla una riga di codice. Il chatbot AI è live in 60 secondi su qualsiasi sito.",
                 color: "from-teal-500 to-teal-600"
               }
             ].map((feature, idx) => (
@@ -782,10 +781,10 @@ export default function LandingPage() {
         <div className="relative w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1400px] mx-auto text-center space-y-8 sm:space-y-10 lg:space-y-12">
           <div className="space-y-4 sm:space-y-6">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
-              Trasforma il tuo sito<br className="hidden sm:block" /> in una macchina<br className="hidden sm:block" /> per incarichi
+              Il chatbot AI che lavora<br className="hidden sm:block" /> per te 24/7
             </h2>
             <p className="text-lg sm:text-xl lg:text-2xl opacity-90 max-w-3xl mx-auto leading-relaxed px-4">
-              Unisciti alle agenzie che hanno smesso di inseguire clienti e hanno iniziato a selezionarli.
+              Conversazione intelligente. Valutazione real-time. Lead qualificati. Tutto automatico mentre dormi.
             </p>
           </div>
 
@@ -796,7 +795,7 @@ export default function LandingPage() {
                 variant="secondary"
                 className="text-lg px-12 py-8 font-bold shadow-2xl hover:shadow-3xl transition-all text-primary group"
               >
-                Prova 7 giorni gratis
+                Attiva il tuo AI Agent ora
                 <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -804,9 +803,9 @@ export default function LandingPage() {
 
           <div className="flex flex-wrap items-center justify-center gap-8 pt-8">
             {[
-              { icon: CheckCircle, text: "Nessuna carta richiesta" },
-              { icon: Clock, text: "Setup in 2 minuti" },
-              { icon: Shield, text: "Cancella quando vuoi" }
+              { icon: Sparkles, text: "AI GPT-4 inclusa" },
+              { icon: Zap, text: "Valutazioni real-time" },
+              { icon: CheckCircle, text: "7 giorni gratis" }
             ].map((item, idx) => (
               <div key={idx} className="flex items-center gap-3">
                 <item.icon className="w-6 h-6 opacity-90" />
