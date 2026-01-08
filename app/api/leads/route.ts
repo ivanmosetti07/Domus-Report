@@ -195,20 +195,44 @@ export async function POST(request: NextRequest) {
       neighborhood: body.neighborhood
     })
 
-    // Verifica se i dati dell'utente sono affidabili
-    const userDataReliable = body.city && body.postalCode && getCityFromPostalCode(body.postalCode)
+    // Verifica se i dati dell'utente sono affidabili:
+    // 1. L'utente ha fornito CAP
+    // 2. Il CAP esiste nel database
+    // 3. La città dedotta dal CAP CORRISPONDE alla città fornita dall'utente (case-insensitive)
+    const cityFromCAP = body.postalCode ? getCityFromPostalCode(body.postalCode) : null
+    const userDataReliable = body.city &&
+                            body.postalCode &&
+                            cityFromCAP &&
+                            body.city.toLowerCase().trim() === cityFromCAP.toLowerCase().trim()
 
     console.log('[POST /api/leads] City inference:', {
       userCity: body.city,
       userPostalCode: body.postalCode,
+      cityFromCAP,
       inferredCity,
       geocodedCity: geocodeResult.city,
       userDataReliable,
       willUse: userDataReliable ? inferredCity : geocodeResult.city
     })
 
-    // Use user data se affidabile, altrimenti geocoded data (fallback to user input if geocoding didn't provide everything)
-    const finalAddress = userDataReliable ? addressInput : (geocodeResult.formattedAddress || addressInput)
+    // Costruisci indirizzo formattato in base all'affidabilità dei dati
+    let finalAddress: string
+    if (userDataReliable) {
+      // Dati utente affidabili: costruisci indirizzo con i dati forniti dall'utente
+      const addressParts = [
+        body.address,
+        body.neighborhood,
+        body.city,
+        body.postalCode
+      ].filter(Boolean)
+      finalAddress = addressParts.join(', ')
+      console.log('[POST /api/leads] Using user-provided data for address:', finalAddress)
+    } else {
+      // Dati utente non affidabili: usa geocoding se disponibile, altrimenti dati utente
+      finalAddress = geocodeResult.formattedAddress || addressInput
+      console.log('[POST /api/leads] Using geocoded address:', finalAddress)
+    }
+
     const finalCity = userDataReliable ? (inferredCity || body.city) : (geocodeResult.city || body.city)
     const finalPostalCode = body.postalCode || geocodeResult.postalCode
     const finalNeighborhood = body.neighborhood || geocodeResult.neighborhood
