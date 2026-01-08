@@ -167,8 +167,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Use geocoding to validate and enrich address data
-    console.log('[POST /api/leads] Geocoding address:', addressInput)
-    const geocodeResult = await geocodeAddress(addressInput)
+    // CRITICO: Se abbiamo città e CAP, geocodifica con città+CAP invece che solo indirizzo
+    // per evitare ambiguità (es: "via Chioggia" esiste in più città)
+    let geocodingQuery = addressInput
+    if (body.city && body.postalCode) {
+      // Geocodifica con città e CAP per maggiore precisione
+      geocodingQuery = `${addressInput}, ${body.city}, ${body.postalCode}`
+      console.log('[POST /api/leads] Geocoding with city+CAP:', geocodingQuery)
+    } else if (body.city) {
+      // Se abbiamo solo città (senza CAP), usala comunque
+      geocodingQuery = `${addressInput}, ${body.city}`
+      console.log('[POST /api/leads] Geocoding with city:', geocodingQuery)
+    } else {
+      console.log('[POST /api/leads] Geocoding with address only:', geocodingQuery)
+    }
+
+    const geocodeResult = await geocodeAddress(geocodingQuery)
 
     if (!geocodeResult) {
       return NextResponse.json(
