@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { calculateValuation, ValuationInput } from "@/lib/valuation"
 import { geocodeAddress } from "@/lib/geocoding"
 import { generateAIValuationAnalysis, PropertyValuationData } from "@/lib/openai"
+import { inferCity } from "@/lib/postal-code"
 
 // IMPORTANTE: Non usare Edge Runtime perché il sistema OMI legge dal filesystem (CSV)
 // export const runtime = "edge"
@@ -23,6 +24,24 @@ interface ExtendedValuationInput extends ValuationInput {
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as ExtendedValuationInput
+
+    // MIGLIORA ESTRAZIONE CITTÀ: deduce città da CAP, indirizzo o quartiere
+    const inferredCity = inferCity({
+      city: body.city,
+      postalCode: body.postalCode,
+      address: body.address,
+      neighborhood: body.neighborhood
+    })
+
+    // Usa la città dedotta se disponibile
+    if (inferredCity) {
+      console.log('[Valuation API] Città dedotta:', {
+        original: body.city,
+        inferred: inferredCity,
+        postalCode: body.postalCode
+      })
+      body.city = inferredCity
+    }
 
     // Validate required fields
     if (!body.address || !body.city || !body.propertyType || !body.surfaceSqm || !body.condition) {

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { X, Send, Building2, Loader2 } from "lucide-react"
 import { Message as MessageType, PropertyType, PropertyCondition } from "@/types"
 import { formatCurrency } from "@/lib/utils"
+import { inferCity } from "@/lib/postal-code"
 
 export interface WidgetThemeConfig {
   primaryColor?: string
@@ -506,6 +507,21 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       const propertyType = collectedData.propertyType || collectedData.type || PropertyType.APARTMENT
       const condition = collectedData.condition || PropertyCondition.GOOD
 
+      // MIGLIORA ESTRAZIONE CITTÀ: usa inferCity per dedurre la città da CAP, indirizzo o quartiere
+      const inferredCity = inferCity({
+        city: collectedData.city,
+        postalCode: collectedData.postalCode,
+        address: collectedData.address,
+        neighborhood: collectedData.neighborhood
+      })
+
+      console.log('[calculateValuation] Città dedotta:', {
+        original: collectedData.city,
+        inferred: inferredCity,
+        postalCode: collectedData.postalCode,
+        address: collectedData.address
+      })
+
       const response = await fetch("/api/valuation", {
         method: "POST",
         headers: {
@@ -514,7 +530,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         body: JSON.stringify({
           // Dati base obbligatori
           address: collectedData.address || "",
-          city: collectedData.city || "",
+          city: inferredCity || collectedData.city || "",
           propertyType: propertyType,
           surfaceSqm: collectedData.surfaceSqm || 100,
           floor: collectedData.floor,
@@ -701,6 +717,20 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         phoneValue: JSON.stringify(phoneRef.current || collectedData.phone)
       })
 
+      // MIGLIORA ESTRAZIONE CITTÀ: usa inferCity anche per il salvataggio
+      const inferredCity = inferCity({
+        city: collectedData.city,
+        postalCode: collectedData.postalCode,
+        address: collectedData.address,
+        neighborhood: collectedData.neighborhood
+      })
+
+      console.log('[completeConversation] Città dedotta per salvataggio:', {
+        original: collectedData.city,
+        inferred: inferredCity,
+        willUse: inferredCity || collectedData.city
+      })
+
       // Prepara il payload base
       const basePayload = {
         // Lead data
@@ -711,7 +741,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         phone: phoneRef.current || collectedData.phone,
         // Property data
         address: collectedData.address,
-        city: collectedData.city,
+        city: inferredCity || collectedData.city,
         neighborhood: collectedData.neighborhood,
         type: collectedData.propertyType || collectedData.type,
         surfaceSqm: collectedData.surfaceSqm,

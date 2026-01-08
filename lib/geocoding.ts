@@ -110,6 +110,8 @@ export async function geocodeAddress(
 
 /**
  * Fallback city extraction from address string
+ * NOTA: Questa funzione è deprecata, usa invece inferCity da lib/postal-code.ts
+ * che include logica più intelligente con CAP
  */
 export function extractCityFromAddress(address: string): string {
   // Try to extract city from address (usually after the last comma)
