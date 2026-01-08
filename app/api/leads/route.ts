@@ -166,41 +166,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Use geocoding to validate and enrich address data
-    // CRITICO: Se abbiamo città e CAP, geocodifica con città+CAP invece che solo indirizzo
-    // per evitare ambiguità (es: "via Chioggia" esiste in più città)
-    let geocodingQuery = addressInput
-    if (body.city && body.postalCode) {
-      // Geocodifica con città e CAP per maggiore precisione
-      geocodingQuery = `${addressInput}, ${body.city}, ${body.postalCode}`
-      console.log('[POST /api/leads] Geocoding with city+CAP:', geocodingQuery)
-    } else if (body.city) {
-      // Se abbiamo solo città (senza CAP), usala comunque
-      geocodingQuery = `${addressInput}, ${body.city}`
-      console.log('[POST /api/leads] Geocoding with city:', geocodingQuery)
-    } else {
-      console.log('[POST /api/leads] Geocoding with address only:', geocodingQuery)
-    }
-
-    const geocodeResult = await geocodeAddress(geocodingQuery)
-
-    if (!geocodeResult) {
-      return NextResponse.json(
-        { error: "Indirizzo non trovato. Verifica che sia corretto e riprova." },
-        { status: 400 }
-      )
-    }
-
-    console.log('[POST /api/leads] Geocoding successful:', {
-      city: geocodeResult.city,
-      hasCoordinates: !!(geocodeResult.latitude && geocodeResult.longitude)
-    })
-
-    // MIGLIORA LOGICA: Non fidarsi ciecamente del geocoding
-    // Se l'utente ha fornito città + CAP, e il CAP è corretto per quella città,
-    // allora MANTIENI i dati dell'utente e NON sovrascrivere con il geocoding
-    // (che può essere sbagliato per indirizzi ambigui come "via Chioggia" che esiste in più città)
-
+    // STEP 1: Verifica affidabilità dati utente PRIMA del geocoding
     // Deduce la città corretta dal CAP se fornito
     const inferredCity = inferCity({
       city: body.city,
@@ -235,14 +201,72 @@ export async function POST(request: NextRequest) {
                             cityFromCAP &&
                             body.city.toLowerCase().trim() === cityFromCAP.toLowerCase().trim()
 
-    console.log('[POST /api/leads] City inference:', {
+    console.log('[POST /api/leads] User data reliability check:', {
       userCity: body.city,
       userPostalCode: body.postalCode,
       cityFromCAP,
       inferredCity,
-      geocodedCity: geocodeResult.city,
-      userDataReliable,
-      willUse: userDataReliable ? inferredCity : geocodeResult.city
+      userDataReliable
+    })
+
+    // STEP 2: Geocoding con fallback intelligente
+    // Se i dati utente sono affidabili ma il geocoding fallisce, usa coordinate della città
+    let geocodeResult = null
+
+    // Tentativo 1: Geocodifica indirizzo completo con città+CAP
+    let geocodingQuery = addressInput
+    if (body.city && body.postalCode) {
+      // Geocodifica con città e CAP per maggiore precisione
+      geocodingQuery = `${addressInput}, ${body.city}, ${body.postalCode}`
+      console.log('[POST /api/leads] Geocoding attempt 1 (full address+city+CAP):', geocodingQuery)
+    } else if (body.city) {
+      // Se abbiamo solo città (senza CAP), usala comunque
+      geocodingQuery = `${addressInput}, ${body.city}`
+      console.log('[POST /api/leads] Geocoding attempt 1 (address+city):', geocodingQuery)
+    } else {
+      console.log('[POST /api/leads] Geocoding attempt 1 (address only):', geocodingQuery)
+    }
+
+    geocodeResult = await geocodeAddress(geocodingQuery)
+
+    // Tentativo 2: Se fallisce e dati utente sono affidabili, geocodifica solo la città
+    if (!geocodeResult && userDataReliable && body.city) {
+      console.log('[POST /api/leads] Geocoding attempt 1 failed. Trying with city only:', body.city)
+      geocodeResult = await geocodeAddress(body.city)
+      if (geocodeResult) {
+        console.log('[POST /api/leads] ✅ Geocoding succeeded with city fallback')
+      }
+    }
+
+    // Gestione fallimento geocoding
+    if (!geocodeResult) {
+      if (userDataReliable) {
+        // Se dati utente sono affidabili, permetti il salvataggio senza coordinate
+        console.log('[POST /api/leads] ⚠️ Geocoding failed but user data is reliable. Proceeding without coordinates.')
+        // Crea un geocodeResult fittizio con i dati utente
+        geocodeResult = {
+          address: addressInput,
+          city: inferredCity || body.city || '',
+          neighborhood: body.neighborhood,
+          postalCode: body.postalCode,
+          latitude: 0, // Coordinate nulle - verranno gestite dopo
+          longitude: 0,
+          formattedAddress: `${addressInput}, ${inferredCity || body.city}, ${body.postalCode || ''}`
+        }
+      } else {
+        // Dati utente non affidabili E geocoding fallito = errore
+        console.log('[POST /api/leads] ❌ Geocoding failed and user data not reliable. Rejecting.')
+        return NextResponse.json(
+          { error: "Indirizzo non trovato. Verifica che sia corretto e riprova." },
+          { status: 400 }
+        )
+      }
+    }
+
+    console.log('[POST /api/leads] Geocoding result:', {
+      city: geocodeResult.city,
+      hasCoordinates: !!(geocodeResult.latitude && geocodeResult.longitude),
+      coordinates: { lat: geocodeResult.latitude, lon: geocodeResult.longitude }
     })
 
     // Costruisci indirizzo formattato in base all'affidabilità dei dati
@@ -266,8 +290,18 @@ export async function POST(request: NextRequest) {
     const finalCity = userDataReliable ? (inferredCity || body.city) : (geocodeResult.city || body.city)
     const finalPostalCode = body.postalCode || geocodeResult.postalCode
     const finalNeighborhood = body.neighborhood || geocodeResult.neighborhood
-    const finalLatitude = geocodeResult.latitude
-    const finalLongitude = geocodeResult.longitude
+
+    // Gestisci coordinate: se sono 0, 0 (fallback fittizio), salvale come null
+    const finalLatitude = (geocodeResult.latitude && geocodeResult.latitude !== 0) ? geocodeResult.latitude : null
+    const finalLongitude = (geocodeResult.longitude && geocodeResult.longitude !== 0) ? geocodeResult.longitude : null
+
+    console.log('[POST /api/leads] Final address data:', {
+      address: finalAddress,
+      city: finalCity,
+      postalCode: finalPostalCode,
+      neighborhood: finalNeighborhood,
+      coordinates: finalLatitude && finalLongitude ? `${finalLatitude}, ${finalLongitude}` : 'null (no coordinates)'
+    })
 
     const surfaceValidation = validateSurface(body.surfaceSqm || 0)
     if (!surfaceValidation.valid) {
