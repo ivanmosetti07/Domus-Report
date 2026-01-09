@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Message } from "./message"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { X, Send, Building2, Loader2 } from "lucide-react"
+import { X, Send, Building2, Loader2, RotateCcw } from "lucide-react"
 import { Message as MessageType, PropertyType, PropertyCondition } from "@/types"
 import { formatCurrency } from "@/lib/utils"
 import { inferCity } from "@/lib/postal-code"
@@ -1047,29 +1047,54 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               }}>Ti rispondo in pochi secondi</p>
             </div>
           </div>
-          {mode === 'bubble' && onClose && (
+          <div className="flex items-center" style={{
+            gap: 'clamp(0.25rem, 1vw, 0.5rem)'
+          }}>
+            {/* Reset button - visibile sia in bubble che inline */}
             <button
               onClick={() => {
-                // Track CLOSE event
-                trackEvent("CLOSE", { mode: conversationMode })
-                // Invia subito gli eventi rimanenti
-                sendEventBatch()
-                // Chiudi widget
-                onClose()
+                // Track RESET event
+                trackEvent("RESET", { mode: conversationMode })
+                // Reset conversation
+                resetConversation()
               }}
               className="text-white hover:text-white/80 transition-colors flex-shrink-0"
               style={{
-                padding: 'clamp(0.25rem, 1vw, 0.5rem)',
-                marginRight: 'calc(var(--space-1) * -1)'
+                padding: 'clamp(0.25rem, 1vw, 0.5rem)'
               }}
-              aria-label="Chiudi chat"
+              aria-label="Ricomincia chat"
+              title="Ricomincia da capo"
             >
-              <X style={{
-                width: 'clamp(1.25rem, 5vw, 1.5rem)',
-                height: 'clamp(1.25rem, 5vw, 1.5rem)'
+              <RotateCcw style={{
+                width: 'clamp(1.125rem, 4.5vw, 1.375rem)',
+                height: 'clamp(1.125rem, 4.5vw, 1.375rem)'
               }} />
             </button>
-          )}
+            {/* Close button - solo in modalità bubble */}
+            {mode === 'bubble' && onClose && (
+              <button
+                onClick={() => {
+                  // Track CLOSE event
+                  trackEvent("CLOSE", { mode: conversationMode })
+                  // Invia subito gli eventi rimanenti
+                  sendEventBatch()
+                  // Chiudi widget
+                  onClose()
+                }}
+                className="text-white hover:text-white/80 transition-colors flex-shrink-0"
+                style={{
+                  padding: 'clamp(0.25rem, 1vw, 0.5rem)',
+                  marginRight: 'calc(var(--space-1) * -1)'
+                }}
+                aria-label="Chiudi chat"
+              >
+                <X style={{
+                  width: 'clamp(1.25rem, 5vw, 1.5rem)',
+                  height: 'clamp(1.25rem, 5vw, 1.5rem)'
+                }} />
+              </button>
+            )}
+          </div>
         </div>
       )}
 
