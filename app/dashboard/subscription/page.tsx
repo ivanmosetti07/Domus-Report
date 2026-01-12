@@ -529,36 +529,21 @@ export default function SubscriptionPage() {
       </Card>
 
       {/* Payment Method Setup durante Trial */}
-      {subscription?.status === 'trial' && subscription.trialEndsAt && !subscription.paymentMethodId && (
-        <div className="space-y-4">
-          <Alert className="border-primary bg-primary/5">
-            <CreditCard className="h-5 w-5 text-primary" />
-            <div className="ml-3">
-              <h3 className="font-semibold text-foreground mb-1">
-                Aggiungi un metodo di pagamento per continuare senza interruzioni
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Nessun addebito verrà effettuato prima della fine del periodo di prova ({new Date(subscription.trialEndsAt).toLocaleDateString('it-IT')}).
-                L'addebito avverrà automaticamente alla scadenza, salvo disdetta.
-              </p>
-            </div>
-          </Alert>
-
-          <PaymentMethodSetup
-            onSuccess={() => {
-              fetchSubscription()
-              toast({
-                title: 'Metodo di pagamento salvato',
-                description: 'Il rinnovo automatico è ora configurato.'
-              })
-            }}
-            trialEndsAt={subscription.trialEndsAt}
-          />
-        </div>
+      {subscription?.trialEndsAt && new Date(subscription.trialEndsAt) > new Date() && !subscription.paymentMethodId && (
+        <PaymentMethodSetup
+          onSuccess={() => {
+            fetchSubscription()
+            toast({
+              title: 'Metodo di pagamento salvato',
+              description: 'Il rinnovo automatico è ora configurato.'
+            })
+          }}
+          trialEndsAt={subscription.trialEndsAt}
+        />
       )}
 
       {/* Conferma metodo di pagamento salvato durante trial */}
-      {subscription?.status === 'trial' && subscription.trialEndsAt && subscription.paymentMethodId && (
+      {subscription?.trialEndsAt && new Date(subscription.trialEndsAt) > new Date() && subscription.paymentMethodId && (
         <Card className="border-success bg-success/5">
           <CardHeader>
             <div className="flex items-center gap-3">

@@ -92,17 +92,6 @@ function PaymentSetupForm({ onSuccess, trialEndsAt }: PaymentMethodSetupProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {trialEndsAt && (
-        <Alert className="border-primary/50 bg-primary/5">
-          <ShieldCheck className="h-4 w-4 text-primary" />
-          <AlertDescription className="text-sm">
-            <strong>Nessun addebito fino al {new Date(trialEndsAt).toLocaleDateString('it-IT')}</strong>
-            <br />
-            La tua carta verrà addebitata automaticamente solo alla fine del periodo di prova.
-          </AlertDescription>
-        </Alert>
-      )}
-
       <PaymentElement
         options={{
           layout: 'tabs',
@@ -210,32 +199,48 @@ export default function PaymentMethodSetup({ onSuccess, trialEndsAt }: PaymentMe
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CreditCard className="h-5 w-5" />
-          Aggiungi Metodo di Pagamento
-        </CardTitle>
-        <CardDescription>
-          Inserisci i dati della tua carta per continuare senza interruzioni al termine della prova
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Elements
-          stripe={stripePromise}
-          options={{
-            clientSecret,
-            appearance: {
-              theme: 'stripe',
-              variables: {
-                colorPrimary: '#2563eb',
+    <div className="space-y-4">
+      <Alert className="border-primary bg-primary/5">
+        <ShieldCheck className="h-5 w-5 text-primary" />
+        <div className="ml-3">
+          <h3 className="font-semibold text-foreground mb-1">
+            Aggiungi un metodo di pagamento per continuare senza interruzioni
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            <strong>Nessun addebito fino al {trialEndsAt ? new Date(trialEndsAt).toLocaleDateString('it-IT') : 'termine del trial'}</strong>
+            <br />
+            L'addebito avverrà automaticamente solo alla fine del periodo di prova, salvo disdetta.
+          </p>
+        </div>
+      </Alert>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5" />
+            Inserisci i dati della carta
+          </CardTitle>
+          <CardDescription>
+            Secure payment powered by Stripe
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Elements
+            stripe={stripePromise}
+            options={{
+              clientSecret,
+              appearance: {
+                theme: 'stripe',
+                variables: {
+                  colorPrimary: '#2563eb',
+                }
               }
-            }
-          }}
-        >
-          <PaymentSetupForm onSuccess={onSuccess} trialEndsAt={trialEndsAt} />
-        </Elements>
-      </CardContent>
-    </Card>
+            }}
+          >
+            <PaymentSetupForm onSuccess={onSuccess} trialEndsAt={trialEndsAt} />
+          </Elements>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
