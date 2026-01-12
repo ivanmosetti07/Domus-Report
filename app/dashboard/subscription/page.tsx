@@ -145,9 +145,10 @@ export default function SubscriptionPage() {
         const urlParams = new URLSearchParams(window.location.search)
         const purchase = urlParams.get('purchase')
         const upgrade = urlParams.get('upgrade')
+        const paymentSetup = urlParams.get('payment_setup')
 
         // Rimuovi i parametri dall'URL prima di mostrare i toast
-        if (purchase || upgrade) {
+        if (purchase || upgrade || paymentSetup) {
           window.history.replaceState({}, '', '/dashboard/subscription')
         }
 
@@ -176,6 +177,21 @@ export default function SubscriptionPage() {
           toast({
             title: 'Upgrade annullato',
             description: 'L\'upgrade del piano è stato annullato.',
+            variant: 'destructive'
+          })
+        } else if (paymentSetup === 'success') {
+          toast({
+            title: 'Metodo di pagamento aggiunto!',
+            description: 'La tua carta è stata salvata con successo. Il rinnovo automatico è ora attivo.'
+          })
+          // Ricarica i dati dopo un piccolo delay
+          setTimeout(() => {
+            fetchSubscription()
+          }, 1000)
+        } else if (paymentSetup === 'cancelled') {
+          toast({
+            title: 'Operazione annullata',
+            description: 'L\'aggiunta del metodo di pagamento è stata annullata.',
             variant: 'destructive'
           })
         }

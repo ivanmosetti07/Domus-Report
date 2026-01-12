@@ -61,6 +61,10 @@ export async function POST(request: Request) {
         await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
         break
 
+      case 'setup_intent.succeeded':
+        await handleSetupIntentSucceeded(event.data.object as Stripe.SetupIntent)
+        break
+
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
         await handleSubscriptionUpdated(event.data.object as Stripe.Subscription)
@@ -480,6 +484,46 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   }
 
   console.log(`Crediti accreditati: ${planCredits} per agency ${dbSubscription.agencyId}`)
+}
+
+// Handler: setup_intent.succeeded
+async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
+  console.log('Setup Intent completato:', setupIntent.id)
+
+  // Trova agenzia dal customer
+  if (!setupIntent.customer || !setupIntent.payment_method) {
+    console.error('Customer o payment method mancante nel setup intent')
+    return
+  }
+
+  const dbSubscription = await prisma.subscription.findFirst({
+    where: { stripeCustomerId: setupIntent.customer as string }
+  })
+
+  if (!dbSubscription) {
+    console.error('Subscription non trovata per customer:', setupIntent.customer)
+    return
+  }
+
+  // Salva il payment method nella subscription
+  await prisma.subscription.update({
+    where: { agencyId: dbSubscription.agencyId },
+    data: {
+      paymentMethodId: setupIntent.payment_method as string
+    }
+  })
+
+  // Crea notifica
+  await prisma.notification.create({
+    data: {
+      agencyId: dbSubscription.agencyId,
+      type: 'PAYMENT_METHOD_ADDED',
+      title: 'Metodo di pagamento aggiunto',
+      message: 'Il tuo metodo di pagamento è stato salvato con successo.'
+    }
+  })
+
+  console.log(`Payment method ${setupIntent.payment_method} salvato per agency ${dbSubscription.agencyId}`)
 }
 
 // Handler: customer.subscription.trial_will_end
