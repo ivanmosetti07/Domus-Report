@@ -84,23 +84,26 @@ export async function POST(request: Request) {
     // Ottieni info piano
     const plan = STRIPE_PLANS[planType]
 
+    // Crea un Price per la subscription
+    const price = await stripe.prices.create({
+      currency: 'eur',
+      unit_amount: plan.priceMonthly * 100,
+      recurring: {
+        interval: 'month',
+        interval_count: 1
+      },
+      product_data: {
+        name: `Piano ${plan.name}`,
+        description: plan.features.join(', ')
+      }
+    })
+
     // Crea subscription Stripe con trial
     const subscription = await stripe.subscriptions.create({
       customer: stripeCustomerId,
       items: [
         {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: `Piano ${plan.name}`,
-              description: plan.features.join(', ')
-            },
-            unit_amount: plan.priceMonthly * 100,
-            recurring: {
-              interval: 'month',
-              interval_count: 1
-            }
-          }
+          price: price.id
         }
       ],
       trial_period_days: trialDays,
@@ -129,7 +132,7 @@ export async function POST(request: Request) {
         status: 'trial',
         stripeCustomerId,
         stripeSubscriptionId: subscription.id,
-        stripePriceId: subscription.items.data[0]?.price.id || null,
+        stripePriceId: price.id,
         paymentMethodId,
         trialEndsAt: trialEnd,
         nextBillingDate: trialEnd,
@@ -140,7 +143,7 @@ export async function POST(request: Request) {
         status: 'trial',
         stripeCustomerId,
         stripeSubscriptionId: subscription.id,
-        stripePriceId: subscription.items.data[0]?.price.id || null,
+        stripePriceId: price.id,
         paymentMethodId,
         trialEndsAt: trialEnd,
         nextBillingDate: trialEnd,
