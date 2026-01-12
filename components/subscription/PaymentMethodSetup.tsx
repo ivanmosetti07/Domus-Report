@@ -44,15 +44,6 @@ function PaymentSetupForm({ onSuccess, trialEndsAt }: PaymentMethodSetupProps) {
         return
       }
 
-      // Recupera il client secret dall'URL o dallo stato
-      const clientSecret = elements.getElement(PaymentElement)?.options?.clientSecret as string
-
-      if (!clientSecret) {
-        setError('Errore di configurazione. Riprova.')
-        setLoading(false)
-        return
-      }
-
       // Conferma il setup
       const { error: confirmError, setupIntent } = await stripe.confirmSetup({
         elements,
