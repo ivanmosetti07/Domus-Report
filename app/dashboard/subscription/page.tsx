@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Alert } from "@/components/ui/alert"
 import {
   CreditCard,
   Check,
@@ -21,9 +22,11 @@ import {
   Gift,
   ShoppingCart,
   Plus,
-  Minus
+  Minus,
+  ShieldCheck
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import PaymentMethodSetup from "@/components/subscription/PaymentMethodSetup"
 
 interface Subscription {
   id: string
@@ -33,6 +36,7 @@ interface Subscription {
   nextBillingDate: string | null
   cancelledAt: string | null
   stripeCustomerId: string | null
+  paymentMethodId: string | null
   valuationsUsedThisMonth?: number
   extraValuationsPurchased?: number
 }
@@ -523,6 +527,65 @@ export default function SubscriptionPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Payment Method Setup durante Trial */}
+      {subscription?.status === 'trial' && subscription.trialEndsAt && !subscription.paymentMethodId && (
+        <div className="space-y-4">
+          <Alert className="border-primary bg-primary/5">
+            <CreditCard className="h-5 w-5 text-primary" />
+            <div className="ml-3">
+              <h3 className="font-semibold text-foreground mb-1">
+                Aggiungi un metodo di pagamento per continuare senza interruzioni
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Nessun addebito verrà effettuato prima della fine del periodo di prova ({new Date(subscription.trialEndsAt).toLocaleDateString('it-IT')}).
+                L'addebito avverrà automaticamente alla scadenza, salvo disdetta.
+              </p>
+            </div>
+          </Alert>
+
+          <PaymentMethodSetup
+            onSuccess={() => {
+              fetchSubscription()
+              toast({
+                title: 'Metodo di pagamento salvato',
+                description: 'Il rinnovo automatico è ora configurato.'
+              })
+            }}
+            trialEndsAt={subscription.trialEndsAt}
+          />
+        </div>
+      )}
+
+      {/* Conferma metodo di pagamento salvato durante trial */}
+      {subscription?.status === 'trial' && subscription.trialEndsAt && subscription.paymentMethodId && (
+        <Card className="border-success bg-success/5">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-success/10 rounded-full">
+                <ShieldCheck className="h-6 w-6 text-success" />
+              </div>
+              <div>
+                <CardTitle className="text-success">Metodo di pagamento configurato</CardTitle>
+                <CardDescription>
+                  Il rinnovo automatico è attivo. Nessun addebito fino al {new Date(subscription.trialEndsAt).toLocaleDateString('it-IT')}.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-3">
+              Alla fine del periodo di prova, il tuo abbonamento continuerà automaticamente e verrà addebitato il costo del piano scelto.
+            </p>
+            {subscription?.stripeCustomerId && (
+              <Button variant="outline" onClick={handleManageBilling} size="sm">
+                <CreditCard className="h-4 w-4 mr-2" />
+                Gestisci metodo di pagamento
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Usage Stats */}
       {usage && (

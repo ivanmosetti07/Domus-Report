@@ -70,6 +70,10 @@ export async function POST(request: Request) {
         await handleSubscriptionDeleted(event.data.object as Stripe.Subscription)
         break
 
+      case 'customer.subscription.trial_will_end':
+        await handleTrialWillEnd(event.data.object as Stripe.Subscription)
+        break
+
       case 'invoice.payment_succeeded':
         await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice)
         break
@@ -476,6 +480,86 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   }
 
   console.log(`Crediti accreditati: ${planCredits} per agency ${dbSubscription.agencyId}`)
+}
+
+// Handler: customer.subscription.trial_will_end
+async function handleTrialWillEnd(subscription: Stripe.Subscription) {
+  console.log('Trial sta per scadere:', subscription.id)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const subData = subscription as any
+
+  // Trova agenzia
+  const dbSubscription = await prisma.subscription.findFirst({
+    where: {
+      OR: [
+        { stripeSubscriptionId: subscription.id },
+        { stripeCustomerId: subscription.customer as string }
+      ]
+    }
+  })
+
+  if (!dbSubscription) {
+    console.error('Subscription non trovata per trial_will_end:', subscription.id)
+    return
+  }
+
+  const agency = await prisma.agency.findUnique({
+    where: { id: dbSubscription.agencyId }
+  })
+
+  if (!agency) return
+
+  // Verifica se ha un metodo di pagamento salvato
+  if (dbSubscription.paymentMethodId) {
+    // Ha il metodo di pagamento - invio reminder che verrà addebitato
+    await sendEmail(
+      agency.email,
+      'Il tuo periodo di prova sta per terminare',
+      `
+        <h1>Il tuo trial sta per terminare</h1>
+        <p>Il tuo periodo di prova terminerà tra 3 giorni.</p>
+        <p>Il metodo di pagamento che hai salvato verrà addebitato automaticamente per continuare con il piano <strong>${dbSubscription.planType.toUpperCase()}</strong>.</p>
+        <p>Se desideri annullare, puoi farlo dalla dashboard prima della scadenza del trial.</p>
+        <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription">Gestisci abbonamento</a></p>
+      `
+    )
+
+    // Crea notifica
+    await prisma.notification.create({
+      data: {
+        agencyId: dbSubscription.agencyId,
+        type: 'TRIAL_ENDING',
+        title: 'Trial in scadenza',
+        message: 'Il tuo periodo di prova sta per terminare. Il rinnovo automatico è attivo.'
+      }
+    })
+  } else {
+    // NON ha metodo di pagamento - avviso che deve aggiungerlo per continuare
+    await sendEmail(
+      agency.email,
+      'Aggiungi un metodo di pagamento per continuare',
+      `
+        <h1>Il tuo trial sta per terminare</h1>
+        <p>Il tuo periodo di prova terminerà tra 3 giorni.</p>
+        <p><strong>Non hai ancora aggiunto un metodo di pagamento.</strong></p>
+        <p>Per continuare senza interruzioni, aggiungi una carta di credito dalla dashboard.</p>
+        <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription">Aggiungi metodo di pagamento</a></p>
+      `
+    )
+
+    // Crea notifica urgente
+    await prisma.notification.create({
+      data: {
+        agencyId: dbSubscription.agencyId,
+        type: 'TRIAL_ENDING',
+        title: 'Trial in scadenza - Azione richiesta',
+        message: 'Aggiungi un metodo di pagamento per continuare senza interruzioni.'
+      }
+    })
+  }
+
+  console.log(`Reminder trial inviato per agency ${dbSubscription.agencyId}`)
 }
 
 // Handler: invoice.payment_failed
