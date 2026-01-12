@@ -93,8 +93,7 @@ export async function POST(request: Request) {
         interval_count: 1
       },
       product_data: {
-        name: `Piano ${plan.name}`,
-        description: plan.features.join(', ')
+        name: `Piano ${plan.name}`
       }
     })
 
