@@ -123,6 +123,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [isInitialized, setIsInitialized] = React.useState(false)
   const [isWaitingForAI, setIsWaitingForAI] = React.useState(false)
+  const [isKeyboardOpen, setIsKeyboardOpen] = React.useState(false)
 
   // Tracking: Event batching queue
   const eventQueueRef = React.useRef<Array<{
@@ -156,6 +157,36 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   React.useEffect(() => {
     scrollChatToBottom()
   }, [messages, isTyping, scrollChatToBottom])
+
+  // Gestione apertura/chiusura tastiera per mobile
+  React.useEffect(() => {
+    const input = inputRef.current
+    if (!input) return
+
+    const handleFocus = () => {
+      setIsKeyboardOpen(true)
+      // Scroll dopo un piccolo delay per dare tempo alla tastiera di aprirsi
+      setTimeout(() => {
+        scrollChatToBottom()
+        // Scroll l'input in vista su iOS
+        if (mode === 'bubble') {
+          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
+      }, 300)
+    }
+
+    const handleBlur = () => {
+      setIsKeyboardOpen(false)
+    }
+
+    input.addEventListener('focus', handleFocus)
+    input.addEventListener('blur', handleBlur)
+
+    return () => {
+      input.removeEventListener('focus', handleFocus)
+      input.removeEventListener('blur', handleBlur)
+    }
+  }, [scrollChatToBottom, mode])
 
   // Tracking: Funzione per accodare evento (batching)
   const trackEvent = React.useCallback((
@@ -1026,12 +1057,16 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         fontFamily,
         overscrollBehavior: 'contain', // lo scroll resta confinato al widget
         WebkitOverflowScrolling: 'touch', // smooth scrolling iOS
-        // Responsive sizing per bubble mode
+        // Responsive sizing per bubble mode con safe area insets
         ...(mode === 'bubble' ? {
           width: '100vw',
           height: '100vh',
           maxWidth: '100vw',
-          maxHeight: '100vh'
+          maxHeight: '100vh',
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)'
         } : {
           height: inlineHeight || 'clamp(500px, 60vh, 650px)',
           minHeight: '500px'
@@ -1149,8 +1184,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         style={{
           backgroundColor: backgroundColor === '#ffffff' ? '#f9fafb' : `${backgroundColor}f5`,
           padding: mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)',
+          paddingBottom: mode === 'bubble' && isKeyboardOpen ? '24px' : (mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)'),
           overscrollBehavior: 'contain', // evita che lo scroll interno trascini la pagina
-          WebkitOverflowScrolling: 'touch' // smooth scrolling iOS
+          WebkitOverflowScrolling: 'touch', // smooth scrolling iOS
+          scrollPaddingBottom: '20px' // extra scroll padding per visibilità messaggi
         }}
       >
         {messages.map((message) => (

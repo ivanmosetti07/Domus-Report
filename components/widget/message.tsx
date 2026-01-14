@@ -23,28 +23,39 @@ export function Message({ message, onQuickReply, primaryColor = '#2563eb' }: Mes
     >
       <div
         className={cn(
-          "max-w-[80%] rounded-lg p-3",
+          "max-w-[85%] rounded-lg",
           isBot
             ? "bg-gray-100 text-gray-900"
             : "text-white"
         )}
-        style={!isBot ? { backgroundColor: primaryColor } : undefined}
+        style={{
+          ...(!isBot ? { backgroundColor: primaryColor } : undefined),
+          padding: '12px 14px'
+        }}
       >
         {isBot && (
           <div className="flex items-center gap-2 mb-2">
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: primaryColor }}
+              className="rounded-full flex items-center justify-center flex-shrink-0"
+              style={{
+                backgroundColor: primaryColor,
+                width: '24px',
+                height: '24px'
+              }}
             >
-              <Bot className="w-4 h-4 text-white" />
+              <Bot style={{ width: '14px', height: '14px', color: 'white' }} />
             </div>
-            <span className="text-xs font-medium text-gray-600">
+            <span style={{ fontSize: '12px', fontWeight: 500 }} className="text-gray-600">
               Assistente
             </span>
           </div>
         )}
 
-        <p className="text-sm whitespace-pre-wrap leading-relaxed">
+        <p style={{
+          fontSize: '15px',
+          lineHeight: '1.5',
+          whiteSpace: 'pre-wrap'
+        }}>
           {message.text}
         </p>
 
@@ -54,8 +65,13 @@ export function Message({ message, onQuickReply, primaryColor = '#2563eb' }: Mes
               <button
                 key={idx}
                 onClick={() => onQuickReply?.(reply.value, reply.label)}
-                className="text-xs px-3 py-2 border rounded-lg text-center bg-white text-gray-900 hover:opacity-80 transition-colors font-medium"
-                style={{ borderColor: `${primaryColor}40` }}
+                className="border rounded-lg text-center bg-white text-gray-900 hover:opacity-80 transition-colors font-medium"
+                style={{
+                  borderColor: `${primaryColor}40`,
+                  padding: '10px 12px',
+                  fontSize: '14px',
+                  minHeight: '44px'
+                }}
               >
                 {reply.label}
               </button>
@@ -63,7 +79,7 @@ export function Message({ message, onQuickReply, primaryColor = '#2563eb' }: Mes
           </div>
         )}
 
-        <p className={cn("text-xs mt-2", isBot ? "text-gray-500" : "text-white/70")}>
+        <p className={cn("mt-2", isBot ? "text-gray-500" : "text-white/70")} style={{ fontSize: '11px' }}>
           {new Date(message.timestamp).toLocaleTimeString("it-IT", {
             hour: "2-digit",
             minute: "2-digit"
