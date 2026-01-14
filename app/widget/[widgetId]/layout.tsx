@@ -1,8 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: "DomusReport Widget",
   description: "Widget chatbot per valutazioni immobiliari",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 /**
@@ -24,6 +32,8 @@ export default function WidgetLayout({
             background: transparent !important;
             background-color: transparent !important;
             overflow: hidden;
+            /* Previeni zoom su double-tap */
+            touch-action: manipulation;
           }
           body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -31,6 +41,9 @@ export default function WidgetLayout({
               sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            /* Previeni zoom su tap */
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
           }
         `
       }} />

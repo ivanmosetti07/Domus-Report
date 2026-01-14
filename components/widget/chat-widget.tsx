@@ -991,12 +991,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         backgroundColor,
         fontFamily,
         overscrollBehavior: 'contain', // lo scroll resta confinato al widget
+        WebkitOverflowScrolling: 'touch', // smooth scrolling iOS
         // Responsive sizing per bubble mode
         ...(mode === 'bubble' ? {
-          width: 'clamp(min(100vw, 360px), 90vw, 400px)',
-          height: 'clamp(min(100vh, 500px), 80vh, 650px)',
-          maxWidth: 'calc(100vw - 2rem)',
-          maxHeight: 'calc(100vh - 2rem)'
+          width: '100vw',
+          height: '100vh',
+          maxWidth: '100vw',
+          maxHeight: '100vh'
         } : {
           height: inlineHeight || 'clamp(500px, 60vh, 650px)',
           minHeight: '500px'
@@ -1009,18 +1010,18 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           className="flex items-center justify-between flex-shrink-0"
           style={{
             background: headerGradient,
-            padding: 'clamp(0.75rem, 2vw, 1rem)'
+            padding: mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)'
           }}
         >
           <div className="flex items-center" style={{
-            gap: 'clamp(0.5rem, 2vw, 0.75rem)'
+            gap: mode === 'bubble' ? '12px' : 'clamp(8px, 2vw, 12px)'
           }}>
             <div
               className="rounded-full flex items-center justify-center flex-shrink-0"
               style={{
                 backgroundColor: backgroundColor,
-                width: 'clamp(2rem, 8vw, 2.5rem)',
-                height: 'clamp(2rem, 8vw, 2.5rem)'
+                width: mode === 'bubble' ? '40px' : 'clamp(32px, 8vw, 40px)',
+                height: mode === 'bubble' ? '40px' : 'clamp(32px, 8vw, 40px)'
               }}
             >
               {logoUrl ? (
@@ -1031,24 +1032,24 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               ) : (
                 <Building2 style={{
                   color: primaryColor,
-                  width: 'clamp(1.5rem, 6vw, 1.75rem)',
-                  height: 'clamp(1.5rem, 6vw, 1.75rem)'
+                  width: mode === 'bubble' ? '24px' : 'clamp(20px, 6vw, 24px)',
+                  height: mode === 'bubble' ? '24px' : 'clamp(20px, 6vw, 24px)'
                 }} />
               )}
             </div>
             <div>
               <h3 className="text-white font-semibold" style={{
-                fontSize: 'clamp(0.875rem, 2vw, 1rem)',
-                lineHeight: '1.2'
+                fontSize: mode === 'bubble' ? '16px' : 'clamp(14px, 2vw, 16px)',
+                lineHeight: '1.3'
               }}>Valuta la tua casa</h3>
               <p className="text-white/70" style={{
-                fontSize: 'clamp(0.6875rem, 1.5vw, 0.75rem)',
-                lineHeight: '1.2'
+                fontSize: mode === 'bubble' ? '13px' : 'clamp(11px, 1.5vw, 13px)',
+                lineHeight: '1.3'
               }}>Ti rispondo in pochi secondi</p>
             </div>
           </div>
           <div className="flex items-center" style={{
-            gap: 'clamp(0.25rem, 1vw, 0.5rem)'
+            gap: mode === 'bubble' ? '8px' : 'clamp(4px, 1vw, 8px)'
           }}>
             {/* Reset button - visibile sia in bubble che inline */}
             <button
@@ -1060,14 +1061,19 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               }}
               className="text-white hover:text-white/80 transition-colors flex-shrink-0"
               style={{
-                padding: 'clamp(0.25rem, 1vw, 0.5rem)'
+                padding: mode === 'bubble' ? '8px' : 'clamp(4px, 1vw, 8px)',
+                minWidth: '40px',
+                minHeight: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
               aria-label="Ricomincia chat"
               title="Ricomincia da capo"
             >
               <RotateCcw style={{
-                width: 'clamp(1.125rem, 4.5vw, 1.375rem)',
-                height: 'clamp(1.125rem, 4.5vw, 1.375rem)'
+                width: mode === 'bubble' ? '20px' : 'clamp(18px, 4.5vw, 20px)',
+                height: mode === 'bubble' ? '20px' : 'clamp(18px, 4.5vw, 20px)'
               }} />
             </button>
             {/* Close button - solo in modalità bubble */}
@@ -1083,14 +1089,18 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
                 }}
                 className="text-white hover:text-white/80 transition-colors flex-shrink-0"
                 style={{
-                  padding: 'clamp(0.25rem, 1vw, 0.5rem)',
-                  marginRight: 'calc(var(--space-1) * -1)'
+                  padding: '8px',
+                  minWidth: '40px',
+                  minHeight: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
                 aria-label="Chiudi chat"
               >
                 <X style={{
-                  width: 'clamp(1.25rem, 5vw, 1.5rem)',
-                  height: 'clamp(1.25rem, 5vw, 1.5rem)'
+                  width: '22px',
+                  height: '22px'
                 }} />
               </button>
             )}
@@ -1104,8 +1114,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         className="flex-1 overflow-y-auto"
         style={{
           backgroundColor: backgroundColor === '#ffffff' ? '#f9fafb' : `${backgroundColor}f5`,
-          padding: 'clamp(0.75rem, 2vw, 1rem)',
-          overscrollBehavior: 'contain' // evita che lo scroll interno trascini la pagina
+          padding: mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)',
+          overscrollBehavior: 'contain', // evita che lo scroll interno trascini la pagina
+          WebkitOverflowScrolling: 'touch' // smooth scrolling iOS
         }}
       >
         {messages.map((message) => (
@@ -1132,11 +1143,11 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         className="border-t border-border flex-shrink-0"
         style={{
           backgroundColor,
-          padding: 'clamp(0.75rem, 2vw, 1rem)'
+          padding: mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)'
         }}
       >
         <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
-          gap: 'clamp(0.5rem, 1.5vw, 0.75rem)'
+          gap: mode === 'bubble' ? '12px' : 'clamp(8px, 1.5vw, 12px)'
         }}>
           <Input
             ref={inputRef}
@@ -1147,8 +1158,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             className="flex-1"
             style={{
               borderColor: `${primaryColor}40`,
-              height: 'clamp(2.5rem, 10vw, 2.75rem)',
-              fontSize: 'clamp(0.875rem, 2vw, 1rem)'
+              height: mode === 'bubble' ? '48px' : 'clamp(44px, 10vw, 48px)',
+              fontSize: '16px', // CRITICO: 16px previene zoom automatico su iOS
+              padding: '0 14px'
             }}
             autoComplete="off"
             data-lpignore="true"
@@ -1161,15 +1173,18 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             disabled={isInputDisabled || !inputValue.trim()}
             style={{
               backgroundColor: sendButtonColor || primaryColor,
-              width: 'clamp(2.5rem, 10vw, 2.75rem)',
-              height: 'clamp(2.5rem, 10vw, 2.75rem)'
+              width: mode === 'bubble' ? '48px' : 'clamp(44px, 10vw, 48px)',
+              height: mode === 'bubble' ? '48px' : 'clamp(44px, 10vw, 48px)',
+              minWidth: '48px',
+              minHeight: '48px',
+              flexShrink: 0
             }}
             aria-label="Invia messaggio"
           >
             <Send style={{
               color: sendButtonIconColor,
-              width: 'clamp(1.125rem, 4vw, 1.25rem)',
-              height: 'clamp(1.125rem, 4vw, 1.25rem)'
+              width: mode === 'bubble' ? '20px' : 'clamp(18px, 4vw, 20px)',
+              height: mode === 'bubble' ? '20px' : 'clamp(18px, 4vw, 20px)'
             }} />
           </Button>
         </form>
