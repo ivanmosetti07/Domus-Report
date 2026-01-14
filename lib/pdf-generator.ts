@@ -132,79 +132,80 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
   doc.setFont('helvetica', 'normal')
   doc.text(`Generato il ${formatDate(new Date())}`, 20, 26)
 
-  // LATO DESTRO: Logo e dati agenzia
-  const rightX = 195
-  let rightY = 15
+  // LATO DESTRO: Logo e dati agenzia - MIGLIORATO
+  const rightX = 190
+  let rightY = 13
 
-  // Carica e aggiungi il logo se disponibile
+  // Carica e aggiungi il logo se disponibile - dimensioni maggiorate
   if (data.agency.logoUrl) {
     try {
       const logoBase64 = await loadImageAsBase64(data.agency.logoUrl)
       if (logoBase64) {
-        // Aggiungi il logo come immagine
-        const logoWidth = 30
-        const logoHeight = 12
+        // Logo più grande e meglio posizionato
+        const logoWidth = 35
+        const logoHeight = 15
         const logoX = rightX - logoWidth
-        doc.addImage(logoBase64, 'PNG', logoX, rightY - 2, logoWidth, logoHeight)
-        rightY += logoHeight + 2
+        doc.addImage(logoBase64, 'PNG', logoX, rightY, logoWidth, logoHeight)
+        rightY += logoHeight + 4
       } else {
         // Fallback al nome se il logo non si carica
-        doc.setFontSize(11)
+        doc.setFontSize(12)
         doc.setTextColor(...primaryColor)
         doc.setFont('helvetica', 'bold')
-        doc.text(data.agency.nome, rightX, rightY, { align: 'right' })
-        rightY += 5
+        doc.text(data.agency.nome, rightX, rightY + 3, { align: 'right' })
+        rightY += 7
       }
     } catch (error) {
       // Fallback al nome in caso di errore
       console.error('Error adding logo to PDF:', error)
-      doc.setFontSize(11)
+      doc.setFontSize(12)
       doc.setTextColor(...primaryColor)
       doc.setFont('helvetica', 'bold')
-      doc.text(data.agency.nome, rightX, rightY, { align: 'right' })
-      rightY += 5
+      doc.text(data.agency.nome, rightX, rightY + 3, { align: 'right' })
+      rightY += 7
     }
   } else {
     // Nessun logo, mostra solo il nome
-    doc.setFontSize(11)
+    doc.setFontSize(12)
     doc.setTextColor(...primaryColor)
     doc.setFont('helvetica', 'bold')
-    doc.text(data.agency.nome, rightX, rightY, { align: 'right' })
-    rightY += 5
+    doc.text(data.agency.nome, rightX, rightY + 3, { align: 'right' })
+    rightY += 7
   }
 
-  // Dati agenzia compatti
-  doc.setFontSize(8)
-  doc.setTextColor(80, 80, 80)
+  // Dati agenzia con spaziatura migliorata e contrasto ottimizzato
+  doc.setFontSize(8.5)
+  doc.setTextColor(60, 60, 60) // Testo più scuro per migliore leggibilità
   doc.setFont('helvetica', 'normal')
 
   if (data.agency.indirizzo) {
     doc.text(data.agency.indirizzo, rightX, rightY, { align: 'right' })
-    rightY += 3.5
+    rightY += 4
   }
 
   doc.text(`${data.agency.citta}`, rightX, rightY, { align: 'right' })
-  rightY += 3.5
+  rightY += 4
 
   if (data.agency.telefono) {
     doc.text(`Tel: ${data.agency.telefono}`, rightX, rightY, { align: 'right' })
-    rightY += 3.5
+    rightY += 4
   }
 
   doc.text(data.agency.email, rightX, rightY, { align: 'right' })
-  rightY += 3.5
+  rightY += 4
 
   if (data.agency.partitaIva) {
     doc.text(`P.IVA: ${data.agency.partitaIva}`, rightX, rightY, { align: 'right' })
-    rightY += 3.5
+    rightY += 4
   }
 
   if (data.agency.sitoWeb) {
     doc.setTextColor(...secondaryColor)
+    doc.setFont('helvetica', 'bold')
     doc.text(data.agency.sitoWeb, rightX, rightY, { align: 'right' })
   }
 
-  yPosition = 52
+  yPosition = 54
 
   // ========== SEZIONE 1: DATI LEAD ==========
   doc.setFontSize(14)
@@ -228,19 +229,19 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
     theme: 'striped',
     styles: {
       fontSize: 10,
-      cellPadding: 4,
+      cellPadding: 5,
       textColor: textColor,
       lineColor: [220, 220, 220],
       lineWidth: 0.1,
     },
     alternateRowStyles: {
-      fillColor: accentColor,
+      fillColor: primaryColor,
+      textColor: [255, 255, 255], // Testo bianco su sfondo colorato
     },
     columnStyles: {
       0: {
         fontStyle: 'bold',
         cellWidth: 50,
-        textColor: primaryColor,
       },
       1: { cellWidth: 130 },
     },
@@ -274,19 +275,19 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
     theme: 'striped',
     styles: {
       fontSize: 10,
-      cellPadding: 4,
+      cellPadding: 5,
       textColor: textColor,
       lineColor: [220, 220, 220],
       lineWidth: 0.1,
     },
     alternateRowStyles: {
-      fillColor: accentColor,
+      fillColor: primaryColor,
+      textColor: [255, 255, 255], // Testo bianco su sfondo colorato
     },
     columnStyles: {
       0: {
         fontStyle: 'bold',
         cellWidth: 50,
-        textColor: primaryColor,
       },
       1: { cellWidth: 130 },
     },
@@ -309,37 +310,37 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
 
   yPosition += 8
 
-  // Box prezzo stimato in evidenza - Design migliorato
-  // Sfondo con gradiente simulato (2 rettangoli)
+  // Box prezzo stimato in evidenza - Design ottimizzato con migliore contrasto
+  // Sfondo principale
   doc.setFillColor(...accentColor)
-  doc.roundedRect(20, yPosition, 170, 28, 4, 4, 'F')
+  doc.roundedRect(20, yPosition, 170, 32, 5, 5, 'F')
 
-  // Bordo colorato
+  // Bordo colorato più spesso
   doc.setDrawColor(...primaryColor)
-  doc.setLineWidth(1.5)
-  doc.roundedRect(20, yPosition, 170, 28, 4, 4, 'S')
+  doc.setLineWidth(2)
+  doc.roundedRect(20, yPosition, 170, 32, 5, 5, 'S')
 
-  // Icona o badge "VALUTAZIONE"
+  // Icona o badge "VALUTAZIONE" - più grande
   doc.setFillColor(...primaryColor)
-  doc.circle(30, yPosition + 14, 8, 'F')
-  doc.setFontSize(16)
+  doc.circle(32, yPosition + 16, 10, 'F')
+  doc.setFontSize(18)
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
-  doc.text('€', 30, yPosition + 17, { align: 'center' })
+  doc.text('€', 32, yPosition + 20, { align: 'center' })
 
-  // Label
-  doc.setFontSize(10)
-  doc.setTextColor(100, 100, 100)
+  // Label con migliore contrasto
+  doc.setFontSize(11)
+  doc.setTextColor(80, 80, 80)
   doc.setFont('helvetica', 'bold')
-  doc.text('PREZZO STIMATO', 45, yPosition + 10)
+  doc.text('PREZZO STIMATO', 48, yPosition + 12)
 
-  // Prezzo grande
-  doc.setFontSize(22)
+  // Prezzo grande e ben visibile
+  doc.setFontSize(24)
   doc.setTextColor(...primaryColor)
   doc.setFont('helvetica', 'bold')
-  doc.text(formatCurrency(data.valuation.prezzoStimato), 45, yPosition + 22)
+  doc.text(formatCurrency(data.valuation.prezzoStimato), 48, yPosition + 25)
 
-  yPosition += 36
+  yPosition += 40
 
   const valuationData = [
     ['Range di Valore', `${formatCurrency(data.valuation.prezzoMinimo)} - ${formatCurrency(data.valuation.prezzoMassimo)}`],
@@ -356,19 +357,19 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
     theme: 'striped',
     styles: {
       fontSize: 10,
-      cellPadding: 4,
+      cellPadding: 5,
       textColor: textColor,
       lineColor: [220, 220, 220],
       lineWidth: 0.1,
     },
     alternateRowStyles: {
-      fillColor: accentColor,
+      fillColor: primaryColor,
+      textColor: [255, 255, 255], // Testo bianco su sfondo colorato
     },
     columnStyles: {
       0: {
         fontStyle: 'bold',
         cellWidth: 50,
-        textColor: primaryColor,
       },
       1: { cellWidth: 130 },
     },
