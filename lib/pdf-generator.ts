@@ -110,93 +110,91 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
 
   const textColor: [number, number, number] = [31, 41, 55] // gray-800
 
-  let yPosition = 15
+  let yPosition = 20
 
-  // ========== HEADER MIGLIORATO CON BANDA COLORATA ==========
-  // Banda colorata superiore
+  // ========== HEADER COMPLETAMENTE RIDISEGNATO ==========
+  // Banda colorata superiore full-width
   doc.setFillColor(...primaryColor)
-  doc.rect(0, 0, 210, 45, 'F')
+  doc.rect(0, 0, 210, 50, 'F')
 
-  // Box bianco per il contenuto principale dell'header
+  // Box bianco centrale più alto per contenere tutto
   doc.setFillColor(255, 255, 255)
-  doc.roundedRect(15, 10, 180, 30, 2, 2, 'F')
+  doc.roundedRect(10, 8, 190, 37, 3, 3, 'F')
 
-  // LATO SINISTRO: Titolo e data
-  doc.setFontSize(18)
+  // ===== COLONNA SINISTRA: Titolo Report =====
+  doc.setFontSize(16)
   doc.setTextColor(...primaryColor)
   doc.setFont('helvetica', 'bold')
-  doc.text('Report Valutazione Immobiliare', 20, 20)
+  doc.text('Report Valutazione', 15, 18)
+  doc.text('Immobiliare', 15, 25)
 
-  doc.setFontSize(9)
-  doc.setTextColor(100, 100, 100)
+  doc.setFontSize(8)
+  doc.setTextColor(120, 120, 120)
   doc.setFont('helvetica', 'normal')
-  doc.text(`Generato il ${formatDate(new Date())}`, 20, 26)
+  doc.text(`Generato il ${formatDate(new Date())}`, 15, 32)
 
-  // LATO DESTRO: Logo e dati agenzia - MIGLIORATO
-  const rightX = 190
-  let rightY = 13
+  // ===== COLONNA CENTRALE: Logo Agenzia =====
+  const centerX = 105 // Centro della pagina
 
-  // Carica e aggiungi il logo se disponibile - dimensioni maggiorate
+  // Carica e posiziona il logo al centro
   if (data.agency.logoUrl) {
     try {
       const logoBase64 = await loadImageAsBase64(data.agency.logoUrl)
       if (logoBase64) {
-        // Logo più grande e meglio posizionato
-        const logoWidth = 35
-        const logoHeight = 15
-        const logoX = rightX - logoWidth
-        doc.addImage(logoBase64, 'PNG', logoX, rightY, logoWidth, logoHeight)
-        rightY += logoHeight + 4
+        // Logo centrato con dimensioni ottimali
+        const logoWidth = 40
+        const logoHeight = 20
+        const logoX = centerX - (logoWidth / 2)
+        doc.addImage(logoBase64, 'PNG', logoX, 15, logoWidth, logoHeight)
       } else {
-        // Fallback al nome se il logo non si carica
-        doc.setFontSize(12)
+        // Fallback: nome centrato
+        doc.setFontSize(11)
         doc.setTextColor(...primaryColor)
         doc.setFont('helvetica', 'bold')
-        doc.text(data.agency.nome, rightX, rightY + 3, { align: 'right' })
-        rightY += 7
+        doc.text(data.agency.nome, centerX, 25, { align: 'center' })
       }
     } catch (error) {
-      // Fallback al nome in caso di errore
       console.error('Error adding logo to PDF:', error)
-      doc.setFontSize(12)
+      doc.setFontSize(11)
       doc.setTextColor(...primaryColor)
       doc.setFont('helvetica', 'bold')
-      doc.text(data.agency.nome, rightX, rightY + 3, { align: 'right' })
-      rightY += 7
+      doc.text(data.agency.nome, centerX, 25, { align: 'center' })
     }
   } else {
-    // Nessun logo, mostra solo il nome
-    doc.setFontSize(12)
+    // Nessun logo: mostra nome centrato
+    doc.setFontSize(11)
     doc.setTextColor(...primaryColor)
     doc.setFont('helvetica', 'bold')
-    doc.text(data.agency.nome, rightX, rightY + 3, { align: 'right' })
-    rightY += 7
+    doc.text(data.agency.nome, centerX, 25, { align: 'center' })
   }
 
-  // Dati agenzia con spaziatura migliorata e contrasto ottimizzato
-  doc.setFontSize(8.5)
-  doc.setTextColor(60, 60, 60) // Testo più scuro per migliore leggibilità
+  // ===== COLONNA DESTRA: Dati Agenzia =====
+  const rightX = 195
+  let rightY = 14
+
+  doc.setFontSize(7.5)
+  doc.setTextColor(70, 70, 70)
   doc.setFont('helvetica', 'normal')
 
-  if (data.agency.indirizzo) {
-    doc.text(data.agency.indirizzo, rightX, rightY, { align: 'right' })
-    rightY += 4
-  }
+  // Costruisci l'indirizzo completo in una riga se possibile
+  const fullAddress = data.agency.indirizzo
+    ? `${data.agency.indirizzo}, ${data.agency.citta}`
+    : data.agency.citta
 
-  doc.text(`${data.agency.citta}`, rightX, rightY, { align: 'right' })
-  rightY += 4
+  doc.text(fullAddress, rightX, rightY, { align: 'right', maxWidth: 55 })
+  rightY += 3.5
 
   if (data.agency.telefono) {
     doc.text(`Tel: ${data.agency.telefono}`, rightX, rightY, { align: 'right' })
-    rightY += 4
+    rightY += 3.5
   }
 
   doc.text(data.agency.email, rightX, rightY, { align: 'right' })
-  rightY += 4
+  rightY += 3.5
 
   if (data.agency.partitaIva) {
     doc.text(`P.IVA: ${data.agency.partitaIva}`, rightX, rightY, { align: 'right' })
-    rightY += 4
+    rightY += 3.5
   }
 
   if (data.agency.sitoWeb) {
@@ -205,7 +203,7 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
     doc.text(data.agency.sitoWeb, rightX, rightY, { align: 'right' })
   }
 
-  yPosition = 54
+  yPosition = 56
 
   // ========== SEZIONE 1: DATI LEAD ==========
   doc.setFontSize(14)
