@@ -37,50 +37,128 @@ interface LeadData {
     nome: string
     email: string
     citta: string
+    indirizzo?: string | null
+    telefono?: string | null
+    partitaIva?: string | null
+    sitoWeb?: string | null
+    logoUrl?: string | null
   }
+  settings?: {
+    brandColors?: {
+      primary?: string
+      secondary?: string
+      accent?: string
+    } | null
+  }
+}
+
+// Helper function to convert hex color to RGB
+function hexToRgb(hex: string): [number, number, number] {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if (!result) {
+    return [37, 99, 235] // Default blue-600
+  }
+  return [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
+  ]
 }
 
 export function generateLeadPDF(data: LeadData): jsPDF {
   const doc = new jsPDF()
 
-  // Colori brand
-  const primaryColor: [number, number, number] = [37, 99, 235] // blue-600
+  // Colori brand personalizzati o default
+  const primaryColor: [number, number, number] = data.settings?.brandColors?.primary
+    ? hexToRgb(data.settings.brandColors.primary)
+    : [37, 99, 235] // blue-600
+
+  const secondaryColor: [number, number, number] = data.settings?.brandColors?.secondary
+    ? hexToRgb(data.settings.brandColors.secondary)
+    : [59, 130, 246] // blue-500
+
+  const accentColor: [number, number, number] = data.settings?.brandColors?.accent
+    ? hexToRgb(data.settings.brandColors.accent)
+    : [239, 246, 255] // blue-50
+
   const textColor: [number, number, number] = [31, 41, 55] // gray-800
   const lightGray: [number, number, number] = [243, 244, 246] // gray-100
 
-  let yPosition = 20
+  let yPosition = 15
 
-  // ========== HEADER ==========
-  doc.setFontSize(24)
+  // ========== HEADER MIGLIORATO CON BANDA COLORATA ==========
+  // Banda colorata superiore
+  doc.setFillColor(...primaryColor)
+  doc.rect(0, 0, 210, 45, 'F')
+
+  // Box bianco per il contenuto principale dell'header
+  doc.setFillColor(255, 255, 255)
+  doc.roundedRect(15, 10, 180, 30, 2, 2, 'F')
+
+  // LATO SINISTRO: Titolo e data
+  doc.setFontSize(18)
   doc.setTextColor(...primaryColor)
   doc.setFont('helvetica', 'bold')
-  doc.text('Report Valutazione Immobiliare', 20, yPosition)
+  doc.text('Report Valutazione Immobiliare', 20, 20)
 
-  yPosition += 10
-  doc.setFontSize(10)
-  doc.setTextColor(100, 100, 100)
-  doc.setFont('helvetica', 'normal')
-  doc.text(`Generato il ${formatDate(new Date())}`, 20, yPosition)
-
-  // Logo agenzia (testo per ora)
-  doc.setFontSize(12)
-  doc.setTextColor(...primaryColor)
-  doc.setFont('helvetica', 'bold')
-  doc.text(data.agency.nome, 150, 20)
   doc.setFontSize(9)
-  doc.setFont('helvetica', 'normal')
   doc.setTextColor(100, 100, 100)
-  doc.text(data.agency.citta, 150, 25)
-  doc.text(data.agency.email, 150, 30)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Generato il ${formatDate(new Date())}`, 20, 26)
 
-  yPosition += 15
+  // LATO DESTRO: Logo e dati agenzia
+  const rightX = 195
+  let rightY = 15
 
-  // Linea separatore
-  doc.setDrawColor(...primaryColor)
-  doc.setLineWidth(0.5)
-  doc.line(20, yPosition, 190, yPosition)
+  // Se c'è un logo, lo aggiungiamo (per ora placeholder testuale)
+  if (data.agency.logoUrl) {
+    // TODO: Implementare caricamento immagine logo
+    // Per ora mostriamo il nome in grassetto
+    doc.setFontSize(11)
+    doc.setTextColor(...primaryColor)
+    doc.setFont('helvetica', 'bold')
+    doc.text(data.agency.nome, rightX, rightY, { align: 'right' })
+    rightY += 5
+  } else {
+    doc.setFontSize(11)
+    doc.setTextColor(...primaryColor)
+    doc.setFont('helvetica', 'bold')
+    doc.text(data.agency.nome, rightX, rightY, { align: 'right' })
+    rightY += 5
+  }
 
-  yPosition += 15
+  // Dati agenzia compatti
+  doc.setFontSize(8)
+  doc.setTextColor(80, 80, 80)
+  doc.setFont('helvetica', 'normal')
+
+  if (data.agency.indirizzo) {
+    doc.text(data.agency.indirizzo, rightX, rightY, { align: 'right' })
+    rightY += 3.5
+  }
+
+  doc.text(`${data.agency.citta}`, rightX, rightY, { align: 'right' })
+  rightY += 3.5
+
+  if (data.agency.telefono) {
+    doc.text(`Tel: ${data.agency.telefono}`, rightX, rightY, { align: 'right' })
+    rightY += 3.5
+  }
+
+  doc.text(data.agency.email, rightX, rightY, { align: 'right' })
+  rightY += 3.5
+
+  if (data.agency.partitaIva) {
+    doc.text(`P.IVA: ${data.agency.partitaIva}`, rightX, rightY, { align: 'right' })
+    rightY += 3.5
+  }
+
+  if (data.agency.sitoWeb) {
+    doc.setTextColor(...secondaryColor)
+    doc.text(data.agency.sitoWeb, rightX, rightY, { align: 'right' })
+  }
+
+  yPosition = 52
 
   // ========== SEZIONE 1: DATI LEAD ==========
   doc.setFontSize(14)
@@ -101,14 +179,23 @@ export function generateLeadPDF(data: LeadData): jsPDF {
     startY: yPosition,
     head: [],
     body: leadData,
-    theme: 'plain',
+    theme: 'striped',
     styles: {
       fontSize: 10,
-      cellPadding: 3,
+      cellPadding: 4,
       textColor: textColor,
+      lineColor: [220, 220, 220],
+      lineWidth: 0.1,
+    },
+    alternateRowStyles: {
+      fillColor: accentColor,
     },
     columnStyles: {
-      0: { fontStyle: 'bold', cellWidth: 50 },
+      0: {
+        fontStyle: 'bold',
+        cellWidth: 50,
+        textColor: primaryColor,
+      },
       1: { cellWidth: 130 },
     },
     margin: { left: 20 },
@@ -138,14 +225,23 @@ export function generateLeadPDF(data: LeadData): jsPDF {
     startY: yPosition,
     head: [],
     body: propertyData,
-    theme: 'plain',
+    theme: 'striped',
     styles: {
       fontSize: 10,
-      cellPadding: 3,
+      cellPadding: 4,
       textColor: textColor,
+      lineColor: [220, 220, 220],
+      lineWidth: 0.1,
+    },
+    alternateRowStyles: {
+      fillColor: accentColor,
     },
     columnStyles: {
-      0: { fontStyle: 'bold', cellWidth: 50 },
+      0: {
+        fontStyle: 'bold',
+        cellWidth: 50,
+        textColor: primaryColor,
+      },
       1: { cellWidth: 130 },
     },
     margin: { left: 20 },
@@ -167,23 +263,37 @@ export function generateLeadPDF(data: LeadData): jsPDF {
 
   yPosition += 8
 
-  // Box prezzo stimato in evidenza
-  doc.setFillColor(...lightGray)
+  // Box prezzo stimato in evidenza - Design migliorato
+  // Sfondo con gradiente simulato (2 rettangoli)
+  doc.setFillColor(...accentColor)
+  doc.roundedRect(20, yPosition, 170, 28, 4, 4, 'F')
+
+  // Bordo colorato
   doc.setDrawColor(...primaryColor)
-  doc.setLineWidth(1)
-  doc.roundedRect(20, yPosition, 170, 20, 3, 3, 'FD')
+  doc.setLineWidth(1.5)
+  doc.roundedRect(20, yPosition, 170, 28, 4, 4, 'S')
 
-  doc.setFontSize(11)
+  // Icona o badge "VALUTAZIONE"
+  doc.setFillColor(...primaryColor)
+  doc.circle(30, yPosition + 14, 8, 'F')
+  doc.setFontSize(16)
+  doc.setTextColor(255, 255, 255)
+  doc.setFont('helvetica', 'bold')
+  doc.text('€', 30, yPosition + 17, { align: 'center' })
+
+  // Label
+  doc.setFontSize(10)
   doc.setTextColor(100, 100, 100)
-  doc.setFont('helvetica', 'normal')
-  doc.text('PREZZO STIMATO', 25, yPosition + 7)
+  doc.setFont('helvetica', 'bold')
+  doc.text('PREZZO STIMATO', 45, yPosition + 10)
 
-  doc.setFontSize(18)
+  // Prezzo grande
+  doc.setFontSize(22)
   doc.setTextColor(...primaryColor)
   doc.setFont('helvetica', 'bold')
-  doc.text(formatCurrency(data.valuation.prezzoStimato), 25, yPosition + 16)
+  doc.text(formatCurrency(data.valuation.prezzoStimato), 45, yPosition + 22)
 
-  yPosition += 28
+  yPosition += 36
 
   const valuationData = [
     ['Range di Valore', `${formatCurrency(data.valuation.prezzoMinimo)} - ${formatCurrency(data.valuation.prezzoMassimo)}`],
@@ -197,14 +307,23 @@ export function generateLeadPDF(data: LeadData): jsPDF {
     startY: yPosition,
     head: [],
     body: valuationData,
-    theme: 'plain',
+    theme: 'striped',
     styles: {
       fontSize: 10,
-      cellPadding: 3,
+      cellPadding: 4,
       textColor: textColor,
+      lineColor: [220, 220, 220],
+      lineWidth: 0.1,
+    },
+    alternateRowStyles: {
+      fillColor: accentColor,
     },
     columnStyles: {
-      0: { fontStyle: 'bold', cellWidth: 50 },
+      0: {
+        fontStyle: 'bold',
+        cellWidth: 50,
+        textColor: primaryColor,
+      },
       1: { cellWidth: 130 },
     },
     margin: { left: 20 },

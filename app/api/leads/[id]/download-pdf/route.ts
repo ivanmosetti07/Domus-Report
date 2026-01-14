@@ -16,7 +16,7 @@ export async function GET(
       )
     }
 
-    // Fetch lead with all related data
+    // Fetch lead with all related data including agency settings
     const lead = await prisma.lead.findUnique({
       where: { id: leadId },
       include: {
@@ -26,7 +26,11 @@ export async function GET(
           },
         },
         conversation: true,
-        agenzia: true,
+        agenzia: {
+          include: {
+            settings: true,
+          },
+        },
       },
     })
 
@@ -45,7 +49,7 @@ export async function GET(
       )
     }
 
-    // Generate PDF using the same function as the dashboard
+    // Generate PDF with complete agency data and settings
     const pdf = generateLeadPDF({
       lead: {
         nome: lead.nome,
@@ -81,7 +85,15 @@ export async function GET(
         nome: lead.agenzia.nome,
         email: lead.agenzia.email,
         citta: lead.agenzia.citta,
+        indirizzo: lead.agenzia.indirizzo,
+        telefono: lead.agenzia.telefono,
+        partitaIva: lead.agenzia.partitaIva,
+        sitoWeb: lead.agenzia.sitoWeb,
+        logoUrl: lead.agenzia.logoUrl,
       },
+      settings: lead.agenzia.settings ? {
+        brandColors: lead.agenzia.settings.brandColors as any,
+      } : undefined,
     })
 
     // Convert PDF to buffer
