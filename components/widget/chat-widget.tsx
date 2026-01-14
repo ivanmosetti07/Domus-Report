@@ -683,24 +683,49 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     } catch (error) {
       console.error("Valuation error:", error)
 
+      // Torna in modalità chatting per permettere di completare i dati
+      setConversationMode("chatting")
+
+      // Analizza l'errore per capire cosa manca
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      console.log('[calculateValuation] Error message:', errorMessage)
+
+      // Identifica quali dati mancano ancora
+      const missingFields: string[] = []
+      if (!collectedData.city && !inferCity({
+        city: collectedData.city,
+        postalCode: collectedData.postalCode,
+        address: collectedData.address,
+        neighborhood: collectedData.neighborhood
+      })) {
+        missingFields.push("città")
+      }
+      if (!collectedData.address) missingFields.push("indirizzo")
+      if (!collectedData.surfaceSqm) missingFields.push("superficie in m²")
+      if (!collectedData.propertyType && !collectedData.type) missingFields.push("tipo di immobile")
+      if (!collectedData.condition) missingFields.push("stato dell'immobile")
+
       if (error instanceof Error && error.name === 'AbortError') {
-        setConversationMode("ask_restart")
         addBotMessage(
-          "Mi dispiace, il calcolo sta richiedendo più tempo del previsto. Vuoi riprovare?",
-          [
-            { label: "Sì, riprova", value: "restart" },
-            { label: "No, grazie", value: "done" }
-          ]
+          "Mi dispiace, il calcolo sta richiedendo più tempo del previsto. Puoi confermare alcuni dati essenziali? " +
+          (missingFields.length > 0
+            ? `Mi servono ancora: ${missingFields.join(", ")}. Iniziamo dal primo: ${missingFields[0]}.`
+            : "Possiamo riprovare insieme?")
         )
       } else {
-        setConversationMode("ask_restart")
-        addBotMessage(
-          "Mi dispiace, si è verificato un errore nel calcolo. Vuoi fare una nuova valutazione?",
-          [
-            { label: "Sì, nuova valutazione", value: "restart" },
-            { label: "No, grazie", value: "done" }
-          ]
-        )
+        // Messaggio personalizzato in base ai dati mancanti
+        if (missingFields.length > 0) {
+          addBotMessage(
+            `Per calcolare la valutazione mi servono ancora alcune informazioni: ${missingFields.join(", ")}. ` +
+            `Dimmi ${missingFields[0]}.`
+          )
+        } else {
+          // Se l'errore non è per dati mancanti, usa un messaggio generico ma mantieni la conversazione
+          addBotMessage(
+            "Mi dispiace, si è verificato un problema nel calcolo. " +
+            "Puoi confermare l'indirizzo completo e la città? Così riprovo subito."
+          )
+        }
       }
     }
   }
