@@ -124,6 +124,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const [isInitialized, setIsInitialized] = React.useState(false)
   const [isWaitingForAI, setIsWaitingForAI] = React.useState(false)
   const [isKeyboardOpen, setIsKeyboardOpen] = React.useState(false)
+  const [visualViewportHeight, setVisualViewportHeight] = React.useState<number | null>(null)
 
   // Tracking: Event batching queue
   const eventQueueRef = React.useRef<Array<{
@@ -158,6 +159,29 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     scrollChatToBottom()
   }, [messages, isTyping, scrollChatToBottom])
 
+  // Visual Viewport API - Gestione dinamica altezza con tastiera
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport || mode !== 'bubble') return
+
+    const handleViewportResize = () => {
+      const viewport = window.visualViewport
+      if (viewport) {
+        setVisualViewportHeight(viewport.height)
+      }
+    }
+
+    // Initial height
+    handleViewportResize()
+
+    window.visualViewport.addEventListener('resize', handleViewportResize)
+    window.visualViewport.addEventListener('scroll', handleViewportResize)
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleViewportResize)
+      window.visualViewport?.removeEventListener('scroll', handleViewportResize)
+    }
+  }, [mode])
+
   // Gestione apertura/chiusura tastiera per mobile
   React.useEffect(() => {
     const input = inputRef.current
@@ -165,18 +189,30 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
     const handleFocus = () => {
       setIsKeyboardOpen(true)
-      // Scroll dopo un piccolo delay per dare tempo alla tastiera di aprirsi
+      // Scroll dopo un delay più lungo per dare tempo alla tastiera e al viewport di stabilizzarsi
       setTimeout(() => {
         scrollChatToBottom()
-        // Scroll l'input in vista su iOS
+        // Su mobile, assicurati che l'input sia visibile
         if (mode === 'bubble') {
-          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+          // Scroll più aggressivo per mobile
+          const container = messagesContainerRef.current
+          if (container) {
+            container.scrollTop = container.scrollHeight
+          }
+          // Porta l'input in vista con block: 'end' per posizionarlo in basso
+          input.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' })
         }
-      }, 300)
+      }, 400)
     }
 
     const handleBlur = () => {
       setIsKeyboardOpen(false)
+      // Reset viewport height quando tastiera si chiude
+      setTimeout(() => {
+        if (window.visualViewport) {
+          setVisualViewportHeight(window.visualViewport.height)
+        }
+      }, 100)
     }
 
     input.addEventListener('focus', handleFocus)
@@ -1057,16 +1093,20 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         fontFamily,
         overscrollBehavior: 'contain', // lo scroll resta confinato al widget
         WebkitOverflowScrolling: 'touch', // smooth scrolling iOS
-        // Responsive sizing per bubble mode con safe area insets
+        // Responsive sizing per bubble mode con safe area insets e visual viewport
         ...(mode === 'bubble' ? {
           width: '100vw',
-          height: '100vh',
+          // Usa visual viewport height se disponibile (quando tastiera è aperta)
+          height: visualViewportHeight ? `${visualViewportHeight}px` : '100vh',
           maxWidth: '100vw',
-          maxHeight: '100vh',
+          maxHeight: visualViewportHeight ? `${visualViewportHeight}px` : '100vh',
           paddingTop: 'env(safe-area-inset-top)',
-          paddingBottom: 'env(safe-area-inset-bottom)',
           paddingLeft: 'env(safe-area-inset-left)',
-          paddingRight: 'env(safe-area-inset-right)'
+          paddingRight: 'env(safe-area-inset-right)',
+          // Non aggiungere padding bottom quando tastiera è aperta
+          paddingBottom: isKeyboardOpen ? '0' : 'env(safe-area-inset-bottom)',
+          // Transizione smooth per il resize
+          transition: 'height 0.2s ease-out, max-height 0.2s ease-out'
         } : {
           height: inlineHeight || 'clamp(500px, 60vh, 650px)',
           minHeight: '500px'
@@ -1184,10 +1224,15 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         style={{
           backgroundColor: backgroundColor === '#ffffff' ? '#f9fafb' : `${backgroundColor}f5`,
           padding: mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)',
-          paddingBottom: mode === 'bubble' && isKeyboardOpen ? '24px' : (mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)'),
+          paddingBottom: mode === 'bubble' && isKeyboardOpen ? '8px' : (mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)'),
           overscrollBehavior: 'contain', // evita che lo scroll interno trascini la pagina
           WebkitOverflowScrolling: 'touch', // smooth scrolling iOS
-          scrollPaddingBottom: '20px' // extra scroll padding per visibilità messaggi
+          scrollPaddingBottom: '20px', // extra scroll padding per visibilità messaggi
+          // Ottimizzazioni iOS per scroll fluido
+          position: 'relative',
+          willChange: isKeyboardOpen ? 'scroll-position' : 'auto',
+          // Migliora rendering su iOS
+          transform: 'translateZ(0)'
         }}
       >
         {messages.map((message) => (
@@ -1214,7 +1259,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         className="border-t border-border flex-shrink-0"
         style={{
           backgroundColor,
-          padding: mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)'
+          padding: mode === 'bubble' ? '16px' : 'clamp(12px, 2vw, 16px)',
+          // Garantisce che l'input rimanga sempre in basso
+          position: mode === 'bubble' ? 'sticky' : 'relative',
+          bottom: 0,
+          zIndex: 10,
+          // Box shadow per separare visivamente l'input dalla chat
+          boxShadow: mode === 'bubble' && isKeyboardOpen ? '0 -2px 10px rgba(0,0,0,0.1)' : 'none'
         }}
       >
         <form onSubmit={handleSubmit} className="flex" data-form-type="other" style={{
