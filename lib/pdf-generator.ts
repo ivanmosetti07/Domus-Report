@@ -136,16 +136,16 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
   // ===== COLONNA CENTRALE: Logo Agenzia =====
   const centerX = 105 // Centro della pagina
 
-  // Carica e posiziona il logo al centro
+  // Carica e posiziona il logo al centro - FORMATO QUADRATO
   if (data.agency.logoUrl) {
     try {
       const logoBase64 = await loadImageAsBase64(data.agency.logoUrl)
       if (logoBase64) {
-        // Logo centrato con dimensioni ottimali
-        const logoWidth = 40
-        const logoHeight = 20
-        const logoX = centerX - (logoWidth / 2)
-        doc.addImage(logoBase64, 'PNG', logoX, 15, logoWidth, logoHeight)
+        // Logo QUADRATO centrato con dimensioni ottimali
+        const logoSize = 25 // Dimensione quadrata 25x25mm
+        const logoX = centerX - (logoSize / 2)
+        const logoY = 14 // Posizione verticale centrata nel box
+        doc.addImage(logoBase64, 'PNG', logoX, logoY, logoSize, logoSize)
       } else {
         // Fallback: nome centrato
         doc.setFontSize(11)
