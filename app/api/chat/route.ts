@@ -40,9 +40,14 @@ REGOLE DI CONVERSAZIONE:
 4. Conferma i dati ricevuti in modo naturale
 5. Se un dato non è chiaro, fai una domanda SPECIFICA per chiarire (es: "Intendi 60 metri quadrati o 60 camere?")
 6. Adatta le domande al tipo di immobile (es: no piano per ville)
-7. Per i contatti, DEVI chiedere in questo ordine preciso: prima nome, poi cognome, poi email, poi telefono
+7. CRITICO - RACCOLTA CONTATTI OBBLIGATORIA: Dopo aver raccolto tutti i dati dell'immobile, DEVI SEMPRE chiedere in questo ordine preciso e NON SALTARE MAI nessuno di questi passaggi:
+   a) Prima domanda: "Come ti chiami?" (per nome)
+   b) Seconda domanda: "E il cognome?" (per cognome)
+   c) Terza domanda: "Qual è la tua email?" (per email)
+   d) Quarta domanda: "Qual è il tuo numero di telefono?" (per telefono)
 8. IMPORTANTE: Dopo aver raccolto telefono, fai un RECAP completo dei dati e chiedi conferma
 9. Solo dopo conferma "sì/corretto/va bene", imposta readyForValuation: true
+10. VALIDAZIONE CONTATTI: Prima di impostare readyForValuation: true, verifica che firstName, lastName, email E phone siano tutti presenti nei dati raccolti
 10. CRITICO: Le risposte con SOLO UN NUMERO sono SEMPRE VALIDE e vanno interpretate nel contesto dell'ultima domanda che hai fatto:
     - Hai chiesto "quanti mq?" e risponde "60" → surfaceSqm: 60, rispondi "Perfetto! 60 m²..."
     - Hai chiesto "quante camere?" e risponde "2" → rooms: 2, rispondi "Ottimo! 2 camere..."
@@ -87,12 +92,13 @@ DEVI chiedere TUTTI i seguenti dati, in ordine, SENZA SALTARE nessuna domanda:
 15. Classe energetica (A-G/Non so) - OBBLIGATORIO
 16. Anno costruzione - OBBLIGATORIO
 17. Occupato o Libero - OBBLIGATORIO
-18. Nome
-19. Cognome
-20. Email
-21. Telefono
+18. Nome (OBBLIGATORIO - NON SALTARE)
+19. Cognome (OBBLIGATORIO - NON SALTARE)
+20. Email (OBBLIGATORIO - NON SALTARE)
+21. Telefono (OBBLIGATORIO - NON SALTARE)
 
 IMPORTANTE: NON saltare MAI le domande da 10 a 17 - sono FONDAMENTALI per la valutazione completa
+CRITICO: NON saltare MAI le domande 18-21 (Nome, Cognome, Email, Telefono) - sono OBBLIGATORIE per la valutazione
 
 IMPORTANTE - FLUSSO RECAP E CONFERMA:
 - Quando hai raccolto telefono (ultimo dato contatto), fai un RECAP COMPLETO E DETTAGLIATO
@@ -601,9 +607,40 @@ export async function POST(request: NextRequest) {
     // Normalizza i dati estratti per assicurarsi che i valori siano quelli corretti degli enum
     const normalizedData = normalizeExtractedData(parsed.extractedData || {})
 
+    // VALIDAZIONE CRITICA: Verifica che i contatti siano presenti prima di permettere readyForValuation
+    // Combina i dati già raccolti con quelli nuovi per verificare completezza
+    const allData = { ...collectedData, ...normalizedData }
+    const hasAllContactInfo = !!(allData.firstName && allData.lastName && allData.email && allData.phone)
+
+    // Se l'AI dice che è pronta per la valutazione ma mancano i contatti, forza readyForValuation a false
+    // e modifica il messaggio per richiedere i dati mancanti
+    let isReadyForValuation = parsed.readyForValuation || false
+    let finalMessage = parsed.message || ""
+
+    if (isReadyForValuation && !hasAllContactInfo) {
+      console.warn("[Chat API] Missing contact info, requesting missing data:", {
+        hasFirstName: !!allData.firstName,
+        hasLastName: !!allData.lastName,
+        hasEmail: !!allData.email,
+        hasPhone: !!allData.phone
+      })
+
+      isReadyForValuation = false
+
+      // Identifica il primo dato mancante e chiedi quello
+      if (!allData.firstName) {
+        finalMessage = "Prima di procedere con la valutazione, ho bisogno di alcuni dati di contatto. Come ti chiami?"
+      } else if (!allData.lastName) {
+        finalMessage = "Perfetto! E il cognome?"
+      } else if (!allData.email) {
+        finalMessage = "Benissimo! Qual è la tua email?"
+      } else if (!allData.phone) {
+        finalMessage = "Ultimo dato: qual è il tuo numero di telefono?"
+      }
+    }
+
     // IMPORTANTE: Valida che il messaggio non sia vuoto
     // Se l'AI non fornisce un messaggio valido, usa un fallback
-    let finalMessage = parsed.message || ""
     console.log("[Chat API] Message validation - original:", {
       hasMessage: !!parsed.message,
       messageType: typeof parsed.message,
@@ -631,7 +668,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: finalMessage,
       extractedData: normalizedData,
-      readyForValuation: parsed.readyForValuation || false,
+      readyForValuation: isReadyForValuation,
       missingRequired: parsed.missingRequired || []
     })
   } catch (error) {

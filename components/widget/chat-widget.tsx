@@ -464,6 +464,40 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         }
         setCollectedData(finalData)
 
+        // VALIDAZIONE FINALE: Verifica che tutti i dati di contatto siano presenti
+        const hasAllContacts = !!(finalData.firstName && finalData.lastName && finalData.email && finalData.phone)
+
+        if (!hasAllContacts) {
+          console.warn('[ChatWidget] Missing contact info, requesting missing data:', {
+            hasFirstName: !!finalData.firstName,
+            hasLastName: !!finalData.lastName,
+            hasEmail: !!finalData.email,
+            hasPhone: !!finalData.phone
+          })
+
+          // Determina quale dato mancante richiedere
+          let missingDataMessage = ""
+          if (!finalData.firstName) {
+            missingDataMessage = "Prima di procedere con la valutazione, ho bisogno di alcuni dati di contatto. Come ti chiami?"
+          } else if (!finalData.lastName) {
+            missingDataMessage = "Perfetto! E il cognome?"
+          } else if (!finalData.email) {
+            missingDataMessage = "Benissimo! Qual è la tua email?"
+          } else if (!finalData.phone) {
+            missingDataMessage = "Ultimo dato: qual è il tuo numero di telefono?"
+          }
+
+          // Mostra messaggio per richiedere i dati mancanti
+          const requestMessage: MessageType = {
+            id: `msg_${Date.now()}`,
+            role: "bot",
+            text: missingDataMessage,
+            timestamp: new Date()
+          }
+          setMessages(prev => [...prev, requestMessage])
+          return
+        }
+
         // Piccolo delay e poi calcola valutazione
         setTimeout(() => {
           calculateValuation()
