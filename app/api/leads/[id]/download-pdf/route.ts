@@ -50,7 +50,7 @@ export async function GET(
     }
 
     // Generate PDF with complete agency data and settings
-    const pdf = generateLeadPDF({
+    const pdf = await generateLeadPDF({
       lead: {
         nome: lead.nome,
         cognome: lead.cognome,

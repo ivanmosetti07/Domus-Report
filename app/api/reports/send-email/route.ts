@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fetch lead with all related data
+    // Fetch lead with all related data including agency settings
     const lead = await prisma.lead.findUnique({
       where: { id: leadId },
       include: {
@@ -62,7 +62,11 @@ export async function POST(request: NextRequest) {
           },
         },
         conversation: true,
-        agenzia: true,
+        agenzia: {
+          include: {
+            settings: true,
+          },
+        },
       },
     })
 
@@ -89,8 +93,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate PDF
-    const pdf = generateLeadPDF({
+    // Generate PDF with complete agency data and settings
+    const pdf = await generateLeadPDF({
       lead: {
         nome: lead.nome,
         cognome: lead.cognome,
@@ -125,7 +129,15 @@ export async function POST(request: NextRequest) {
         nome: lead.agenzia.nome,
         email: lead.agenzia.email,
         citta: lead.agenzia.citta,
+        indirizzo: lead.agenzia.indirizzo,
+        telefono: lead.agenzia.telefono,
+        partitaIva: lead.agenzia.partitaIva,
+        sitoWeb: lead.agenzia.sitoWeb,
+        logoUrl: lead.agenzia.logoUrl,
       },
+      settings: lead.agenzia.settings ? {
+        brandColors: lead.agenzia.settings.brandColors as any,
+      } : undefined,
     })
 
     // Convert PDF to base64 for email attachment

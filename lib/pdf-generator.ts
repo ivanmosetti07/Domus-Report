@@ -65,7 +65,34 @@ function hexToRgb(hex: string): [number, number, number] {
   ]
 }
 
-export function generateLeadPDF(data: LeadData): jsPDF {
+// Helper function to load image from URL and convert to base64
+async function loadImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) return null
+
+    const arrayBuffer = await response.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    const base64 = buffer.toString('base64')
+
+    // Determine image format from URL or content-type
+    const contentType = response.headers.get('content-type')
+    let format = 'PNG'
+
+    if (contentType?.includes('jpeg') || contentType?.includes('jpg')) {
+      format = 'JPEG'
+    } else if (contentType?.includes('png')) {
+      format = 'PNG'
+    }
+
+    return `data:image/${format.toLowerCase()};base64,${base64}`
+  } catch (error) {
+    console.error('Error loading logo image:', error)
+    return null
+  }
+}
+
+export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
   const doc = new jsPDF()
 
   // Colori brand personalizzati o default
@@ -82,7 +109,6 @@ export function generateLeadPDF(data: LeadData): jsPDF {
     : [239, 246, 255] // blue-50
 
   const textColor: [number, number, number] = [31, 41, 55] // gray-800
-  const lightGray: [number, number, number] = [243, 244, 246] // gray-100
 
   let yPosition = 15
 
@@ -110,16 +136,36 @@ export function generateLeadPDF(data: LeadData): jsPDF {
   const rightX = 195
   let rightY = 15
 
-  // Se c'è un logo, lo aggiungiamo (per ora placeholder testuale)
+  // Carica e aggiungi il logo se disponibile
   if (data.agency.logoUrl) {
-    // TODO: Implementare caricamento immagine logo
-    // Per ora mostriamo il nome in grassetto
-    doc.setFontSize(11)
-    doc.setTextColor(...primaryColor)
-    doc.setFont('helvetica', 'bold')
-    doc.text(data.agency.nome, rightX, rightY, { align: 'right' })
-    rightY += 5
+    try {
+      const logoBase64 = await loadImageAsBase64(data.agency.logoUrl)
+      if (logoBase64) {
+        // Aggiungi il logo come immagine
+        const logoWidth = 30
+        const logoHeight = 12
+        const logoX = rightX - logoWidth
+        doc.addImage(logoBase64, 'PNG', logoX, rightY - 2, logoWidth, logoHeight)
+        rightY += logoHeight + 2
+      } else {
+        // Fallback al nome se il logo non si carica
+        doc.setFontSize(11)
+        doc.setTextColor(...primaryColor)
+        doc.setFont('helvetica', 'bold')
+        doc.text(data.agency.nome, rightX, rightY, { align: 'right' })
+        rightY += 5
+      }
+    } catch (error) {
+      // Fallback al nome in caso di errore
+      console.error('Error adding logo to PDF:', error)
+      doc.setFontSize(11)
+      doc.setTextColor(...primaryColor)
+      doc.setFont('helvetica', 'bold')
+      doc.text(data.agency.nome, rightX, rightY, { align: 'right' })
+      rightY += 5
+    }
   } else {
+    // Nessun logo, mostra solo il nome
     doc.setFontSize(11)
     doc.setTextColor(...primaryColor)
     doc.setFont('helvetica', 'bold')
