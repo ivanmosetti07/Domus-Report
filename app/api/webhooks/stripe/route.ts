@@ -101,36 +101,71 @@ export async function POST(request: Request) {
 
 // Handler: checkout.session.completed
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  console.log('Checkout completato:', session.id)
+  console.log(`[handleCheckoutCompleted] Session: ${session.id}`)
+  console.log(`[handleCheckoutCompleted] Metadata:`, JSON.stringify(session.metadata))
+  console.log(`[handleCheckoutCompleted] Customer: ${session.customer}, Subscription: ${session.subscription}`)
 
-  const agencyId = session.metadata?.agencyId
+  let agencyId = session.metadata?.agencyId
   const type = session.metadata?.type
-  const planType = session.metadata?.planType as PlanType
+  let planType = session.metadata?.planType as PlanType
 
   if (!agencyId) {
+    console.log('[handleCheckoutCompleted] AgencyId non nei metadata, tentativo recupero da customer')
+
     // Prova a recuperare da customer
     if (session.customer) {
       const subscription = await prisma.subscription.findFirst({
         where: { stripeCustomerId: session.customer as string }
       })
       if (subscription) {
-        if (type === 'extra_valuations') {
-          await processExtraValuationsCheckout(subscription.agencyId, session)
-        } else {
-          await processCheckout(subscription.agencyId, session, planType)
-        }
-        return
+        agencyId = subscription.agencyId
+        console.log(`[handleCheckoutCompleted] AgencyId recuperato da customer: ${agencyId}`)
       }
     }
-    console.error('AgencyId non trovato nel checkout session')
-    return
+
+    // Ultimo tentativo: cerca nei metadata del customer Stripe
+    if (!agencyId && session.customer) {
+      try {
+        const stripeCustomer = await stripe.customers.retrieve(session.customer as string)
+        if (!('deleted' in stripeCustomer) && stripeCustomer.metadata?.agencyId) {
+          agencyId = stripeCustomer.metadata.agencyId
+          console.log(`[handleCheckoutCompleted] AgencyId recuperato da Stripe customer metadata: ${agencyId}`)
+        }
+      } catch (e) {
+        console.error('[handleCheckoutCompleted] Errore recupero customer:', e)
+      }
+    }
+
+    if (!agencyId) {
+      console.error('[handleCheckoutCompleted] ERRORE CRITICO: AgencyId non trovato in nessun modo!')
+      console.error('[handleCheckoutCompleted] Session ID:', session.id, 'Customer:', session.customer)
+      return
+    }
   }
 
   // Gestisci acquisto valutazioni extra
   if (type === 'extra_valuations') {
+    console.log(`[handleCheckoutCompleted] Tipo: extra_valuations per agency ${agencyId}`)
     await processExtraValuationsCheckout(agencyId, session)
     return
   }
+
+  // Se planType non è nei metadata della session, prova a recuperarlo dalla subscription Stripe
+  if (!planType && session.subscription) {
+    try {
+      const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription as string)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const subData = stripeSubscription as any
+      if (subData.metadata?.planType) {
+        planType = subData.metadata.planType as PlanType
+        console.log(`[handleCheckoutCompleted] PlanType recuperato da subscription metadata: ${planType}`)
+      }
+    } catch (e) {
+      console.error('[handleCheckoutCompleted] Errore recupero subscription:', e)
+    }
+  }
+
+  console.log(`[handleCheckoutCompleted] Processando upgrade - Agency: ${agencyId}, Plan: ${planType}`)
 
   // Gestisci subscription upgrade
   await processCheckout(agencyId, session, planType)
@@ -202,6 +237,8 @@ async function processExtraValuationsCheckout(agencyId: string, session: Stripe.
 }
 
 async function processCheckout(agencyId: string, session: Stripe.Checkout.Session, planType: PlanType) {
+  console.log(`[processCheckout] Inizio - AgencyId: ${agencyId}, PlanType dai metadata: ${planType}`)
+
   // Recupera subscription Stripe
   const stripeSubscription = session.subscription
     ? await stripe.subscriptions.retrieve(session.subscription as string)
@@ -211,13 +248,37 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
   const subData = stripeSubscription as any
   const periodEnd = subData?.current_period_end ? new Date(subData.current_period_end * 1000) : null
   const priceId = subData?.items?.data?.[0]?.price?.id || null
+  const priceAmount = subData?.items?.data?.[0]?.price?.unit_amount
+
+  // Determina il piano con fallback multipli
+  let finalPlanType: PlanType = planType
+
+  if (!finalPlanType || !['basic', 'premium'].includes(finalPlanType)) {
+    // Fallback 1: dai metadata della subscription Stripe
+    if (subData?.metadata?.planType && ['basic', 'premium'].includes(subData.metadata.planType)) {
+      finalPlanType = subData.metadata.planType as PlanType
+      console.log(`[processCheckout] PlanType da subscription metadata: ${finalPlanType}`)
+    }
+    // Fallback 2: dal prezzo
+    else if (priceAmount) {
+      finalPlanType = priceAmount >= 10000 ? 'premium' : 'basic'
+      console.log(`[processCheckout] PlanType da prezzo (${priceAmount}): ${finalPlanType}`)
+    }
+    // Fallback 3: default a basic
+    else {
+      finalPlanType = 'basic'
+      console.log(`[processCheckout] PlanType default: ${finalPlanType}`)
+    }
+  }
+
+  console.log(`[processCheckout] Piano finale: ${finalPlanType}, StripeSubscriptionId: ${stripeSubscription?.id}`)
 
   // Aggiorna subscription nel DB
   await prisma.subscription.upsert({
     where: { agencyId },
     create: {
       agencyId,
-      planType: planType || 'basic',
+      planType: finalPlanType,
       status: 'active',
       stripeCustomerId: session.customer as string,
       stripeSubscriptionId: stripeSubscription?.id || null,
@@ -225,7 +286,7 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
       nextBillingDate: periodEnd
     },
     update: {
-      planType: planType || 'basic',
+      planType: finalPlanType,
       status: 'active',
       stripeCustomerId: session.customer as string,
       stripeSubscriptionId: stripeSubscription?.id || null,
@@ -238,8 +299,10 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
   // Aggiorna piano agenzia
   await prisma.agency.update({
     where: { id: agencyId },
-    data: { piano: planType || 'basic' }
+    data: { piano: finalPlanType }
   })
+
+  console.log(`[processCheckout] DB aggiornato - Agency.piano e Subscription.planType = ${finalPlanType}`)
 
   // Invia email benvenuto
   const agency = await prisma.agency.findUnique({ where: { id: agencyId } })
@@ -279,32 +342,52 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const subData = subscription as any
 
-  // Trova agenzia
-  const dbSubscription = await prisma.subscription.findFirst({
+  // Trova agenzia - prima per stripeSubscriptionId, poi per stripeCustomerId
+  let dbSubscription = await prisma.subscription.findFirst({
     where: { stripeSubscriptionId: subscription.id }
   })
 
   if (!dbSubscription) {
     // Prova con customer ID
-    const subByCustomer = await prisma.subscription.findFirst({
+    dbSubscription = await prisma.subscription.findFirst({
       where: { stripeCustomerId: subscription.customer as string }
     })
-    if (!subByCustomer) {
-      console.error('Subscription non trovata per:', subscription.id)
-      return
+    if (!dbSubscription) {
+      // Ultimo tentativo: cerca nei metadata della subscription Stripe
+      const agencyIdFromMetadata = subData.metadata?.agencyId
+      if (agencyIdFromMetadata) {
+        dbSubscription = await prisma.subscription.findFirst({
+          where: { agencyId: agencyIdFromMetadata }
+        })
+      }
+
+      if (!dbSubscription) {
+        console.error('Subscription non trovata per:', subscription.id, 'customer:', subscription.customer)
+        return
+      }
     }
   }
 
-  const agencyId = dbSubscription?.agencyId
+  const agencyId = dbSubscription.agencyId
 
   if (!agencyId) return
 
-  // Determina il piano dal price
+  // Determina il piano - prima dai metadata, poi dal prezzo
   let planType: PlanType = 'basic'
   const priceId = subData.items?.data?.[0]?.price?.id
-  if (priceId === process.env.STRIPE_PRICE_PREMIUM_MONTHLY) {
+  const priceAmount = subData.items?.data?.[0]?.price?.unit_amount
+
+  // Prima controlla i metadata (più affidabili)
+  if (subData.metadata?.planType && ['basic', 'premium'].includes(subData.metadata.planType)) {
+    planType = subData.metadata.planType as PlanType
+  } else if (priceId === process.env.STRIPE_PRICE_PREMIUM_MONTHLY) {
     planType = 'premium'
+  } else if (priceAmount) {
+    // Fallback: determina dal prezzo (10000 = €100 = premium, 5000 = €50 = basic)
+    planType = priceAmount >= 10000 ? 'premium' : 'basic'
   }
+
+  console.log(`[handleSubscriptionUpdated] Agency: ${agencyId}, Plan: ${planType}, Price: ${priceAmount}, Metadata: ${JSON.stringify(subData.metadata)}`)
 
   // Mappa status Stripe a nostro status
   let status = 'active'
@@ -313,7 +396,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   else if (subData.status === 'trialing') status = 'trial'
   else if (subData.status === 'unpaid') status = 'expired'
 
-  // Aggiorna DB
+  // Aggiorna DB - Subscription
   await prisma.subscription.update({
     where: { agencyId },
     data: {
@@ -328,11 +411,13 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     }
   })
 
-  // Aggiorna piano agenzia
+  // Aggiorna piano agenzia - CRITICO: garantisce sincronizzazione
   await prisma.agency.update({
     where: { id: agencyId },
     data: { piano: planType }
   })
+
+  console.log(`[handleSubscriptionUpdated] ✅ DB aggiornato - Agency.piano e Subscription.planType = ${planType}, Status = ${status}`)
 }
 
 // Handler: customer.subscription.deleted
