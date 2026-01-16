@@ -146,6 +146,12 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
               <thead className="bg-surface border-b border-border">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
+                    Dettagli
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Nome
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
@@ -160,12 +166,6 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                   <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
                     Data
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                    Azioni
-                  </th>
                 </tr>
               </thead>
               <tbody className="bg-card divide-y divide-border">
@@ -174,6 +174,18 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                   const statusInfo = getStatusBadge(latestStatus)
                   return (
                   <tr key={lead.id} className="hover:bg-surface transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Link href={`/dashboard/leads/${lead.id}`}>
+                        <Button variant="outline" size="sm">
+                          Dettagli
+                        </Button>
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Badge className={statusInfo.color + ' border'}>
+                        {statusInfo.label}
+                      </Badge>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="font-medium text-foreground">
                         {lead.nome} {lead.cognome}
@@ -225,18 +237,6 @@ export function LeadsTableClient({ leads }: LeadsTableClientProps) {
                       <span className="text-sm text-foreground">
                         {formatDate(lead.dataRichiesta)}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge className={statusInfo.color + ' border'}>
-                        {statusInfo.label}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <Link href={`/dashboard/leads/${lead.id}`}>
-                        <Button variant="outline" size="sm">
-                          Dettagli
-                        </Button>
-                      </Link>
                     </td>
                   </tr>
                   )
