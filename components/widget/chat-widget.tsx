@@ -135,8 +135,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const batchTimerRef = React.useRef<NodeJS.Timeout | null>(null)
   const leadIdRef = React.useRef<string | null>(null)
 
-  // FIX CRITICO: Ref per phone per evitare problemi di React state batching
+  // FIX CRITICO: Ref per tutti i dati raccolti per evitare problemi di React state batching
   const phoneRef = React.useRef<string | undefined>(undefined)
+  const collectedDataRef = React.useRef<CollectedData>({})
 
   // Auto-scroll interno alla chat (non influenza l'embed esterno)
   const scrollChatToBottom = React.useCallback(() => {
@@ -326,6 +327,11 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
         if (parsed.collectedData) {
           setCollectedData(parsed.collectedData)
+          // FIX CRITICO: Inizializza anche il ref con i dati salvati
+          collectedDataRef.current = parsed.collectedData
+          if (parsed.collectedData.phone) {
+            phoneRef.current = parsed.collectedData.phone
+          }
         }
 
         if (parsed.valuation) {
@@ -355,6 +361,11 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setConversationMode("chatting")
     setIsInitialized(true)
   }
+
+  // FIX CRITICO: Mantieni collectedDataRef sempre sincronizzato con lo stato
+  React.useEffect(() => {
+    collectedDataRef.current = collectedData
+  }, [collectedData])
 
   // Save to localStorage whenever state changes
   React.useEffect(() => {
@@ -487,6 +498,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
               (updated as any)[key] = value
             }
           })
+          // FIX CRITICO: Aggiorna anche il ref immediatamente
+          collectedDataRef.current = updated
           return updated
         })
       }
@@ -516,13 +529,27 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       // Se l'AI dice che siamo pronti per la valutazione, procedi
       if (data.readyForValuation) {
-        // Aggiorna i dati finali prima di calcolare
-        const finalData = { ...collectedData, ...data.extractedData }
+        // FIX CRITICO: Usa collectedDataRef.current invece di collectedData (stale closure)
+        // Questo assicura di avere sempre i dati più recenti
+        const finalData = { ...collectedDataRef.current, ...data.extractedData }
+
+        // Aggiorna anche il ref con i nuovi dati estratti
+        collectedDataRef.current = finalData
+
         // Salva phone nella ref se presente
         if (finalData.phone) {
           phoneRef.current = finalData.phone
         }
         setCollectedData(finalData)
+
+        console.log('[ChatWidget] readyForValuation=true, finalData:', {
+          firstName: finalData.firstName,
+          lastName: finalData.lastName,
+          email: finalData.email,
+          phone: finalData.phone,
+          city: finalData.city,
+          address: finalData.address
+        })
 
         // VALIDAZIONE FINALE: Verifica che tutti i dati di contatto siano presenti
         const hasAllContacts = !!(finalData.firstName && finalData.lastName && finalData.email && finalData.phone)
@@ -558,6 +585,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           return
         }
 
+        console.log('[ChatWidget] All contacts present, proceeding to calculateValuation')
+
         // Piccolo delay e poi calcola valutazione
         setTimeout(() => {
           calculateValuation()
@@ -583,12 +612,15 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setConversationMode("calculating")
     addBotMessage("Perfetto! Sto calcolando la valutazione con AI... ⏳")
 
+    // FIX CRITICO: Usa collectedDataRef.current per avere i dati più recenti
+    const currentData = collectedDataRef.current
+
     // DEBUG: Log collectedData PRIMA della chiamata API
     console.log('[calculateValuation] CollectedData BEFORE API call:', {
-      phone: collectedData.phone,
-      email: collectedData.email,
-      firstName: collectedData.firstName,
-      allData: collectedData
+      phone: currentData.phone,
+      email: currentData.email,
+      firstName: currentData.firstName,
+      allData: currentData
     })
 
     try {
@@ -598,22 +630,22 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       // Invia TUTTI i dati raccolti per un'analisi AI più accurata
       // L'AI popola propertyType, ma per compatibilità controlliamo anche type
-      const propertyType = collectedData.propertyType || collectedData.type || PropertyType.APARTMENT
-      const condition = collectedData.condition || PropertyCondition.GOOD
+      const propertyType = currentData.propertyType || currentData.type || PropertyType.APARTMENT
+      const condition = currentData.condition || PropertyCondition.GOOD
 
       // MIGLIORA ESTRAZIONE CITTÀ: usa inferCity per dedurre la città da CAP, indirizzo o quartiere
       const inferredCity = inferCity({
-        city: collectedData.city,
-        postalCode: collectedData.postalCode,
-        address: collectedData.address,
-        neighborhood: collectedData.neighborhood
+        city: currentData.city,
+        postalCode: currentData.postalCode,
+        address: currentData.address,
+        neighborhood: currentData.neighborhood
       })
 
       console.log('[calculateValuation] Città dedotta:', {
-        original: collectedData.city,
+        original: currentData.city,
         inferred: inferredCity,
-        postalCode: collectedData.postalCode,
-        address: collectedData.address
+        postalCode: currentData.postalCode,
+        address: currentData.address
       })
 
       const response = await fetch("/api/valuation", {
@@ -623,25 +655,25 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         },
         body: JSON.stringify({
           // Dati base obbligatori
-          address: collectedData.address || "",
-          city: inferredCity || collectedData.city || "",
+          address: currentData.address || "",
+          city: inferredCity || currentData.city || "",
           propertyType: propertyType,
-          surfaceSqm: collectedData.surfaceSqm || 100,
-          floor: collectedData.floor,
-          hasElevator: collectedData.hasElevator,
+          surfaceSqm: currentData.surfaceSqm || 100,
+          floor: currentData.floor,
+          hasElevator: currentData.hasElevator,
           condition: condition,
           // Dati aggiuntivi per analisi AI
-          neighborhood: collectedData.neighborhood,
-          postalCode: collectedData.postalCode,
-          omiCategory: collectedData.omiCategory,
-          rooms: collectedData.rooms,
-          bathrooms: collectedData.bathrooms,
-          hasParking: collectedData.hasParking,
-          outdoorSpace: collectedData.outdoorSpace,
-          heatingType: collectedData.heatingType,
-          hasAirConditioning: collectedData.hasAirConditioning,
-          energyClass: collectedData.energyClass,
-          buildYear: collectedData.buildYear,
+          neighborhood: currentData.neighborhood,
+          postalCode: currentData.postalCode,
+          omiCategory: currentData.omiCategory,
+          rooms: currentData.rooms,
+          bathrooms: currentData.bathrooms,
+          hasParking: currentData.hasParking,
+          outdoorSpace: currentData.outdoorSpace,
+          heatingType: currentData.heatingType,
+          hasAirConditioning: currentData.hasAirConditioning,
+          energyClass: currentData.energyClass,
+          buildYear: currentData.buildYear,
           // Abilita analisi AI
           useAI: true,
         }),
@@ -683,20 +715,21 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       const errorMessage = error instanceof Error ? error.message : String(error)
       console.log('[calculateValuation] Error message:', errorMessage)
 
-      // Identifica quali dati mancano ancora
+      // Identifica quali dati mancano ancora (usa currentData definita sopra nel try)
+      const errorData = collectedDataRef.current
       const missingFields: string[] = []
-      if (!collectedData.city && !inferCity({
-        city: collectedData.city,
-        postalCode: collectedData.postalCode,
-        address: collectedData.address,
-        neighborhood: collectedData.neighborhood
+      if (!errorData.city && !inferCity({
+        city: errorData.city,
+        postalCode: errorData.postalCode,
+        address: errorData.address,
+        neighborhood: errorData.neighborhood
       })) {
         missingFields.push("città")
       }
-      if (!collectedData.address) missingFields.push("indirizzo")
-      if (!collectedData.surfaceSqm) missingFields.push("superficie in m²")
-      if (!collectedData.propertyType && !collectedData.type) missingFields.push("tipo di immobile")
-      if (!collectedData.condition) missingFields.push("stato dell'immobile")
+      if (!errorData.address) missingFields.push("indirizzo")
+      if (!errorData.surfaceSqm) missingFields.push("superficie in m²")
+      if (!errorData.propertyType && !errorData.type) missingFields.push("tipo di immobile")
+      if (!errorData.condition) missingFields.push("stato dell'immobile")
 
       if (error instanceof Error && error.name === 'AbortError') {
         addBotMessage(
@@ -786,7 +819,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `valutazione-${collectedData.lastName || "immobile"}.pdf`
+      a.download = `valutazione-${collectedDataRef.current.lastName || "immobile"}.pdf`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -806,18 +839,21 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
 
   const completeConversation = async (valuationResult?: ValuationResult) => {
-    const firstName = collectedData.firstName || "Amico"
+    // FIX CRITICO: Usa collectedDataRef.current per evitare problemi di stale closure
+    const currentData = collectedDataRef.current
+    const firstName = currentData.firstName || "Amico"
 
     // Use passed result or fall back to state
     const finalValuation = valuationResult || valuation
 
     // DEBUG: Log COMPLETO di collectedData
     console.log('[completeConversation] 🔍 CRITICAL DEBUG - CollectedData at start:', {
-      phone: collectedData.phone,
-      email: collectedData.email,
-      firstName: collectedData.firstName,
-      lastName: collectedData.lastName,
-      FULL_collectedData: JSON.stringify(collectedData, null, 2)
+      phone: currentData.phone,
+      email: currentData.email,
+      firstName: currentData.firstName,
+      lastName: currentData.lastName,
+      FULL_collectedData: JSON.stringify(currentData, null, 2),
+      stateCollectedData: JSON.stringify(collectedData, null, 2)
     })
 
     // Show loading message
@@ -829,58 +865,58 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       // Log dei dati raccolti PRIMA di inviarli
       console.log('[ChatWidget] Phone data before sending:', {
-        phoneFromState: collectedData.phone,
+        phoneFromState: currentData.phone,
         phoneFromRef: phoneRef.current,
-        phoneToUse: phoneRef.current || collectedData.phone,
-        phoneType: typeof (phoneRef.current || collectedData.phone),
-        phoneValue: JSON.stringify(phoneRef.current || collectedData.phone)
+        phoneToUse: phoneRef.current || currentData.phone,
+        phoneType: typeof (phoneRef.current || currentData.phone),
+        phoneValue: JSON.stringify(phoneRef.current || currentData.phone)
       })
 
       // MIGLIORA ESTRAZIONE CITTÀ: usa inferCity anche per il salvataggio
       const inferredCity = inferCity({
-        city: collectedData.city,
-        postalCode: collectedData.postalCode,
-        address: collectedData.address,
-        neighborhood: collectedData.neighborhood
+        city: currentData.city,
+        postalCode: currentData.postalCode,
+        address: currentData.address,
+        neighborhood: currentData.neighborhood
       })
 
       console.log('[completeConversation] Città dedotta per salvataggio:', {
-        original: collectedData.city,
+        original: currentData.city,
         inferred: inferredCity,
-        willUse: inferredCity || collectedData.city
+        willUse: inferredCity || currentData.city
       })
 
-      // Prepara il payload base
+      // Prepara il payload base - FIX CRITICO: usa currentData (dal ref) invece di collectedData (stale)
       const basePayload = {
         // Lead data
-        firstName: collectedData.firstName,
-        lastName: collectedData.lastName,
-        email: collectedData.email,
-        // FIX CRITICO: Usa phoneRef invece di collectedData.phone per evitare state batching
-        phone: phoneRef.current || collectedData.phone,
+        firstName: currentData.firstName,
+        lastName: currentData.lastName,
+        email: currentData.email,
+        // FIX CRITICO: Usa phoneRef invece di currentData.phone per evitare state batching
+        phone: phoneRef.current || currentData.phone,
         // Property data
-        address: collectedData.address,
-        city: inferredCity || collectedData.city,
-        neighborhood: collectedData.neighborhood,
-        postalCode: collectedData.postalCode, // CRITICO: Include CAP per validazione città/geocoding
-        type: collectedData.propertyType || collectedData.type,
-        surfaceSqm: collectedData.surfaceSqm,
-        rooms: collectedData.rooms,
-        bathrooms: collectedData.bathrooms,
-        floor: collectedData.floor,
-        hasElevator: collectedData.hasElevator,
-        floorType: collectedData.floorType,
-        outdoorSpace: collectedData.outdoorSpace,
-        hasParking: collectedData.hasParking,
-        condition: collectedData.condition,
-        heatingType: collectedData.heatingType,
-        hasAirConditioning: collectedData.hasAirConditioning,
-        energyClass: collectedData.energyClass && !collectedData.energyClass.toLowerCase().includes('non') ? collectedData.energyClass : undefined,
-        buildYear: typeof collectedData.buildYear === 'number' ? collectedData.buildYear :
-                   (typeof collectedData.buildYear === 'string' && !collectedData.buildYear.toLowerCase().includes('non') ?
-                    parseInt(collectedData.buildYear, 10) : undefined),
-        occupancyStatus: collectedData.occupancyStatus,
-        occupancyEndDate: collectedData.occupancyEndDate,
+        address: currentData.address,
+        city: inferredCity || currentData.city,
+        neighborhood: currentData.neighborhood,
+        postalCode: currentData.postalCode, // CRITICO: Include CAP per validazione città/geocoding
+        type: currentData.propertyType || currentData.type,
+        surfaceSqm: currentData.surfaceSqm,
+        rooms: currentData.rooms,
+        bathrooms: currentData.bathrooms,
+        floor: currentData.floor,
+        hasElevator: currentData.hasElevator,
+        floorType: currentData.floorType,
+        outdoorSpace: currentData.outdoorSpace,
+        hasParking: currentData.hasParking,
+        condition: currentData.condition,
+        heatingType: currentData.heatingType,
+        hasAirConditioning: currentData.hasAirConditioning,
+        energyClass: currentData.energyClass && !currentData.energyClass.toLowerCase().includes('non') ? currentData.energyClass : undefined,
+        buildYear: typeof currentData.buildYear === 'number' ? currentData.buildYear :
+                   (typeof currentData.buildYear === 'string' && !currentData.buildYear.toLowerCase().includes('non') ?
+                    parseInt(currentData.buildYear, 10) : undefined),
+        occupancyStatus: currentData.occupancyStatus,
+        occupancyEndDate: currentData.occupancyEndDate,
         // Valuation data
         minPrice: finalValuation?.minPrice || 0,
         maxPrice: finalValuation?.maxPrice || 0,
@@ -971,8 +1007,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       // Track CONTACT_FORM_SUBMIT event
       trackEvent("CONTACT_FORM_SUBMIT", {
-        hasPhone: !!collectedData.phone,
-        propertyType: collectedData.type,
+        hasPhone: !!currentData.phone,
+        propertyType: currentData.type,
         estimatedPrice: finalValuation?.estimatedPrice,
       })
 
@@ -1014,7 +1050,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         stack: error instanceof Error ? error.stack : undefined,
         widgetId,
         isDemo,
-        hasEmail: !!collectedData.email,
+        hasEmail: !!currentData.email,
         hasValuation: !!finalValuation,
         timestamp: new Date().toISOString()
       })
@@ -1054,7 +1090,9 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setConversationMode("chatting")
     setInputValue("")
     setSavedLeadId(null)
+    // FIX CRITICO: Resetta anche i ref
     phoneRef.current = undefined
+    collectedDataRef.current = {}
 
     // Clear localStorage
     if (!isDemo) {
