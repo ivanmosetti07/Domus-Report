@@ -30,6 +30,7 @@
     "@sentry/nextjs": "^10.29.0",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.5.3",
+    "@vercel/analytics": "^1.6.1",
     "@vercel/blob": "^2.0.0",
     "bcrypt": "^6.0.0",
     "canvas-confetti": "^1.9.4",
