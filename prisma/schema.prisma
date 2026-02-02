@@ -23,6 +23,8 @@ model Agency {
   partitaIva     String?          @map("partita_iva")
   sitoWeb        String?          @map("sito_web")
   telefono       String?
+  affiliateId    String?          @map("affiliate_id")
+  affiliate      Affiliate?       @relation(fields: [affiliateId], references: [id])
   sessions       AgencySession[]
   settings       AgencySetting?
   analytics      AnalyticsDaily[]
@@ -34,6 +36,7 @@ model Agency {
   subscription   Subscription?
   widgetConfigs  WidgetConfig[]
 
+  @@index([affiliateId])
   @@map("agencies")
 }
 
@@ -446,4 +449,38 @@ model ZoneInsight {
   @@index([citta, zona])
   @@index([cap])
   @@map("zone_insights")
+}
+
+model Affiliate {
+  id           String             @id @default(cuid())
+  email        String             @unique
+  password     String
+  nome         String
+  cognome      String
+  referralCode String             @unique @map("referral_code")
+  attivo       Boolean            @default(true)
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+  sessions     AffiliateSession[]
+  agencies     Agency[]
+
+  @@map("affiliates")
+}
+
+model AffiliateSession {
+  id             String    @id @default(cuid())
+  affiliateId    String    @map("affiliate_id")
+  tokenHash      String    @map("token_hash")
+  ipAddress      String?   @map("ip_address")
+  userAgent      String?   @map("user_agent")
+  loginAt        DateTime  @default(now()) @map("login_at")
+  expiresAt      DateTime  @map("expires_at")
+  lastActivityAt DateTime  @default(now()) @map("last_activity_at")
+  revokedAt      DateTime? @map("revoked_at")
+  affiliate      Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@index([affiliateId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("affiliate_sessions")
 }

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 import { nanoid } from "nanoid"
 import { validateEmail, validatePassword, validateCity, sanitizeString } from "@/lib/validation"
+import { cookies } from "next/headers"
 
 export interface RegisterRequest {
   nome: string
@@ -78,13 +79,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check for referral code in cookies
+    const cookieStore = await cookies()
+    const referralCode = cookieStore.get("referral_code")?.value
+    let affiliateId: string | null = null
+
+    if (referralCode) {
+      // Find the affiliate by referral code
+      const affiliate = await prisma.affiliate.findUnique({
+        where: { referralCode },
+        select: { id: true },
+      })
+      if (affiliate) {
+        affiliateId = affiliate.id
+      }
+    }
+
     // Hash password
     const hashedPassword = await bcrypt.hash(body.password, 10)
 
     // Generate unique widget ID
     const widgetId = nanoid(16) // 16 characters unique ID
 
-    // Create agency SENZA piano selezionato (stato onboarding incompleto)
+    // Create agency with optional affiliate link
     const agency = await prisma.agency.create({
       data: {
         nome,
@@ -94,7 +111,7 @@ export async function POST(request: NextRequest) {
         widgetId,
         piano: "free", // Default free durante onboarding
         attiva: true,
-        // NO subscription creata qui - verrà creata durante onboarding
+        affiliateId, // Link to affiliate if referral code was valid
       },
       select: {
         id: true,
@@ -106,7 +123,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({
+    // Create response and clear referral cookie after use
+    const response = NextResponse.json({
       success: true,
       message: "Registrazione completata! Scegli il tuo piano.",
       agency: {
@@ -115,6 +133,13 @@ export async function POST(request: NextRequest) {
         email: agency.email,
       },
     })
+
+    // Clear the referral code cookie after successful registration
+    if (referralCode) {
+      response.cookies.delete("referral_code")
+    }
+
+    return response
   } catch (error) {
     console.error("Registration error:", error)
 
