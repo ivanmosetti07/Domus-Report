@@ -35,6 +35,16 @@ export function Footer() {
                 Documentazione
               </Link>
             </li>
+            <li>
+              <Link href="/affiliate/register" className="transition-colors hover:text-foreground">
+                Diventa Affiliato
+              </Link>
+            </li>
+            <li>
+              <Link href="/affiliate/login" className="transition-colors hover:text-foreground">
+                Login Affiliati
+              </Link>
+            </li>
           </ul>
         </div>
 
