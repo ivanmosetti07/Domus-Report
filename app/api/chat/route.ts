@@ -628,6 +628,44 @@ function normalizeExtractedData(data: CollectedData): CollectedData {
   return normalized
 }
 
+// Funzione per interpretare risposte numeriche in base al contesto dell'ultima domanda
+function interpretNumericResponse(
+  userMessage: string,
+  lastBotMessage: string,
+  currentData: CollectedData,
+  extractedData: CollectedData
+): CollectedData {
+  const enhanced = { ...extractedData }
+  const trimmedMessage = userMessage.trim()
+
+  // Controlla se la risposta è solo un numero
+  const numericMatch = trimmedMessage.match(/^(\d+)$/)
+  if (!numericMatch) return enhanced
+
+  const number = parseInt(numericMatch[1], 10)
+  const botMsgLower = lastBotMessage.toLowerCase()
+
+  // Interpreta il numero in base all'ultima domanda del bot
+  if ((botMsgLower.includes('camer') || botMsgLower.includes('stanz')) && currentData.rooms === undefined && enhanced.rooms === undefined) {
+    enhanced.rooms = number
+    console.log("[Chat API] Interpreted numeric response as rooms:", number)
+  } else if (botMsgLower.includes('bagn') && currentData.bathrooms === undefined && enhanced.bathrooms === undefined) {
+    enhanced.bathrooms = number
+    console.log("[Chat API] Interpreted numeric response as bathrooms:", number)
+  } else if ((botMsgLower.includes('metr') || botMsgLower.includes('mq') || botMsgLower.includes('m²') || botMsgLower.includes('superficie')) && currentData.surfaceSqm === undefined && enhanced.surfaceSqm === undefined) {
+    enhanced.surfaceSqm = number
+    console.log("[Chat API] Interpreted numeric response as surfaceSqm:", number)
+  } else if (botMsgLower.includes('piano') && currentData.floor === undefined && enhanced.floor === undefined) {
+    enhanced.floor = number
+    console.log("[Chat API] Interpreted numeric response as floor:", number)
+  } else if ((botMsgLower.includes('anno') || botMsgLower.includes('costruzion')) && currentData.buildYear === undefined && enhanced.buildYear === undefined) {
+    enhanced.buildYear = number
+    console.log("[Chat API] Interpreted numeric response as buildYear:", number)
+  }
+
+  return enhanced
+}
+
 interface ChatMessage {
   role: "user" | "bot"
   text: string
@@ -746,7 +784,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Normalizza i dati estratti per assicurarsi che i valori siano quelli corretti degli enum
-    const normalizedData = normalizeExtractedData(parsed.extractedData || {})
+    let normalizedData = normalizeExtractedData(parsed.extractedData || {})
+
+    // INTERPRETA RISPOSTE NUMERICHE: Se l'utente risponde solo con un numero, interpretalo nel contesto
+    const lastUserMessage = messages[messages.length - 1]?.text || ""
+    const lastBotMessage = messages.length >= 2 ? messages[messages.length - 2]?.text || "" : ""
+    if (lastBotMessage && messages[messages.length - 2]?.role === "bot") {
+      normalizedData = interpretNumericResponse(lastUserMessage, lastBotMessage, collectedData, normalizedData)
+    }
 
     // VALIDAZIONE DATI DI CONTATTO: Se un dato di contatto è invalido, rimuovilo e mostra errore
     const contactValidation = validateContactData(normalizedData, collectedData)
