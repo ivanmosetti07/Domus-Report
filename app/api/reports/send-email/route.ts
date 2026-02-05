@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
 import { prisma } from '@/lib/prisma'
 import { getAuthAgency } from '@/lib/auth'
 import { generateLeadPDF } from '@/lib/pdf-generator'
 import { generateReportEmailHTML, generateReportEmailText } from '@/lib/email-templates'
 import { validateEmail } from '@/lib/validation'
+import { sendEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if Resend is configured
-    if (!process.env.RESEND_API_KEY) {
+    // Check if SMTP is configured
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
       return NextResponse.json(
         { error: 'Servizio email non configurato. Contatta l\'amministratore.' },
         { status: 500 }
@@ -164,12 +164,9 @@ export async function POST(request: NextRequest) {
       recipients.push(lead.agenzia.email)
     }
 
-    // Initialize Resend
-    const resend = new Resend(process.env.RESEND_API_KEY)
-
-    // Send email via Resend
-    const result = await resend.emails.send({
-      from: `${lead.agenzia.nome} <noreply@domusreport.com>`,
+    // Send email via SMTP
+    const result = await sendEmail({
+      from: `${lead.agenzia.nome} <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
       to: recipients,
       subject: `Valutazione Immobiliare - ${lead.property.indirizzo}`,
       html: htmlContent,
@@ -182,14 +179,14 @@ export async function POST(request: NextRequest) {
       ],
     })
 
-    if (!result.data) {
-      throw new Error('Errore nell\'invio dell\'email')
+    if (!result.success) {
+      throw new Error(result.error || 'Errore nell\'invio dell\'email')
     }
 
     return NextResponse.json({
       success: true,
       message: 'Email inviata con successo',
-      emailId: result.data.id,
+      emailId: result.messageId,
     })
   } catch (error) {
     console.error('Error sending email:', error)

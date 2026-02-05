@@ -65,14 +65,13 @@ export async function GET(request: Request) {
 
         results.downgraded++
 
-        // Invia email (se Resend è configurato)
-        if (process.env.RESEND_API_KEY && subscription.agency) {
+        // Invia email (se SMTP è configurato)
+        if (process.env.SMTP_HOST && subscription.agency) {
           try {
-            const { Resend } = await import('resend')
-            const resend = new Resend(process.env.RESEND_API_KEY)
+            const { sendEmail } = await import('@/lib/email')
 
-            await resend.emails.send({
-              from: 'Domus Report <noreply@domusreport.com>',
+            await sendEmail({
+              from: `Domus Report <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
               to: subscription.agency.email,
               subject: 'Il tuo periodo di prova è terminato',
               html: `

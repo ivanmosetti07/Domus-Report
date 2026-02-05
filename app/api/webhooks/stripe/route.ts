@@ -7,14 +7,13 @@ import Stripe from 'stripe'
 // Disabilita body parsing per Stripe webhooks
 export const runtime = 'nodejs'
 
-async function sendEmail(to: string, subject: string, html: string) {
-  // Usa Resend se configurato
-  if (process.env.RESEND_API_KEY) {
+async function sendEmailNotification(to: string, subject: string, html: string) {
+  // Usa SMTP se configurato
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD) {
     try {
-      const { Resend } = await import('resend')
-      const resend = new Resend(process.env.RESEND_API_KEY)
-      await resend.emails.send({
-        from: 'Domus Report <noreply@domusreport.com>',
+      const { sendEmail } = await import('@/lib/email')
+      await sendEmail({
+        from: `Domus Report <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
         to,
         subject,
         html
@@ -211,7 +210,7 @@ async function processExtraValuationsCheckout(agencyId: string, session: Stripe.
 
   if (agency && session.amount_total) {
     const amount = (session.amount_total / 100).toFixed(2)
-    await sendEmail(
+    await sendEmailNotification(
       agency.email,
       `Acquisto confermato - ${quantityNum} valutazioni extra`,
       `
@@ -307,7 +306,7 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
   // Invia email benvenuto
   const agency = await prisma.agency.findUnique({ where: { id: agencyId } })
   if (agency) {
-    await sendEmail(
+    await sendEmailNotification(
       agency.email,
       `Benvenuto nel piano ${planType?.toUpperCase() || 'BASIC'}!`,
       `
@@ -463,7 +462,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   })
 
   if (agency) {
-    await sendEmail(
+    await sendEmailNotification(
       agency.email,
       'Il tuo abbonamento è terminato',
       `
@@ -554,7 +553,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   })
 
   if (agency && invoiceData.hosted_invoice_url) {
-    await sendEmail(
+    await sendEmailNotification(
       agency.email,
       `Ricevuta pagamento - €${((invoiceData.amount_paid || 0) / 100).toFixed(2)}`,
       `
@@ -642,7 +641,7 @@ async function handleTrialWillEnd(subscription: Stripe.Subscription) {
   // Verifica se ha un metodo di pagamento salvato
   if (dbSubscription.paymentMethodId) {
     // Ha il metodo di pagamento - invio reminder che verrà addebitato
-    await sendEmail(
+    await sendEmailNotification(
       agency.email,
       'Il tuo periodo di prova sta per terminare',
       `
@@ -665,7 +664,7 @@ async function handleTrialWillEnd(subscription: Stripe.Subscription) {
     })
   } else {
     // NON ha metodo di pagamento - avviso che deve aggiungerlo per continuare
-    await sendEmail(
+    await sendEmailNotification(
       agency.email,
       'Aggiungi un metodo di pagamento per continuare',
       `
@@ -724,7 +723,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   })
 
   if (agency) {
-    await sendEmail(
+    await sendEmailNotification(
       agency.email,
       'Problema con il pagamento',
       `
