@@ -9,6 +9,7 @@ import { X, Send, Building2, Loader2, RotateCcw } from "lucide-react"
 import { Message as MessageType, PropertyType, PropertyCondition } from "@/types"
 import { formatCurrency } from "@/lib/utils"
 import { inferCity } from "@/lib/postal-code"
+import * as gtag from "@/lib/gtag"
 
 export interface WidgetThemeConfig {
   primaryColor?: string
@@ -282,6 +283,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   // Tracking: OPEN - quando widget viene montato
   React.useEffect(() => {
     trackEvent("OPEN", undefined, true) // Invia immediatamente
+    // GA4 tracking
+    gtag.trackWidgetOpen(widgetId)
 
     // Cleanup: invia eventi rimanenti quando componente viene smontato
     return () => {
@@ -441,6 +444,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
     // Track MESSAGE event
     trackEvent("MESSAGE", { messageCount: messages.length + 1 })
+    // GA4 tracking
+    gtag.trackMessageSent(widgetId, messages.length + 1)
 
     const userInput = inputValue.trim()
     addUserMessage(userInput)
@@ -763,6 +768,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       minPrice: result.minPrice,
       maxPrice: result.maxPrice,
     })
+    // GA4 tracking
+    gtag.trackValuationComplete({
+      widgetId,
+      city: collectedDataRef.current.city || "",
+      estimatedValue: result.estimatedPrice,
+      surface: collectedDataRef.current.surfaceSqm || 0,
+    })
 
     // Add valuation as special message
     const valuationMessage: MessageType = {
@@ -831,6 +843,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
       // Track PDF download event
       trackEvent("PDF_DOWNLOAD", { leadId: savedLeadId })
+      // GA4 tracking
+      gtag.trackPdfDownload(widgetId)
     } catch (error) {
       console.error("[downloadPDF] Error:", error)
       addBotMessage("Si è verificato un errore nel download del PDF. Riprova o contattaci.")
@@ -1010,6 +1024,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         hasPhone: !!currentData.phone,
         propertyType: currentData.type,
         estimatedPrice: finalValuation?.estimatedPrice,
+      })
+      // GA4 tracking - Lead generato (conversione principale)
+      gtag.trackLeadGenerated({
+        widgetId,
+        city: currentData.city || "",
+        hasPhone: !!currentData.phone,
+        hasEmail: !!currentData.email,
       })
 
       // Messaggio diverso per demo vs reale
@@ -1243,6 +1264,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
                 onClick={() => {
                   // Track CLOSE event
                   trackEvent("CLOSE", { mode: conversationMode })
+                  // GA4 tracking
+                  gtag.trackWidgetClose(widgetId)
                   // Invia subito gli eventi rimanenti
                   sendEventBatch()
                   // Chiudi widget

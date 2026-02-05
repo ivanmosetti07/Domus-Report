@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Building2, Eye, EyeOff } from "lucide-react"
+import { trackAgencyLogin } from "@/lib/gtag"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -68,6 +69,9 @@ export default function LoginPage() {
       if (data.token) {
         localStorage.setItem('token', data.token)
       }
+
+      // GA4 tracking - Login
+      trackAgencyLogin()
 
       // Success - redirect to dashboard
       router.push("/dashboard")

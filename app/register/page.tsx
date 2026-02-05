@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Building2, Eye, EyeOff } from "lucide-react"
+import { trackAgencySignup } from "@/lib/gtag"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -103,6 +104,9 @@ export default function RegisterPage() {
         setLoading(false)
         return
       }
+
+      // GA4 tracking - Signup
+      trackAgencySignup(formData.city)
 
       const loginResponse = await fetch("/api/auth/login", {
         method: "POST",
