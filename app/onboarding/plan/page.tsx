@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { PLAN_PRICES, planLimits } from "@/lib/plan-limits"
+import { trackPlanSelected, trackTrialStart } from "@/lib/gtag"
 
 type PlanType = 'free' | 'basic' | 'premium'
 
@@ -60,6 +61,23 @@ export default function OnboardingPlanPage() {
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.error || 'Errore durante la selezione del piano')
+      }
+
+      // GA4 tracking - Piano selezionato
+      const planValue = PLAN_PRICES[planType] / 100 // Converti centesimi in EUR
+      trackPlanSelected({
+        planType,
+        value: planValue,
+        hasTrial: trialDays > 0,
+      })
+
+      // GA4 tracking - Trial iniziato (solo per piani a pagamento)
+      if (trialDays > 0 && (planType === 'basic' || planType === 'premium')) {
+        trackTrialStart({
+          planType,
+          trialDays,
+          value: planValue,
+        })
       }
 
       // Successo: redirect a welcome

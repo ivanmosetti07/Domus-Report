@@ -219,6 +219,123 @@ export const trackPricingView = () => {
 };
 
 // ============================================
+// EVENTI SUBSCRIPTION / REVENUE (BUSINESS KPI)
+// ============================================
+
+/** Piano selezionato durante onboarding */
+export const trackPlanSelected = (params: {
+  planType: "free" | "basic" | "premium";
+  value: number; // prezzo in EUR (0, 50, 100)
+  hasTrial: boolean;
+}) => {
+  trackEvent("select_plan", {
+    plan_type: params.planType,
+    value: params.value,
+    has_trial: params.hasTrial,
+    currency: "EUR",
+    event_category: "subscription",
+  });
+};
+
+/** Trial iniziato (per piani a pagamento) */
+export const trackTrialStart = (params: {
+  planType: "basic" | "premium";
+  trialDays: number;
+  value: number; // valore potenziale mensile
+}) => {
+  trackEvent("begin_trial", {
+    plan_type: params.planType,
+    trial_days: params.trialDays,
+    value: params.value,
+    currency: "EUR",
+    event_category: "subscription",
+  });
+};
+
+/** Acquisto completato - evento GA4 standard per e-commerce */
+export const trackPurchase = (params: {
+  transactionId: string;
+  planType: "basic" | "premium";
+  value: number; // importo in EUR
+  isFirstPurchase: boolean;
+}) => {
+  trackEvent("purchase", {
+    transaction_id: params.transactionId,
+    value: params.value,
+    currency: "EUR",
+    items: [
+      {
+        item_id: params.planType,
+        item_name: `Piano ${params.planType.charAt(0).toUpperCase() + params.planType.slice(1)}`,
+        item_category: "subscription",
+        price: params.value,
+        quantity: 1,
+      },
+    ],
+    is_first_purchase: params.isFirstPurchase,
+    event_category: "subscription",
+  });
+};
+
+/** Upgrade piano (da free a basic/premium o da basic a premium) */
+export const trackSubscriptionUpgrade = (params: {
+  fromPlan: "free" | "basic";
+  toPlan: "basic" | "premium";
+  value: number; // nuovo valore mensile
+}) => {
+  trackEvent("subscription_upgrade", {
+    from_plan: params.fromPlan,
+    to_plan: params.toPlan,
+    value: params.value,
+    currency: "EUR",
+    event_category: "subscription",
+  });
+};
+
+/** Downgrade piano */
+export const trackSubscriptionDowngrade = (params: {
+  fromPlan: "basic" | "premium";
+  toPlan: "free" | "basic";
+  lostValue: number; // valore perso
+}) => {
+  trackEvent("subscription_downgrade", {
+    from_plan: params.fromPlan,
+    to_plan: params.toPlan,
+    lost_value: params.lostValue,
+    currency: "EUR",
+    event_category: "subscription",
+  });
+};
+
+/** Cancellazione subscription */
+export const trackSubscriptionCancel = (params: {
+  planType: "basic" | "premium";
+  value: number; // MRR perso
+  reason?: string;
+}) => {
+  trackEvent("subscription_cancel", {
+    plan_type: params.planType,
+    value: params.value,
+    currency: "EUR",
+    reason: params.reason,
+    event_category: "subscription",
+  });
+};
+
+/** Acquisto valutazioni extra */
+export const trackExtraValuationsPurchase = (params: {
+  quantity: number;
+  value: number; // importo totale EUR
+}) => {
+  trackEvent("extra_valuations_purchase", {
+    quantity: params.quantity,
+    value: params.value,
+    currency: "EUR",
+    event_category: "subscription",
+  });
+};
+
+// ============================================
 // EVENTI ERRORE
 // ============================================
 
