@@ -19,7 +19,7 @@ console.log('Container #domusreport-widget-root trovato:', !!container);
 if (!container) {
   console.error('❌ Container del widget NON trovato! Lo script potrebbe non essere caricato.');
   console.log('Verifica che ci sia questo script nella pagina:');
-  console.log('<script src="https://domusreport.mainstream.agency/widget-embed.js?widgetId=XXX"></script>');
+  console.log('<script src="https://domusreport.com/widget-embed.js?widgetId=XXX"></script>');
 } else {
   console.log('✅ Container trovato');
 }

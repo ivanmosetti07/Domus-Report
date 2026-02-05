@@ -48,7 +48,7 @@ export function EmbedCodeModal({
 
   if (!widget) return null
 
-  const widgetHost = process.env.NEXT_PUBLIC_APP_URL || 'https://domusreport.mainstream.agency'
+  const widgetHost = process.env.NEXT_PUBLIC_APP_URL || 'https://domusreport.com'
 
   // Script tag - metodo principale (bubble)
   const bubbleCode = `<!-- DomusReport Widget - ${widget.name} -->

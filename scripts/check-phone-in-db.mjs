@@ -118,7 +118,7 @@ async function checkPhoneInDatabase() {
     }
 
     console.log('\n🔍 Prossimi passi per debug:')
-    console.log('   1. Aprire browser su https://domusreport.mainstream.agency/')
+    console.log('   1. Aprire browser su https://domusreport.com/')
     console.log('   2. Aprire DevTools (F12) → Tab Network')
     console.log('   3. Testare il widget inserendo un numero telefono')
     console.log('   4. Verificare la richiesta POST /api/leads')

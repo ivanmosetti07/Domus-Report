@@ -66,7 +66,7 @@ Assicurati che queste variabili siano configurate su Vercel:
 CRON_SECRET=your-cron-secret-key-change-in-production
 
 # Verifica che sia configurato correttamente
-NEXT_PUBLIC_APP_URL=https://domusreport.mainstream.agency
+NEXT_PUBLIC_APP_URL=https://domusreport.com
 ```
 
 ### 3. Deploy su Vercel

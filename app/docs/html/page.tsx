@@ -13,7 +13,7 @@ export default function HTMLDocsPage() {
 
   const widgetCode = `<!-- DomusReport Widget -->
 <script
-  src="https://domusreport.mainstream.agency/widget.js"
+  src="https://domusreport.com/widget.js"
   data-widget-id="TUO_WIDGET_ID"
   async>
 </script>`
@@ -32,7 +32,7 @@ export default function HTMLDocsPage() {
 
   <!-- DomusReport Widget - PRIMA del tag </body> -->
   <script
-    src="https://domusreport.mainstream.agency/widget.js"
+    src="https://domusreport.com/widget.js"
     data-widget-id="TUO_WIDGET_ID"
     async>
   </script>
@@ -262,7 +262,7 @@ export default function HTMLDocsPage() {
                 <pre className="bg-surface-2 text-foreground p-4 rounded-lg overflow-x-auto text-xs border border-border leading-relaxed">
                   <code>{`<!-- DomusReport Widget Inline -->
 <iframe
-  src="https://domusreport.mainstream.agency/widget/inline/TUO_WIDGET_ID"
+  src="https://domusreport.com/widget/inline/TUO_WIDGET_ID"
   width="100%"
   height="600"
   frameborder="0"
@@ -276,7 +276,7 @@ export default function HTMLDocsPage() {
                   className="absolute top-3 right-3"
                   onClick={() => handleCopy(`<!-- DomusReport Widget Inline -->
 <iframe
-  src="https://domusreport.mainstream.agency/widget/inline/TUO_WIDGET_ID"
+  src="https://domusreport.com/widget/inline/TUO_WIDGET_ID"
   width="100%"
   height="600"
   frameborder="0"

@@ -130,7 +130,7 @@ console.log('3️⃣  Il campo viene perso durante il calcolo della valutazione'
 console.log('    → Verificare che calculateValuation() preservi collectedData')
 console.log('')
 console.log('🔍 Per verificare:')
-console.log('   1. Aprire browser su https://domusreport.mainstream.agency/')
+console.log('   1. Aprire browser su https://domusreport.com/')
 console.log('   2. F12 → Network tab')
 console.log('   3. Fare una valutazione completa con numero: 3497494871')
 console.log('   4. Guardare la richiesta POST /api/leads')

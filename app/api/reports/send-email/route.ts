@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
 
     // Send email via Resend
     const result = await resend.emails.send({
-      from: `${lead.agenzia.nome} <noreply@domusreport.mainstream.agency>`,
+      from: `${lead.agenzia.nome} <noreply@domusreport.com>`,
       to: recipients,
       subject: `Valutazione Immobiliare - ${lead.property.indirizzo}`,
       html: htmlContent,

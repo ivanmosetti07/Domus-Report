@@ -5,7 +5,7 @@
 Per aggiungere il widget DomusReport al tuo sito web, basta inserire questo codice HTML prima della chiusura del tag `</body>`:
 
 ```html
-<script src="https://domusreport.mainstream.agency/widget.js" data-widget-id="IL_TUO_WIDGET_ID"></script>
+<script src="https://domusreport.com/widget.js" data-widget-id="IL_TUO_WIDGET_ID"></script>
 ```
 
 Sostituisci `IL_TUO_WIDGET_ID` con il tuo Widget ID personale che trovi nella dashboard.
@@ -84,7 +84,7 @@ Apri il file HTML e incolla lo script prima della chiusura del tag `</body>`:
     <!-- Contenuto del sito -->
 
     <!-- DomusReport Widget -->
-    <script src="https://domusreport.mainstream.agency/widget.js" data-widget-id="IL_TUO_WIDGET_ID"></script>
+    <script src="https://domusreport.com/widget.js" data-widget-id="IL_TUO_WIDGET_ID"></script>
 </body>
 </html>
 ```
@@ -131,7 +131,7 @@ In futuro sarà possibile personalizzare il widget con opzioni aggiuntive:
 
 ```html
 <script
-    src="https://domusreport.mainstream.agency/widget.js"
+    src="https://domusreport.com/widget.js"
     data-widget-id="IL_TUO_WIDGET_ID"
     data-position="bottom-left"
     data-color="#2563eb"
@@ -168,9 +168,9 @@ Dovresti vedere un oggetto con il tuo Widget ID.
 ## Supporto
 
 Per assistenza tecnica:
-- Email: support@domusreport.mainstream.agency
-- Dashboard: https://domusreport.mainstream.agency/dashboard
-- Documentazione: https://domusreport.mainstream.agency/docs
+- Email: support@domusreport.com
+- Dashboard: https://domusreport.com/dashboard
+- Documentazione: https://domusreport.com/docs
 
 ---
 

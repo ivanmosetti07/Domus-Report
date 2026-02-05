@@ -3,7 +3,7 @@
  * Version: 2.1.0 (2025-12-13) - Allineato a config API + cache-busting
  *
  * Usage:
- * <script src="https://domusreport.mainstream.agency/widget.js" data-widget-id="YOUR_WIDGET_ID"></script>
+ * <script src="https://domusreport.com/widget.js" data-widget-id="YOUR_WIDGET_ID"></script>
  *
  * Configuration options (via data attributes):
  * - data-widget-id: (required) Your unique widget ID
@@ -23,7 +23,7 @@
   // Configuration
   const WIDGET_HOST = typeof window !== 'undefined' && window.location.hostname === 'localhost'
     ? 'http://localhost:3000'
-    : 'https://domusreport.mainstream.agency';
+    : 'https://domusreport.com';
 
   // Get widget ID and options from script tag
   const currentScript = document.currentScript || document.querySelector('script[data-widget-id]');

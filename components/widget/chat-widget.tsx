@@ -800,7 +800,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       // Determina l'URL base assoluto (importante per widget embeddati in siti esterni)
       const baseUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
         ? 'http://localhost:3000'
-        : 'https://domusreport.mainstream.agency'
+        : 'https://domusreport.com'
 
       // Chiama l'API per generare il PDF usando URL assoluto
       const pdfUrl = `${baseUrl}/api/leads/${savedLeadId}/download-pdf`

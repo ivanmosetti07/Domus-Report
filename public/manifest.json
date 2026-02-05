@@ -1,0 +1,26 @@
+{
+  "name": "DomusReport - Valutazioni Immobiliari AI",
+  "short_name": "DomusReport",
+  "description": "Il primo chatbot AI conversazionale per agenti immobiliari. Valutazioni OMI in tempo reale.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["business", "productivity"]
+}

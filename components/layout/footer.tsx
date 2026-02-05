@@ -48,7 +48,7 @@ export function Footer() {
             </li>
             <li>
               <a
-                href="mailto:info@domusreport.it"
+                href="mailto:info@domusreport.com"
                 className="transition-colors hover:text-foreground"
               >
                 Contatti

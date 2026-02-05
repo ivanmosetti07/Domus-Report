@@ -286,8 +286,8 @@ Server disponibile su [http://localhost:3000](http://localhost:3000)
    ```
 
 4. **Configura Dominio**
-   - Dominio principale: `domusreport.mainstream.agency`
-   - CDN widget: `cdn.domusreport.mainstream.agency`
+   - Dominio principale: `domusreport.com`
+   - CDN widget: `cdn.domusreport.com`
 
 ### Variabili Ambiente Production
 
@@ -300,7 +300,7 @@ OPENAI_API_KEY="sk-proj-..."
 
 # Auth
 JWT_SECRET="generate-strong-secret-key-here"
-NEXTAUTH_URL="https://domusreport.mainstream.agency"
+NEXTAUTH_URL="https://domusreport.com"
 
 # Geocoding
 GOOGLE_MAPS_API_KEY="AIza..."

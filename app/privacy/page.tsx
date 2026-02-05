@@ -31,7 +31,7 @@ export default function PrivacyPage() {
           <h2>2. Titolare del Trattamento</h2>
           <p>
             Mainstream Agency<br />
-            Email: info@domusreport.it
+            Email: info@domusreport.com
           </p>
         </section>
 
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
             <li>Proporre reclamo all'Autorità Garante</li>
           </ul>
           <p>
-            Per esercitare i tuoi diritti, contattaci all'indirizzo: info@domusreport.it
+            Per esercitare i tuoi diritti, contattaci all'indirizzo: info@domusreport.com
           </p>
         </section>
 
@@ -129,7 +129,7 @@ export default function PrivacyPage() {
           <h2>11. Contatti</h2>
           <p>
             Per qualsiasi domanda o richiesta relativa alla presente Privacy Policy, contatta:<br />
-            <strong>Email:</strong> info@domusreport.it
+            <strong>Email:</strong> info@domusreport.com
           </p>
         </section>
       </main>

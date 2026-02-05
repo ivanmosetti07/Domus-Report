@@ -15,14 +15,14 @@ export default function WordPressDocsPage() {
 
   const widgetCode = `<!-- DomusReport Widget -->
 <script
-  src="https://domusreport.mainstream.agency/widget.js"
+  src="https://domusreport.com/widget.js"
   data-widget-id="TUO_WIDGET_ID"
   async>
 </script>`
 
   const inlineCode = `<!-- DomusReport Widget Inline -->
 <iframe
-  src="https://domusreport.mainstream.agency/widget/inline/TUO_WIDGET_ID"
+  src="https://domusreport.com/widget/inline/TUO_WIDGET_ID"
   width="100%"
   height="600"
   frameborder="0"

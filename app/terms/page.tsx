@@ -160,7 +160,7 @@ export default function TermsPage() {
           <p>
             Per qualsiasi domanda relativa ai Termini e Condizioni, contatta:<br />
             <strong>Mainstream Agency</strong><br />
-            Email: info@domusreport.it
+            Email: info@domusreport.com
           </p>
         </section>
       </main>
