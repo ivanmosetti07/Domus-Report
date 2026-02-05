@@ -29,6 +29,7 @@ export interface WidgetThemeConfig {
   inlineHeight?: string
   sendButtonColor?: string
   sendButtonIconColor?: string
+  agencyName?: string
 }
 
 interface ChatWidgetProps {
@@ -98,6 +99,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     bubblePosition = 'bottom-right',
     sendButtonColor,
     sendButtonIconColor = '#ffffff',
+    agencyName = 'DomusReport',
   } = theme
 
   // CSS variables for theming
@@ -357,7 +359,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     const welcomeMessage: MessageType = {
       id: `msg_${Date.now()}`,
       role: "bot",
-      text: "Ciao! 👋 Sono DomusBot, il tuo assistente per la valutazione immobiliare. In quale città si trova il tuo immobile?",
+      text: `Ciao! 👋 Sono l'Agente Immobiliare AI di ${agencyName}, il tuo assistente per la valutazione immobiliare. In quale città si trova il tuo immobile?`,
       timestamp: new Date()
     }
     setMessages([welcomeMessage])

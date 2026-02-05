@@ -27,6 +27,7 @@ interface WidgetConfigData {
   showBorder: boolean
   customCss?: string
   logoUrl?: string
+  agencyName?: string
 }
 
 /**
@@ -144,6 +145,7 @@ export default function WidgetEmbedPage() {
     showHeader: config.showHeader,
     showBorder: config.showBorder,
     inlineHeight: config.inlineHeight,
+    agencyName: config.agencyName,
   }
 
   // Determina il mode: usa la configurazione salvata, non il parametro URL

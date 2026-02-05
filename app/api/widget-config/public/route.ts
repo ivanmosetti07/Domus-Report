@@ -43,6 +43,7 @@ export async function GET(request: Request) {
         logoUrl: null,
         sendButtonColor: '#3b82f6',
         sendButtonIconColor: '#ffffff',
+        agencyName: 'DomusReport Demo',
       }
       return NextResponse.json({ widgetConfig: demoConfig })
     }
@@ -75,7 +76,12 @@ export async function GET(request: Request) {
         logoUrl: true,
         sendButtonColor: true,
         sendButtonIconColor: true,
-        // Non esponiamo agencyId per privacy
+        // Includiamo il nome dell'agenzia per il messaggio di benvenuto
+        agency: {
+          select: {
+            nome: true,
+          },
+        },
       },
     })
 
@@ -101,7 +107,14 @@ export async function GET(request: Request) {
       console.error('Error incrementing impressions:', err)
     })
 
-    return NextResponse.json({ widgetConfig })
+    // Estrai il nome dell'agenzia e aggiungilo alla risposta
+    const { agency, ...configWithoutAgency } = widgetConfig
+    const responseConfig = {
+      ...configWithoutAgency,
+      agencyName: agency?.nome || 'DomusReport',
+    }
+
+    return NextResponse.json({ widgetConfig: responseConfig })
   } catch (error) {
     console.error('Errore GET widget-config/public:', error)
     return NextResponse.json({ error: 'Errore server' }, { status: 500 })

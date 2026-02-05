@@ -27,6 +27,7 @@ interface WidgetConfigData {
   showBorder: boolean
   customCss?: string
   logoUrl?: string
+  agencyName?: string
 }
 
 /**
@@ -139,6 +140,7 @@ export default function WidgetInlinePage() {
     showBorder: config.showBorder,
     inlineHeight: config.inlineHeight || '600px',
     logoUrl: config.logoUrl,
+    agencyName: config.agencyName,
   }
 
   return (

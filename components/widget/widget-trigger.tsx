@@ -25,6 +25,7 @@ export interface WidgetThemeConfig {
   showHeader?: boolean
   showBorder?: boolean
   inlineHeight?: string
+  agencyName?: string
 }
 
 interface WidgetTriggerProps {
