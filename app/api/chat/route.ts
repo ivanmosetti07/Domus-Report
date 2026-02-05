@@ -511,6 +511,66 @@ function getNextQuestion(data: CollectedData): string {
   return "Ho raccolto tutti i dati necessari. Vuoi che proceda con la valutazione?"
 }
 
+// Interfaccia per risultato validazione contatti
+interface ContactValidationResult {
+  isValid: boolean
+  errorMessage?: string
+  invalidField?: 'firstName' | 'lastName' | 'email' | 'phone'
+}
+
+// Funzione per validare i dati di contatto appena inseriti
+function validateContactData(newData: CollectedData, previousData: CollectedData): ContactValidationResult {
+  // Valida solo i campi appena inseriti (presenti in newData ma non in previousData)
+
+  // Validazione Nome (minimo 2 caratteri)
+  if (newData.firstName !== undefined && !previousData.firstName) {
+    if (!newData.firstName || newData.firstName.trim().length < 2) {
+      return {
+        isValid: false,
+        errorMessage: "Il nome deve avere almeno 2 caratteri! Riscrivi il tuo nome.",
+        invalidField: 'firstName'
+      }
+    }
+  }
+
+  // Validazione Cognome (minimo 2 caratteri)
+  if (newData.lastName !== undefined && !previousData.lastName) {
+    if (!newData.lastName || newData.lastName.trim().length < 2) {
+      return {
+        isValid: false,
+        errorMessage: "Il cognome deve avere almeno 2 caratteri! Riscrivi il tuo cognome.",
+        invalidField: 'lastName'
+      }
+    }
+  }
+
+  // Validazione Email (formato valido)
+  if (newData.email !== undefined && !previousData.email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!newData.email || !emailRegex.test(newData.email.trim())) {
+      return {
+        isValid: false,
+        errorMessage: "L'email inserita non è valida! Inserisci un'email corretta (es: nome@esempio.com).",
+        invalidField: 'email'
+      }
+    }
+  }
+
+  // Validazione Telefono (minimo 6 cifre)
+  if (newData.phone !== undefined && !previousData.phone) {
+    const phoneDigits = (newData.phone || '').replace(/\D/g, '')
+    if (phoneDigits.length < 6) {
+      return {
+        isValid: false,
+        errorMessage: "Il numero di telefono deve avere almeno 6 cifre! Riscrivi il tuo numero di telefono.",
+        invalidField: 'phone'
+      }
+    }
+  }
+
+  return { isValid: true }
+}
+
 // Funzione per normalizzare i dati estratti dall'AI
 function normalizeExtractedData(data: CollectedData): CollectedData {
   const normalized = { ...data }
@@ -687,6 +747,26 @@ export async function POST(request: NextRequest) {
 
     // Normalizza i dati estratti per assicurarsi che i valori siano quelli corretti degli enum
     const normalizedData = normalizeExtractedData(parsed.extractedData || {})
+
+    // VALIDAZIONE DATI DI CONTATTO: Se un dato di contatto è invalido, rimuovilo e mostra errore
+    const contactValidation = validateContactData(normalizedData, collectedData)
+    if (!contactValidation.isValid && contactValidation.invalidField) {
+      console.warn("[Chat API] Invalid contact data:", {
+        field: contactValidation.invalidField,
+        value: normalizedData[contactValidation.invalidField],
+        error: contactValidation.errorMessage
+      })
+      // Rimuovi il dato invalido
+      delete normalizedData[contactValidation.invalidField]
+      // Restituisci subito l'errore
+      return NextResponse.json({
+        success: true,
+        message: contactValidation.errorMessage,
+        extractedData: normalizedData,
+        readyForValuation: false,
+        missingRequired: parsed.missingRequired || []
+      })
+    }
 
     // VALIDAZIONE CRITICA: Verifica che i contatti siano presenti prima di permettere readyForValuation
     // Combina i dati già raccolti con quelli nuovi per verificare completezza
