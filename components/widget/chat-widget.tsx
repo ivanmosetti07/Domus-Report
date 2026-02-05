@@ -354,7 +354,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     const welcomeMessage: MessageType = {
       id: `msg_${Date.now()}`,
       role: "bot",
-      text: "Ciao! 👋 Sono DomusBot, il tuo assistente per la valutazione immobiliare. Dimmi tutto quello che sai sulla tua casa: dove si trova, che tipo di immobile è, quanti metri quadri... Più informazioni mi dai, più precisa sarà la valutazione!",
+      text: "Ciao! 👋 Sono DomusBot, il tuo assistente per la valutazione immobiliare. In quale città si trova il tuo immobile?",
       timestamp: new Date()
     }
     setMessages([welcomeMessage])
