@@ -438,6 +438,79 @@ const OMI_CATEGORY_MAP: Record<string, string> = {
   "villini": "Ville e villini"
 }
 
+// Funzione per determinare la prossima domanda in base ai dati mancanti
+function getNextQuestion(data: CollectedData): string {
+  // Ordine delle domande secondo il flusso definito
+  if (!data.city) {
+    return "In quale città si trova il tuo immobile?"
+  }
+  if (!data.address) {
+    return "Qual è l'indirizzo completo dell'immobile?"
+  }
+  if (!data.postalCode) {
+    return "Sai dirmi il CAP?"
+  }
+  if (!data.propertyType) {
+    return "Che tipo di immobile è? (Appartamento, Villa, Attico, ecc.)"
+  }
+  if (!data.surfaceSqm) {
+    return "Quanti metri quadri è l'immobile?"
+  }
+  if (data.rooms === undefined && (data.propertyType === "Appartamento" || data.propertyType === "Attico" || data.propertyType === "Villa")) {
+    return "Quante camere da letto ha?"
+  }
+  if (data.bathrooms === undefined) {
+    return "Quanti bagni ci sono?"
+  }
+  // Piano solo per appartamenti
+  if (data.floor === undefined && (data.propertyType === "Appartamento" || data.propertyType === "Attico")) {
+    return "A che piano si trova?"
+  }
+  // Ascensore solo se c'è un piano
+  if (data.hasElevator === undefined && data.floor !== undefined && data.floor > 0) {
+    return "C'è l'ascensore?"
+  }
+  if (!data.outdoorSpace) {
+    return "Ci sono spazi esterni? (Nessuno, Balcone, Terrazzo, Giardino)"
+  }
+  if (data.hasParking === undefined) {
+    return "C'è un box o posto auto?"
+  }
+  if (!data.condition) {
+    return "In che stato è l'immobile? (Nuovo, Ristrutturato, Buono, Da ristrutturare)"
+  }
+  if (!data.heatingType) {
+    return "Che tipo di riscaldamento ha? (Autonomo, Centralizzato, Assente)"
+  }
+  if (data.hasAirConditioning === undefined) {
+    return "C'è l'aria condizionata?"
+  }
+  if (!data.energyClass) {
+    return "Conosci la classe energetica? (A, B, C, D, E, F, G oppure Non so)"
+  }
+  if (!data.buildYear) {
+    return "Sai l'anno di costruzione dell'immobile?"
+  }
+  if (!data.occupancyStatus) {
+    return "L'immobile è attualmente libero o occupato?"
+  }
+  // Dati di contatto
+  if (!data.firstName) {
+    return "Perfetto, ho quasi tutte le informazioni! Come ti chiami?"
+  }
+  if (!data.lastName) {
+    return "E il cognome?"
+  }
+  if (!data.email) {
+    return "Qual è la tua email?"
+  }
+  if (!data.phone) {
+    return "Qual è il tuo numero di telefono?"
+  }
+  // Se tutti i dati sono presenti, chiedi conferma
+  return "Ho raccolto tutti i dati necessari. Vuoi che proceda con la valutazione?"
+}
+
 // Funzione per normalizzare i dati estratti dall'AI
 function normalizeExtractedData(data: CollectedData): CollectedData {
   const normalized = { ...data }
@@ -663,12 +736,13 @@ export async function POST(request: NextRequest) {
     console.log("[Chat API] After trim:", { finalMessage, length: finalMessage.length })
 
     if (!finalMessage || finalMessage.length === 0) {
-      // Invece di un messaggio generico "non ho capito", chiedi qualcosa di specifico
-      finalMessage = "Grazie per la risposta! Per procedere, puoi darmi qualche dettaglio in più?"
-      console.warn("[Chat API] Empty or invalid message from AI, using fallback:", {
+      // Analizza i dati raccolti e continua con la domanda successiva
+      finalMessage = getNextQuestion(allData)
+      console.warn("[Chat API] Empty or invalid message from AI, using next question fallback:", {
         rawContent: content?.substring(0, 200),
         parsed: parsed,
-        lastUserMessage: messages[messages.length - 1]?.text
+        lastUserMessage: messages[messages.length - 1]?.text,
+        nextQuestion: finalMessage
       })
     }
 
