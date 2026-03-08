@@ -27,7 +27,10 @@ interface WidgetConfigData {
   showBorder: boolean
   customCss?: string
   logoUrl?: string
+  sendButtonColor?: string
+  sendButtonIconColor?: string
   agencyName?: string
+  questionMode?: 'long' | 'short'
 }
 
 /**
@@ -140,7 +143,10 @@ export default function WidgetInlinePage() {
     showBorder: config.showBorder,
     inlineHeight: config.inlineHeight || '600px',
     logoUrl: config.logoUrl,
+    sendButtonColor: config.sendButtonColor,
+    sendButtonIconColor: config.sendButtonIconColor,
     agencyName: config.agencyName,
+    questionMode: config.questionMode,
   }
 
   return (

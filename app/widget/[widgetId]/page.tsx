@@ -27,7 +27,10 @@ interface WidgetConfigData {
   showBorder: boolean
   customCss?: string
   logoUrl?: string
+  sendButtonColor?: string
+  sendButtonIconColor?: string
   agencyName?: string
+  questionMode?: 'long' | 'short'
 }
 
 /**
@@ -145,7 +148,10 @@ export default function WidgetEmbedPage() {
     showHeader: config.showHeader,
     showBorder: config.showBorder,
     inlineHeight: config.inlineHeight,
+    sendButtonColor: config.sendButtonColor,
+    sendButtonIconColor: config.sendButtonIconColor,
     agencyName: config.agencyName,
+    questionMode: config.questionMode,
   }
 
   // Determina il mode: usa la configurazione salvata, non il parametro URL
