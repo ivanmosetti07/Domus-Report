@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/ui/page-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -50,6 +51,7 @@ export default function WidgetsPage() {
   const [selectedWidget, setSelectedWidget] = React.useState<WidgetConfig | null>(null)
 
   const { toast } = useToast()
+  const router = useRouter()
   const limits = getPlanLimits(plan)
 
   // Fetch widgets
@@ -313,7 +315,7 @@ export default function WidgetsPage() {
                 Passa a un piano superiore per creare più widget.
               </p>
             </div>
-            <Button variant="outline" size="sm" className="bg-white">
+            <Button variant="outline" size="sm" className="bg-white" onClick={() => router.push('/dashboard/billing')}>
               Upgrade
             </Button>
           </CardContent>

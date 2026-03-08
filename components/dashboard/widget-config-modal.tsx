@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { MessageSquare, Layout, Palette, Settings2, Code, AlertTriangle, Lock, Upload, X, Loader2 } from "lucide-react"
+import { MessageSquare, Layout, Palette, Settings2, Code, AlertTriangle, Lock, Upload, X, Loader2, AlertCircle } from "lucide-react"
 import {
   themes,
   availableFonts,
@@ -33,6 +33,7 @@ import {
 } from "@/lib/widget-themes"
 import { canUseCustomBranding, canUseCustomCss } from "@/lib/plan-limits"
 import { ChatWidget } from "@/components/widget/chat-widget"
+import { useToast } from "@/hooks/use-toast"
 
 interface WidgetConfig {
   id?: string
@@ -101,7 +102,9 @@ export function WidgetConfigModal({
   const [isSaving, setIsSaving] = React.useState(false)
   const [activeTab, setActiveTab] = React.useState('general')
   const [isUploadingLogo, setIsUploadingLogo] = React.useState(false)
+  const [nameError, setNameError] = React.useState(false)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
 
   const isEdit = !!widget?.id
   const canBrand = canUseCustomBranding(plan)
@@ -114,14 +117,14 @@ export function WidgetConfigModal({
 
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      alert('File troppo grande. Massimo 2MB.')
+      toast({ title: 'File troppo grande', description: 'Massimo 2MB.', variant: 'destructive' })
       return
     }
 
     // Validate file type
     const allowedTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp']
     if (!allowedTypes.includes(file.type)) {
-      alert('Tipo file non supportato. Usa PNG, JPG, SVG o WebP.')
+      toast({ title: 'Tipo file non supportato', description: 'Usa PNG, JPG, SVG o WebP.', variant: 'destructive' })
       return
     }
 
@@ -129,7 +132,7 @@ export function WidgetConfigModal({
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
       if (!token) {
-        alert('Sessione non valida. Effettua nuovamente il login.')
+        toast({ title: 'Sessione non valida', description: 'Effettua nuovamente il login.', variant: 'destructive' })
         return
       }
 
@@ -156,7 +159,7 @@ export function WidgetConfigModal({
       const data = await response.json()
       setConfig((prev) => ({ ...prev, logoUrl: data.url }))
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Errore durante upload')
+      toast({ title: 'Errore upload', description: err instanceof Error ? err.message : 'Errore durante upload', variant: 'destructive' })
     } finally {
       setIsUploadingLogo(false)
       if (fileInputRef.current) {
@@ -177,6 +180,7 @@ export function WidgetConfigModal({
       setConfig(defaultConfig)
     }
     setActiveTab('general')
+    setNameError(false)
   }, [widget, open])
 
   // Apply theme preset
@@ -201,9 +205,12 @@ export function WidgetConfigModal({
 
   const handleSave = async () => {
     if (!config.name?.trim()) {
+      setNameError(true)
+      setActiveTab('general')
       return
     }
 
+    setNameError(false)
     setIsSaving(true)
     try {
       await onSave(config)
@@ -255,11 +262,22 @@ export function WidgetConfigModal({
                   id="name"
                   placeholder="es. Widget Homepage"
                   value={config.name || ''}
-                  onChange={(e) => setConfig({ ...config, name: e.target.value })}
+                  onChange={(e) => {
+                    setConfig({ ...config, name: e.target.value })
+                    if (e.target.value.trim()) setNameError(false)
+                  }}
+                  className={nameError ? 'border-destructive focus-visible:ring-destructive' : ''}
                 />
-                <p className="text-xs text-foreground-muted">
-                  Un nome per identificare questo widget nella dashboard
-                </p>
+                {nameError ? (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Il nome del widget è obbligatorio
+                  </p>
+                ) : (
+                  <p className="text-xs text-foreground-muted">
+                    Un nome per identificare questo widget nella dashboard
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -270,7 +288,7 @@ export function WidgetConfigModal({
                     className={`p-4 rounded-lg border-2 text-left transition-colors ${
                       config.mode === 'bubble'
                         ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-border'
+                        : 'border-border hover:border-primary/40 hover:bg-primary/5'
                     }`}
                     onClick={() => setConfig({ ...config, mode: 'bubble' })}
                   >
@@ -288,7 +306,7 @@ export function WidgetConfigModal({
                     className={`p-4 rounded-lg border-2 text-left transition-colors ${
                       config.mode === 'inline'
                         ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-border'
+                        : 'border-border hover:border-primary/40 hover:bg-primary/5'
                     }`}
                     onClick={() => setConfig({ ...config, mode: 'inline' })}
                   >
