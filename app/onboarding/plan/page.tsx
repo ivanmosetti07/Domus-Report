@@ -3,40 +3,37 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { PlanCard } from "@/components/onboarding/plan-card"
-import { Button } from "@/components/ui/button"
+import { CardPaymentForm } from "@/components/onboarding/card-payment-form"
 import { Building2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { PLAN_PRICES, planLimits } from "@/lib/plan-limits"
-import { trackPlanSelected, trackTrialStart } from "@/lib/gtag"
+import { trackPlanSelected } from "@/lib/gtag"
 
 type PlanType = 'free' | 'basic' | 'premium'
 
 export default function OnboardingPlanPage() {
   const router = useRouter()
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null)
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const handlePlanSelect = (planType: PlanType) => {
     setSelectedPlan(planType)
 
     if (planType === 'free') {
-      // Piano free: nessun trial, attivazione immediata
-      activatePlan(planType, 0)
+      activateFreePlan()
     } else {
-      // Piano a pagamento: mostra conferma trial
-      setShowConfirmDialog(true)
+      setShowPaymentDialog(true)
     }
   }
 
-  const activatePlan = async (planType: PlanType, trialDays: number) => {
+  const activateFreePlan = async () => {
     setIsLoading(true)
 
     try {
@@ -52,10 +49,7 @@ export default function OnboardingPlanPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          planType,
-          trialDays
-        })
+        body: JSON.stringify({ planType: 'free', trialDays: 0 })
       })
 
       if (!response.ok) {
@@ -63,36 +57,12 @@ export default function OnboardingPlanPage() {
         throw new Error(error.error || 'Errore durante la selezione del piano')
       }
 
-      // GA4 tracking - Piano selezionato
-      const planValue = PLAN_PRICES[planType] / 100 // Converti centesimi in EUR
-      trackPlanSelected({
-        planType,
-        value: planValue,
-        hasTrial: trialDays > 0,
-      })
-
-      // GA4 tracking - Trial iniziato (solo per piani a pagamento)
-      if (trialDays > 0 && (planType === 'basic' || planType === 'premium')) {
-        trackTrialStart({
-          planType,
-          trialDays,
-          value: planValue,
-        })
-      }
-
-      // Successo: redirect a welcome
+      trackPlanSelected({ planType: 'free', value: 0, hasTrial: false })
       router.push('/onboarding/welcome')
     } catch (error) {
-      console.error('Error selecting plan:', error)
+      console.error('Error selecting free plan:', error)
       alert('Errore durante la selezione del piano. Riprova.')
       setIsLoading(false)
-    }
-  }
-
-  const handleConfirmTrial = () => {
-    if (selectedPlan) {
-      setShowConfirmDialog(false)
-      activatePlan(selectedPlan, 7) // 7 giorni di trial
     }
   }
 
@@ -186,64 +156,29 @@ export default function OnboardingPlanPage() {
           <p className="text-sm text-foreground-muted">
             Tutti i piani includono supporto per widget responsive, valutazioni OMI precise e notifiche email.
             <br />
-            Nessuna carta di credito richiesta per iniziare la prova gratuita.
+            Il piano Free è gratuito per sempre. Per i piani a pagamento inizia con 7 giorni di prova senza addebiti.
           </p>
         </div>
       </div>
 
-      {/* Dialogo conferma trial */}
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="border-2 border-primary/30">
+      {/* Dialog inserimento carta per trial Basic/Premium */}
+      <Dialog open={showPaymentDialog} onOpenChange={(open) => { if (!open) setShowPaymentDialog(false) }}>
+        <DialogContent className="border-2 border-primary/30 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-foreground">
-              Hai scelto il piano {selectedPlan === 'basic' ? 'Basic' : 'Premium'}
+              Inizia la prova gratuita — piano {selectedPlan === 'basic' ? 'Basic' : 'Premium'}
             </DialogTitle>
-            <DialogDescription className="space-y-3 pt-4">
-              <p className="text-base text-foreground">
-                Inizia la tua prova gratuita di 7 giorni.
-              </p>
-              <div className="bg-primary/15 border-2 border-primary/30 rounded-lg p-4 shadow-soft">
-                <ul className="space-y-2 text-sm text-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary font-bold text-base">✓</span>
-                    <span>Non ti chiederemo la carta di credito ora</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary font-bold text-base">✓</span>
-                    <span>Accesso completo a tutte le funzionalità del piano</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary font-bold text-base">✓</span>
-                    <span>Al termine dei 7 giorni potrai decidere se continuare</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-primary font-bold text-base">✓</span>
-                    <span>Puoi annullare in qualsiasi momento</span>
-                  </li>
-                </ul>
-              </div>
-              <p className="text-xs text-foreground-muted pt-2">
-                Se non aggiungi un metodo di pagamento entro 7 giorni, il tuo account passerà automaticamente al piano Free.
-              </p>
+            <DialogDescription className="text-foreground-muted">
+              7 giorni gratuiti, poi €{selectedPlan ? PLAN_PRICES[selectedPlan] / 100 : ''}/mese. Nessun addebito oggi.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowConfirmDialog(false)}
-              disabled={isLoading}
-              className="border-border hover:border-primary/50 hover:bg-surface-2"
-            >
-              Annulla
-            </Button>
-            <Button
-              onClick={handleConfirmTrial}
-              disabled={isLoading}
-              className="bg-primary hover:bg-primary-hover text-primary-foreground shadow-soft hover:shadow-glow-primary transition-all duration-240"
-            >
-              {isLoading ? 'Attivazione...' : 'Attiva Prova Gratuita'}
-            </Button>
-          </DialogFooter>
+
+          {selectedPlan && selectedPlan !== 'free' && (
+            <CardPaymentForm
+              planType={selectedPlan}
+              onCancel={() => setShowPaymentDialog(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

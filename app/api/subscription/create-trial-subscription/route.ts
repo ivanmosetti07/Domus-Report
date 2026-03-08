@@ -135,7 +135,8 @@ export async function POST(request: Request) {
         paymentMethodId,
         trialEndsAt: trialEnd,
         nextBillingDate: trialEnd,
-        trialDays
+        trialDays,
+        onboardingCompletedAt: new Date()
       },
       update: {
         planType,
@@ -146,7 +147,8 @@ export async function POST(request: Request) {
         paymentMethodId,
         trialEndsAt: trialEnd,
         nextBillingDate: trialEnd,
-        trialDays
+        trialDays,
+        onboardingCompletedAt: new Date()
       }
     })
 
