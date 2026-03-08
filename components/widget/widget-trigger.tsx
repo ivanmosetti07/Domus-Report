@@ -123,6 +123,18 @@ export function WidgetTrigger({
     }
   }, [mode])
 
+  // Ascolta DOMUS_WIDGET_OPEN_COMMAND dal parent (widget.js) per aprire la chat
+  React.useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.data?.type === 'DOMUS_WIDGET_OPEN_COMMAND') {
+        setIsOpen(true)
+        setHasNotification(false)
+      }
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [])
+
   return (
     <>
       {/* Floating Button - solo in modalità bubble */}
