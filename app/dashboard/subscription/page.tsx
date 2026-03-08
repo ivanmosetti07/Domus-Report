@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Alert } from "@/components/ui/alert"
+import { PLAN_PRICES, planLimits, EXTRA_VALUATION_PRICE } from "@/lib/plan-limits"
 import {
   CreditCard,
   Check,
@@ -70,53 +71,53 @@ interface UsageData {
 const PLANS = {
   free: {
     name: 'Free',
-    price: 0,
+    price: PLAN_PRICES.free / 100,
     description: 'Per iniziare',
     icon: Building2,
     popular: false,
     features: [
-      { text: '1 widget', included: true },
-      { text: '5 valutazioni/mese', included: true },
-      { text: 'Analytics base', included: false },
-      { text: 'Supporto email', included: true },
-      { text: 'Custom branding', included: false },
-      { text: 'API access', included: false },
+      { text: `${planLimits.free.maxWidgets} widget`, included: true },
+      { text: `${planLimits.free.maxValutationsPerMonth} valutazioni/mese`, included: true },
+      { text: 'Analytics base', included: planLimits.free.analytics },
+      { text: 'Supporto email', included: planLimits.free.emailNotifications },
+      { text: 'Custom branding', included: planLimits.free.customBranding },
+      { text: 'API access', included: planLimits.free.apiAccess },
     ]
   },
   basic: {
     name: 'Basic',
-    price: 50,
+    price: PLAN_PRICES.basic / 100,
     description: 'Per agenzie in crescita',
     icon: Zap,
     popular: true,
     features: [
-      { text: '3 widget', included: true },
-      { text: '50 valutazioni/mese', included: true },
-      { text: 'Analytics completo', included: true },
-      { text: 'Supporto prioritario', included: true },
-      { text: 'Custom branding', included: true },
-      { text: 'API access', included: false },
+      { text: `${planLimits.basic.maxWidgets} widget`, included: true },
+      { text: `${planLimits.basic.maxValutationsPerMonth} valutazioni/mese`, included: true },
+      { text: 'Analytics completo', included: planLimits.basic.analytics },
+      { text: 'Supporto prioritario', included: planLimits.basic.prioritySupport },
+      { text: 'Custom branding', included: planLimits.basic.customBranding },
+      { text: 'API access', included: planLimits.basic.apiAccess },
     ]
   },
   premium: {
     name: 'Premium',
-    price: 100,
+    price: PLAN_PRICES.premium / 100,
     description: 'Per agenzie professionali',
     icon: Crown,
     popular: false,
     features: [
-      { text: '10 widget', included: true },
-      { text: '150 valutazioni/mese', included: true },
-      { text: 'Analytics avanzato', included: true },
-      { text: 'Supporto dedicato', included: true },
-      { text: 'White-label + CSS', included: true },
-      { text: 'API access', included: true },
+      { text: `${planLimits.premium.maxWidgets} widget`, included: true },
+      { text: `${planLimits.premium.maxValutationsPerMonth} valutazioni/mese`, included: true },
+      { text: 'Analytics avanzato', included: planLimits.premium.analytics },
+      { text: 'Supporto dedicato', included: planLimits.premium.prioritySupport },
+      { text: 'White-label + CSS', included: planLimits.premium.customBranding && planLimits.premium.customCss },
+      { text: 'API access', included: planLimits.premium.apiAccess },
     ]
   }
 }
 
-// Prezzo valutazioni extra
-const EXTRA_VALUATION_PRICE = 1.50
+// Prezzo valutazioni extra in EUR
+const EXTRA_VALUATIONS = EXTRA_VALUATION_PRICE / 100
 
 export default function SubscriptionPage() {
   const [subscription, setSubscription] = useState<Subscription | null>(null)
@@ -648,7 +649,7 @@ export default function SubscriptionPage() {
             Acquista Valutazioni Extra
           </CardTitle>
           <CardDescription>
-            €{EXTRA_VALUATION_PRICE.toFixed(2)} per valutazione
+            €{EXTRA_VALUATIONS.toFixed(2)} per valutazione
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -681,7 +682,7 @@ export default function SubscriptionPage() {
             </div>
             <div className="flex-1">
               <p className="text-lg font-bold">
-                €{(extraQuantity * EXTRA_VALUATION_PRICE).toFixed(2)}
+                €{(extraQuantity * EXTRA_VALUATIONS).toFixed(2)}
               </p>
               <p className="text-sm text-muted-foreground">
                 {extraQuantity} valutazioni
