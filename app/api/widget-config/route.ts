@@ -50,12 +50,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
     }
 
-    // Ottieni piano agenzia
+    // Ottieni piano agenzia e settings
     const agencyData = await prisma.agency.findUnique({
       where: { id: agency.agencyId },
-      select: { piano: true },
+      select: { piano: true, settings: true },
     })
     const plan = agencyData?.piano || 'free'
+    const brandColors: any = agencyData?.settings?.brandColors || null
+    const defaultPrimaryColor = brandColors?.primary || '#2563eb'
 
     // Conta widget attuali (solo quelli non eliminati)
     const currentCount = await prisma.widgetConfig.count({
@@ -144,7 +146,7 @@ export async function POST(request: Request) {
         mode,
         isDefault,
         themeName,
-        primaryColor: primaryColor || '#2563eb',
+        primaryColor: primaryColor || defaultPrimaryColor,
         secondaryColor: secondaryColor || undefined,
         backgroundColor: backgroundColor || '#ffffff',
         textColor: textColor || '#1f2937',

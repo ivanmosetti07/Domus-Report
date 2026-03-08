@@ -8,6 +8,13 @@ interface PerformanceReportData {
     email: string
     citta: string
   }
+  settings?: {
+    brandColors?: {
+      primary?: string
+      secondary?: string
+      accent?: string
+    } | null
+  }
   reportType: 'monthly' | 'converted' | 'followup'
   period: {
     start: Date
@@ -32,11 +39,26 @@ interface PerformanceReportData {
   leadsByStatus: Record<string, number>
 }
 
+// Helper function to convert hex color to RGB
+function hexToRgb(hex: string): [number, number, number] {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if (!result) {
+    return [37, 99, 235] // Default blue-600
+  }
+  return [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
+  ]
+}
+
 export function generatePerformanceReportPDF(data: PerformanceReportData): jsPDF {
   const doc = new jsPDF()
 
   // Colori brand
-  const primaryColor: [number, number, number] = [37, 99, 235]
+  const primaryColor: [number, number, number] = data.settings?.brandColors?.primary
+    ? hexToRgb(data.settings.brandColors.primary)
+    : [37, 99, 235]
   const textColor: [number, number, number] = [31, 41, 55]
   const lightGray: [number, number, number] = [243, 244, 246]
 

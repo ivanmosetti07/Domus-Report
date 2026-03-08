@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
     // Fetch agency data
     const agencyData = await prisma.agency.findUnique({
       where: { id: agencyId },
+      include: { settings: true },
     })
 
     if (!agencyData) {
@@ -162,6 +163,9 @@ export async function POST(request: NextRequest) {
         email: agencyData.email,
         citta: agencyData.citta,
       },
+      settings: agencyData.settings ? {
+        brandColors: agencyData.settings.brandColors as any,
+      } : undefined,
       reportType,
       period: {
         start: startDate,
