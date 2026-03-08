@@ -47,24 +47,24 @@ interface ShortStep {
 }
 
 const SHORT_MODE_STEPS: ShortStep[] = [
-  { key: 'city',         question: 'In quale **città** si trova l\'immobile?' },
-  { key: 'postalCode',   question: 'Qual è il **CAP**?' },
-  { key: 'address',      question: 'Qual è **via e civico**?' },
+  { key: 'city',       question: 'In quale città si trova l\'immobile?' },
+  { key: 'postalCode', question: 'Qual è il CAP?' },
+  { key: 'address',    question: 'Via e civico?' },
   {
     key: 'propertyType',
-    question: 'Che **tipologia** di immobile è?',
+    question: 'Che tipologia di immobile è?',
     quickReplies: [
-      { value: 'Appartamento',       label: 'Appartamento' },
-      { value: 'Casa indipendente',  label: 'Casa indipendente' },
-      { value: 'Villa',              label: 'Villa' },
-      { value: 'Ufficio',            label: 'Ufficio' },
+      { value: 'Appartamento',      label: 'Appartamento' },
+      { value: 'Casa indipendente', label: 'Casa indipendente' },
+      { value: 'Villa',             label: 'Villa' },
+      { value: 'Ufficio',           label: 'Ufficio' },
     ],
   },
-  { key: 'surface', question: 'Quanti **m²** misura?' },
-  { key: 'floor',   question: 'A che **piano** si trova? (0 = piano terra)' },
+  { key: 'surface', question: 'Quanti m² misura?' },
+  { key: 'floor',   question: 'A che piano si trova? (0 = piano terra)' },
   {
     key: 'hasOutdoor',
-    question: 'Ci sono **terrazzi o balconi**?',
+    question: 'Ci sono terrazzi o balconi?',
     quickReplies: [
       { value: 'si', label: 'Sì' },
       { value: 'no', label: 'No' },
@@ -74,15 +74,15 @@ const SHORT_MODE_STEPS: ShortStep[] = [
     key: 'outdoorCount',
     question: 'Quanti? 🌿',
     quickReplies: [
-      { value: '1', label: '1' },
-      { value: '2', label: '2' },
-      { value: '3', label: '3' },
+      { value: '1',  label: '1' },
+      { value: '2',  label: '2' },
+      { value: '3',  label: '3' },
       { value: '4+', label: 'Più di 3' },
     ],
   },
   {
     key: 'parking',
-    question: 'È presente un **posto auto**?',
+    question: 'È presente un posto auto?',
     quickReplies: [
       { value: 'si', label: 'Sì' },
       { value: 'no', label: 'No' },
@@ -90,18 +90,18 @@ const SHORT_MODE_STEPS: ShortStep[] = [
   },
   {
     key: 'heating',
-    question: 'Che tipo di **riscaldamento**?',
+    question: 'Che tipo di riscaldamento?',
     quickReplies: [
-      { value: 'Centralizzato',    label: 'Centralizzato' },
-      { value: 'Autonomo',         label: 'Autonomo' },
-      { value: 'Pompa di calore',  label: 'Pompa di calore' },
-      { value: 'Assente',          label: 'Assente' },
+      { value: 'Centralizzato',   label: 'Centralizzato' },
+      { value: 'Autonomo',        label: 'Autonomo' },
+      { value: 'Pompa di calore', label: 'Pompa di calore' },
+      { value: 'Assente',         label: 'Assente' },
     ],
   },
-  { key: 'firstName', question: 'Perfetto! 🎉 Per inviarti la valutazione, come ti chiami? (**nome**)' },
-  { key: 'lastName',  question: 'E il **cognome**?' },
-  { key: 'email',     question: 'Qual è la tua **email**?' },
-  { key: 'phone',     question: 'E il **numero di telefono**? (es. +39 333 1234567)' },
+  { key: 'firstName', question: 'Perfetto! 🎉 Per inviarti la valutazione, come ti chiami? (nome)' },
+  { key: 'lastName',  question: 'E il cognome?' },
+  { key: 'email',     question: 'Qual è la tua email?' },
+  { key: 'phone',     question: 'E il numero di telefono? (es. +39 333 1234567)' },
 ]
 
 interface ChatWidgetProps {
@@ -488,7 +488,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         break
       case 'surface': {
         const n = parseFloat(answer.replace(',', '.'))
-        if (!isNaN(n)) dataUpdate.surfaceSqm = n
+        if (!isNaN(n) && n >= 10) {
+          dataUpdate.surfaceSqm = n
+        } else {
+          // Valore non valido: re-chiedi lo stesso step
+          addBotMessage('Inserisci una superficie valida (minimo 10 m²). Quanti m² misura?')
+          return
+        }
         break
       }
       case 'floor': {
@@ -950,6 +956,78 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           )
         }
       }
+
+      // SALVATAGGIO DI EMERGENZA: salva il lead nel CRM anche se la valutazione fallisce,
+      // in modo che i dati di contatto non vengano persi per errori dell'API di valutazione.
+      const hasFallbackContacts = !!(
+        errorData.firstName &&
+        errorData.lastName &&
+        errorData.email
+      )
+      const hasFallbackAddress = !!(errorData.address || errorData.city)
+
+      if (hasFallbackContacts && hasFallbackAddress && !isDemo) {
+        const fallbackInferredCity = inferCity({
+          city: errorData.city,
+          postalCode: errorData.postalCode,
+          address: errorData.address,
+          neighborhood: errorData.neighborhood,
+        })
+        console.log('[calculateValuation] Tentativo salvataggio fallback lead nel CRM...')
+        fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            widgetId,
+            firstName: errorData.firstName,
+            lastName: errorData.lastName,
+            email: errorData.email,
+            phone: phoneRef.current || errorData.phone,
+            address: errorData.address || fallbackInferredCity || errorData.city || "",
+            city: fallbackInferredCity || errorData.city || "",
+            neighborhood: errorData.neighborhood,
+            postalCode: errorData.postalCode,
+            type: errorData.propertyType || errorData.type || PropertyType.APARTMENT,
+            surfaceSqm: errorData.surfaceSqm || 0,
+            rooms: errorData.rooms,
+            bathrooms: errorData.bathrooms,
+            floor: errorData.floor,
+            hasElevator: errorData.hasElevator,
+            outdoorSpace: errorData.outdoorSpace,
+            hasParking: errorData.hasParking,
+            condition: errorData.condition || PropertyCondition.GOOD,
+            heatingType: errorData.heatingType,
+            hasAirConditioning: errorData.hasAirConditioning,
+            energyClass: errorData.energyClass && !errorData.energyClass.toLowerCase().includes('non')
+              ? errorData.energyClass : undefined,
+            buildYear: typeof errorData.buildYear === 'number' ? errorData.buildYear
+              : (typeof errorData.buildYear === 'string' && !errorData.buildYear.toLowerCase().includes('non')
+                ? parseInt(errorData.buildYear, 10) : undefined),
+            minPrice: 0,
+            maxPrice: 0,
+            estimatedPrice: 0,
+            baseOMIValue: 0,
+            floorCoefficient: 1.0,
+            conditionCoefficient: 1.0,
+            explanation: "Valutazione automatica non riuscita - richiede follow-up manuale",
+            messages: messages.map(msg => ({
+              role: msg.role,
+              text: msg.text,
+              timestamp: msg.timestamp,
+            })),
+          }),
+        })
+          .then(r => {
+            if (!r.ok) return r.json().then((e: any) => Promise.reject(new Error(e.error || `HTTP ${r.status}`)))
+            return r.json()
+          })
+          .then((data: any) => {
+            console.log('[calculateValuation] ✅ Lead salvato nel CRM come fallback:', data.lead?.id)
+          })
+          .catch((saveError: unknown) => {
+            console.error('[calculateValuation] ❌ Salvataggio fallback nel CRM fallito:', saveError)
+          })
+      }
     }
   }
 
@@ -1105,8 +1183,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         city: inferredCity || currentData.city,
         neighborhood: currentData.neighborhood,
         postalCode: currentData.postalCode, // CRITICO: Include CAP per validazione città/geocoding
-        type: currentData.propertyType || currentData.type,
-        surfaceSqm: currentData.surfaceSqm,
+        type: Object.values(PropertyType).includes((currentData.propertyType || currentData.type) as PropertyType)
+          ? (currentData.propertyType || currentData.type)
+          : PropertyType.APARTMENT,
+        surfaceSqm: currentData.surfaceSqm || 80,
         rooms: currentData.rooms,
         bathrooms: currentData.bathrooms,
         floor: currentData.floor,
@@ -1114,7 +1194,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         floorType: currentData.floorType,
         outdoorSpace: currentData.outdoorSpace,
         hasParking: currentData.hasParking,
-        condition: currentData.condition,
+        condition: currentData.condition || PropertyCondition.GOOD,
         heatingType: currentData.heatingType,
         hasAirConditioning: currentData.hasAirConditioning,
         energyClass: currentData.energyClass && !currentData.energyClass.toLowerCase().includes('non') ? currentData.energyClass : undefined,
