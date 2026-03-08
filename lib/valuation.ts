@@ -226,11 +226,11 @@ export function calculateValuationLocal(
 
     // Valori medi generici per tipo di immobile (€/m²)
     const fallbackValues: Record<string, { min: number; medio: number; max: number }> = {
-      residenziale: { min: 2000, medio: 3500, max: 5000 },
-      box: { min: 1000, medio: 1500, max: 2000 },
-      commerciale: { min: 1500, medio: 2500, max: 3500 },
-      uffici: { min: 2000, medio: 3000, max: 4000 },
-      altro: { min: 1500, medio: 2500, max: 3500 },
+      residenziale: { min: 2975, medio: 3500, max: 4025 },
+      box: { min: 1275, medio: 1500, max: 1725 },
+      commerciale: { min: 2125, medio: 2500, max: 2875 },
+      uffici: { min: 2550, medio: 3000, max: 3450 },
+      altro: { min: 2125, medio: 2500, max: 2875 },
     }
 
     const fallback = fallbackValues[tipoImmobile] || fallbackValues.altro
@@ -247,12 +247,8 @@ export function calculateValuationLocal(
     estimatedPrice = Math.round(
       fallback.medio * input.surfaceSqm * floorCoefficient * conditionCoefficient
     )
-    minPrice = Math.round(
-      fallback.min * input.surfaceSqm * floorCoefficient * conditionCoefficient
-    )
-    maxPrice = Math.round(
-      fallback.max * input.surfaceSqm * floorCoefficient * conditionCoefficient
-    )
+    minPrice = Math.round(estimatedPrice * 0.90)
+    maxPrice = Math.round(estimatedPrice * 1.10)
 
     const result: ValuationResult = {
       minPrice,
@@ -286,16 +282,13 @@ export function calculateValuationLocal(
   )
   const conditionCoefficient = calculateConditionCoefficient(input.condition)
 
-  // Calculate prices using OMI min/max ranges + coefficients
+  // Calculate prices using OMI data + coefficients
   estimatedPrice = Math.round(
     baseOMIValue * input.surfaceSqm * floorCoefficient * conditionCoefficient
   )
-  minPrice = Math.round(
-    omiAdvanced.valoreMinMq * input.surfaceSqm * floorCoefficient * conditionCoefficient
-  )
-  maxPrice = Math.round(
-    omiAdvanced.valoreMaxMq * input.surfaceSqm * floorCoefficient * conditionCoefficient
-  )
+  // Restrict range to ±10% of estimated price for a tighter, more professional result
+  minPrice = Math.round(estimatedPrice * 0.90)
+  maxPrice = Math.round(estimatedPrice * 1.10)
 
   const result: ValuationResult = {
     minPrice,

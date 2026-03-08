@@ -47,9 +47,9 @@ interface ShortStep {
 }
 
 const SHORT_MODE_STEPS: ShortStep[] = [
-  { key: 'city',       question: 'In quale città si trova l\'immobile?' },
-  { key: 'postalCode', question: 'Qual è il CAP?' },
-  { key: 'address',    question: 'Via e civico?' },
+  { key: 'city',       question: 'In quale città si trova il tuo immobile?' },
+  { key: 'postalCode', question: 'Perfetto! Conosci il CAP?' },
+  { key: 'address',    question: 'Via e numero civico?' },
   {
     key: 'propertyType',
     question: 'Che tipologia di immobile è?',
@@ -60,8 +60,8 @@ const SHORT_MODE_STEPS: ShortStep[] = [
       { value: 'Ufficio',           label: 'Ufficio' },
     ],
   },
-  { key: 'surface', question: 'Quanti m² misura?' },
-  { key: 'floor',   question: 'A che piano si trova? (0 = piano terra)' },
+  { key: 'surface', question: 'Qual è la superficie in m²?' },
+  { key: 'floor',   question: 'A che piano si trova? (0 per piano terra)' },
   {
     key: 'hasOutdoor',
     question: 'Ci sono terrazzi o balconi?',
@@ -72,7 +72,7 @@ const SHORT_MODE_STEPS: ShortStep[] = [
   },
   {
     key: 'outdoorCount',
-    question: 'Quanti? 🌿',
+    question: 'Quanti ne hai?',
     quickReplies: [
       { value: '1',  label: '1' },
       { value: '2',  label: '2' },
@@ -90,7 +90,7 @@ const SHORT_MODE_STEPS: ShortStep[] = [
   },
   {
     key: 'heating',
-    question: 'Che tipo di riscaldamento?',
+    question: 'Che tipo di riscaldamento ha l\'immobile?',
     quickReplies: [
       { value: 'Centralizzato',   label: 'Centralizzato' },
       { value: 'Autonomo',        label: 'Autonomo' },
@@ -98,10 +98,10 @@ const SHORT_MODE_STEPS: ShortStep[] = [
       { value: 'Assente',         label: 'Assente' },
     ],
   },
-  { key: 'firstName', question: 'Perfetto! 🎉 Per inviarti la valutazione, come ti chiami? (nome)' },
-  { key: 'lastName',  question: 'E il cognome?' },
+  { key: 'firstName', question: 'Siamo quasi alla fine! Per inviarti la valutazione, come ti chiami?' },
+  { key: 'lastName',  question: 'E il tuo cognome?' },
   { key: 'email',     question: 'Qual è la tua email?' },
-  { key: 'phone',     question: 'E il numero di telefono? (es. +39 333 1234567)' },
+  { key: 'phone',     question: 'E il tuo numero di telefono?' },
 ]
 
 interface ChatWidgetProps {
@@ -456,7 +456,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     const welcomeMessage: MessageType = {
       id: `msg_${Date.now()}`,
       role: "bot",
-      text: `Ciao! 👋 Valutiamo il tuo immobile in pochi passi.\n\n${firstStep.question}`,
+      text: `Ciao! 👋 Sono l'assistente immobiliare di ${agencyName}. Ti farò alcune domande per calcolare il valore del tuo immobile.\n\n${firstStep.question}`,
       timestamp: new Date()
     }
     setMessages([welcomeMessage])
@@ -492,7 +492,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           dataUpdate.surfaceSqm = n
         } else {
           // Valore non valido: re-chiedi lo stesso step
-          addBotMessage('Inserisci una superficie valida (minimo 10 m²). Quanti m² misura?')
+          addBotMessage('Il valore inserito non è valido. Qual è la superficie in m²? (minimo 10 m²)')
           return
         }
         break
