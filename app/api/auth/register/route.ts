@@ -108,27 +108,35 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Notifica admin per nuova registrazione (non bloccante)
+    // Notifica admin per nuova registrazione (Attendiamo l'invio per evitare terminazione precoce su Vercel)
     if (process.env.SMTP_HOST) {
-      const htmlContent = generateNewAgencyNotificationHTML({
-        agencyName: agency.nome,
-        agencyEmail: agency.email,
-        agencyCity: agency.citta,
-        registeredAt: new Date(),
-      })
-      const textContent = generateNewAgencyNotificationText({
-        agencyName: agency.nome,
-        agencyEmail: agency.email,
-        agencyCity: agency.citta,
-        registeredAt: new Date(),
-      })
-      sendEmail({
-        from: formatEmailAddress('Domus Report', process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || ''),
-        to: 'ivan@mainstreamagency.it',
-        subject: `Nuova Agenzia Registrata: ${agency.nome}`,
-        html: htmlContent,
-        text: textContent,
-      }).catch(err => console.error('[POST /api/auth/register] Failed to send admin notification:', err))
+      try {
+        const htmlContent = generateNewAgencyNotificationHTML({
+          agencyName: agency.nome,
+          agencyEmail: agency.email,
+          agencyCity: agency.citta,
+          registeredAt: new Date(),
+        })
+        const textContent = generateNewAgencyNotificationText({
+          agencyName: agency.nome,
+          agencyEmail: agency.email,
+          agencyCity: agency.citta,
+          registeredAt: new Date(),
+        })
+
+        console.log('[POST /api/auth/register] Sending admin notification email for new agency:', agency.nome)
+
+        await sendEmail({
+          from: formatEmailAddress('Domus Report', process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || ''),
+          to: 'ivan@mainstreamagency.it',
+          subject: `Nuova Agenzia Registrata: ${agency.nome}`,
+          html: htmlContent,
+          text: textContent,
+        })
+      } catch (err) {
+        console.error('[POST /api/auth/register] Failed to send admin notification:', err)
+        // Non blocchiamo la risposta se l'invio email fallisce
+      }
     }
 
     return NextResponse.json({

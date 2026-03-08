@@ -202,9 +202,9 @@ export async function POST(request: NextRequest) {
     })
 
     const userDataReliable = body.city &&
-                            body.postalCode &&
-                            cityFromCAP &&
-                            body.city.toLowerCase().trim() === cityFromCAP.toLowerCase().trim()
+      body.postalCode &&
+      cityFromCAP &&
+      body.city.toLowerCase().trim() === cityFromCAP.toLowerCase().trim()
 
     console.log('[POST /api/leads] User data reliability check:', {
       userCity: body.city,
@@ -540,52 +540,40 @@ export async function POST(request: NextRequest) {
     await incrementValuationCount(agency.id)
     console.log('[POST /api/leads] Valuation count incremented for agency:', { agencyId: agency.id })
 
-    // Invia notifica email all'agenzia — completamente non bloccante:
-    // il DB query e l'invio email avvengono in background senza ritardare la risposta
+    // Invia notifica email all'agenzia — Attendiamo l'invio per evitare terminazione precoce su Vercel
     if (agency.email && process.env.SMTP_HOST) {
-      const agencyId = agency.id
-      const agencyEmail = agency.email
-      const agencyNome = agency.nome
-      const leadId = lead.id
-      const leadNome = lead.nome
-      const leadCognome = lead.cognome
-      const leadEmail = lead.email
-      const leadTelefono = lead.telefono
-      const propAddress = lead.property?.indirizzo ?? finalAddress
-      const propCity = lead.property?.citta ?? finalCity ?? ''
-      const propSurface = lead.property?.superficieMq ?? body.surfaceSqm
-      const propPrice = lead.property?.valuation?.prezzoStimato ?? body.estimatedPrice
+      try {
+        const agencyId = agency.id
+        const settings = await prisma.agencySetting.findUnique({ where: { agencyId } })
+        const shouldNotify = !settings || (settings.notificationsEmail && settings.emailOnNewLead)
 
-      void (async () => {
-        try {
-          const settings = await prisma.agencySetting.findUnique({ where: { agencyId } })
-          const shouldNotify = !settings || (settings.notificationsEmail && settings.emailOnNewLead)
-          if (!shouldNotify) return
-
+        if (shouldNotify) {
+          console.log('[POST /api/leads] Sending lead notification email to agency:', agency.email)
           const appUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://domusreport.com'
-          const dashboardUrl = `${appUrl}/dashboard/leads/${leadId}`
+          const dashboardUrl = `${appUrl}/dashboard/leads/${lead.id}`
           const notifData = {
-            agencyName: agencyNome,
-            leadName: `${leadNome} ${leadCognome}`,
-            leadEmail,
-            leadPhone: leadTelefono,
-            propertyAddress: propAddress,
-            propertyCity: propCity,
-            propertySurface: propSurface,
-            estimatedPrice: propPrice,
+            agencyName: agency.nome,
+            leadName: `${lead.nome} ${lead.cognome}`,
+            leadEmail: lead.email,
+            leadPhone: lead.telefono,
+            propertyAddress: lead.property?.indirizzo ?? finalAddress,
+            propertyCity: lead.property?.citta ?? finalCity ?? '',
+            propertySurface: lead.property?.superficieMq ?? body.surfaceSqm,
+            estimatedPrice: lead.property?.valuation?.prezzoStimato ?? body.estimatedPrice,
             dashboardUrl,
           }
           await sendEmail({
             from: `"Domus Report" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
-            to: agencyEmail,
-            subject: `Nuovo Lead: ${leadNome} ${leadCognome} - ${propCity}`,
+            to: agency.email,
+            subject: `Nuovo Lead: ${lead.nome} ${lead.cognome} - ${notifData.propertyCity}`,
             html: generateNewLeadNotificationHTML(notifData),
             text: generateNewLeadNotificationText(notifData),
           })
-        } catch (err) {
-          console.error('[POST /api/leads] Failed to send lead notification email:', err)
         }
-      })()
+      } catch (err) {
+        console.error('[POST /api/leads] Failed to send lead notification email:', err)
+        // Non blocchiamo la risposta se l'invio email fallisce, ma abbiamo loggato l'errore
+      }
     }
 
     return NextResponse.json({
