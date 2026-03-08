@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 import { nanoid } from "nanoid"
 import { validateEmail, validatePassword, validateCity, sanitizeString } from "@/lib/validation"
+import { sendEmail } from "@/lib/email"
+import { generateNewAgencyNotificationHTML, generateNewAgencyNotificationText } from "@/lib/email-templates"
 
 export interface RegisterRequest {
   nome: string
@@ -105,6 +107,29 @@ export async function POST(request: NextRequest) {
         piano: true,
       },
     })
+
+    // Notifica admin per nuova registrazione (non bloccante)
+    if (process.env.SMTP_HOST) {
+      const htmlContent = generateNewAgencyNotificationHTML({
+        agencyName: agency.nome,
+        agencyEmail: agency.email,
+        agencyCity: agency.citta,
+        registeredAt: new Date(),
+      })
+      const textContent = generateNewAgencyNotificationText({
+        agencyName: agency.nome,
+        agencyEmail: agency.email,
+        agencyCity: agency.citta,
+        registeredAt: new Date(),
+      })
+      sendEmail({
+        from: `Domus Report <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
+        to: 'ivan@mainstreamagency.it',
+        subject: `Nuova Agenzia Registrata: ${agency.nome}`,
+        html: htmlContent,
+        text: textContent,
+      }).catch(err => console.error('[POST /api/auth/register] Failed to send admin notification:', err))
+    }
 
     return NextResponse.json({
       success: true,

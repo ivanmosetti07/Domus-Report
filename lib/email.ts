@@ -17,6 +17,7 @@ interface EmailOptions {
   html: string
   text?: string
   from?: string
+  replyTo?: string
   attachments?: Array<{
     filename: string
     content: Buffer | string
@@ -39,6 +40,7 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
       subject: options.subject,
       html: options.html,
       text: options.text,
+      replyTo: options.replyTo,
       attachments: options.attachments?.map(att => ({
         filename: att.filename,
         content: att.content,

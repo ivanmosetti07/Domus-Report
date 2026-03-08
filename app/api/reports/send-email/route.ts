@@ -165,9 +165,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Send email via SMTP
+    // Il mittente è sempre noreply@domusreport.com, ma il Reply-To è impostato
+    // sull'email dell'agenzia così il cliente risponde direttamente all'agenzia
     const result = await sendEmail({
       from: `${lead.agenzia.nome} <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
       to: recipients,
+      replyTo: `${lead.agenzia.nome} <${lead.agenzia.email}>`,
       subject: `Valutazione Immobiliare - ${lead.property.indirizzo}`,
       html: htmlContent,
       text: textContent,

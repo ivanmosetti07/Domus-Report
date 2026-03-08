@@ -14,6 +14,8 @@ import {
 import { geocodeAddress } from "@/lib/geocoding"
 import { incrementValuationCount, checkValuationLimit } from "@/lib/subscription-limits"
 import { inferCity, getCityFromPostalCode } from "@/lib/postal-code"
+import { sendEmail } from "@/lib/email"
+import { generateNewLeadNotificationHTML, generateNewLeadNotificationText } from "@/lib/email-templates"
 
 export interface CreateLeadRequest {
   widgetId: string
@@ -537,6 +539,47 @@ export async function POST(request: NextRequest) {
     // Incrementa il contatore delle valutazioni usate questo mese
     await incrementValuationCount(agency.id)
     console.log('[POST /api/leads] Valuation count incremented for agency:', { agencyId: agency.id })
+
+    // Invia notifica email all'agenzia (non bloccante)
+    if (agency.email && process.env.SMTP_HOST) {
+      // Verifica impostazioni notifiche (se esistono)
+      const settings = await prisma.agencySetting.findUnique({ where: { agencyId: agency.id } })
+      const shouldNotify = !settings || (settings.notificationsEmail && settings.emailOnNewLead)
+
+      if (shouldNotify) {
+        const appUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://app.domusreport.com'
+        const dashboardUrl = `${appUrl}/dashboard/leads/${lead.id}`
+        const htmlContent = generateNewLeadNotificationHTML({
+          agencyName: agency.nome,
+          leadName: `${lead.nome} ${lead.cognome}`,
+          leadEmail: lead.email,
+          leadPhone: lead.telefono,
+          propertyAddress: lead.property?.indirizzo || finalAddress,
+          propertyCity: lead.property?.citta || finalCity || '',
+          propertySurface: lead.property?.superficieMq || body.surfaceSqm,
+          estimatedPrice: lead.property?.valuation?.prezzoStimato || body.estimatedPrice,
+          dashboardUrl,
+        })
+        const textContent = generateNewLeadNotificationText({
+          agencyName: agency.nome,
+          leadName: `${lead.nome} ${lead.cognome}`,
+          leadEmail: lead.email,
+          leadPhone: lead.telefono,
+          propertyAddress: lead.property?.indirizzo || finalAddress,
+          propertyCity: lead.property?.citta || finalCity || '',
+          propertySurface: lead.property?.superficieMq || body.surfaceSqm,
+          estimatedPrice: lead.property?.valuation?.prezzoStimato || body.estimatedPrice,
+          dashboardUrl,
+        })
+        sendEmail({
+          from: `Domus Report <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
+          to: agency.email,
+          subject: `Nuovo Lead: ${lead.nome} ${lead.cognome} - ${finalCity || ''}`,
+          html: htmlContent,
+          text: textContent,
+        }).catch(err => console.error('[POST /api/leads] Failed to send lead notification email:', err))
+      }
+    }
 
     return NextResponse.json({
       success: true,

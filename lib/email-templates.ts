@@ -1,5 +1,173 @@
 import { formatCurrency } from './utils'
 
+// ─── Template notifica nuovo lead all'agenzia ────────────────────────────────
+
+interface NewLeadNotificationData {
+  agencyName: string
+  leadName: string
+  leadEmail: string
+  leadPhone?: string | null
+  propertyAddress: string
+  propertyCity: string
+  propertySurface: number
+  estimatedPrice: number
+  dashboardUrl: string
+}
+
+export function generateNewLeadNotificationHTML(data: NewLeadNotificationData): string {
+  return `
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuovo Lead - Domus Report</title>
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 0; background-color: #f4f4f4; }
+    .email-container { background-color: #ffffff; margin: 20px auto; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; padding: 30px 20px; text-align: center; }
+    .header h1 { margin: 0; font-size: 22px; font-weight: bold; }
+    .badge { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 14px; font-size: 13px; margin-top: 8px; }
+    .content { padding: 30px 20px; }
+    .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; margin: 24px 0 10px; }
+    .info-grid { background: #f9fafb; border-radius: 8px; padding: 18px; margin-bottom: 16px; }
+    .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #6b7280; }
+    .info-value { font-weight: 600; color: #111827; }
+    .price-box { background: #16a34a; color: #fff; border-radius: 8px; padding: 18px; text-align: center; margin: 20px 0; }
+    .price-box .label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; }
+    .price-box .price { font-size: 28px; font-weight: bold; margin-top: 4px; }
+    .cta { display: block; background: #2563eb; color: #fff !important; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-weight: bold; text-align: center; margin: 24px 0; }
+    .footer { background: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Nuovo Lead Ricevuto!</h1>
+      <div class="badge">Domus Report</div>
+    </div>
+    <div class="content">
+      <p>Ciao <strong>${data.agencyName}</strong>, hai ricevuto una nuova richiesta di valutazione immobiliare.</p>
+
+      <div class="section-title">Contatto</div>
+      <div class="info-grid">
+        <div class="info-row"><span class="info-label">Nome</span><span class="info-value">${data.leadName}</span></div>
+        <div class="info-row"><span class="info-label">Email</span><span class="info-value">${data.leadEmail}</span></div>
+        ${data.leadPhone ? `<div class="info-row"><span class="info-label">Telefono</span><span class="info-value">${data.leadPhone}</span></div>` : ''}
+      </div>
+
+      <div class="section-title">Immobile</div>
+      <div class="info-grid">
+        <div class="info-row"><span class="info-label">Indirizzo</span><span class="info-value">${data.propertyAddress}</span></div>
+        <div class="info-row"><span class="info-label">Città</span><span class="info-value">${data.propertyCity}</span></div>
+        <div class="info-row"><span class="info-label">Superficie</span><span class="info-value">${data.propertySurface} m²</span></div>
+      </div>
+
+      <div class="price-box">
+        <div class="label">Prezzo Stimato</div>
+        <div class="price">${formatCurrency(data.estimatedPrice)}</div>
+      </div>
+
+      <a href="${data.dashboardUrl}" class="cta">Vedi il Lead nella Dashboard →</a>
+
+      <p style="font-size: 13px; color: #6b7280; margin-top: 8px;">
+        Accedi alla dashboard per contattare il cliente e inviare il report completo con il PDF allegato.
+      </p>
+    </div>
+    <div class="footer">
+      <p>Notifica automatica da <strong>Domus Report</strong></p>
+      <p>Gestisci le preferenze di notifica nella tua dashboard.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim()
+}
+
+export function generateNewLeadNotificationText(data: NewLeadNotificationData): string {
+  return `
+NUOVO LEAD - Domus Report
+
+Ciao ${data.agencyName}, hai ricevuto una nuova richiesta di valutazione.
+
+CONTATTO
+Nome: ${data.leadName}
+Email: ${data.leadEmail}${data.leadPhone ? `\nTelefono: ${data.leadPhone}` : ''}
+
+IMMOBILE
+Indirizzo: ${data.propertyAddress}
+Città: ${data.propertyCity}
+Superficie: ${data.propertySurface} m²
+Prezzo Stimato: ${formatCurrency(data.estimatedPrice)}
+
+Accedi alla dashboard: ${data.dashboardUrl}
+  `.trim()
+}
+
+// ─── Template notifica admin - nuova agenzia registrata ──────────────────────
+
+interface NewAgencyNotificationData {
+  agencyName: string
+  agencyEmail: string
+  agencyCity: string
+  registeredAt: Date
+}
+
+export function generateNewAgencyNotificationHTML(data: NewAgencyNotificationData): string {
+  return `
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Nuova Agenzia - Domus Report</title>
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; background: #f4f4f4; }
+    .email-container { background: #fff; margin: 20px auto; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: #fff; padding: 30px 20px; text-align: center; }
+    .header h1 { margin: 0; font-size: 22px; }
+    .content { padding: 30px 20px; }
+    .info-grid { background: #f9fafb; border-radius: 8px; padding: 18px; }
+    .info-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #6b7280; }
+    .info-value { font-weight: 600; }
+    .footer { background: #f9fafb; padding: 16px 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Nuova Agenzia Registrata</h1>
+    </div>
+    <div class="content">
+      <p>Una nuova agenzia si è appena iscritta sulla piattaforma <strong>Domus Report</strong>.</p>
+      <div class="info-grid">
+        <div class="info-row"><span class="info-label">Nome Agenzia</span><span class="info-value">${data.agencyName}</span></div>
+        <div class="info-row"><span class="info-label">Email</span><span class="info-value">${data.agencyEmail}</span></div>
+        <div class="info-row"><span class="info-label">Città</span><span class="info-value">${data.agencyCity}</span></div>
+        <div class="info-row"><span class="info-label">Registrata il</span><span class="info-value">${data.registeredAt.toLocaleString('it-IT', { timeZone: 'Europe/Rome' })}</span></div>
+      </div>
+    </div>
+    <div class="footer">Domus Report Admin Notifications</div>
+  </div>
+</body>
+</html>
+  `.trim()
+}
+
+export function generateNewAgencyNotificationText(data: NewAgencyNotificationData): string {
+  return `
+NUOVA AGENZIA REGISTRATA - Domus Report
+
+Nome: ${data.agencyName}
+Email: ${data.agencyEmail}
+Città: ${data.agencyCity}
+Registrata il: ${data.registeredAt.toLocaleString('it-IT', { timeZone: 'Europe/Rome' })}
+  `.trim()
+}
+
 interface EmailTemplateData {
   agencyName: string
   leadName: string
