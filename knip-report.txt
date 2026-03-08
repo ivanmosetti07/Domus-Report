@@ -1,0 +1,138 @@
+Unused files (21)
+debug-widget-console.js          
+lib/omi.ts                       
+public/widget-embed.js           
+public/widget.js                 
+scripts/check-omi-data.ts        
+scripts/check-phone-in-db.mjs    
+scripts/check-trial-expiry.ts    
+scripts/create-test-widget.ts    
+scripts/fix-midas-subscription.ts
+scripts/generate-omi-sql.ts      
+scripts/import-omi-simple.ts     
+scripts/load-omi-data.ts         
+test-api-phone.mjs               
+test-borghesiana.ts              
+test-geocoding-fallback.ts       
+test-omi-csv.ts                  
+test-omi-query.ts                
+test-phone-final.js              
+test-phone-formats.js            
+test-phone-validation.js         
+test-valuation-api.ts            
+Unused dependencies (8)
+@auth/prisma-adapter           package.json:20:6
+@radix-ui/react-dropdown-menu  package.json:23:6
+@stripe/react-stripe-js        package.json:31:6
+@stripe/stripe-js              package.json:32:6
+next-auth                      package.json:45:6
+prisma                         package.json:47:6
+react-dom                      package.json:49:6
+resend                         package.json:51:6
+Unused devDependencies (4)
+@types/react-dom    package.json:64:6
+eslint              package.json:66:6
+eslint-config-next  package.json:67:6
+tsx                 package.json:70:6
+Unlisted dependencies (3)
+jose  app/api/auth/login/route.ts:4:26
+jose  lib/auth.ts:1:28                
+jose  middleware.ts:3:28              
+Unlisted binaries (3)
+next    package.json
+prisma  package.json
+tsx     package.json
+Unused exports (69)
+AlertTitle                                     components/ui/alert.tsx:62:17    
+AlertDescription                               components/ui/alert.tsx:62:29    
+badgeVariants                                  components/ui/badge.tsx:40:17    
+buttonVariants                                 components/ui/button.tsx:66:18   
+DialogPortal                                   components/ui/dialog.tsx:114:3   
+DialogOverlay                                  components/ui/dialog.tsx:115:3   
+DialogClose                                    components/ui/dialog.tsx:116:3   
+SelectGroup                                    components/ui/select.tsx:149:3   
+SelectLabel                                    components/ui/select.tsx:153:3   
+SelectSeparator                                components/ui/select.tsx:155:3   
+SelectScrollUpButton                           components/ui/select.tsx:156:3   
+SelectScrollDownButton                         components/ui/select.tsx:157:3   
+ToastAction                                    components/ui/toast.tsx:126:3    
+reducer                                        hooks/use-toast.ts:73:14         
+toast                                          hooks/use-toast.ts:188:20        
+getAuditLogs                         function  lib/audit.ts:46:23               
+cleanupOldAuditLogs                  function  lib/audit.ts:70:23               
+isAuthenticated                      function  lib/auth.ts:92:23                
+verifySmtpConnection                 function  lib/email.ts:65:23               
+extractCityFromAddress               function  lib/geocoding.ts:116:17          
+geocodeAddressAPI                    function  lib/geocoding.ts:207:23          
+trackEvent                     gtag            lib/gtag.ts:23:14                
+trackConversationStart         gtag            lib/gtag.ts:57:14                
+trackValuationRequest          gtag            lib/gtag.ts:78:14                
+trackLeadContacted             gtag            lib/gtag.ts:137:14               
+trackLeadStatusChange          gtag            lib/gtag.ts:145:14               
+trackWidgetCodeCopied          gtag            lib/gtag.ts:180:14               
+trackDataExport                gtag            lib/gtag.ts:187:14               
+trackCtaClick                  gtag            lib/gtag.ts:199:14               
+trackDemoWidgetOpen            gtag            lib/gtag.ts:208:14               
+trackPricingView               gtag            lib/gtag.ts:215:14               
+trackPurchase                  gtag            lib/gtag.ts:256:14               
+trackSubscriptionUpgrade       gtag            lib/gtag.ts:281:14               
+trackSubscriptionDowngrade     gtag            lib/gtag.ts:296:14               
+trackSubscriptionCancel        gtag            lib/gtag.ts:311:14               
+trackExtraValuationsPurchase   gtag            lib/gtag.ts:326:14               
+trackError                     gtag            lib/gtag.ts:343:14               
+logger                                         lib/logger.ts:83:14              
+SYSTEM_PROMPT                                  lib/openai.ts:43:14              
+sendMessageToOpenAI                  function  lib/openai.ts:78:23              
+convertMessagesToOpenAI              function  lib/openai.ts:114:17             
+extractDataFromInput                 function  lib/openai.ts:125:23             
+validateNumericInput                 function  lib/openai.ts:146:17             
+validateEmail                        function  lib/openai.ts:175:17             
+validatePhone                        function  lib/openai.ts:183:17             
+TRIAL_DAYS                                     lib/plan-limits.ts:23:14         
+getPlanPrice                         function  lib/plan-limits.ts:69:17         
+getMaxValutationsPerMonth            function  lib/plan-limits.ts:86:17         
+isValidItalianPostalCode             function  lib/postal-code.ts:356:17        
+getStripeInstance                              lib/stripe.ts:6:14               
+EXTRA_VALUATION_PRICE                          lib/stripe.ts:89:14              
+getPlanInfo                          function  lib/stripe.ts:94:17              
+comparePlans                         function  lib/stripe.ts:104:17             
+getPlanLimits                        function  lib/subscription-limits.ts:15:17 
+EXTRA_VALUATION_PRICE                          lib/subscription-limits.ts:27:10 
+checkWidgetLimit                     function  lib/subscription-limits.ts:30:23 
+addExtraValuations                   function  lib/subscription-limits.ts:219:23
+checkAnalyticsAccess                 function  lib/subscription-limits.ts:229:23
+checkWhiteLabelAccess                function  lib/subscription-limits.ts:252:23
+isTrialExpired                       function  lib/subscription-limits.ts:343:23
+getTrialDaysRemaining                function  lib/subscription-limits.ts:355:23
+formatPhoneNumber                    function  lib/utils.ts:26:17               
+validateAddress                      function  lib/validation.ts:157:17         
+calculateFloorCoefficient            function  lib/valuation.ts:98:17           
+calculateConditionCoefficient        function  lib/valuation.ts:136:17          
+generateValuationExplanation         function  lib/valuation.ts:152:17          
+calculateValuationLocal              function  lib/valuation.ts:197:17          
+getThemeCSSVariables                 function  lib/widget-themes.ts:108:17      
+getThemeCSS                          function  lib/widget-themes.ts:127:17      
+Unused exported types (22)
+BadgeProps             interface  components/ui/badge.tsx:30:18  
+ButtonProps            interface  components/ui/button.tsx:36:18 
+InputProps             interface  components/ui/input.tsx:5:18   
+TextareaProps          interface  components/ui/textarea.tsx:5:18
+JWTPayload             interface  lib/auth.ts:14:18              
+EmailOptions           interface  lib/email.ts:14:18             
+GeocodeResult          interface  lib/geocoding.ts:10:18         
+OMIValueDetailed       interface  lib/omi-advanced.ts:38:18      
+PriceHistoryEntry      interface  lib/omi-advanced.ts:52:18      
+ZoneTrend              interface  lib/omi-advanced.ts:58:18      
+OpenAIMessage          interface  lib/openai.ts:3:18             
+ChatCompletionOptions  interface  lib/openai.ts:36:18            
+PlanLimits             interface  lib/plan-limits.ts:4:18        
+PlanType               type       lib/subscription-limits.ts:4:13
+SubscriptionLimits     interface  lib/subscription-limits.ts:6:18
+ValuationResult        interface  lib/valuation.ts:85:18         
+WidgetTheme            interface  lib/widget-themes.ts:4:18      
+CustomThemeColors      interface  lib/widget-themes.ts:98:18     
+Lead                   interface  types/index.ts:1:18            
+Property               interface  types/index.ts:14:18           
+Valuation              interface  types/index.ts:99:18           
+Conversation           interface  types/index.ts:112:18          
+Configuration hints (1)

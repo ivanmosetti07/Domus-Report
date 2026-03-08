@@ -11,7 +11,7 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.NEXTAUTH_SECRET || "domusreport-jwt-secret-change-in-production"
 )
 
-export interface JWTPayload {
+interface JWTPayload {
   agencyId: string
   email: string
   nome: string
@@ -86,10 +86,3 @@ export async function getAuthAgency(): Promise<JWTPayload | null> {
   }
 }
 
-/**
- * Checks if user is authenticated
- */
-export async function isAuthenticated(): Promise<boolean> {
-  const agency = await getAuthAgency()
-  return agency !== null
-}

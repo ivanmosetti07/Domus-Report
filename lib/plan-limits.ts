@@ -19,13 +19,6 @@ export const PLAN_PRICES = {
   premium: 10000, // €100/mese
 } as const
 
-// Giorni trial per piano (0 = nessun trial)
-export const TRIAL_DAYS = {
-  free: 0,
-  basic: 7,
-  premium: 7,
-} as const
-
 // Prezzo per valutazione extra (in centesimi EUR)
 export const EXTRA_VALUATION_PRICE = 150 // €1.50
 
@@ -66,10 +59,6 @@ export function getPlanLimits(planType: string): PlanLimits {
   return planLimits[planType] || planLimits.free
 }
 
-export function getPlanPrice(planType: string): number {
-  return PLAN_PRICES[planType as keyof typeof PLAN_PRICES] || 0
-}
-
 export function canCreateWidget(planType: string, currentWidgetCount: number): boolean {
   const limits = getPlanLimits(planType)
   return currentWidgetCount < limits.maxWidgets
@@ -83,6 +72,3 @@ export function canUseCustomCss(planType: string): boolean {
   return getPlanLimits(planType).customCss
 }
 
-export function getMaxValutationsPerMonth(planType: string): number {
-  return getPlanLimits(planType).maxValutationsPerMonth
-}

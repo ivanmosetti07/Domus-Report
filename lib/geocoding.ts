@@ -7,7 +7,7 @@ import { createLogger } from './logger'
 
 const logger = createLogger('geocoding')
 
-export interface GeocodeResult {
+interface GeocodeResult {
   address: string
   city: string
   neighborhood?: string
@@ -113,7 +113,7 @@ export async function geocodeAddress(
  * NOTA: Questa funzione è deprecata, usa invece inferCity da lib/postal-code.ts
  * che include logica più intelligente con CAP
  */
-export function extractCityFromAddress(address: string): string {
+function extractCityFromAddress(address: string): string {
   // Try to extract city from address (usually after the last comma)
   const parts = address.split(",").map((p) => p.trim())
 
@@ -201,37 +201,3 @@ export function extractCityFromAddress(address: string): string {
   return "Milano" // Default fallback
 }
 
-/**
- * API route handler for geocoding
- */
-export async function geocodeAddressAPI(address: string): Promise<Response> {
-  try {
-    const result = await geocodeAddress(address)
-
-    if (!result) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Impossibile geocodificare l'indirizzo",
-        }),
-        { status: 400 }
-      )
-    }
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        data: result,
-      }),
-      { status: 200 }
-    )
-  } catch (error) {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : "Errore sconosciuto",
-      }),
-      { status: 500 }
-    )
-  }
-}

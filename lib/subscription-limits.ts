@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { getPlanLimits as getBasePlanLimits, EXTRA_VALUATION_PRICE } from '@/lib/plan-limits'
+import { getPlanLimits as getBasePlanLimits } from '@/lib/plan-limits'
 
 export type PlanType = 'free' | 'basic' | 'premium'
 
@@ -12,7 +12,7 @@ export interface SubscriptionLimits {
 }
 
 // Ottieni i limiti per un piano
-export function getPlanLimits(planType: PlanType): SubscriptionLimits {
+function getPlanLimits(planType: PlanType): SubscriptionLimits {
   const baseLimits = getBasePlanLimits(planType)
   return {
     widgets: baseLimits.maxWidgets,
@@ -23,72 +23,6 @@ export function getPlanLimits(planType: PlanType): SubscriptionLimits {
   }
 }
 
-// Prezzo valutazione extra in centesimi
-export { EXTRA_VALUATION_PRICE }
-
-// Verifica se un'agenzia ha raggiunto il limite widget
-export async function checkWidgetLimit(agencyId: string): Promise<{
-  allowed: boolean
-  current: number
-  limit: number
-  message?: string
-}> {
-  const agency = await prisma.agency.findUnique({
-    where: { id: agencyId },
-    include: {
-      widgetConfigs: { where: { isActive: true } },
-      subscription: true
-    }
-  })
-
-  if (!agency) {
-    return { allowed: false, current: 0, limit: 0, message: 'Agenzia non trovata' }
-  }
-
-  // Verifica se il trial è scaduto
-  const subscription = agency.subscription
-  if (subscription?.status === 'trial' && subscription.trialEndsAt) {
-    if (new Date() > subscription.trialEndsAt) {
-      // Trial scaduto - usa limiti del piano free
-      const freeLimits = getPlanLimits('free')
-      const currentWidgets = agency.widgetConfigs.length
-
-      if (currentWidgets >= freeLimits.widgets) {
-        return {
-          allowed: false,
-          current: currentWidgets,
-          limit: freeLimits.widgets,
-          message: `Il tuo trial è scaduto. Limite widget raggiunto (${currentWidgets}/${freeLimits.widgets}). Effettua l'upgrade per creare più widget.`
-        }
-      }
-
-      return {
-        allowed: true,
-        current: currentWidgets,
-        limit: freeLimits.widgets
-      }
-    }
-  }
-
-  const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
-  const limits = getPlanLimits(planType)
-  const currentWidgets = agency.widgetConfigs.length
-
-  if (currentWidgets >= limits.widgets) {
-    return {
-      allowed: false,
-      current: currentWidgets,
-      limit: limits.widgets,
-      message: `Limite widget raggiunto (${currentWidgets}/${limits.widgets}). Passa a un piano superiore per creare più widget.`
-    }
-  }
-
-  return {
-    allowed: true,
-    current: currentWidgets,
-    limit: limits.widgets
-  }
-}
 
 // Verifica se un'agenzia ha raggiunto il limite valutazioni mensili
 export async function checkValuationLimit(agencyId: string): Promise<{
@@ -215,61 +149,6 @@ export async function incrementValuationCount(agencyId: string): Promise<void> {
   }
 }
 
-// Aggiungi valutazioni extra acquistate
-export async function addExtraValuations(agencyId: string, quantity: number): Promise<void> {
-  await prisma.subscription.update({
-    where: { agencyId },
-    data: {
-      extraValuationsPurchased: { increment: quantity }
-    }
-  })
-}
-
-// Verifica se un'agenzia ha accesso alle analytics
-export async function checkAnalyticsAccess(agencyId: string): Promise<boolean> {
-  const agency = await prisma.agency.findUnique({
-    where: { id: agencyId },
-    include: { subscription: true }
-  })
-
-  if (!agency) return false
-
-  // Verifica se il trial è scaduto
-  const subscription = agency.subscription
-  if (subscription?.status === 'trial' && subscription.trialEndsAt) {
-    if (new Date() > subscription.trialEndsAt) {
-      // Trial scaduto - nessun accesso analytics
-      return false
-    }
-  }
-
-  const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
-  const limits = getPlanLimits(planType)
-  return limits.analytics
-}
-
-// Verifica se un'agenzia ha accesso al white-label
-export async function checkWhiteLabelAccess(agencyId: string): Promise<boolean> {
-  const agency = await prisma.agency.findUnique({
-    where: { id: agencyId },
-    include: { subscription: true }
-  })
-
-  if (!agency) return false
-
-  // Verifica se il trial è scaduto
-  const subscription = agency.subscription
-  if (subscription?.status === 'trial' && subscription.trialEndsAt) {
-    if (new Date() > subscription.trialEndsAt) {
-      // Trial scaduto - nessun accesso white-label
-      return false
-    }
-  }
-
-  const planType = (agency.subscription?.planType || agency.piano || 'free') as PlanType
-  const limits = getPlanLimits(planType)
-  return limits.whiteLabel
-}
 
 // Ottieni utilizzo corrente dell'agenzia
 export async function getAgencyUsage(agencyId: string): Promise<{
@@ -339,32 +218,3 @@ export async function getAgencyUsage(agencyId: string): Promise<{
   }
 }
 
-// Verifica se il trial è scaduto
-export async function isTrialExpired(agencyId: string): Promise<boolean> {
-  const subscription = await prisma.subscription.findUnique({
-    where: { agencyId }
-  })
-
-  if (!subscription || subscription.status !== 'trial') return false
-  if (!subscription.trialEndsAt) return false
-
-  return new Date() > subscription.trialEndsAt
-}
-
-// Ottieni giorni rimanenti del trial
-export async function getTrialDaysRemaining(agencyId: string): Promise<number | null> {
-  const subscription = await prisma.subscription.findUnique({
-    where: { agencyId }
-  })
-
-  if (!subscription || subscription.status !== 'trial' || !subscription.trialEndsAt) {
-    return null
-  }
-
-  const now = new Date()
-  const trialEnd = new Date(subscription.trialEndsAt)
-  const diffTime = trialEnd.getTime() - now.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-  return Math.max(0, diffDays)
-}

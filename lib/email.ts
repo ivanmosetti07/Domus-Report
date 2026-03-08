@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-export interface EmailOptions {
+interface EmailOptions {
   to: string | string[]
   subject: string
   html: string
@@ -61,13 +61,3 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
   }
 }
 
-// Verify SMTP connection (useful for health checks)
-export async function verifySmtpConnection(): Promise<boolean> {
-  try {
-    await transporter.verify()
-    return true
-  } catch (error) {
-    console.error('SMTP verification failed:', error)
-    return false
-  }
-}
