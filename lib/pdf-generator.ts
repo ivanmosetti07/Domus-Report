@@ -54,10 +54,22 @@ interface LeadData {
 
 // Helper function to convert hex color to RGB
 function hexToRgb(hex: string): [number, number, number] {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  if (!result) {
+  if (!hex) return [37, 99, 235] // Default blue-600
+
+  // Rimuovi # se presente
+  const cleanHex = hex.replace(/^#/, '')
+
+  // Se è a 3 cifre, espandilo a 6 (es. "000" -> "000000")
+  let processedHex = cleanHex
+  if (cleanHex.length === 3) {
+    processedHex = cleanHex.split('').map(char => char + char).join('')
+  }
+
+  const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(processedHex)
+  if (!result || processedHex.length !== 6) {
     return [37, 99, 235] // Default blue-600
   }
+
   return [
     parseInt(result[1], 16),
     parseInt(result[2], 16),
