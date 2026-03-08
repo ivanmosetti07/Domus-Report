@@ -118,7 +118,7 @@ export function generatePerformanceReportPDF(data: PerformanceReportData): jsPDF
     {
       label: 'Lead Totali',
       value: data.metrics.totalLeads.toString(),
-      color: [59, 130, 246] as [number, number, number],
+      color: primaryColor,
     },
     {
       label: 'Lead nel Periodo',

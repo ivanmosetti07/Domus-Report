@@ -102,11 +102,15 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
 
   const secondaryColor: [number, number, number] = data.settings?.brandColors?.secondary
     ? hexToRgb(data.settings.brandColors.secondary)
-    : [59, 130, 246] // blue-500
+    : primaryColor // fallback to primary instead of hardcoded blue
 
   const accentColor: [number, number, number] = data.settings?.brandColors?.accent
     ? hexToRgb(data.settings.brandColors.accent)
-    : [239, 246, 255] // blue-50
+    : [
+      Math.round(primaryColor[0] * 0.1 + 255 * 0.9),
+      Math.round(primaryColor[1] * 0.1 + 255 * 0.9),
+      Math.round(primaryColor[2] * 0.1 + 255 * 0.9)
+    ] // very light version of primary color
 
   const textColor: [number, number, number] = [31, 41, 55] // gray-800
 
