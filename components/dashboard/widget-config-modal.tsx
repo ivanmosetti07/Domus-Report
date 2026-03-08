@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { MessageSquare, Layout, Palette, Settings2, Code, AlertTriangle, Lock, Upload, X, Loader2, AlertCircle } from "lucide-react"
+import { MessageSquare, Layout, Palette, Settings2, Code, AlertTriangle, Lock, Upload, X, Loader2, AlertCircle, Send } from "lucide-react"
 import {
   themes,
   availableFonts,
@@ -32,7 +32,6 @@ import {
   inlineHeightPresets,
 } from "@/lib/widget-themes"
 import { canUseCustomBranding, canUseCustomCss } from "@/lib/plan-limits"
-import { ChatWidget } from "@/components/widget/chat-widget"
 import { useToast } from "@/hooks/use-toast"
 
 interface WidgetConfig {
@@ -61,6 +60,7 @@ interface WidgetConfig {
   logoUrl?: string
   sendButtonColor?: string
   sendButtonIconColor?: string
+  questionMode?: 'long' | 'short'
 }
 
 interface WidgetConfigModalProps {
@@ -89,6 +89,7 @@ const defaultConfig: Omit<WidgetConfig, 'id' | 'widgetId'> = {
   showBorder: true,
   sendButtonColor: '#2563eb',
   sendButtonIconColor: '#ffffff',
+  questionMode: 'long',
 }
 
 export function WidgetConfigModal({
@@ -316,6 +317,48 @@ export function WidgetConfigModal({
                     </div>
                     <p className="text-sm text-foreground-muted">
                       Widget integrato direttamente nella pagina
+                    </p>
+                  </button>
+                </div>
+              </div>
+
+              {/* Question mode toggle */}
+              <div className="space-y-3">
+                <Label>Modalità Domande</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
+                      (config.questionMode ?? 'long') === 'long'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/40 hover:bg-primary/5'
+                    }`}
+                    onClick={() => setConfig({ ...config, questionMode: 'long' })}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <MessageSquare className="w-4 h-4 text-primary" />
+                      <span className="font-medium text-sm">Estesa</span>
+                    </div>
+                    <p className="text-xs text-foreground-muted">
+                      Conversazione AI libera con domande approfondite
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
+                      config.questionMode === 'short'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/40 hover:bg-primary/5'
+                    }`}
+                    onClick={() => setConfig({ ...config, questionMode: 'short' })}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <Settings2 className="w-4 h-4 text-primary" />
+                      <span className="font-medium text-sm">Breve</span>
+                    </div>
+                    <p className="text-xs text-foreground-muted">
+                      Domande guidate: città, tipo, mq, piano, esterni, auto, riscaldamento e contatti
                     </p>
                   </button>
                 </div>
@@ -731,20 +774,35 @@ export function WidgetConfigModal({
           <div className="mt-6 border-t pt-6">
             <Label className="mb-4 block">Anteprima</Label>
             <div
-              className="relative bg-surface rounded-lg p-4 overflow-hidden"
-              style={{ height: config.mode === 'inline' ? '300px' : '200px' }}
+              className="relative bg-surface rounded-lg overflow-hidden"
+              style={{ height: config.mode === 'inline' ? '320px' : '180px' }}
             >
               {config.mode === 'bubble' ? (
-                <div className="absolute bottom-4 right-4">
+                /* ── Bubble preview ── */
+                <div
+                  className={`absolute ${
+                    config.bubblePosition === 'bottom-left'
+                      ? 'bottom-4 left-4'
+                      : config.bubblePosition === 'bottom-center'
+                      ? 'bottom-4 left-1/2 -translate-x-1/2'
+                      : 'bottom-4 right-4'
+                  }`}
+                >
                   <button
-                    className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110 ${
-                      config.bubbleAnimation === 'pulse' ? 'animate-pulse' : ''
-                    } ${config.bubbleAnimation === 'bounce' ? 'animate-bounce' : ''}`}
+                    className={`w-14 h-14 shadow-lg flex items-center justify-center relative ${
+                      config.buttonStyle === 'flat' ? 'rounded-lg' : 'rounded-full'
+                    } ${config.bubbleAnimation === 'pulse' ? 'animate-pulse' : ''} ${
+                      config.bubbleAnimation === 'bounce' ? 'animate-bounce' : ''
+                    }`}
                     style={{
-                      background: `linear-gradient(135deg, ${config.primaryColor}, ${config.primaryColor}dd)`,
+                      background: `linear-gradient(135deg, ${config.primaryColor}, ${config.primaryColor}cc)`,
                     }}
                   >
-                    <MessageSquare className="w-6 h-6 text-white" />
+                    {config.logoUrl ? (
+                      <img src={config.logoUrl} alt="Logo" className="w-8 h-8 object-contain rounded-full" />
+                    ) : (
+                      <MessageSquare className="w-6 h-6 text-white" />
+                    )}
                     {config.showBadge && (
                       <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
                         <span className="text-xs text-white font-bold">1</span>
@@ -753,37 +811,98 @@ export function WidgetConfigModal({
                   </button>
                 </div>
               ) : (
+                /* ── Inline preview ── */
                 <div
-                  className="h-full rounded-lg overflow-hidden"
+                  className="h-full flex flex-col overflow-hidden"
                   style={{
                     backgroundColor: config.backgroundColor,
-                    border: config.showBorder ? '1px solid hsl(var(--border))' : 'none',
+                    border: config.showBorder ? `1px solid ${config.primaryColor}40` : 'none',
+                    fontFamily: config.fontFamily,
                   }}
                 >
+                  {/* Header */}
                   {config.showHeader && (
                     <div
-                      className="px-4 py-3 flex items-center gap-3"
+                      className="px-3 py-2 flex items-center gap-2 flex-shrink-0"
                       style={{
-                        background: `linear-gradient(135deg, ${config.primaryColor}, ${config.primaryColor}dd)`,
+                        background: `linear-gradient(135deg, ${config.primaryColor}, ${config.primaryColor}cc)`,
                       }}
                     >
-                      <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                        <MessageSquare
-                          className="w-4 h-4"
-                          style={{ color: config.primaryColor }}
-                        />
-                      </div>
+                      {config.logoUrl ? (
+                        <img src={config.logoUrl} alt="Logo" className="w-6 h-6 object-contain rounded-full bg-white p-0.5" />
+                      ) : (
+                        <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                          <MessageSquare className="w-3 h-3" style={{ color: config.primaryColor }} />
+                        </div>
+                      )}
                       <div>
-                        <h3 className="text-white font-semibold text-sm">Valuta la tua casa</h3>
-                        <p className="text-xs text-white/70">Ti rispondo in pochi secondi</p>
+                        <p className="text-white font-semibold leading-tight" style={{ fontSize: '11px' }}>Valuta la tua casa</p>
+                        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '10px' }}>Ti rispondo in pochi secondi</p>
                       </div>
                     </div>
                   )}
-                  <div
-                    className="p-4 text-sm"
-                    style={{ color: config.textColor, fontFamily: config.fontFamily }}
-                  >
-                    Anteprima widget inline...
+
+                  {/* Chat messages */}
+                  <div className="flex-1 p-2.5 space-y-2 overflow-hidden" style={{ color: config.textColor }}>
+                    {/* Bot message */}
+                    <div className="flex gap-1.5 max-w-[85%]">
+                      <div
+                        className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center"
+                        style={{ background: config.primaryColor }}
+                      >
+                        <MessageSquare className="w-2.5 h-2.5 text-white" />
+                      </div>
+                      <div
+                        className="px-2.5 py-1.5"
+                        style={{
+                          backgroundColor: `${config.textColor}12`,
+                          color: config.textColor,
+                          borderRadius: config.borderRadius,
+                          fontSize: '11px',
+                        }}
+                      >
+                        Ciao! Qual è l'indirizzo dell'immobile?
+                      </div>
+                    </div>
+                    {/* User message */}
+                    <div className="flex justify-end">
+                      <div
+                        className="px-2.5 py-1.5 max-w-[70%]"
+                        style={{
+                          backgroundColor: config.primaryColor,
+                          color: config.sendButtonIconColor || '#ffffff',
+                          borderRadius: config.borderRadius,
+                          fontSize: '11px',
+                        }}
+                      >
+                        Via Roma 10, Milano
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Input area */}
+                  <div className="px-2.5 pb-2.5 flex gap-1.5 flex-shrink-0">
+                    <div
+                      className="flex-1 border px-2.5 py-1.5"
+                      style={{
+                        borderColor: `${config.primaryColor}40`,
+                        borderRadius: config.borderRadius,
+                        color: `${config.textColor}60`,
+                        backgroundColor: config.backgroundColor,
+                        fontSize: '11px',
+                      }}
+                    >
+                      Scrivi qui...
+                    </div>
+                    <button
+                      className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+                      style={{
+                        backgroundColor: config.sendButtonColor || config.primaryColor,
+                        borderRadius: config.borderRadius,
+                      }}
+                    >
+                      <Send className="w-3.5 h-3.5" style={{ color: config.sendButtonIconColor || '#ffffff' }} />
+                    </button>
                   </div>
                 </div>
               )}

@@ -30,7 +30,79 @@ export interface WidgetThemeConfig {
   sendButtonColor?: string
   sendButtonIconColor?: string
   agencyName?: string
+  questionMode?: 'long' | 'short'
 }
+
+// ─── Short mode: definizione dei passi ────────────────────────────────────────
+type ShortStepKey =
+  | 'city' | 'postalCode' | 'address' | 'propertyType'
+  | 'surface' | 'floor' | 'hasOutdoor' | 'outdoorCount'
+  | 'parking' | 'heating'
+  | 'firstName' | 'lastName' | 'email' | 'phone'
+
+interface ShortStep {
+  key: ShortStepKey
+  question: string
+  quickReplies?: Array<{ value: string; label: string }>
+}
+
+const SHORT_MODE_STEPS: ShortStep[] = [
+  { key: 'city',         question: 'In quale **città** si trova l\'immobile?' },
+  { key: 'postalCode',   question: 'Qual è il **CAP**?' },
+  { key: 'address',      question: 'Qual è **via e civico**?' },
+  {
+    key: 'propertyType',
+    question: 'Che **tipologia** di immobile è?',
+    quickReplies: [
+      { value: 'Appartamento',       label: 'Appartamento' },
+      { value: 'Casa indipendente',  label: 'Casa indipendente' },
+      { value: 'Villa',              label: 'Villa' },
+      { value: 'Ufficio',            label: 'Ufficio' },
+    ],
+  },
+  { key: 'surface', question: 'Quanti **m²** misura?' },
+  { key: 'floor',   question: 'A che **piano** si trova? (0 = piano terra)' },
+  {
+    key: 'hasOutdoor',
+    question: 'Ci sono **terrazzi o balconi**?',
+    quickReplies: [
+      { value: 'si', label: 'Sì' },
+      { value: 'no', label: 'No' },
+    ],
+  },
+  {
+    key: 'outdoorCount',
+    question: 'Quanti? 🌿',
+    quickReplies: [
+      { value: '1', label: '1' },
+      { value: '2', label: '2' },
+      { value: '3', label: '3' },
+      { value: '4+', label: 'Più di 3' },
+    ],
+  },
+  {
+    key: 'parking',
+    question: 'È presente un **posto auto**?',
+    quickReplies: [
+      { value: 'si', label: 'Sì' },
+      { value: 'no', label: 'No' },
+    ],
+  },
+  {
+    key: 'heating',
+    question: 'Che tipo di **riscaldamento**?',
+    quickReplies: [
+      { value: 'Centralizzato',    label: 'Centralizzato' },
+      { value: 'Autonomo',         label: 'Autonomo' },
+      { value: 'Pompa di calore',  label: 'Pompa di calore' },
+      { value: 'Assente',          label: 'Assente' },
+    ],
+  },
+  { key: 'firstName', question: 'Perfetto! 🎉 Per inviarti la valutazione, come ti chiami? (**nome**)' },
+  { key: 'lastName',  question: 'E il **cognome**?' },
+  { key: 'email',     question: 'Qual è la tua **email**?' },
+  { key: 'phone',     question: 'E il **numero di telefono**? (es. +39 333 1234567)' },
+]
 
 interface ChatWidgetProps {
   widgetId: string
@@ -102,6 +174,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     agencyName = 'DomusReport',
   } = theme
 
+  const questionMode = theme.questionMode || 'long'
+
   // CSS variables for theming
   const themeStyles: React.CSSProperties = {
     '--widget-primary': primaryColor,
@@ -119,6 +193,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const [inputValue, setInputValue] = React.useState("")
   const [isTyping, setIsTyping] = React.useState(false)
   const [conversationMode, setConversationMode] = React.useState<ConversationMode>("chatting")
+  const [shortModeStep, setShortModeStep] = React.useState<number>(0)
   const [collectedData, setCollectedData] = React.useState<CollectedData>({})
   const [valuation, setValuation] = React.useState<ValuationResult | null>(null)
   const [savedLeadId, setSavedLeadId] = React.useState<string | null>(null)
@@ -343,6 +418,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           setValuation(parsed.valuation)
         }
 
+        if (typeof parsed.shortModeStep === 'number') {
+          setShortModeStep(parsed.shortModeStep)
+        }
+
         setIsInitialized(true)
       } else {
         // First time - initialize conversation
@@ -356,6 +435,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
   // Initialize conversation - ora usa AI
   const initializeConversation = () => {
+    if (questionMode === 'short') {
+      initializeShortMode()
+      return
+    }
     const welcomeMessage: MessageType = {
       id: `msg_${Date.now()}`,
       role: "bot",
@@ -365,6 +448,104 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setMessages([welcomeMessage])
     setConversationMode("chatting")
     setIsInitialized(true)
+  }
+
+  // Initialize short mode conversation
+  const initializeShortMode = () => {
+    const firstStep = SHORT_MODE_STEPS[0]
+    const welcomeMessage: MessageType = {
+      id: `msg_${Date.now()}`,
+      role: "bot",
+      text: `Ciao! 👋 Valutiamo il tuo immobile in pochi passi.\n\n${firstStep.question}`,
+      timestamp: new Date()
+    }
+    setMessages([welcomeMessage])
+    setShortModeStep(0)
+    setConversationMode("chatting")
+    setIsInitialized(true)
+  }
+
+  // Process short mode answer and advance to next step
+  const processShortModeAnswer = (answer: string, stepIndex: number) => {
+    const step = SHORT_MODE_STEPS[stepIndex]
+    if (!step) return
+
+    let nextStepIndex = stepIndex + 1
+    const dataUpdate: Partial<CollectedData> = {}
+
+    switch (step.key) {
+      case 'city':
+        dataUpdate.city = answer
+        break
+      case 'postalCode':
+        dataUpdate.postalCode = answer
+        break
+      case 'address':
+        dataUpdate.address = answer
+        break
+      case 'propertyType':
+        dataUpdate.propertyType = answer
+        break
+      case 'surface': {
+        const n = parseFloat(answer.replace(',', '.'))
+        if (!isNaN(n)) dataUpdate.surfaceSqm = n
+        break
+      }
+      case 'floor': {
+        const n = parseInt(answer, 10)
+        if (!isNaN(n)) dataUpdate.floor = n
+        break
+      }
+      case 'hasOutdoor':
+        if (answer === 'no') {
+          dataUpdate.outdoorSpace = 'nessuno'
+          nextStepIndex = stepIndex + 2 // Salta outdoorCount
+        }
+        break
+      case 'outdoorCount':
+        dataUpdate.outdoorSpace = answer
+        break
+      case 'parking':
+        dataUpdate.hasParking = answer === 'si' || answer === 'sì'
+        break
+      case 'heating':
+        dataUpdate.heatingType = answer
+        break
+      case 'firstName':
+        dataUpdate.firstName = answer
+        break
+      case 'lastName':
+        dataUpdate.lastName = answer
+        break
+      case 'email':
+        dataUpdate.email = answer
+        break
+      case 'phone':
+        dataUpdate.phone = answer
+        phoneRef.current = answer
+        break
+    }
+
+    // Aggiorna dati raccolti
+    setCollectedData(prev => {
+      const updated = { ...prev, ...dataUpdate }
+      collectedDataRef.current = updated
+      return updated
+    })
+
+    // Tutti i passi completati → valuta
+    if (nextStepIndex >= SHORT_MODE_STEPS.length) {
+      setTimeout(() => calculateValuation(), 500)
+      return
+    }
+
+    // Avanza al passo successivo
+    const nextStep = SHORT_MODE_STEPS[nextStepIndex]
+    setShortModeStep(nextStepIndex)
+    addBotMessage(
+      nextStep.question,
+      nextStep.quickReplies?.map(qr => ({ value: qr.value, label: qr.label }))
+    )
   }
 
   // FIX CRITICO: Mantieni collectedDataRef sempre sincronizzato con lo stato
@@ -382,6 +563,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         conversationMode,
         collectedData,
         valuation,
+        shortModeStep,
         timestamp: new Date().toISOString()
       }
       localStorage.setItem(storageKey, JSON.stringify(stateToSave))
@@ -435,8 +617,12 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         }
       }
     } else {
-      // In modalità chatting, invia alla AI
-      processWithAI(label)
+      // In modalità chatting, instrada in base al questionMode
+      if (questionMode === 'short') {
+        processShortModeAnswer(value, shortModeStep)
+      } else {
+        processWithAI(label)
+      }
     }
   }
 
@@ -453,9 +639,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     addUserMessage(userInput)
     setInputValue("")
 
-    // Se siamo in modalità chatting, usa l'AI
+    // Se siamo in modalità chatting, instrada in base al questionMode
     if (conversationMode === "chatting") {
-      processWithAI(userInput)
+      if (questionMode === 'short') {
+        processShortModeAnswer(userInput, shortModeStep)
+      } else {
+        processWithAI(userInput)
+      }
     }
   }
 

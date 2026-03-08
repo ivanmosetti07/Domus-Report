@@ -25,7 +25,10 @@ export interface WidgetThemeConfig {
   showHeader?: boolean
   showBorder?: boolean
   inlineHeight?: string
+  sendButtonColor?: string
+  sendButtonIconColor?: string
   agencyName?: string
+  questionMode?: 'long' | 'short'
 }
 
 interface WidgetTriggerProps {

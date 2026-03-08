@@ -367,6 +367,7 @@ model WidgetConfig {
   logoUrl             String?  @map("logo_url")
   sendButtonColor     String?  @map("send_button_color")
   sendButtonIconColor String?  @map("send_button_icon_color")
+  questionMode        String   @default("long") @map("question_mode")
   impressions         Int      @default(0)
   leadsGenerated      Int      @default(0) @map("leads_generated")
   createdAt           DateTime @default(now()) @map("created_at")

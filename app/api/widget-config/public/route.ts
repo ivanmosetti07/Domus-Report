@@ -43,6 +43,7 @@ export async function GET(request: Request) {
         logoUrl: null,
         sendButtonColor: '#3b82f6',
         sendButtonIconColor: '#ffffff',
+        questionMode: 'long',
         agencyName: 'DomusReport Demo',
       }
       return NextResponse.json({ widgetConfig: demoConfig })
@@ -76,6 +77,7 @@ export async function GET(request: Request) {
         logoUrl: true,
         sendButtonColor: true,
         sendButtonIconColor: true,
+        questionMode: true,
         // Includiamo il nome dell'agenzia per il messaggio di benvenuto
         agency: {
           select: {

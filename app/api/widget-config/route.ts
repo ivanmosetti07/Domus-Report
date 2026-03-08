@@ -98,6 +98,7 @@ export async function POST(request: Request) {
       logoUrl,
       sendButtonColor,
       sendButtonIconColor,
+      questionMode,
     } = body
 
     // Validazioni
@@ -164,6 +165,7 @@ export async function POST(request: Request) {
         logoUrl: logoUrl || undefined,
         sendButtonColor: sendButtonColor || undefined,
         sendButtonIconColor: sendButtonIconColor || undefined,
+        questionMode: questionMode || 'long',
       },
     })
 
