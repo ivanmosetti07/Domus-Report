@@ -4,7 +4,7 @@ import { getAuthAgency } from '@/lib/auth'
 import { generateLeadPDF } from '@/lib/pdf-generator'
 import { generateReportEmailHTML, generateReportEmailText } from '@/lib/email-templates'
 import { validateEmail } from '@/lib/validation'
-import { sendEmail } from '@/lib/email'
+import { sendEmail, formatEmailAddress } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -167,10 +167,11 @@ export async function POST(request: NextRequest) {
     // Send email via SMTP
     // Il mittente è sempre noreply@domusreport.com, ma il Reply-To è impostato
     // sull'email dell'agenzia così il cliente risponde direttamente all'agenzia
+    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || ''
     const result = await sendEmail({
-      from: `${lead.agenzia.nome} <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
+      from: formatEmailAddress(lead.agenzia.nome, fromEmail),
       to: recipients,
-      replyTo: `${lead.agenzia.nome} <${lead.agenzia.email}>`,
+      replyTo: formatEmailAddress(lead.agenzia.nome, lead.agenzia.email),
       subject: `Valutazione Immobiliare - ${lead.property.indirizzo}`,
       html: htmlContent,
       text: textContent,

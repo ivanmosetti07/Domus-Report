@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 import { nanoid } from "nanoid"
 import { validateEmail, validatePassword, validateCity, sanitizeString } from "@/lib/validation"
-import { sendEmail } from "@/lib/email"
+import { sendEmail, formatEmailAddress } from "@/lib/email"
 import { generateNewAgencyNotificationHTML, generateNewAgencyNotificationText } from "@/lib/email-templates"
 
 export interface RegisterRequest {
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
         registeredAt: new Date(),
       })
       sendEmail({
-        from: `Domus Report <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
+        from: formatEmailAddress('Domus Report', process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || ''),
         to: 'ivan@mainstreamagency.it',
         subject: `Nuova Agenzia Registrata: ${agency.nome}`,
         html: htmlContent,

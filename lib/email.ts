@@ -1,16 +1,5 @@
 import nodemailer from 'nodemailer'
 
-// SMTP Configuration for SiteGround
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '465'),
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-})
-
 interface EmailOptions {
   to: string | string[]
   subject: string
@@ -25,12 +14,35 @@ interface EmailOptions {
   }>
 }
 
+// Sanitizza il display name per evitare header email non validi
+// (es. nomi agenzia con virgolette, newline o caratteri speciali)
+export function sanitizeEmailDisplayName(name: string): string {
+  return name.replace(/["\r\n]/g, ' ').trim()
+}
+
+export function formatEmailAddress(name: string, email: string): string {
+  return `"${sanitizeEmailDisplayName(name)}" <${email}>`
+}
+
 export async function sendEmail(options: EmailOptions): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
     // Validate SMTP configuration
     if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
       throw new Error('Configurazione SMTP mancante')
     }
+
+    // Crea il transporter a ogni invio: legge le env vars aggiornate
+    // e garantisce che port/secure siano sempre coerenti
+    const port = parseInt(process.env.SMTP_PORT || '465')
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port,
+      secure: port === 465, // true per SSL/465, false per STARTTLS/587
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    })
 
     const fromEmail = options.from || process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER
 
@@ -62,4 +74,3 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
     }
   }
 }
-
