@@ -175,10 +175,10 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                   {lead.property.locali && (
                     <div>
                       <label className="text-xs font-medium text-foreground-muted uppercase tracking-wide">
-                        Locali
+                        Camere
                       </label>
                       <p className="text-sm text-foreground mt-1">
-                        {lead.property.locali} {lead.property.locali === 1 ? 'locale' : 'locali'}
+                        {lead.property.locali} {lead.property.locali === 1 ? 'camera' : 'camere'}
                       </p>
                     </div>
                   )}
