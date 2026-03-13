@@ -14,7 +14,7 @@ interface ConnectStatus {
   dashboardUrl: string | null
 }
 
-export default function AffiliateConnectPage() {
+function AffiliateConnectContent() {
   const [status, setStatus] = React.useState<ConnectStatus | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [connecting, setConnecting] = React.useState(false)
@@ -156,5 +156,19 @@ export default function AffiliateConnectPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function AffiliateConnectPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
+        </div>
+      }
+    >
+      <AffiliateConnectContent />
+    </React.Suspense>
   )
 }
