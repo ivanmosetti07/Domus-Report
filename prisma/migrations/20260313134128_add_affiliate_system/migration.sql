@@ -1,0 +1,3 @@
+-- Empty migration to align Prisma history with already pushed schema
+-- The schema changes were already applied via `prisma db push`
+-- This file exists to satisfy Prisma Migrate requirements
