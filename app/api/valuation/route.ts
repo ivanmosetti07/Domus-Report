@@ -7,17 +7,12 @@ import { inferCity } from "@/lib/postal-code"
 // IMPORTANTE: Non usare Edge Runtime perché il sistema OMI legge dal filesystem (CSV)
 // export const runtime = "edge"
 
-// Extended input type per includere dati aggiuntivi per l'AI
+// Extended input type per includere dati aggiuntivi non usati nel calcolo OMI
+// (energyClass, buildYear, hasParking, outdoorSpace, heatingType sono già in ValuationInput)
 interface ExtendedValuationInput extends ValuationInput {
-  neighborhood?: string
   rooms?: number
   bathrooms?: number
-  hasParking?: boolean
-  outdoorSpace?: string
-  heatingType?: string
   hasAirConditioning?: boolean
-  energyClass?: string
-  buildYear?: number
   useAI?: boolean // Flag per abilitare/disabilitare analisi AI
 }
 

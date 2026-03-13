@@ -23,7 +23,19 @@ const CACHE_TTL = 15 * 60 * 1000 // 15 minutes
  * Generates a cache key from valuation input
  */
 function getCacheKey(input: ValuationInput): string {
-  return `${input.city}-${input.propertyType}-${input.surfaceSqm}-${input.floor || 0}-${input.hasElevator || false}-${input.condition}`
+  return [
+    input.city,
+    input.propertyType,
+    input.surfaceSqm,
+    input.floor ?? 0,
+    input.hasElevator ?? false,
+    input.condition,
+    input.energyClass ?? '',
+    input.buildYear ?? 0,
+    input.hasParking ?? false,
+    input.outdoorSpace ?? '',
+    input.heatingType ?? '',
+  ].join('-')
 }
 
 /**
@@ -80,6 +92,12 @@ export interface ValuationInput {
   floor?: number
   hasElevator?: boolean
   condition: PropertyCondition
+  // Campi aggiuntivi usati per coefficienti di qualità
+  energyClass?: string       // es. "A4", "A3", "B", "C", "D", "E", "F", "G"
+  buildYear?: number         // Anno di costruzione
+  hasParking?: boolean       // Box/posto auto incluso nel prezzo
+  outdoorSpace?: string      // "NONE", "BALCONY", "TERRACE", "GARDEN", "ROOF_TERRACE"
+  heatingType?: string       // "AUTONOMOUS", "CENTRALIZED", "NONE", ecc.
 }
 
 export interface ValuationResult {
@@ -88,7 +106,7 @@ export interface ValuationResult {
   estimatedPrice: number
   baseOMIValue: number
   floorCoefficient: number
-  conditionCoefficient: number
+  conditionCoefficient: number  // Coefficiente qualità complessivo (stato + energia + anno + extra)
   explanation: string
 }
 
@@ -147,6 +165,114 @@ export function calculateConditionCoefficient(
 }
 
 /**
+ * Calculates energy class coefficient based on Italian energy rating
+ * Basato su standard OMI e mercato immobiliare italiano
+ */
+export function calculateEnergyClassCoefficient(energyClass?: string): number {
+  if (!energyClass || energyClass === 'UNKNOWN' || energyClass === 'NOT_AVAILABLE') {
+    return 1.0
+  }
+
+  const normalized = energyClass.toUpperCase().trim()
+
+  if (normalized === 'A4' || normalized === 'A3') return 1.10 // +10%
+  if (normalized === 'A2' || normalized === 'A1' || normalized === 'A+' || normalized === 'A') return 1.07 // +7%
+  if (normalized === 'B') return 1.04 // +4%
+  if (normalized === 'C') return 1.02 // +2%
+  if (normalized === 'D') return 1.00 // baseline
+  if (normalized === 'E') return 0.97 // -3%
+  if (normalized === 'F') return 0.94 // -6%
+  if (normalized === 'G') return 0.90 // -10%
+
+  return 1.0
+}
+
+/**
+ * Calculates build year coefficient based on construction year
+ * Edifici recenti hanno premium, edifici datati hanno sconto
+ */
+export function calculateBuildYearCoefficient(buildYear?: number): number {
+  if (!buildYear || buildYear < 1800 || buildYear > new Date().getFullYear()) {
+    return 1.0
+  }
+
+  if (buildYear >= 2015) return 1.05   // Edificio recente: +5%
+  if (buildYear >= 2000) return 1.02   // 2000-2014: +2%
+  if (buildYear >= 1980) return 1.00   // 1980-1999: baseline
+  if (buildYear >= 1960) return 0.97   // 1960-1979: -3%
+  return 0.94                           // Pre-1960: -6%
+}
+
+/**
+ * Calculates extras coefficient based on parking, outdoor space, heating
+ * Somma dei contributi di ogni caratteristica aggiuntiva
+ */
+export function calculateExtrasCoefficient(
+  hasParking?: boolean,
+  outdoorSpace?: string,
+  heatingType?: string
+): number {
+  let adjustment = 0
+
+  // Posto auto / box
+  if (hasParking) adjustment += 0.04 // +4%
+
+  // Spazi esterni
+  if (outdoorSpace) {
+    const outdoor = outdoorSpace.toUpperCase()
+    if (outdoor === 'GARDEN') adjustment += 0.07          // Giardino: +7%
+    else if (outdoor === 'ROOF_TERRACE') adjustment += 0.06 // Terrazzo roof: +6%
+    else if (outdoor === 'TERRACE') adjustment += 0.05     // Terrazza: +5%
+    else if (outdoor === 'BALCONY') adjustment += 0.02     // Balcone: +2%
+  }
+
+  // Riscaldamento
+  if (heatingType) {
+    const heating = heatingType.toUpperCase()
+    if (heating === 'NONE' || heating === 'ABSENT') adjustment -= 0.04 // No riscaldamento: -4%
+  }
+
+  // Cap: nessun singolo immobile può avere bonus > +20% o malus > -10% dagli extra
+  return Math.max(0.90, Math.min(1.20, 1 + adjustment))
+}
+
+/**
+ * Selects the most appropriate OMI category based on property characteristics
+ * Permette di scegliere tra abitazioni civili, signorili, economiche, ville
+ */
+function selectOMICategory(
+  propertyType: PropertyType,
+  condition: PropertyCondition,
+  energyClass?: string,
+  buildYear?: number
+): string | undefined {
+  // Ville e villini hanno categoria OMI dedicata
+  if (propertyType === PropertyType.VILLA) {
+    return 'Ville e Villini'
+  }
+
+  if (propertyType === PropertyType.APARTMENT || propertyType === PropertyType.ATTICO) {
+    const energyNorm = energyClass?.toUpperCase() ?? ''
+    const isHighQuality = (
+      ['A4', 'A3', 'A2', 'A1', 'A+', 'A', 'B'].includes(energyNorm) ||
+      (buildYear !== undefined && buildYear >= 2010) ||
+      condition === PropertyCondition.NEW
+    )
+    const isLowQuality = (
+      condition === PropertyCondition.TO_RENOVATE ||
+      (buildYear !== undefined && buildYear < 1960)
+    )
+
+    if (isHighQuality) return 'Abitazioni signorili'
+    if (isLowQuality) return 'Abitazioni di tipo economico'
+    return 'Abitazioni civili'
+  }
+
+  // Per altri tipi non residenziali, non specificare categoria
+  return undefined
+}
+
+/**
  * Generates explanation text for the valuation
  */
 export function generateValuationExplanation(
@@ -183,7 +309,22 @@ export function generateValuationExplanation(
   if (result.conditionCoefficient !== 1.0) {
     const percentage = ((result.conditionCoefficient - 1) * 100).toFixed(0)
     const sign = result.conditionCoefficient > 1 ? "+" : ""
-    parts.push(`Coefficiente stato: ${sign}${percentage}%.`)
+    parts.push(`Coefficiente qualità complessivo: ${sign}${percentage}%.`)
+  }
+
+  // Dettaglio fattori aggiuntivi se presenti
+  const energyCoef = calculateEnergyClassCoefficient(input.energyClass)
+  if (energyCoef !== 1.0 && input.energyClass) {
+    const percentage = ((energyCoef - 1) * 100).toFixed(0)
+    const sign = energyCoef > 1 ? "+" : ""
+    parts.push(`Classe energetica ${input.energyClass}: ${sign}${percentage}%.`)
+  }
+
+  const buildYearCoef = calculateBuildYearCoefficient(input.buildYear)
+  if (buildYearCoef !== 1.0 && input.buildYear) {
+    const percentage = ((buildYearCoef - 1) * 100).toFixed(0)
+    const sign = buildYearCoef > 1 ? "+" : ""
+    parts.push(`Anno costruzione ${input.buildYear}: ${sign}${percentage}%.`)
   }
 
   return parts.join(" ")
@@ -197,34 +338,69 @@ export function generateValuationExplanation(
 export function calculateValuationLocal(
   input: ValuationInput
 ): ValuationResult {
-  // Try to get advanced OMI data first
   const tipoImmobile = mapPropertyTypeToOMI(input.propertyType)
   let baseOMIValue: number
   let minPrice: number
   let maxPrice: number
   let estimatedPrice: number
 
-  // Get OMI Advanced data (with fallback if not available)
-  const omiAdvanced = getOMIValueByZone(
+  // Selezione automatica categoria OMI più precisa
+  const autoCategory = selectOMICategory(
+    input.propertyType,
+    input.condition,
+    input.energyClass,
+    input.buildYear
+  )
+  const omiCategory = input.omiCategory || autoCategory
+
+  // Tentativo 1: con categoria specifica
+  let omiAdvanced = getOMIValueByZone(
     input.city,
     input.neighborhood,
     input.postalCode,
     tipoImmobile,
-    input.omiCategory
+    omiCategory
+  )
+
+  // Tentativo 2: senza categoria (media città per quel tipo immobile)
+  if (!omiAdvanced && omiCategory) {
+    logger.info("OMI category not found, retrying without category", {
+      city: input.city, omiCategory
+    })
+    omiAdvanced = getOMIValueByZone(
+      input.city,
+      input.neighborhood,
+      input.postalCode,
+      tipoImmobile
+    )
+  }
+
+  // Calcola coefficienti
+  const floorCoefficient = calculateFloorCoefficient(input.floor, input.hasElevator)
+  const conditionCoefficient = calculateConditionCoefficient(input.condition)
+  const energyClassCoefficient = calculateEnergyClassCoefficient(input.energyClass)
+  const buildYearCoefficient = calculateBuildYearCoefficient(input.buildYear)
+  const extrasCoefficient = calculateExtrasCoefficient(
+    input.hasParking,
+    input.outdoorSpace,
+    input.heatingType
+  )
+
+  // Coefficiente qualità complessivo (tutti i fattori non-piano combinati)
+  const qualityCoefficient = parseFloat(
+    (conditionCoefficient * energyClassCoefficient * buildYearCoefficient * extrasCoefficient).toFixed(4)
   )
 
   if (!omiAdvanced) {
-    // FALLBACK: Se i dati OMI avanzati non sono disponibili, usa valori medi generici
-    // Questo evita che il chatbot si blocchi quando i dati OMI non sono ancora caricati nel database
-    logger.warn("OMI Advanced data not found - using generic fallback values", {
+    // FALLBACK: usa valori medi generici se OMI non disponibile
+    logger.warn("OMI data not found - using generic fallback values", {
       city: input.city,
       neighborhood: input.neighborhood,
       postalCode: input.postalCode,
       tipoImmobile,
-      omiCategory: input.omiCategory,
+      omiCategory,
     })
 
-    // Valori medi generici per tipo di immobile (€/m²)
     const fallbackValues: Record<string, { min: number; medio: number; max: number }> = {
       residenziale: { min: 2975, medio: 3500, max: 4025 },
       box: { min: 1275, medio: 1500, max: 1725 },
@@ -236,16 +412,8 @@ export function calculateValuationLocal(
     const fallback = fallbackValues[tipoImmobile] || fallbackValues.altro
     baseOMIValue = fallback.medio
 
-    // Calculate coefficients
-    const floorCoefficient = calculateFloorCoefficient(
-      input.floor,
-      input.hasElevator
-    )
-    const conditionCoefficient = calculateConditionCoefficient(input.condition)
-
-    // Calculate prices using fallback values + coefficients
     estimatedPrice = Math.round(
-      fallback.medio * input.surfaceSqm * floorCoefficient * conditionCoefficient
+      fallback.medio * input.surfaceSqm * floorCoefficient * qualityCoefficient
     )
     minPrice = Math.round(estimatedPrice * 0.90)
     maxPrice = Math.round(estimatedPrice * 1.10)
@@ -256,7 +424,7 @@ export function calculateValuationLocal(
       estimatedPrice,
       baseOMIValue,
       floorCoefficient,
-      conditionCoefficient,
+      conditionCoefficient: qualityCoefficient,
       explanation: "",
     }
 
@@ -265,28 +433,20 @@ export function calculateValuationLocal(
     return result
   }
 
-  // Use OMI Advanced data with min/max ranges
+  // Usa dati OMI reali
   logger.info("Using OMI Advanced data", {
     city: input.city,
     zona: omiAdvanced.zona,
-    categoria: input.omiCategory,
+    omiCategory,
     valoreMedioMq: omiAdvanced.valoreMedioMq,
+    qualityCoefficient,
   })
 
   baseOMIValue = omiAdvanced.valoreMedioMq
 
-  // Calculate coefficients
-  const floorCoefficient = calculateFloorCoefficient(
-    input.floor,
-    input.hasElevator
-  )
-  const conditionCoefficient = calculateConditionCoefficient(input.condition)
-
-  // Calculate prices using OMI data + coefficients
   estimatedPrice = Math.round(
-    baseOMIValue * input.surfaceSqm * floorCoefficient * conditionCoefficient
+    baseOMIValue * input.surfaceSqm * floorCoefficient * qualityCoefficient
   )
-  // Restrict range to ±10% of estimated price for a tighter, more professional result
   minPrice = Math.round(estimatedPrice * 0.90)
   maxPrice = Math.round(estimatedPrice * 1.10)
 
@@ -296,7 +456,7 @@ export function calculateValuationLocal(
     estimatedPrice,
     baseOMIValue,
     floorCoefficient,
-    conditionCoefficient,
+    conditionCoefficient: qualityCoefficient,
     explanation: "",
   }
 
