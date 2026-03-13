@@ -19,6 +19,16 @@ interface LeadData {
     piano: number | null
     ascensore: boolean | null
     stato: string
+    quartiere: string | null
+    locali: number | null
+    bagni: number | null
+    spaziEsterni: string | null
+    postoAuto: boolean | null
+    riscaldamento: string | null
+    ariaCondizionata: boolean | null
+    classeEnergetica: string | null
+    annoCostruzione: number | null
+    statoOccupazione: string | null
   }
   valuation: {
     prezzoMinimo: number
@@ -52,24 +62,19 @@ interface LeadData {
   }
 }
 
-// Helper function to convert hex color to RGB
+// ==================== HELPER FUNCTIONS ====================
+
 function hexToRgb(hex: string): [number, number, number] {
-  if (!hex) return [37, 99, 235] // Default blue-600
-
-  // Rimuovi # se presente
+  if (!hex) return [37, 99, 235]
   const cleanHex = hex.replace(/^#/, '')
-
-  // Se è a 3 cifre, espandilo a 6 (es. "000" -> "000000")
   let processedHex = cleanHex
   if (cleanHex.length === 3) {
     processedHex = cleanHex.split('').map(char => char + char).join('')
   }
-
   const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(processedHex)
   if (!result || processedHex.length !== 6) {
-    return [37, 99, 235] // Default blue-600
+    return [37, 99, 235]
   }
-
   return [
     parseInt(result[1], 16),
     parseInt(result[2], 16),
@@ -77,26 +82,20 @@ function hexToRgb(hex: string): [number, number, number] {
   ]
 }
 
-// Helper function to load image from URL and convert to base64
 async function loadImageAsBase64(url: string): Promise<string | null> {
   try {
     const response = await fetch(url)
     if (!response.ok) return null
-
     const arrayBuffer = await response.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
     const base64 = buffer.toString('base64')
-
-    // Determine image format from URL or content-type
     const contentType = response.headers.get('content-type')
     let format = 'PNG'
-
     if (contentType?.includes('jpeg') || contentType?.includes('jpg')) {
       format = 'JPEG'
     } else if (contentType?.includes('png')) {
       format = 'PNG'
     }
-
     return `data:image/${format.toLowerCase()};base64,${base64}`
   } catch (error) {
     console.error('Error loading logo image:', error)
@@ -104,17 +103,143 @@ async function loadImageAsBase64(url: string): Promise<string | null> {
   }
 }
 
+// Colori fissi di design
+const LIGHT_GRAY: [number, number, number] = [248, 249, 250]
+const MEDIUM_GRAY: [number, number, number] = [233, 236, 239]
+const DARK_GRAY: [number, number, number] = [73, 80, 87]
+const TEXT_COLOR: [number, number, number] = [31, 41, 55]
+
+// Layout
+const MARGIN_LEFT = 20
+const MARGIN_RIGHT = 190
+const CONTENT_WIDTH = 170
+const SECTION_SPACING = 12
+
+function drawSectionTitle(
+  doc: jsPDF,
+  sectionNumber: number,
+  title: string,
+  yPos: number,
+  color: [number, number, number]
+): number {
+  // Cerchietto numerato
+  doc.setFillColor(...color)
+  doc.circle(MARGIN_LEFT + 5, yPos - 1.5, 5, 'F')
+  doc.setFontSize(10)
+  doc.setTextColor(255, 255, 255)
+  doc.setFont('helvetica', 'bold')
+  doc.text(String(sectionNumber), MARGIN_LEFT + 5, yPos + 1, { align: 'center' })
+
+  // Titolo
+  doc.setFontSize(13)
+  doc.setTextColor(...color)
+  doc.setFont('helvetica', 'bold')
+  doc.text(title, MARGIN_LEFT + 14, yPos)
+
+  // Linea sottile
+  doc.setDrawColor(...color)
+  doc.setLineWidth(0.5)
+  doc.line(MARGIN_LEFT + 14, yPos + 2, MARGIN_RIGHT, yPos + 2)
+
+  return yPos + 10
+}
+
+function checkPageBreak(doc: jsPDF, yPos: number, requiredSpace: number = 60): number {
+  if (yPos + requiredSpace > 270) {
+    doc.addPage()
+    return 20
+  }
+  return yPos
+}
+
+function translateValue(key: string, value: string | null | undefined): string {
+  if (!value) return 'Non specificato'
+  const translations: Record<string, Record<string, string>> = {
+    spaziEsterni: {
+      'NONE': 'Nessuno',
+      'BALCONY': 'Balcone',
+      'TERRACE': 'Terrazzo',
+      'GARDEN': 'Giardino',
+      'ROOF_TERRACE': 'Terrazza sul tetto',
+    },
+    riscaldamento: {
+      'AUTONOMOUS': 'Autonomo',
+      'CENTRALIZED': 'Centralizzato',
+      'NONE': 'Assente',
+      'ABSENT': 'Assente',
+    },
+    statoOccupazione: {
+      'FREE': 'Libero',
+      'OCCUPIED': 'Occupato',
+    },
+    tipo: {
+      'APARTMENT': 'Appartamento',
+      'VILLA': 'Villa',
+      'HOUSE': 'Casa indipendente',
+      'SHOP': 'Negozio',
+      'BOX': 'Box/Garage',
+      'OFFICE': 'Ufficio',
+      'LAND': 'Terreno',
+    },
+    stato: {
+      'NEW': 'Nuovo',
+      'RENOVATED': 'Ristrutturato',
+      'GOOD': 'Buono',
+      'TO_RENOVATE': 'Da ristrutturare',
+    },
+  }
+  return translations[key]?.[value] ?? value
+}
+
+// Standard table style used across all sections
+function createStyledTable(
+  doc: jsPDF,
+  yPosition: number,
+  body: string[][],
+  primaryColor: [number, number, number]
+) {
+  autoTable(doc, {
+    startY: yPosition,
+    head: [],
+    body,
+    theme: 'striped',
+    styles: {
+      fontSize: 9.5,
+      cellPadding: 4,
+      textColor: TEXT_COLOR,
+      lineColor: MEDIUM_GRAY,
+      lineWidth: 0.1,
+    },
+    alternateRowStyles: {
+      fillColor: LIGHT_GRAY,
+    },
+    columnStyles: {
+      0: {
+        fontStyle: 'bold',
+        cellWidth: 50,
+        textColor: DARK_GRAY,
+      },
+      1: { cellWidth: 130 },
+    },
+    margin: { left: MARGIN_LEFT },
+    tableLineColor: primaryColor,
+  })
+  return (doc as any).lastAutoTable.finalY
+}
+
+// ==================== MAIN FUNCTION ====================
+
 export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
   const doc = new jsPDF()
 
-  // Colori brand personalizzati o default
+  // Brand colors
   const primaryColor: [number, number, number] = data.settings?.brandColors?.primary
     ? hexToRgb(data.settings.brandColors.primary)
-    : [37, 99, 235] // blue-600
+    : [37, 99, 235]
 
   const secondaryColor: [number, number, number] = data.settings?.brandColors?.secondary
     ? hexToRgb(data.settings.brandColors.secondary)
-    : primaryColor // fallback to primary instead of hardcoded blue
+    : primaryColor
 
   const accentColor: [number, number, number] = data.settings?.brandColors?.accent
     ? hexToRgb(data.settings.brandColors.accent)
@@ -122,22 +247,20 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
       Math.round(primaryColor[0] * 0.1 + 255 * 0.9),
       Math.round(primaryColor[1] * 0.1 + 255 * 0.9),
       Math.round(primaryColor[2] * 0.1 + 255 * 0.9)
-    ] // very light version of primary color
-
-  const textColor: [number, number, number] = [31, 41, 55] // gray-800
+    ]
 
   let yPosition = 20
 
-  // ========== HEADER COMPLETAMENTE RIDISEGNATO ==========
-  // Banda colorata superiore full-width
+  // ==================== HEADER ====================
+  // Banda colorata superiore
   doc.setFillColor(...primaryColor)
   doc.rect(0, 0, 210, 50, 'F')
 
-  // Box bianco centrale più alto per contenere tutto
+  // Box bianco centrale
   doc.setFillColor(255, 255, 255)
   doc.roundedRect(10, 8, 190, 37, 3, 3, 'F')
 
-  // ===== COLONNA SINISTRA: Titolo Report =====
+  // Colonna sinistra: Titolo
   doc.setFontSize(16)
   doc.setTextColor(...primaryColor)
   doc.setFont('helvetica', 'bold')
@@ -149,54 +272,44 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
   doc.setFont('helvetica', 'normal')
   doc.text(`Generato il ${formatDate(new Date())}`, 15, 32)
 
-  // ===== COLONNA CENTRALE: Logo Agenzia =====
-  const centerX = 105 // Centro della pagina
-
-  // Carica e posiziona il logo al centro - FORMATO QUADRATO
+  // Colonna centrale: Logo
+  const centerX = 105
   if (data.agency.logoUrl) {
     try {
       const logoBase64 = await loadImageAsBase64(data.agency.logoUrl)
       if (logoBase64) {
-        // Logo QUADRATO centrato con dimensioni ottimali
-        const logoSize = 25 // Dimensione quadrata 25x25mm
+        const logoSize = 25
         const logoX = centerX - (logoSize / 2)
-        const logoY = 14 // Posizione verticale centrata nel box
-        doc.addImage(logoBase64, 'PNG', logoX, logoY, logoSize, logoSize)
+        doc.addImage(logoBase64, 'PNG', logoX, 14, logoSize, logoSize)
       } else {
-        // Fallback: nome centrato
-        doc.setFontSize(11)
+        doc.setFontSize(14)
         doc.setTextColor(...primaryColor)
         doc.setFont('helvetica', 'bold')
         doc.text(data.agency.nome, centerX, 25, { align: 'center' })
       }
-    } catch (error) {
-      console.error('Error adding logo to PDF:', error)
-      doc.setFontSize(11)
+    } catch {
+      doc.setFontSize(14)
       doc.setTextColor(...primaryColor)
       doc.setFont('helvetica', 'bold')
       doc.text(data.agency.nome, centerX, 25, { align: 'center' })
     }
   } else {
-    // Nessun logo: mostra nome centrato
-    doc.setFontSize(11)
+    doc.setFontSize(14)
     doc.setTextColor(...primaryColor)
     doc.setFont('helvetica', 'bold')
     doc.text(data.agency.nome, centerX, 25, { align: 'center' })
   }
 
-  // ===== COLONNA DESTRA: Dati Agenzia =====
+  // Colonna destra: Dati agenzia
   const rightX = 195
   let rightY = 14
-
   doc.setFontSize(7.5)
   doc.setTextColor(70, 70, 70)
   doc.setFont('helvetica', 'normal')
 
-  // Costruisci l'indirizzo completo in una riga se possibile
   const fullAddress = data.agency.indirizzo
     ? `${data.agency.indirizzo}, ${data.agency.citta}`
     : data.agency.citta
-
   doc.text(fullAddress, rightX, rightY, { align: 'right', maxWidth: 55 })
   rightY += 3.5
 
@@ -221,242 +334,279 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
 
   yPosition = 56
 
-  // ========== SEZIONE 1: DATI LEAD ==========
-  doc.setFontSize(14)
-  doc.setTextColor(...primaryColor)
-  doc.setFont('helvetica', 'bold')
-  doc.text('1. Dati Cliente', 20, yPosition)
+  // ==================== SEZIONE 1: DATI CLIENTE ====================
+  yPosition = drawSectionTitle(doc, 1, 'Dati Cliente', yPosition, primaryColor)
 
-  yPosition += 8
-
-  const leadData = [
+  const leadTableData = [
     ['Nome Completo', `${data.lead.nome} ${data.lead.cognome}`],
     ['Email', data.lead.email],
     ['Telefono', data.lead.telefono || 'Non fornito'],
     ['Data Richiesta', formatDate(data.lead.dataRichiesta)],
   ]
 
-  autoTable(doc, {
-    startY: yPosition,
-    head: [],
-    body: leadData,
-    theme: 'striped',
-    styles: {
-      fontSize: 10,
-      cellPadding: 5,
-      textColor: textColor,
-      lineColor: [220, 220, 220],
-      lineWidth: 0.1,
-    },
-    alternateRowStyles: {
-      fillColor: primaryColor,
-      textColor: [255, 255, 255], // Testo bianco su sfondo colorato
-    },
-    columnStyles: {
-      0: {
-        fontStyle: 'bold',
-        cellWidth: 50,
-      },
-      1: { cellWidth: 130 },
-    },
-    margin: { left: 20 },
-  })
+  yPosition = createStyledTable(doc, yPosition, leadTableData, primaryColor) + SECTION_SPACING
 
-  yPosition = (doc as any).lastAutoTable.finalY + 15
+  // ==================== SEZIONE 2: DETTAGLI IMMOBILE ====================
+  yPosition = checkPageBreak(doc, yPosition, 80)
+  yPosition = drawSectionTitle(doc, 2, 'Dettagli Immobile', yPosition, primaryColor)
 
-  // ========== SEZIONE 2: DATI IMMOBILE ==========
-  doc.setFontSize(14)
-  doc.setTextColor(...primaryColor)
-  doc.setFont('helvetica', 'bold')
-  doc.text('2. Dettagli Immobile', 20, yPosition)
-
-  yPosition += 8
-
-  const propertyData = [
+  const propertyTableData: string[][] = [
     ['Indirizzo', data.property.indirizzo],
-    ['Città', `${data.property.cap ? data.property.cap + ' ' : ''}${data.property.citta}`],
-    ['Tipologia', data.property.tipo],
-    ['Superficie', `${data.property.superficieMq} m²`],
-    ['Piano', data.property.piano !== null ? `${data.property.piano}° piano` : 'Non specificato'],
-    ['Ascensore', data.property.ascensore !== null ? (data.property.ascensore ? 'Sì' : 'No') : 'Non specificato'],
-    ['Stato', data.property.stato],
+    ['Citt\u00E0', `${data.property.cap ? data.property.cap + ' ' : ''}${data.property.citta}`],
   ]
 
-  autoTable(doc, {
-    startY: yPosition,
-    head: [],
-    body: propertyData,
-    theme: 'striped',
-    styles: {
-      fontSize: 10,
-      cellPadding: 5,
-      textColor: textColor,
-      lineColor: [220, 220, 220],
-      lineWidth: 0.1,
-    },
-    alternateRowStyles: {
-      fillColor: primaryColor,
-      textColor: [255, 255, 255], // Testo bianco su sfondo colorato
-    },
-    columnStyles: {
-      0: {
-        fontStyle: 'bold',
-        cellWidth: 50,
-      },
-      1: { cellWidth: 130 },
-    },
-    margin: { left: 20 },
-  })
-
-  yPosition = (doc as any).lastAutoTable.finalY + 15
-
-  // Check se serve nuova pagina
-  if (yPosition > 220) {
-    doc.addPage()
-    yPosition = 20
+  if (data.property.quartiere) {
+    propertyTableData.push(['Quartiere', data.property.quartiere])
   }
 
-  // ========== SEZIONE 3: VALUTAZIONE ==========
-  doc.setFontSize(14)
+  propertyTableData.push(['Tipologia', translateValue('tipo', data.property.tipo)])
+  propertyTableData.push(['Superficie', `${data.property.superficieMq} m\u00B2`])
+
+  // Locali e bagni
+  if (data.property.locali != null && data.property.bagni != null) {
+    propertyTableData.push(['Composizione', `${data.property.locali} locali, ${data.property.bagni} bagni`])
+  } else {
+    if (data.property.locali != null) propertyTableData.push(['Locali', String(data.property.locali)])
+    if (data.property.bagni != null) propertyTableData.push(['Bagni', String(data.property.bagni)])
+  }
+
+  // Piano + ascensore combinati
+  if (data.property.piano !== null) {
+    const pianoText = data.property.piano === 0 ? 'Piano terra' : `${data.property.piano}\u00B0 piano`
+    const ascText = data.property.ascensore != null
+      ? (data.property.ascensore ? ' (con ascensore)' : ' (senza ascensore)')
+      : ''
+    propertyTableData.push(['Piano', pianoText + ascText])
+  }
+
+  propertyTableData.push(['Stato', translateValue('stato', data.property.stato)])
+
+  if (data.property.annoCostruzione) {
+    propertyTableData.push(['Anno Costruzione', String(data.property.annoCostruzione)])
+  }
+
+  if (data.property.classeEnergetica && data.property.classeEnergetica !== 'NOT_AVAILABLE' && data.property.classeEnergetica !== 'UNKNOWN') {
+    propertyTableData.push(['Classe Energetica', `Classe ${data.property.classeEnergetica}`])
+  }
+
+  if (data.property.riscaldamento) {
+    let riscText = translateValue('riscaldamento', data.property.riscaldamento)
+    if (data.property.ariaCondizionata) {
+      riscText += ' + Aria condizionata'
+    }
+    propertyTableData.push(['Riscaldamento', riscText])
+  }
+
+  if (data.property.spaziEsterni && data.property.spaziEsterni !== 'NONE') {
+    propertyTableData.push(['Spazi Esterni', translateValue('spaziEsterni', data.property.spaziEsterni)])
+  }
+
+  if (data.property.postoAuto != null) {
+    propertyTableData.push(['Posto Auto', data.property.postoAuto ? 'S\u00EC' : 'No'])
+  }
+
+  if (data.property.statoOccupazione) {
+    propertyTableData.push(['Occupazione', translateValue('statoOccupazione', data.property.statoOccupazione)])
+  }
+
+  yPosition = createStyledTable(doc, yPosition, propertyTableData, primaryColor) + SECTION_SPACING
+
+  // ==================== SEZIONE 3: VALUTAZIONE ====================
+  yPosition = checkPageBreak(doc, yPosition, 100)
+  yPosition = drawSectionTitle(doc, 3, 'Valutazione Immobiliare', yPosition, primaryColor)
+
+  // --- Box prezzo stimato ---
+  doc.setFillColor(...accentColor)
+  doc.roundedRect(MARGIN_LEFT, yPosition, CONTENT_WIDTH, 38, 4, 4, 'F')
+
+  // Bordo sinistro accent
+  doc.setFillColor(...primaryColor)
+  doc.rect(MARGIN_LEFT, yPosition + 4, 4, 30, 'F')
+
+  // Label
+  doc.setFontSize(10)
+  doc.setTextColor(...DARK_GRAY)
+  doc.setFont('helvetica', 'bold')
+  doc.text('PREZZO STIMATO', MARGIN_LEFT + 12, yPosition + 10)
+
+  // Prezzo grande
+  doc.setFontSize(26)
   doc.setTextColor(...primaryColor)
   doc.setFont('helvetica', 'bold')
-  doc.text('3. Valutazione Immobiliare', 20, yPosition)
+  doc.text(formatCurrency(data.valuation.prezzoStimato), MARGIN_LEFT + 12, yPosition + 24)
 
-  yPosition += 8
+  // Prezzo al m2
+  const prezzoAlMq = data.property.superficieMq > 0
+    ? Math.round(data.valuation.prezzoStimato / data.property.superficieMq)
+    : 0
+  doc.setFontSize(10)
+  doc.setTextColor(...DARK_GRAY)
+  doc.setFont('helvetica', 'normal')
+  doc.text(
+    `${formatCurrency(prezzoAlMq)}/m\u00B2`,
+    MARGIN_RIGHT - 5, yPosition + 24,
+    { align: 'right' }
+  )
 
-  // Box prezzo stimato in evidenza - Design ottimizzato con migliore contrasto
-  // Sfondo principale
-  doc.setFillColor(...accentColor)
-  doc.roundedRect(20, yPosition, 170, 32, 5, 5, 'F')
+  // Range testo
+  doc.setFontSize(9)
+  doc.setTextColor(120, 120, 120)
+  doc.text(
+    `Range: ${formatCurrency(data.valuation.prezzoMinimo)} \u2013 ${formatCurrency(data.valuation.prezzoMassimo)}`,
+    MARGIN_LEFT + 12, yPosition + 33
+  )
 
-  // Bordo colorato più spesso
-  doc.setDrawColor(...primaryColor)
-  doc.setLineWidth(2)
-  doc.roundedRect(20, yPosition, 170, 32, 5, 5, 'S')
+  yPosition += 44
 
-  // Icona o badge "VALUTAZIONE" - più grande
+  // --- Barra visuale range prezzo ---
+  const barY = yPosition
+  const barHeight = 8
+  const barLeft = MARGIN_LEFT + 15
+  const barWidth = CONTENT_WIDTH - 30
+
+  // Label "Stima" sopra l'indicatore (posizionata dopo il calcolo)
+  const range = data.valuation.prezzoMassimo - data.valuation.prezzoMinimo
+  const pricePosition = range > 0
+    ? (data.valuation.prezzoStimato - data.valuation.prezzoMinimo) / range
+    : 0.5
+  const indicatorX = barLeft + (barWidth * pricePosition)
+
+  doc.setFontSize(7)
+  doc.setTextColor(...primaryColor)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Stima', indicatorX, barY - 2, { align: 'center' })
+
+  // Sfondo barra
+  doc.setFillColor(
+    Math.round(primaryColor[0] * 0.2 + 255 * 0.8),
+    Math.round(primaryColor[1] * 0.2 + 255 * 0.8),
+    Math.round(primaryColor[2] * 0.2 + 255 * 0.8)
+  )
+  doc.roundedRect(barLeft, barY, barWidth, barHeight, 3, 3, 'F')
+
+  // Barra riempita fino all'indicatore (gradiente simulato)
+  doc.setFillColor(
+    Math.round(primaryColor[0] * 0.4 + 255 * 0.6),
+    Math.round(primaryColor[1] * 0.4 + 255 * 0.6),
+    Math.round(primaryColor[2] * 0.4 + 255 * 0.6)
+  )
+  const fillWidth = barWidth * pricePosition
+  if (fillWidth > 3) {
+    doc.roundedRect(barLeft, barY, fillWidth, barHeight, 3, 3, 'F')
+  }
+
+  // Indicatore circolare
   doc.setFillColor(...primaryColor)
-  doc.circle(32, yPosition + 16, 10, 'F')
-  doc.setFontSize(18)
+  doc.circle(indicatorX, barY + barHeight / 2, 5, 'F')
+  doc.setFontSize(7)
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
-  doc.text('€', 32, yPosition + 20, { align: 'center' })
+  doc.text('\u20AC', indicatorX, barY + barHeight / 2 + 2, { align: 'center' })
 
-  // Label con migliore contrasto
-  doc.setFontSize(11)
-  doc.setTextColor(80, 80, 80)
-  doc.setFont('helvetica', 'bold')
-  doc.text('PREZZO STIMATO', 48, yPosition + 12)
+  // Etichette min/max
+  doc.setFontSize(7.5)
+  doc.setTextColor(120, 120, 120)
+  doc.setFont('helvetica', 'normal')
+  doc.text(formatCurrency(data.valuation.prezzoMinimo), barLeft, barY + barHeight + 5)
+  doc.text(
+    formatCurrency(data.valuation.prezzoMassimo),
+    barLeft + barWidth, barY + barHeight + 5,
+    { align: 'right' }
+  )
 
-  // Prezzo grande e ben visibile
-  doc.setFontSize(24)
-  doc.setTextColor(...primaryColor)
-  doc.setFont('helvetica', 'bold')
-  doc.text(formatCurrency(data.valuation.prezzoStimato), 48, yPosition + 25)
+  yPosition = barY + barHeight + 12
 
-  yPosition += 40
-
-  const valuationData = [
-    ['Range di Valore', `${formatCurrency(data.valuation.prezzoMinimo)} - ${formatCurrency(data.valuation.prezzoMassimo)}`],
-    ['Valore OMI Base', `${formatCurrency(data.valuation.valoreOmiBase)}/m²`],
-    ['Coefficiente Piano', `${(data.valuation.coefficientePiano * 100).toFixed(0)}%`],
-    ['Coefficiente Stato', `${(data.valuation.coefficienteStato * 100).toFixed(0)}%`],
+  // --- Tabella dati valutazione ---
+  const valuationTableData = [
+    ['Valore OMI Base', `${formatCurrency(data.valuation.valoreOmiBase)}/m\u00B2`],
+    ['Prezzo al m\u00B2', `${formatCurrency(prezzoAlMq)}/m\u00B2`],
+    ['Coeff. Piano', `${(data.valuation.coefficientePiano * 100).toFixed(0)}%`],
+    ['Coeff. Qualit\u00E0', `${(data.valuation.coefficienteStato * 100).toFixed(0)}%`],
     ['Data Calcolo', formatDate(data.valuation.dataCalcolo)],
   ]
 
-  autoTable(doc, {
-    startY: yPosition,
-    head: [],
-    body: valuationData,
-    theme: 'striped',
-    styles: {
-      fontSize: 10,
-      cellPadding: 5,
-      textColor: textColor,
-      lineColor: [220, 220, 220],
-      lineWidth: 0.1,
-    },
-    alternateRowStyles: {
-      fillColor: primaryColor,
-      textColor: [255, 255, 255], // Testo bianco su sfondo colorato
-    },
-    columnStyles: {
-      0: {
-        fontStyle: 'bold',
-        cellWidth: 50,
-      },
-      1: { cellWidth: 130 },
-    },
-    margin: { left: 20 },
-  })
+  yPosition = createStyledTable(doc, yPosition, valuationTableData, primaryColor)
+  yPosition += 8
 
-  yPosition = (doc as any).lastAutoTable.finalY + 10
+  // --- Box spiegazione ---
+  yPosition = checkPageBreak(doc, yPosition, 40)
 
-  // Spiegazione valutazione
-  doc.setFontSize(10)
-  doc.setTextColor(...textColor)
+  const explanationLines = doc.splitTextToSize(data.valuation.spiegazione, CONTENT_WIDTH - 14)
+  const explanationHeight = explanationLines.length * 4.2 + 14
+
+  // Sfondo
+  doc.setFillColor(252, 252, 253)
+  doc.roundedRect(MARGIN_LEFT, yPosition, CONTENT_WIDTH, explanationHeight, 2, 2, 'F')
+
+  // Bordo sinistro
+  doc.setFillColor(...primaryColor)
+  doc.rect(MARGIN_LEFT, yPosition + 2, 2.5, explanationHeight - 4, 'F')
+
+  // Titoletto
+  doc.setFontSize(9)
+  doc.setTextColor(...primaryColor)
   doc.setFont('helvetica', 'bold')
-  doc.text('Spiegazione Dettagliata:', 20, yPosition)
+  doc.text('Nota metodologica', MARGIN_LEFT + 7, yPosition + 7)
 
-  yPosition += 6
-
+  // Testo
+  doc.setFontSize(8.5)
+  doc.setTextColor(...DARK_GRAY)
   doc.setFont('helvetica', 'normal')
-  const splitExplanation = doc.splitTextToSize(data.valuation.spiegazione, 170)
-  doc.text(splitExplanation, 20, yPosition)
+  doc.text(explanationLines, MARGIN_LEFT + 7, yPosition + 13)
 
-  yPosition += splitExplanation.length * 5 + 15
+  yPosition += explanationHeight + SECTION_SPACING
 
-  // Check se serve nuova pagina per conversazione
-  if (yPosition > 220) {
-    doc.addPage()
-    yPosition = 20
-  }
-
-  // ========== SEZIONE 4: NOTE CONVERSAZIONE ==========
+  // ==================== SEZIONE 4: RIEPILOGO CONVERSAZIONE ====================
   if (data.conversation && data.conversation.messaggi.length > 0) {
-    doc.setFontSize(14)
-    doc.setTextColor(...primaryColor)
-    doc.setFont('helvetica', 'bold')
-    doc.text('4. Riepilogo Conversazione', 20, yPosition)
+    yPosition = checkPageBreak(doc, yPosition, 40)
+    yPosition = drawSectionTitle(doc, 4, 'Riepilogo Interazione', yPosition, primaryColor)
 
-    yPosition += 8
+    const messaggi = data.conversation.messaggi as any[]
+    const userMessages = messaggi.filter((m: any) => m.role === 'user')
+    const botMessages = messaggi.filter((m: any) => m.role === 'bot' || m.role === 'assistant')
 
-    doc.setFontSize(10)
-    doc.setTextColor(...textColor)
-    doc.setFont('helvetica', 'normal')
+    const conversationTableData = [
+      ['Messaggi Totali', String(messaggi.length)],
+      ['Risposte Cliente', String(userMessages.length)],
+      ['Domande Sistema', String(botMessages.length)],
+    ]
 
-    const summary = `Il cliente ha interagito con il sistema di valutazione attraverso una conversazione di ${data.conversation.messaggi.length} messaggi. `
-    const userMessages = data.conversation.messaggi.filter((m: any) => m.role === 'user').length
-    const summaryText = summary + `Ha fornito ${userMessages} risposte alle domande del sistema per completare la valutazione.`
-
-    const splitSummary = doc.splitTextToSize(summaryText, 170)
-    doc.text(splitSummary, 20, yPosition)
-
-    yPosition += splitSummary.length * 5 + 10
+    yPosition = createStyledTable(doc, yPosition, conversationTableData, primaryColor) + SECTION_SPACING
   }
 
-  // ========== FOOTER ==========
+  // ==================== FOOTER ====================
   const pageCount = doc.getNumberOfPages()
 
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i)
 
-    // Linea footer
-    doc.setDrawColor(200, 200, 200)
-    doc.setLineWidth(0.3)
-    doc.line(20, 280, 190, 280)
+    // Linea divisoria
+    doc.setDrawColor(...MEDIUM_GRAY)
+    doc.setLineWidth(0.5)
+    doc.line(MARGIN_LEFT, 275, MARGIN_RIGHT, 275)
 
-    // Testo footer
-    doc.setFontSize(8)
-    doc.setTextColor(100, 100, 100)
+    // Riga 1: Agenzia + Powered by + Pagina
+    doc.setFontSize(7)
+    doc.setTextColor(...primaryColor)
+    doc.setFont('helvetica', 'bold')
+    doc.text(data.agency.nome, MARGIN_LEFT, 280)
+
+    doc.setTextColor(150, 150, 150)
+    doc.setFont('helvetica', 'normal')
+    doc.text('Powered by Domus Report', 105, 280, { align: 'center' })
+    doc.text(`Pagina ${i} di ${pageCount}`, MARGIN_RIGHT, 280, { align: 'right' })
+
+    // Riga 2: Disclaimer legale
+    doc.setFontSize(6.5)
+    doc.setTextColor(130, 130, 130)
     doc.setFont('helvetica', 'italic')
 
-    const disclaimerText = 'Questo documento è stato generato automaticamente da Domus Report. La valutazione è indicativa e basata su dati OMI.'
-    doc.text(disclaimerText, 20, 285)
+    const disclaimer = 'Valutazione indicativa basata su dati OMI (Osservatorio del Mercato Immobiliare). ' +
+      'Non costituisce una perizia ufficiale n\u00E9 un documento di valore legale. ' +
+      'Per una valutazione formale, rivolgersi a un perito abilitato.'
 
-    // Numero pagina
-    doc.setFont('helvetica', 'normal')
-    doc.text(`Pagina ${i} di ${pageCount}`, 180, 285, { align: 'right' })
+    const disclaimerLines = doc.splitTextToSize(disclaimer, CONTENT_WIDTH)
+    doc.text(disclaimerLines, MARGIN_LEFT, 284)
   }
 
   return doc
