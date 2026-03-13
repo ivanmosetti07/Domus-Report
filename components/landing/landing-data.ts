@@ -397,13 +397,7 @@ export const STRUCTURED_DATA = {
         availability: "https://schema.org/InStock",
         url: "https://domusreport.com/register",
       },
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.9",
-        reviewCount: "127",
-        bestRating: "5",
-      },
-      screenshot: "https://domusreport.com/screenshot.png",
+      screenshot: "https://domusreport.com/og-image.png",
       featureList: [
         "Chatbot AI conversazionale",
         "Valutazioni OMI real-time",
@@ -434,11 +428,6 @@ export const STRUCTURED_DATA = {
       "@type": "WebSite",
       name: "DomusReport",
       url: "https://domusreport.com",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: "https://domusreport.com/search?q={search_term_string}",
-        "query-input": "required name=search_term_string",
-      },
     },
     {
       "@type": "FAQPage",

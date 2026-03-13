@@ -3,7 +3,10 @@ import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
   title: "Privacy Policy - DomusReport",
-  description: "Informativa sulla privacy di DomusReport",
+  description: "Informativa sulla privacy di DomusReport. Come trattiamo i tuoi dati personali in conformita al GDPR.",
+  alternates: {
+    canonical: "https://domusreport.com/privacy",
+  },
 }
 
 export default function PrivacyPage() {

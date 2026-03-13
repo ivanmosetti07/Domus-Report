@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "DomusReport - Chatbot AI per Valutazioni Immobiliari | Lead Generation Agenzie",
+    default: "DomusReport - Chatbot AI Valutazioni Immobiliari per Agenzie",
     template: "%s | DomusReport",
   },
   description: "Il primo chatbot AI conversazionale per agenti immobiliari. Valutazioni OMI in tempo reale, qualificazione automatica lead, CRM integrato. Conversazione intelligente che sostituisce i form. 1.200+ lead generati, precisione 98%. Prova gratis 7 giorni.",
@@ -89,9 +89,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: baseUrl,
-    languages: {
-      "it-IT": baseUrl,
-    },
   },
   icons: {
     icon: [
@@ -118,6 +115,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="it">
+      <head>
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+      </head>
       <body className={inter.className}>
         <GoogleAnalytics />
         {children}

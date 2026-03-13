@@ -134,6 +134,9 @@ export default function SubscriptionPage() {
   const [extraQuantity, setExtraQuantity] = useState(10)
   const [buyingExtra, setBuyingExtra] = useState(false)
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly')
+  const [changingInterval, setChangingInterval] = useState(false)
+  const [showIntervalChange, setShowIntervalChange] = useState(false)
+  const [newInterval, setNewInterval] = useState<BillingInterval>('monthly')
   const { toast } = useToast()
   const hasProcessedParams = useRef(false)
 
@@ -403,6 +406,48 @@ export default function SubscriptionPage() {
     }
   }
 
+  const handleChangeInterval = async () => {
+    if (!subscription || subscription.planType === 'free') return
+
+    setChangingInterval(true)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch('/api/subscription/change-interval', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ billingInterval: newInterval })
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        toast({
+          title: 'Intervallo aggiornato!',
+          description: data.message
+        })
+        setShowIntervalChange(false)
+        fetchSubscription()
+      } else {
+        toast({
+          title: 'Errore',
+          description: data.error || 'Impossibile cambiare l\'intervallo',
+          variant: 'destructive'
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Errore',
+        description: 'Errore di connessione',
+        variant: 'destructive'
+      })
+    } finally {
+      setChangingInterval(false)
+    }
+  }
+
   const validatePromoCode = async () => {
     if (!promoCode.trim()) return
 
@@ -529,12 +574,23 @@ export default function SubscriptionPage() {
             </p>
           )}
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {subscription?.stripeCustomerId && (
               <Button variant="outline" onClick={handleManageBilling}>
                 <CreditCard className="h-4 w-4 mr-2" />
                 Gestisci fatturazione
                 <ExternalLink className="h-4 w-4 ml-2" />
+              </Button>
+            )}
+            {currentPlan !== 'free' && (subscription?.status === 'active' || subscription?.status === 'trial') && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setNewInterval(subscription?.billingInterval || 'monthly')
+                  setShowIntervalChange(!showIntervalChange)
+                }}
+              >
+                Cambia intervallo
               </Button>
             )}
             {currentPlan !== 'free' && subscription?.status === 'active' && (
@@ -548,6 +604,43 @@ export default function SubscriptionPage() {
               </Button>
             )}
           </div>
+
+          {/* Cambio intervallo fatturazione */}
+          {showIntervalChange && currentPlan !== 'free' && (
+            <div className="border border-border rounded-lg p-4 space-y-4 mt-2">
+              <p className="text-sm font-medium text-foreground">Scegli il nuovo intervallo di fatturazione:</p>
+              <BillingIntervalToggle
+                value={newInterval}
+                onChange={setNewInterval}
+              />
+              {newInterval !== (subscription?.billingInterval || 'monthly') && (
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 text-sm text-foreground">
+                  <p>
+                    Nuovo prezzo: <strong>{formatPlanPrice(currentPlan, newInterval)}</strong>
+                  </p>
+                  <p className="text-foreground-muted mt-1">
+                    Il cambio verrà applicato con prorazione sul periodo corrente.
+                  </p>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowIntervalChange(false)}
+                  disabled={changingInterval}
+                >
+                  Annulla
+                </Button>
+                <Button
+                  onClick={handleChangeInterval}
+                  disabled={changingInterval || newInterval === (subscription?.billingInterval || 'monthly')}
+                >
+                  {changingInterval ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  Conferma cambio
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

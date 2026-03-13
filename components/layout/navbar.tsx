@@ -45,14 +45,16 @@ export function Navbar() {
     >
       <div className="site-container flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3">
-          <Image
-            src="/logo.png"
-            alt="DomusReport"
-            width={160}
-            height={48}
-            className="h-10 w-auto"
-            priority
-          />
+          <div className="bg-white rounded-lg px-2.5 py-1.5">
+            <Image
+              src="/logo.png"
+              alt="DomusReport"
+              width={180}
+              height={54}
+              className="h-8 w-auto"
+              priority
+            />
+          </div>
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">

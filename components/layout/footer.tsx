@@ -8,13 +8,15 @@ export function Footer() {
       <div className="site-container grid gap-8 py-12 md:grid-cols-5">
         <div className="md:col-span-2 space-y-4">
           <Link href="/" className="inline-block">
-            <Image
-              src="/logo.png"
-              alt="DomusReport"
-              width={160}
-              height={48}
-              className="h-10 w-auto"
-            />
+            <div className="bg-white rounded-lg px-2.5 py-1.5 inline-block">
+              <Image
+                src="/logo.png"
+                alt="DomusReport"
+                width={180}
+                height={54}
+                className="h-8 w-auto"
+              />
+            </div>
           </Link>
           <p className="text-sm text-foreground-muted max-w-md">
             La piattaforma intelligente per agenzie immobiliari che genera lead qualificati con valutazioni automatiche basate su dati OMI ufficiali.

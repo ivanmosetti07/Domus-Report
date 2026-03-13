@@ -8,6 +8,9 @@ import { Building2, Users, Target, ArrowRight, Database, Zap, Shield } from "luc
 export const metadata = {
   title: "Chi Siamo - DomusReport",
   description: "Scopri la storia e la missione di DomusReport, la piattaforma AI per agenti immobiliari.",
+  alternates: {
+    canonical: "https://domusreport.com/about",
+  },
 }
 
 export default function AboutPage() {
@@ -129,7 +132,7 @@ export default function AboutPage() {
             </div>
             <div className="space-y-4 text-lg text-foreground-muted">
               <p>
-                DomusReport è sviluppato da Mainstream Agency, agenzia digitale con sede a Milano specializzata in progetti SaaS per il real estate.
+                DomusReport è sviluppato da Mainstream Agency, agenzia digitale con sede a Roma specializzata in progetti SaaS per il real estate.
               </p>
               <p>
                 Il nostro team è composto da sviluppatori, designer e professionisti del settore immobiliare che lavorano ogni giorno per migliorare la piattaforma e offrire nuove funzionalità.

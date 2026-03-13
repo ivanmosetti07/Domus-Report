@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 export const metadata: Metadata = {
   title: "DomusReport Widget",
   description: "Widget chatbot per valutazioni immobiliari",
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {

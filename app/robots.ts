@@ -24,6 +24,8 @@ export default function robots(): MetadataRoute.Robots {
           '/private/',
           '/widget/',
           '/onboarding/',
+          '/affiliate/dashboard/',
+          '/affiliate/login',
         ],
       },
       {

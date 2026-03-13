@@ -3,7 +3,10 @@ import { Footer } from "@/components/layout/footer"
 
 export const metadata = {
   title: "Termini e Condizioni - DomusReport",
-  description: "Termini e condizioni d'uso di DomusReport",
+  description: "Termini e condizioni d'uso della piattaforma DomusReport per agenzie immobiliari.",
+  alternates: {
+    canonical: "https://domusreport.com/terms",
+  },
 }
 
 export default function TermsPage() {
