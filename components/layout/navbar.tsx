@@ -30,8 +30,8 @@ export function Navbar() {
   const navLinks = [
     { href: "#features", label: "Funzionalità" },
     { href: "#pricing", label: "Pricing" },
+    { href: "/blog", label: "Blog" },
     { href: "/about", label: "Chi Siamo" },
-    { href: "/affiliate", label: "Affiliati" },
     { href: "/docs/wordpress", label: "Docs" },
   ]
 

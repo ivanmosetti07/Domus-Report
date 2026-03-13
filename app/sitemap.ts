@@ -18,6 +18,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    // Pagine funzionalità - alta priorità SEO
+    {
+      url: `${baseUrl}/funzionalita/valutazione-immobiliare-online`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/funzionalita/lead-generation-immobiliare`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/funzionalita/crm-immobiliare`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/funzionalita/chatbot-immobiliare`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
     // Chi siamo
     {
       url: `${baseUrl}/about`,
@@ -32,6 +57,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+    // Blog
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/blog/come-generare-lead-immobiliari`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/valutazione-immobiliare-guida-agenzie`,
+      lastModified: '2026-03-10',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/intelligenza-artificiale-immobiliare`,
+      lastModified: '2026-03-07',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
     // Registrazione affiliati
     {
       url: `${baseUrl}/affiliate/register`,
@@ -39,7 +89,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
-    // Documentazione - importante per SEO long-tail
+    // Documentazione
     {
       url: `${baseUrl}/docs/wordpress`,
       lastModified: '2026-03-01',

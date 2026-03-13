@@ -53,20 +53,32 @@ export function Footer() {
           <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Prodotto</h3>
           <ul className="space-y-2 text-sm text-foreground-muted">
             <li>
-              <Link href="/#features" className="transition-colors hover:text-foreground">Funzionalità</Link>
+              <Link href="/funzionalita/chatbot-immobiliare" className="transition-colors hover:text-foreground">Chatbot AI</Link>
+            </li>
+            <li>
+              <Link href="/funzionalita/valutazione-immobiliare-online" className="transition-colors hover:text-foreground">Valutazione OMI</Link>
+            </li>
+            <li>
+              <Link href="/funzionalita/lead-generation-immobiliare" className="transition-colors hover:text-foreground">Lead Generation</Link>
+            </li>
+            <li>
+              <Link href="/funzionalita/crm-immobiliare" className="transition-colors hover:text-foreground">CRM Immobiliare</Link>
             </li>
             <li>
               <Link href="/#pricing" className="transition-colors hover:text-foreground">Pricing</Link>
-            </li>
-            <li>
-              <Link href="/docs/wordpress" className="transition-colors hover:text-foreground">Documentazione</Link>
             </li>
           </ul>
         </div>
 
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Azienda</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Risorse</h3>
           <ul className="space-y-2 text-sm text-foreground-muted">
+            <li>
+              <Link href="/blog" className="transition-colors hover:text-foreground">Blog</Link>
+            </li>
+            <li>
+              <Link href="/docs/wordpress" className="transition-colors hover:text-foreground">Documentazione</Link>
+            </li>
             <li>
               <Link href="/about" className="transition-colors hover:text-foreground">Chi siamo</Link>
             </li>
