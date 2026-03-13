@@ -67,14 +67,38 @@ export async function POST(request: NextRequest) {
           body.latitude = geocodeData.latitude
           body.longitude = geocodeData.longitude
 
-          // NON sovrascrivere città e CAP forniti dall'utente!
-          // Il geocoding potrebbe trovare un indirizzo sbagliato in un'altra città.
-          // Solo aggiorna se l'utente NON ha fornito questi dati.
-          if (!body.city && geocodeData.city) {
-            body.city = geocodeData.city
-          }
+          // Aggiorna CAP dal geocoding se non era ancora disponibile
           if (!body.postalCode && geocodeData.postalCode) {
             body.postalCode = geocodeData.postalCode
+          }
+
+          // Dopo il geocoding rivaluta la città con tutti i dati aggiornati.
+          // Il CAP è più specifico della città digitata dall'utente:
+          // es. "Roma" con CAP 00071 (Pomezia) → deve usare OMI di Pomezia.
+          // Questo previene valutazioni gonfiate/errate per comuni della provincia.
+          const cityAfterGeocode = inferCity({
+            city: body.city,
+            postalCode: body.postalCode,
+            address: body.address,
+            neighborhood: body.neighborhood,
+          })
+          if (cityAfterGeocode && cityAfterGeocode !== body.city) {
+            console.log('[Valuation API] Città corretta dopo geocoding via CAP:', {
+              prima: body.city,
+              dopo: cityAfterGeocode,
+              cap: body.postalCode,
+            })
+            body.city = cityAfterGeocode
+          }
+
+          // Fallback finale: se inferCity non ha corretto (CAP non nel mapping),
+          // usa la città restituta dal geocoding (basata su coordinate = precisa)
+          if (geocodeData.city && geocodeData.city.toLowerCase() !== body.city.toLowerCase()) {
+            console.log('[Valuation API] Città corretta via coordinate geocoding:', {
+              prima: body.city,
+              dopo: geocodeData.city,
+            })
+            body.city = geocodeData.city
           }
         }
       } catch (error) {
