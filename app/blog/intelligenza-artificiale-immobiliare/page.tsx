@@ -3,6 +3,8 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, ArrowLeft } from "lucide-react"
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
+import { ArticoliCorrelati } from "@/components/blog/articoli-correlati"
 
 export const metadata = {
   title: "Intelligenza Artificiale nel Settore Immobiliare: Cosa Cambia per le Agenzie",
@@ -31,7 +33,12 @@ export default function ArticoloAI() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="h-16" />
+      <div className="h-20" />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "https://domusreport.com" },
+        { name: "Blog", url: "https://domusreport.com/blog" },
+        { name: "Intelligenza Artificiale nel Settore Immobiliare", url: "https://domusreport.com/blog/intelligenza-artificiale-immobiliare" },
+      ]} />
 
       <main className="w-full">
         <article className="site-container py-12 sm:py-16 max-w-3xl mx-auto">
@@ -78,7 +85,8 @@ export default function ArticoloAI() {
               Piattaforme come DomusReport combinano i dati OMI con coefficienti qualitativi (piano, classe energetica,
               anno di costruzione) per offrire{" "}
               <Link href="/funzionalita/valutazione-immobiliare-online" className="text-primary hover:underline">valutazioni
-              automatiche</Link> pi&ugrave; accurate della semplice media di zona.
+              automatiche</Link> pi&ugrave; accurate della semplice media di zona. Per un approfondimento su come l&apos;intelligenza artificiale migliora concretamente le stime, leggi il nostro articolo su{" "}
+              <Link href="/blog/intelligenza-artificiale-stime-immobiliari" className="text-primary hover:underline">AI e stime immobiliari</Link>.
             </p>
 
             <h2 className="text-2xl font-bold text-foreground pt-4">Chatbot conversazionali vs form tradizionali</h2>
@@ -122,6 +130,8 @@ export default function ArticoloAI() {
               acquisizione prima di scalare.
             </p>
           </div>
+
+          <ArticoliCorrelati currentSlug="intelligenza-artificiale-immobiliare" />
 
           {/* CTA */}
           <div className="mt-12 rounded-2xl bg-surface border border-border p-8 text-center space-y-4">

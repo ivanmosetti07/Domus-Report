@@ -464,6 +464,30 @@ export const STRUCTURED_DATA = {
             text: "Sì, utilizziamo il database ufficiale OMI (Osservatorio Mercato Immobiliare) con oltre 133.000 valori per zona e CAP, garantendo stime precise e aggiornate.",
           },
         },
+        {
+          "@type": "Question",
+          name: "Posso provare gratis?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Assolutamente sì. Tutti i piani includono 7 giorni di prova gratuita senza carta di credito. Il piano Free è gratuito per sempre con 5 valutazioni al mese.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Posso personalizzare l'aspetto del chatbot?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Sì, il chatbot è completamente personalizzabile: 12 temi predefiniti, colori custom, logo della tua agenzia, posizione e animazione. Con il piano Premium puoi anche usare CSS personalizzato per un white-label completo.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Come funziona il programma affiliati?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Guadagni il 10% ricorrente su ogni pagamento mensile delle agenzie che referisci. Il tracking è automatico con cookie da 30 giorni e i pagamenti avvengono tramite Stripe Connect. Nessun limite al numero di referral.",
+          },
+        },
       ],
     },
     {

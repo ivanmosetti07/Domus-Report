@@ -3,6 +3,8 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, ArrowLeft } from "lucide-react"
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
+import { ArticoliCorrelati } from "@/components/blog/articoli-correlati"
 
 export const metadata = {
   title: "Come Generare Lead Immobiliari nel 2026: Guida Completa",
@@ -29,7 +31,12 @@ export default function ArticoloLeadGeneration() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="h-16" />
+      <div className="h-20" />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "https://domusreport.com" },
+        { name: "Blog", url: "https://domusreport.com/blog" },
+        { name: "Come Generare Lead Immobiliari nel 2026", url: "https://domusreport.com/blog/come-generare-lead-immobiliari" },
+      ]} />
 
       <main className="w-full">
         <article className="site-container py-12 sm:py-16 max-w-3xl mx-auto">
@@ -47,7 +54,9 @@ export default function ArticoloLeadGeneration() {
           <div className="prose-custom space-y-6 text-lg text-foreground-muted">
             <p>
               La <strong className="text-foreground">lead generation per agenzie immobiliari</strong> &egrave; diventata
-              una delle sfide principali del settore. Con la crescente digitalizzazione, i potenziali venditori e acquirenti
+              una delle sfide principali del settore. In questa{" "}
+              <Link href="/blog/guida-lead-generation-immobiliare" className="text-primary hover:underline">guida completa alla lead generation immobiliare</Link>{" "}
+              approfondiamo tutti gli aspetti strategici; qui ci concentriamo sulle tecniche pratiche. Con la crescente digitalizzazione, i potenziali venditori e acquirenti
               cercano online prima di contattare un&apos;agenzia. Chi non &egrave; presente nel momento giusto, perde l&apos;opportunit&agrave;.
             </p>
 
@@ -116,6 +125,8 @@ export default function ArticoloLeadGeneration() {
               competitivo significativo. La chiave &egrave; offrire valore prima di chiedere dati.
             </p>
           </div>
+
+          <ArticoliCorrelati currentSlug="come-generare-lead-immobiliari" />
 
           {/* CTA */}
           <div className="mt-12 rounded-2xl bg-surface border border-border p-8 text-center space-y-4">

@@ -177,6 +177,7 @@
       if (data.type === 'DOMUS_WIDGET_CLOSE') {
         iframe.style.display = 'none';
         btn.style.display = '';
+        if (poweredBy) poweredBy.style.display = '';
 
         var ev = new CustomEvent('domusreport:close', { detail: { widgetId: widgetId } });
         window.dispatchEvent(ev);
@@ -191,11 +192,44 @@
       }
     });
 
+    // "Powered by" attribution link
+    var poweredBy = null;
+    if (!config || !config.hideAttribution) {
+      var position = (config && config.bubblePosition) || 'bottom-right';
+      var poweredPosStyle = 'right:24px;';
+      if (position === 'bottom-left') poweredPosStyle = 'left:24px;';
+      else if (position === 'bottom-center') poweredPosStyle = 'left:50%;transform:translateX(-50%);';
+
+      poweredBy = document.createElement('a');
+      poweredBy.href = 'https://domusreport.com?ref=widget';
+      poweredBy.target = '_blank';
+      poweredBy.rel = 'nofollow sponsored';
+      poweredBy.textContent = 'Powered by DomusReport';
+      poweredBy.style.cssText = [
+        'position:fixed',
+        'bottom:6px',
+        poweredPosStyle,
+        'font-size:10px',
+        'color:#999',
+        'text-decoration:none',
+        'z-index:2147483645',
+        'font-family:system-ui,sans-serif',
+      ].join(';');
+    }
+
+    // Gestione visibilita "Powered by" con bubble
+    var origBtnOnclick = btn.onclick;
+    btn.onclick = function () {
+      if (poweredBy) poweredBy.style.display = 'none';
+      origBtnOnclick();
+    };
+
     // Inietta nel DOM
     function inject() {
       if (document.body) {
         document.body.appendChild(btn);
         document.body.appendChild(iframe);
+        if (poweredBy) document.body.appendChild(poweredBy);
         console.log('[DomusReport] Widget caricato.');
       } else {
         setTimeout(inject, 50);

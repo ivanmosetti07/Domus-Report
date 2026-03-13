@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
           '/docs/',
           '/funzionalita/',
           '/blog/',
+          '/soluzioni/',
           '/affiliate',
           '/privacy',
           '/terms',

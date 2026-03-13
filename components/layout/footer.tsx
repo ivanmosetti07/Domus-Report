@@ -5,7 +5,7 @@ import { Linkedin, Twitter, Instagram } from "lucide-react"
 export function Footer() {
   return (
     <footer className="border-t border-border bg-surface text-foreground">
-      <div className="site-container grid gap-8 py-12 md:grid-cols-5">
+      <div className="site-container grid gap-8 py-12 md:grid-cols-6">
         <div className="md:col-span-2 space-y-4">
           <Link href="/" className="inline-block">
             <div className="bg-white rounded-lg px-2.5 py-1.5 inline-block">
@@ -71,6 +71,16 @@ export function Footer() {
         </div>
 
         <div className="space-y-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Soluzioni</h3>
+          <ul className="space-y-2 text-sm text-foreground-muted">
+            <li><Link href="/soluzioni/widget-valutazione-immobili-sito-web" className="hover:text-primary transition-colors">Widget Valutazione</Link></li>
+            <li><Link href="/soluzioni/chatbot-immobiliare-whatsapp-sito" className="hover:text-primary transition-colors">Chatbot Immobiliare</Link></li>
+            <li><Link href="/soluzioni/software-stima-immobiliare-white-label" className="hover:text-primary transition-colors">Software White Label</Link></li>
+            <li><Link href="/soluzioni/migliori-software-valutazione-immobiliare" className="hover:text-primary transition-colors">Confronto Software</Link></li>
+          </ul>
+        </div>
+
+        <div className="space-y-3">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Risorse</h3>
           <ul className="space-y-2 text-sm text-foreground-muted">
             <li>
@@ -110,8 +120,21 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="site-container border-t border-border/50 py-6 text-center text-sm text-foreground-muted">
-        &copy; {new Date().getFullYear()} DomusReport by Mainstream Agency. Tutti i diritti riservati.
+      <div className="site-container border-t border-border/50 py-6 text-center text-xs sm:text-sm text-foreground-muted space-y-1">
+        <p>
+          &copy; {new Date().getFullYear()} DomusReport by Agenzia Web,{" "}
+          <a
+            href="https://www.mainstreamagency.it"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-foreground-muted hover:text-foreground transition-colors underline underline-offset-2"
+          >
+            Mainstream Agency srls
+          </a>
+        </p>
+        <p>
+          Via Cammarata, 8, 00133, Roma, Italia &ndash; REA: RM &ndash; 1689974 &ndash; P.IVA: IT17011871005 &ndash; Capitale Sociale 6100&euro;
+        </p>
       </div>
     </footer>
   )

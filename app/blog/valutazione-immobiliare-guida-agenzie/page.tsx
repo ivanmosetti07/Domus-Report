@@ -3,6 +3,8 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, ArrowLeft } from "lucide-react"
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
+import { ArticoliCorrelati } from "@/components/blog/articoli-correlati"
 
 export const metadata = {
   title: "Valutazione Immobiliare Online: Guida per Agenzie",
@@ -30,7 +32,12 @@ export default function ArticoloValutazione() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="h-16" />
+      <div className="h-20" />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "https://domusreport.com" },
+        { name: "Blog", url: "https://domusreport.com/blog" },
+        { name: "Valutazione Immobiliare Online: Guida per Agenzie", url: "https://domusreport.com/blog/valutazione-immobiliare-guida-agenzie" },
+      ]} />
 
       <main className="w-full">
         <article className="site-container py-12 sm:py-16 max-w-3xl mx-auto">
@@ -48,8 +55,9 @@ export default function ArticoloValutazione() {
           <div className="prose-custom space-y-6 text-lg text-foreground-muted">
             <p>
               La <strong className="text-foreground">valutazione immobiliare online</strong> &egrave; diventata uno strumento
-              essenziale per le agenzie che vogliono offrire un servizio immediato ai potenziali venditori. In questa guida
-              vediamo come funziona, quali dati utilizza e come integrarla nel tuo flusso di lavoro.
+              essenziale per le agenzie che vogliono offrire un servizio immediato ai potenziali venditori. Come approfondito
+              nella nostra <Link href="/blog/guida-dati-omi-valutazioni" className="text-primary hover:underline">guida completa ai dati OMI e alle valutazioni</Link>,
+              in questa guida vediamo come funziona, quali dati utilizza e come integrarla nel tuo flusso di lavoro.
             </p>
 
             <h2 className="text-2xl font-bold text-foreground pt-4">Cosa sono i dati OMI</h2>
@@ -117,6 +125,8 @@ export default function ArticoloValutazione() {
               <Link href="/docs/html" className="text-primary hover:underline">HTML</Link> e qualsiasi piattaforma.
             </p>
           </div>
+
+          <ArticoliCorrelati currentSlug="valutazione-immobiliare-guida-agenzie" />
 
           {/* CTA */}
           <div className="mt-12 rounded-2xl bg-surface border border-border p-8 text-center space-y-4">

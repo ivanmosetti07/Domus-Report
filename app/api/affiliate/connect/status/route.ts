@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { stripe } from "@/lib/stripe"
 import { verifyAffiliateAuth } from "@/lib/affiliate-auth"
 
 export async function GET(request: NextRequest) {
@@ -20,9 +19,8 @@ export async function GET(request: NextRequest) {
     const affiliate = await prisma.affiliate.findUnique({
       where: { id: auth.affiliateId },
       select: {
-        stripeConnectId: true,
-        stripeConnectOnboarded: true,
-        payoutsEnabled: true,
+        iban: true,
+        ibanAccountHolder: true,
       },
     })
 
@@ -30,34 +28,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Affiliato non trovato" }, { status: 404 })
     }
 
-    let dashboardUrl: string | null = null
-
-    if (affiliate.stripeConnectId && affiliate.stripeConnectOnboarded) {
-      try {
-        const account = await stripe.accounts.retrieve(affiliate.stripeConnectId)
-        await prisma.affiliate.update({
-          where: { id: auth.affiliateId },
-          data: {
-            stripeConnectOnboarded: account.details_submitted || false,
-            payoutsEnabled: account.payouts_enabled || false,
-          },
-        })
-
-        const loginLink = await stripe.accounts.createLoginLink(affiliate.stripeConnectId)
-        dashboardUrl = loginLink.url
-      } catch (error) {
-        console.error("Error fetching Stripe Connect status:", error)
-      }
-    }
+    // Calcola saldo pending
+    const pendingBalance = await prisma.commission.aggregate({
+      where: { affiliateId: auth.affiliateId, status: "pending" },
+      _sum: { amountCents: true },
+    })
 
     return NextResponse.json({
-      connected: !!affiliate.stripeConnectId,
-      onboarded: affiliate.stripeConnectOnboarded,
-      payoutsEnabled: affiliate.payoutsEnabled,
-      dashboardUrl,
+      ibanConfigured: !!affiliate.iban,
+      iban: affiliate.iban ? `${affiliate.iban.slice(0, 4)}****${affiliate.iban.slice(-4)}` : null,
+      ibanAccountHolder: affiliate.ibanAccountHolder,
+      pendingBalanceCents: pendingBalance._sum.amountCents || 0,
     })
   } catch (error) {
-    console.error("Stripe Connect status error:", error)
+    console.error("IBAN status error:", error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Errore interno del server" },
       { status: 500 }

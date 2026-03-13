@@ -12,7 +12,7 @@ export default function AffiliateLandingPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="h-16" />
+      <div className="h-20" />
 
       {/* Hero */}
       <section className="relative w-full overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background py-16 sm:py-20 lg:py-28">

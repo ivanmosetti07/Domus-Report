@@ -25,9 +25,8 @@ export async function GET(request: NextRequest) {
         cognome: true,
         email: true,
         telefono: true,
-        stripeConnectId: true,
-        stripeConnectOnboarded: true,
-        payoutsEnabled: true,
+        iban: true,
+        ibanAccountHolder: true,
         dataCreazione: true,
       },
     })

@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
         commissionRate: c.commissionRate,
         currency: c.currency,
         status: c.status,
-        stripeTransferId: c.stripeTransferId,
+        paymentReference: c.paymentReference,
         paidAt: c.paidAt,
         failReason: c.failReason,
         createdAt: c.createdAt,

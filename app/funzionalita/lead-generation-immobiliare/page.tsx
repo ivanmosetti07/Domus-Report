@@ -3,6 +3,7 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Target, MessageSquare, Zap, ArrowRight, XCircle, CheckCircle, BarChart3 } from "lucide-react"
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
 
 export const metadata = {
   title: "Lead Generation Immobiliare con AI",
@@ -51,7 +52,12 @@ export default function LeadGenerationPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="h-16" />
+      <div className="h-20" />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "https://domusreport.com" },
+        { name: "Funzionalità", url: "https://domusreport.com/funzionalita" },
+        { name: "Lead Generation Immobiliare", url: "https://domusreport.com/funzionalita/lead-generation-immobiliare" },
+      ]} />
 
       <main className="w-full">
         {/* Hero */}
@@ -174,6 +180,28 @@ export default function LeadGenerationPage() {
               il potenziale cliente riceve un servizio utile, e nel processo fornisce spontaneamente tutte le informazioni necessarie per un follow-up
               efficace. Il risultato? Lead che rispondono al telefono perch&eacute; hanno gi&agrave; interagito con il tuo brand.
             </p>
+          </div>
+        </section>
+
+        {/* Approfondisci */}
+        <section className="site-container py-16 sm:py-20 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-8">Approfondisci sul blog</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Link href="/blog/guida-lead-generation-immobiliare" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Guida Completa</div>
+              <h3 className="text-sm font-semibold leading-snug">Guida Definitiva alla Lead Generation Immobiliare nel 2026</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
+            <Link href="/blog/come-generare-lead-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Lead Generation</div>
+              <h3 className="text-sm font-semibold leading-snug">Come Generare Lead Immobiliari nel 2026</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
+            <Link href="/blog/qualificare-lead-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Lead Management</div>
+              <h3 className="text-sm font-semibold leading-snug">Come Qualificare i Lead Immobiliari</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
           </div>
         </section>
 

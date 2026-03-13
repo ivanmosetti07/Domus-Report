@@ -23,9 +23,7 @@ export async function GET(request: NextRequest) {
         nome: true,
         cognome: true,
         email: true,
-        stripeConnectId: true,
-        stripeConnectOnboarded: true,
-        payoutsEnabled: true,
+        iban: true,
       },
     })
 
@@ -74,7 +72,11 @@ export async function GET(request: NextRequest) {
       : 0
 
     return NextResponse.json({
-      affiliate,
+      affiliate: {
+        nome: affiliate.nome,
+        cognome: affiliate.cognome,
+        ibanConfigured: !!affiliate.iban,
+      },
       stats: {
         totalReferrals,
         activeReferrals,

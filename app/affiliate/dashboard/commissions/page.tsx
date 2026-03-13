@@ -13,7 +13,7 @@ interface Commission {
   invoiceAmountCents: number
   commissionRate: number
   status: string
-  stripeTransferId: string | null
+  paymentReference: string | null
   paidAt: string | null
   failReason: string | null
   createdAt: string
@@ -21,7 +21,7 @@ interface Commission {
 
 const STATUS_MAP: Record<string, { label: string; variant: "default" | "success" | "destructive" | "warning" }> = {
   pending: { label: "In attesa", variant: "warning" },
-  transferred: { label: "Trasferita", variant: "success" },
+  transferred: { label: "Pagata", variant: "success" },
   failed: { label: "Fallita", variant: "destructive" },
 }
 
@@ -71,7 +71,7 @@ export default function AffiliateCommissionsPage() {
       <div className="flex gap-2">
         {[
           { value: "", label: "Tutte" },
-          { value: "transferred", label: "Trasferite" },
+          { value: "transferred", label: "Pagate" },
           { value: "pending", label: "In attesa" },
           { value: "failed", label: "Fallite" },
         ].map((f) => (

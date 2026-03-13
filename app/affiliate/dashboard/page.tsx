@@ -13,8 +13,7 @@ interface DashboardData {
   affiliate: {
     nome: string
     cognome: string
-    stripeConnectOnboarded: boolean
-    payoutsEnabled: boolean
+    ibanConfigured: boolean
   }
   stats: {
     totalReferrals: number
@@ -89,16 +88,16 @@ export default function AffiliateDashboardPage() {
         <p className="text-foreground-muted mt-1">Ecco il riepilogo del tuo programma affiliati</p>
       </div>
 
-      {/* Banner Stripe Connect */}
-      {!affiliate.stripeConnectOnboarded && (
+      {/* Banner IBAN */}
+      {!affiliate.ibanConfigured && (
         <Card className="border-2 border-warning bg-warning/10">
           <CardContent className="py-4">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-6 w-6 text-warning shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold">Configura Stripe Connect</h3>
+                <h3 className="font-semibold">Inserisci il tuo IBAN</h3>
                 <p className="text-sm text-foreground-muted mt-1">
-                  Per ricevere i pagamenti delle commissioni, devi collegare il tuo conto bancario tramite Stripe Connect.
+                  Per ricevere le commissioni, inserisci il tuo IBAN nella sezione Pagamenti.
                 </p>
               </div>
               <Link href="/affiliate/dashboard/connect">

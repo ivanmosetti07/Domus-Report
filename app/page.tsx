@@ -44,7 +44,7 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Spacer per la navbar fixed */}
-      <div className="h-16" />
+      <div className="h-20" />
 
       <HeroSection
         onDemoClick={() => {

@@ -57,11 +57,55 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+    // Soluzioni
+    {
+      url: `${baseUrl}/soluzioni`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/soluzioni/widget-valutazione-immobili-sito-web`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/soluzioni/chatbot-immobiliare-whatsapp-sito`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/soluzioni/software-stima-immobiliare-white-label`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/soluzioni/migliori-software-valutazione-immobiliare`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
     // Blog
     {
       url: `${baseUrl}/blog`,
       lastModified: '2026-03-13',
       changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    // Pillar pages
+    {
+      url: `${baseUrl}/blog/guida-lead-generation-immobiliare`,
+      lastModified: '2026-03-13',
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/blog/guida-dati-omi-valutazioni`,
+      lastModified: '2026-03-10',
+      changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
@@ -79,6 +123,90 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}/blog/intelligenza-artificiale-immobiliare`,
       lastModified: '2026-03-07',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/marketing-digitale-agenzie-immobiliari`,
+      lastModified: '2026-03-03',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/dati-omi-guida-completa`,
+      lastModified: '2026-03-01',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/qualificare-lead-immobiliari`,
+      lastModified: '2026-02-27',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/strumenti-digitali-agenzie-immobiliari`,
+      lastModified: '2026-02-25',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/report-valutazione-immobiliare-professionale`,
+      lastModified: '2026-02-22',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/acquisizione-immobili-strategie-agenzie`,
+      lastModified: '2026-02-20',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/come-leggere-quotazioni-omi`,
+      lastModified: '2026-02-18',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/valutazione-omi-vs-stima-commerciale`,
+      lastModified: '2026-02-16',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/notizie-immobiliari-online`,
+      lastModified: '2026-02-15',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/valutazione-immobile-online-gratis-agenzie`,
+      lastModified: '2026-02-14',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/acquisizione-incarichi-vendita`,
+      lastModified: '2026-02-12',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/social-media-acquisizione-immobili`,
+      lastModified: '2026-02-10',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/farming-immobiliare-digitale`,
+      lastModified: '2026-02-08',
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/blog/intelligenza-artificiale-stime-immobiliari`,
+      lastModified: '2026-02-06',
       changeFrequency: 'monthly',
       priority: 0.7,
     },

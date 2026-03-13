@@ -17,7 +17,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="h-16" />
+      <div className="h-20" />
 
       <main className="w-full">
         {/* Hero */}

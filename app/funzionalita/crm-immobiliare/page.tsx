@@ -3,6 +3,7 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Users, BarChart3, FileText, ArrowRight, CheckCircle, Mail, Download } from "lucide-react"
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
 
 export const metadata = {
   title: "CRM Immobiliare con AI e Analytics",
@@ -58,7 +59,12 @@ export default function CRMImmobiliarePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="h-16" />
+      <div className="h-20" />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "https://domusreport.com" },
+        { name: "Funzionalità", url: "https://domusreport.com/funzionalita" },
+        { name: "CRM Immobiliare", url: "https://domusreport.com/funzionalita/crm-immobiliare" },
+      ]} />
 
       <main className="w-full">
         {/* Hero */}
@@ -154,6 +160,28 @@ export default function CRMImmobiliarePage() {
                 <span className="text-foreground-muted text-sm">{item}</span>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Approfondisci */}
+        <section className="site-container py-16 sm:py-20 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-8">Approfondisci sul blog</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Link href="/blog/strumenti-digitali-agenzie-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Strumenti</div>
+              <h3 className="text-sm font-semibold leading-snug">Strumenti Digitali per Agenzie Immobiliari</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
+            <Link href="/blog/qualificare-lead-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Lead Management</div>
+              <h3 className="text-sm font-semibold leading-snug">Come Qualificare i Lead Immobiliari</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
+            <Link href="/blog/marketing-digitale-agenzie-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Marketing</div>
+              <h3 className="text-sm font-semibold leading-snug">Marketing Digitale per Agenzie Immobiliari</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
           </div>
         </section>
 

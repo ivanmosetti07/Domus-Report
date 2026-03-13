@@ -463,9 +463,8 @@ model Affiliate {
   password               String
   telefono               String?
   attivo                 Boolean            @default(true)
-  stripeConnectId        String?            @unique @map("stripe_connect_id")
-  stripeConnectOnboarded Boolean            @default(false) @map("stripe_connect_onboarded")
-  payoutsEnabled         Boolean            @default(false) @map("payouts_enabled")
+  iban                   String?
+  ibanAccountHolder      String?            @map("iban_account_holder")
   dataCreazione          DateTime           @default(now()) @map("data_creazione")
   sessions               AffiliateSession[]
   referralCodes          ReferralCode[]
@@ -534,7 +533,7 @@ model Commission {
   affiliateId        String    @map("affiliate_id")
   referralId         String    @map("referral_id")
   stripeInvoiceId    String    @map("stripe_invoice_id")
-  stripeTransferId   String?   @map("stripe_transfer_id")
+  paymentReference   String?   @map("payment_reference")
   amountCents        Int       @map("amount_cents")
   invoiceAmountCents Int       @map("invoice_amount_cents")
   commissionRate     Float     @default(0.10) @map("commission_rate")

@@ -3,6 +3,7 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
 import { Sparkles, MessageSquare, Code, ArrowRight, CheckCircle, Palette } from "lucide-react"
+import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
 
 export const metadata = {
   title: "Chatbot Immobiliare AI per Agenzie",
@@ -64,7 +65,12 @@ export default function ChatbotImmobiliarePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <div className="h-16" />
+      <div className="h-20" />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "https://domusreport.com" },
+        { name: "Funzionalità", url: "https://domusreport.com/funzionalita" },
+        { name: "Chatbot Immobiliare AI", url: "https://domusreport.com/funzionalita/chatbot-immobiliare" },
+      ]} />
 
       <main className="w-full">
         {/* Hero */}
@@ -159,6 +165,28 @@ export default function ChatbotImmobiliarePage() {
               <Link href="/docs/webflow" className="text-primary hover:underline">Webflow</Link>,{" "}
               <Link href="/docs/html" className="text-primary hover:underline">HTML statico</Link> e qualsiasi piattaforma web.
             </p>
+          </div>
+        </section>
+
+        {/* Approfondisci */}
+        <section className="site-container py-16 sm:py-20 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-8">Approfondisci sul blog</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Link href="/blog/intelligenza-artificiale-immobiliare" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Tecnologia</div>
+              <h3 className="text-sm font-semibold leading-snug">Intelligenza Artificiale nel Settore Immobiliare</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
+            <Link href="/blog/come-generare-lead-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Lead Generation</div>
+              <h3 className="text-sm font-semibold leading-snug">Come Generare Lead Immobiliari nel 2026</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
+            <Link href="/blog/qualificare-lead-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
+              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Lead Management</div>
+              <h3 className="text-sm font-semibold leading-snug">Come Qualificare i Lead Immobiliari</h3>
+              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
+            </Link>
           </div>
         </section>
 

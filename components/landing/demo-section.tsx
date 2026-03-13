@@ -1,9 +1,22 @@
 "use client"
 
+import { Suspense } from "react"
+import dynamic from "next/dynamic"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChatWidget } from "@/components/widget/chat-widget"
-import { Smartphone, Play, Sparkles, CheckCircle, Code, Zap } from "lucide-react"
+import { Smartphone, Play, Sparkles, CheckCircle, Code, Zap, Loader2 } from "lucide-react"
+
+const ChatWidget = dynamic(
+  () => import("@/components/widget/chat-widget").then((m) => ({ default: m.ChatWidget })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="animate-spin h-8 w-8 text-primary" />
+      </div>
+    ),
+  }
+)
 
 interface DemoSectionProps {
   showWidget: boolean

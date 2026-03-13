@@ -1646,6 +1646,20 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           </Button>
         </form>
       </div>
+
+      {/* Powered by DomusReport - visibile solo in widget embed, non in demo */}
+      {!isDemo && (
+        <div className="text-center flex-shrink-0" style={{ padding: '4px 0', borderTop: '1px solid rgba(128,128,128,0.15)' }}>
+          <a
+            href="https://domusreport.com?ref=widget"
+            target="_blank"
+            rel="nofollow sponsored"
+            style={{ fontSize: '10px', color: 'rgba(128,128,128,0.5)', textDecoration: 'none' }}
+          >
+            Powered by DomusReport
+          </a>
+        </div>
+      )}
     </div>
   )
 }

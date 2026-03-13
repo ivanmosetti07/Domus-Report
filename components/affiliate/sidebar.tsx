@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Home, Users, DollarSign, Link2, CreditCard, User, LogOut, X, Menu } from "lucide-react"
+import { Home, Users, DollarSign, Link2, Wallet, User, LogOut, X, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import * as React from "react"
 
@@ -11,7 +11,7 @@ const navigation = [
   { name: "Referral", href: "/affiliate/dashboard/referrals", icon: Users },
   { name: "Commissioni", href: "/affiliate/dashboard/commissions", icon: DollarSign },
   { name: "Codici Referral", href: "/affiliate/dashboard/codes", icon: Link2 },
-  { name: "Stripe Connect", href: "/affiliate/dashboard/connect", icon: CreditCard },
+  { name: "Pagamenti", href: "/affiliate/dashboard/connect", icon: Wallet },
   { name: "Profilo", href: "/affiliate/dashboard/profile", icon: User },
 ]
 

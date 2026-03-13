@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { stripe } from "@/lib/stripe"
 import { verifyAffiliateAuth } from "@/lib/affiliate-auth"
+import { sanitizeString } from "@/lib/validation"
+
+function validateIBAN(iban: string): boolean {
+  const cleaned = iban.replace(/\s/g, '').toUpperCase()
+  // Formato base IBAN: 2 lettere paese + 2 cifre controllo + BBAN
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(cleaned)) return false
+  // Per IBAN italiani: IT + 2 cifre + 1 lettera CIN + 5 cifre ABI + 5 cifre CAB + 12 cifre conto = 27 caratteri
+  if (cleaned.startsWith('IT') && cleaned.length !== 27) return false
+  return true
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,48 +26,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Token non valido" }, { status: 401 })
     }
 
-    const affiliate = await prisma.affiliate.findUnique({
+    const body = await request.json()
+    const { iban, ibanAccountHolder } = body
+
+    if (!iban || !ibanAccountHolder) {
+      return NextResponse.json({ error: "IBAN e intestatario sono obbligatori" }, { status: 400 })
+    }
+
+    const cleanedIban = iban.replace(/\s/g, '').toUpperCase()
+    if (!validateIBAN(cleanedIban)) {
+      return NextResponse.json({ error: "Formato IBAN non valido" }, { status: 400 })
+    }
+
+    const sanitizedHolder = sanitizeString(ibanAccountHolder).trim()
+    if (sanitizedHolder.length < 3) {
+      return NextResponse.json({ error: "Nome intestatario troppo corto" }, { status: 400 })
+    }
+
+    const affiliate = await prisma.affiliate.update({
       where: { id: auth.affiliateId },
+      data: {
+        iban: cleanedIban,
+        ibanAccountHolder: sanitizedHolder,
+      },
+      select: {
+        iban: true,
+        ibanAccountHolder: true,
+      },
     })
 
-    if (!affiliate) {
-      return NextResponse.json({ error: "Affiliato non trovato" }, { status: 404 })
-    }
-
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://domusreport.it'
-    let accountId = affiliate.stripeConnectId
-
-    if (!accountId) {
-      const account = await stripe.accounts.create({
-        type: 'express',
-        country: 'IT',
-        email: affiliate.email,
-        capabilities: {
-          transfers: { requested: true },
-        },
-        metadata: {
-          affiliateId: affiliate.id,
-        },
-      })
-
-      accountId = account.id
-
-      await prisma.affiliate.update({
-        where: { id: affiliate.id },
-        data: { stripeConnectId: accountId },
-      })
-    }
-
-    const accountLink = await stripe.accountLinks.create({
-      account: accountId,
-      refresh_url: `${baseUrl}/affiliate/dashboard/connect?status=refresh`,
-      return_url: `${baseUrl}/api/affiliate/connect/callback?account_id=${accountId}`,
-      type: 'account_onboarding',
-    })
-
-    return NextResponse.json({ url: accountLink.url })
+    return NextResponse.json({ success: true, affiliate })
   } catch (error) {
-    console.error("Stripe Connect setup error:", error)
+    console.error("IBAN save error:", error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Errore interno del server" },
       { status: 500 }

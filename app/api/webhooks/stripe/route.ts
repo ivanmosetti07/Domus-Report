@@ -789,11 +789,9 @@ async function processAffiliateCommission(agencyId: string, invoiceData: any) {
 
     if (!referral) return // Agenzia non referita
 
-    // 2. Verifica che l'affiliato sia attivo e onboarded
-    if (!referral.affiliate.attivo ||
-        !referral.affiliate.stripeConnectId ||
-        !referral.affiliate.payoutsEnabled) {
-      console.log(`[processAffiliateCommission] Affiliato ${referral.affiliateId} non può ricevere commissioni (attivo: ${referral.affiliate.attivo}, connect: ${referral.affiliate.stripeConnectId}, payouts: ${referral.affiliate.payoutsEnabled})`)
+    // 2. Verifica che l'affiliato sia attivo e abbia IBAN configurato
+    if (!referral.affiliate.attivo || !referral.affiliate.iban) {
+      console.log(`[processAffiliateCommission] Affiliato ${referral.affiliateId} non può ricevere commissioni (attivo: ${referral.affiliate.attivo}, iban: ${!!referral.affiliate.iban})`)
       return
     }
 
@@ -812,8 +810,8 @@ async function processAffiliateCommission(agencyId: string, invoiceData: any) {
 
     if (commissionAmount < 100) return // Min 1 EUR
 
-    // 5. Crea record commissione
-    const commission = await prisma.commission.create({
+    // 5. Crea record commissione (pending - verrà pagata manualmente via bonifico SEPA)
+    await prisma.commission.create({
       data: {
         affiliateId: referral.affiliateId,
         referralId: referral.id,
@@ -825,41 +823,7 @@ async function processAffiliateCommission(agencyId: string, invoiceData: any) {
       },
     })
 
-    // 6. Esegui Transfer Stripe Connect
-    try {
-      const transfer = await stripe.transfers.create({
-        amount: commissionAmount,
-        currency: 'eur',
-        destination: referral.affiliate.stripeConnectId!,
-        transfer_group: `referral_${referral.id}`,
-        metadata: {
-          commissionId: commission.id,
-          affiliateId: referral.affiliateId,
-          agencyId,
-          invoiceId: invoiceData.id,
-        },
-      })
-
-      await prisma.commission.update({
-        where: { id: commission.id },
-        data: {
-          status: 'transferred',
-          stripeTransferId: transfer.id,
-          paidAt: new Date(),
-        },
-      })
-
-      console.log(`[processAffiliateCommission] ✅ Commissione €${(commissionAmount / 100).toFixed(2)} trasferita a affiliato ${referral.affiliateId}`)
-    } catch (transferError) {
-      await prisma.commission.update({
-        where: { id: commission.id },
-        data: {
-          status: 'failed',
-          failReason: transferError instanceof Error ? transferError.message : 'Errore trasferimento',
-        },
-      })
-      console.error('[processAffiliateCommission] Errore trasferimento:', transferError)
-    }
+    console.log(`[processAffiliateCommission] Commissione €${(commissionAmount / 100).toFixed(2)} registrata per affiliato ${referral.affiliateId} (IBAN: ${referral.affiliate.iban})`)
   } catch (error) {
     console.error('[processAffiliateCommission] Errore generale:', error)
   }

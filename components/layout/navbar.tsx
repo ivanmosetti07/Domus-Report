@@ -29,6 +29,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: "#features", label: "Funzionalità" },
+    { href: "/soluzioni", label: "Soluzioni" },
     { href: "#pricing", label: "Pricing" },
     { href: "/blog", label: "Blog" },
     { href: "/about", label: "Chi Siamo" },
@@ -43,15 +44,15 @@ export function Navbar() {
           : "bg-transparent border-b border-transparent"
       }`}
     >
-      <div className="site-container flex h-16 items-center justify-between gap-4">
+      <div className="site-container flex h-20 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3">
-          <div className="bg-white rounded-lg px-2.5 py-1.5">
+          <div className="bg-white rounded-xl px-3 py-2">
             <Image
               src="/logo.png"
               alt="DomusReport"
-              width={180}
-              height={54}
-              className="h-8 w-auto"
+              width={220}
+              height={66}
+              className="h-11 w-auto"
               priority
             />
           </div>
