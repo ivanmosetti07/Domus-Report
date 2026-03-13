@@ -276,7 +276,20 @@ export function inferCity(data: {
   address?: string
   neighborhood?: string
 }): string {
-  // 1. Se la città è fornita esplicitamente, usala
+  // 1. Se sia città che CAP sono forniti, verifica che siano coerenti.
+  //    Il CAP è più specifico della città: se il CAP identifica un comune diverso
+  //    da quello fornito (es. utente scrive "Roma" ma CAP 00071 = Pomezia),
+  //    si usa il comune derivato dal CAP per ottenere dati OMI corretti.
+  if (data.city && data.city.trim().length > 0 && data.postalCode) {
+    const cityFromCAP = getCityFromPostalCode(data.postalCode)
+    if (cityFromCAP && cityFromCAP.toLowerCase() !== data.city.trim().toLowerCase()) {
+      console.log(`[inferCity] CAP ${data.postalCode} indica "${cityFromCAP}" (sovrascrive città fornita "${data.city}")`)
+      return cityFromCAP
+    }
+    return data.city.trim()
+  }
+
+  // 1b. Solo città fornita (senza CAP)
   if (data.city && data.city.trim().length > 0) {
     return data.city.trim()
   }
