@@ -8,9 +8,41 @@ import { Menu, X } from "lucide-react"
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+  const [isScrolled, setIsScrolled] = React.useState(false)
+
+  React.useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20)
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("#")) {
+      e.preventDefault()
+      const el = document.getElementById(href.slice(1))
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" })
+      }
+      setMobileMenuOpen(false)
+    }
+  }
+
+  const navLinks = [
+    { href: "#features", label: "Funzionalità" },
+    { href: "#pricing", label: "Pricing" },
+    { href: "/about", label: "Chi Siamo" },
+    { href: "/affiliate", label: "Affiliati" },
+    { href: "/docs/wordpress", label: "Docs" },
+  ]
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <nav
+      className={`fixed top-0 z-40 w-full transition-all duration-300 ${
+        isScrolled
+          ? "border-b border-border bg-background/95 backdrop-blur-lg shadow-soft"
+          : "bg-transparent border-b border-transparent"
+      }`}
+    >
       <div className="site-container flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3">
           <Image
@@ -24,24 +56,16 @@ export function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">
-          <Link
-            href="#features"
-            className="text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
-          >
-            Funzionalità
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
-          >
-            Pricing
-          </Link>
-          <Link
-            href="/docs/wordpress"
-            className="text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
-          >
-            Documentazione
-          </Link>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-foreground-muted transition-colors hover:text-foreground"
+              onClick={(e) => handleAnchorClick(e, link.href)}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -64,34 +88,24 @@ export function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-surface">
+        <div className="md:hidden border-t border-border bg-surface/95 backdrop-blur-lg">
           <div className="site-container flex flex-col gap-4 py-6">
-            <Link
-              href="#features"
-              className="text-base font-medium text-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Funzionalità
-            </Link>
-            <Link
-              href="#pricing"
-              className="text-base font-medium text-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/docs/wordpress"
-              className="text-base font-medium text-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Documentazione
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-base font-medium text-foreground"
+                onClick={(e) => {
+                  handleAnchorClick(e, link.href)
+                  setMobileMenuOpen(false)
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
             <div className="flex flex-col gap-3 pt-2">
               <Link href="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full">
-                  Accedi
-                </Button>
+                <Button variant="outline" className="w-full">Accedi</Button>
               </Link>
               <Link href="/register" className="w-full" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full">Inizia Gratis</Button>
