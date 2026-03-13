@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAuth } from '@/lib/auth'
-import { stripe, STRIPE_PLANS, PlanType } from '@/lib/stripe'
+import { stripe, STRIPE_PLANS, PlanType, getStripeRecurring, getPlanPrice, VALID_BILLING_INTERVALS } from '@/lib/stripe'
+import type { BillingInterval } from '@/lib/plan-limits'
 
 // POST /api/subscription/create-trial-subscription
 // Crea una subscription Stripe in modalità trial con il metodo di pagamento già configurato
@@ -19,15 +20,21 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { planType, paymentMethodId, trialDays = 14 } = body as {
+    const { planType, paymentMethodId, trialDays = 14, billingInterval = 'monthly' } = body as {
       planType: PlanType
       paymentMethodId: string
       trialDays?: number
+      billingInterval?: BillingInterval
     }
 
     // Valida planType
     if (!planType || !['basic', 'premium'].includes(planType)) {
       return NextResponse.json({ error: 'Piano non valido' }, { status: 400 })
+    }
+
+    // Valida billingInterval
+    if (!VALID_BILLING_INTERVALS.includes(billingInterval)) {
+      return NextResponse.json({ error: 'Intervallo di fatturazione non valido' }, { status: 400 })
     }
 
     if (!paymentMethodId) {
@@ -81,19 +88,18 @@ export async function POST(request: Request) {
       })
     }
 
-    // Ottieni info piano
+    // Ottieni info piano e calcola prezzo per intervallo
     const plan = STRIPE_PLANS[planType]
+    const totalPriceCents = getPlanPrice(planType, billingInterval)
+    const stripeRecurring = getStripeRecurring(billingInterval)
 
-    // Crea un Price per la subscription
+    // Crea un Price per la subscription con intervallo corretto
     const price = await stripe.prices.create({
       currency: 'eur',
-      unit_amount: plan.priceMonthly * 100,
-      recurring: {
-        interval: 'month',
-        interval_count: 1
-      },
+      unit_amount: totalPriceCents,
+      recurring: stripeRecurring,
       product_data: {
-        name: `Piano ${plan.name}`
+        name: `Piano ${plan.name} (${billingInterval})`
       }
     })
 
@@ -113,7 +119,8 @@ export async function POST(request: Request) {
       },
       metadata: {
         agencyId: agency.id,
-        planType
+        planType,
+        billingInterval
       }
     })
 
@@ -123,33 +130,24 @@ export async function POST(request: Request) {
       : new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000)
 
     // Salva/aggiorna subscription nel DB
+    const subscriptionData = {
+      planType,
+      status: 'trial',
+      stripeCustomerId,
+      stripeSubscriptionId: subscription.id,
+      stripePriceId: price.id,
+      paymentMethodId,
+      trialEndsAt: trialEnd,
+      nextBillingDate: trialEnd,
+      trialDays,
+      billingInterval,
+      onboardingCompletedAt: new Date()
+    }
+
     await prisma.subscription.upsert({
       where: { agencyId: agency.id },
-      create: {
-        agencyId: agency.id,
-        planType,
-        status: 'trial',
-        stripeCustomerId,
-        stripeSubscriptionId: subscription.id,
-        stripePriceId: price.id,
-        paymentMethodId,
-        trialEndsAt: trialEnd,
-        nextBillingDate: trialEnd,
-        trialDays,
-        onboardingCompletedAt: new Date()
-      },
-      update: {
-        planType,
-        status: 'trial',
-        stripeCustomerId,
-        stripeSubscriptionId: subscription.id,
-        stripePriceId: price.id,
-        paymentMethodId,
-        trialEndsAt: trialEnd,
-        nextBillingDate: trialEnd,
-        trialDays,
-        onboardingCompletedAt: new Date()
-      }
+      create: { agencyId: agency.id, ...subscriptionData },
+      update: subscriptionData
     })
 
     // Aggiorna piano agenzia

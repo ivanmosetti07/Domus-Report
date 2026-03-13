@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { PlanCard } from "@/components/onboarding/plan-card"
 import { CardPaymentForm } from "@/components/onboarding/card-payment-form"
@@ -12,16 +12,41 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
-import { PLAN_PRICES, planLimits } from "@/lib/plan-limits"
+import { PLAN_PRICES, planLimits, type BillingInterval, BILLING_INTERVALS, formatPlanPrice, getMonthlyEquivalent, getPlanPrice } from "@/lib/plan-limits"
 import { trackPlanSelected } from "@/lib/gtag"
+import { useToast } from "@/hooks/use-toast"
+import { BillingIntervalToggle } from "@/components/ui/billing-interval-toggle"
 
 type PlanType = 'free' | 'basic' | 'premium'
 
 export default function OnboardingPlanPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null)
   const [showPaymentDialog, setShowPaymentDialog] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly')
+
+  // Verifica auth e stato onboarding al mount
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      router.push('/login')
+      return
+    }
+
+    // Verifica se onboarding già completato
+    fetch('/api/subscription', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.subscription?.onboardingCompletedAt) {
+          router.push('/dashboard')
+        }
+      })
+      .catch(() => {}) // ignora errori — il middleware gestisce l'auth
+  }, [router])
 
   const handlePlanSelect = (planType: PlanType) => {
     setSelectedPlan(planType)
@@ -49,7 +74,7 @@ export default function OnboardingPlanPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ planType: 'free', trialDays: 0 })
+        body: JSON.stringify({ planType: 'free' })
       })
 
       if (!response.ok) {
@@ -61,7 +86,11 @@ export default function OnboardingPlanPage() {
       router.push('/onboarding/welcome')
     } catch (error) {
       console.error('Error selecting free plan:', error)
-      alert('Errore durante la selezione del piano. Riprova.')
+      toast({
+        title: 'Errore',
+        description: 'Errore durante la selezione del piano. Riprova.',
+        variant: 'destructive'
+      })
       setIsLoading(false)
     }
   }
@@ -80,6 +109,11 @@ export default function OnboardingPlanPage() {
           <p className="text-lg text-foreground-muted max-w-2xl mx-auto">
             Inizia con il piano che meglio si adatta alle tue esigenze. Puoi cambiare o annullare in qualsiasi momento.
           </p>
+        </div>
+
+        {/* Billing Interval Toggle */}
+        <div className="flex justify-center mb-8">
+          <BillingIntervalToggle value={billingInterval} onChange={setBillingInterval} />
         </div>
 
         {/* Plans Grid */}
@@ -110,8 +144,8 @@ export default function OnboardingPlanPage() {
           <PlanCard
             name="Basic"
             description="Ideale per agenzie in crescita"
-            price={`€${PLAN_PRICES.basic / 100}`}
-            priceSubtext="/mese"
+            price={formatPlanPrice('basic', billingInterval)}
+            priceSubtext={billingInterval !== 'monthly' ? `(€${getMonthlyEquivalent('basic', billingInterval) / 100}/mese)` : undefined}
             features={[
               { text: `${planLimits.basic.maxWidgets} widget`, included: true },
               { text: `${planLimits.basic.maxValutationsPerMonth} valutazioni/mese`, included: true },
@@ -127,14 +161,15 @@ export default function OnboardingPlanPage() {
             onSelect={() => handlePlanSelect('basic')}
             isLoading={isLoading && selectedPlan === 'basic'}
             isSelected={selectedPlan === 'basic'}
+            discount={BILLING_INTERVALS[billingInterval].discount > 0 ? BILLING_INTERVALS[billingInterval].discount * 100 : undefined}
           />
 
           {/* Piano Premium */}
           <PlanCard
             name="Premium"
             description="Per agenzie professionali"
-            price={`€${PLAN_PRICES.premium / 100}`}
-            priceSubtext="/mese"
+            price={formatPlanPrice('premium', billingInterval)}
+            priceSubtext={billingInterval !== 'monthly' ? `(€${getMonthlyEquivalent('premium', billingInterval) / 100}/mese)` : undefined}
             features={[
               { text: `${planLimits.premium.maxWidgets} widget`, included: true },
               { text: `${planLimits.premium.maxValutationsPerMonth} valutazioni/mese`, included: true },
@@ -148,6 +183,7 @@ export default function OnboardingPlanPage() {
             onSelect={() => handlePlanSelect('premium')}
             isLoading={isLoading && selectedPlan === 'premium'}
             isSelected={selectedPlan === 'premium'}
+            discount={BILLING_INTERVALS[billingInterval].discount > 0 ? BILLING_INTERVALS[billingInterval].discount * 100 : undefined}
           />
         </div>
 
@@ -169,7 +205,7 @@ export default function OnboardingPlanPage() {
               Inizia la prova gratuita — piano {selectedPlan === 'basic' ? 'Basic' : 'Premium'}
             </DialogTitle>
             <DialogDescription className="text-foreground-muted">
-              7 giorni gratuiti, poi €{selectedPlan ? PLAN_PRICES[selectedPlan] / 100 : ''}/mese. Nessun addebito oggi.
+              7 giorni gratuiti, poi {selectedPlan && selectedPlan !== 'free' ? formatPlanPrice(selectedPlan, billingInterval) : ''}. Nessun addebito oggi.
             </DialogDescription>
           </DialogHeader>
 

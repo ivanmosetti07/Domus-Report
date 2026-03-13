@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Circle, ChevronRight } from "lucide-react"
@@ -14,20 +13,28 @@ interface ChecklistItem {
   href?: string
 }
 
+interface ChecklistProgress {
+  hasWidget: boolean
+  hasBrandColors: boolean
+  hasLead: boolean
+}
+
 interface WelcomeChecklistProps {
   agencyName: string
   planName: string
   trialDaysRemaining?: number
   trialEndsAt?: Date
+  checklistProgress?: ChecklistProgress
 }
 
 export function WelcomeChecklist({
   agencyName,
   planName,
   trialDaysRemaining,
-  trialEndsAt
+  trialEndsAt,
+  checklistProgress
 }: WelcomeChecklistProps) {
-  const [items, setItems] = useState<ChecklistItem[]>([
+  const items: ChecklistItem[] = [
     {
       id: 'account',
       title: 'Account creato',
@@ -38,31 +45,31 @@ export function WelcomeChecklist({
       id: 'widget',
       title: 'Configura il tuo primo widget',
       description: 'Personalizza il widget per il tuo sito',
-      completed: false,
+      completed: checklistProgress?.hasWidget ?? false,
       href: '/dashboard/widgets'
     },
     {
       id: 'install',
       title: 'Installa widget sul tuo sito',
       description: 'Copia il codice e incollalo nel tuo sito',
-      completed: false,
+      completed: checklistProgress?.hasWidget ?? false,
       href: '/dashboard/widgets'
     },
     {
       id: 'branding',
       title: 'Personalizza colori brand',
       description: 'Adatta il widget allo stile del tuo brand',
-      completed: false,
+      completed: checklistProgress?.hasBrandColors ?? false,
       href: '/dashboard/settings'
     },
     {
       id: 'lead',
       title: 'Genera il primo lead',
       description: 'Prova il widget e raccogli la prima valutazione',
-      completed: false,
+      completed: checklistProgress?.hasLead ?? false,
       href: '/dashboard'
     }
-  ])
+  ]
 
   const completedCount = items.filter(item => item.completed).length
   const progressPercentage = (completedCount / items.length) * 100
@@ -115,7 +122,7 @@ export function WelcomeChecklist({
 
         <CardContent>
           <div className="space-y-3 mb-6">
-            {items.map((item, index) => (
+            {items.map((item) => (
               <div
                 key={item.id}
                 className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-240 ${

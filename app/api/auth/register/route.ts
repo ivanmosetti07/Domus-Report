@@ -108,6 +108,34 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // === REFERRAL TRACKING ===
+    try {
+      const cookieHeader = request.headers.get('cookie') || ''
+      const refMatch = cookieHeader.match(/domus_ref=([A-Za-z0-9]+)/)
+      const refCode = refMatch?.[1]
+
+      if (refCode) {
+        const referralCode = await prisma.referralCode.findFirst({
+          where: { code: refCode.toUpperCase(), isActive: true },
+          include: { affiliate: true },
+        })
+
+        if (referralCode && referralCode.affiliate.attivo) {
+          await prisma.referral.create({
+            data: {
+              affiliateId: referralCode.affiliateId,
+              referralCodeId: referralCode.id,
+              agencyId: agency.id,
+              status: 'registered',
+            },
+          })
+          console.log(`[POST /api/auth/register] Referral tracked: agency ${agency.id} via code ${refCode}`)
+        }
+      }
+    } catch (refErr) {
+      console.error('[POST /api/auth/register] Referral tracking error:', refErr)
+    }
+
     // Notifica admin per nuova registrazione (Attendiamo l'invio per evitare terminazione precoce su Vercel)
     if (process.env.SMTP_HOST) {
       try {
@@ -128,7 +156,7 @@ export async function POST(request: NextRequest) {
 
         await sendEmail({
           from: formatEmailAddress('Domus Report', process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || ''),
-          to: 'ivan@mainstreamagency.it',
+          to: process.env.ADMIN_NOTIFICATION_EMAIL || 'ivan@mainstreamagency.it',
           subject: `Nuova Agenzia Registrata: ${agency.nome}`,
           html: htmlContent,
           text: textContent,

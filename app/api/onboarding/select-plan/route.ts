@@ -3,8 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { verifyAuth } from "@/lib/auth"
 
 export interface SelectPlanRequest {
-  planType: 'free' | 'basic' | 'premium'
-  trialDays: number // 0-7
+  planType: 'free'
 }
 
 export async function POST(request: NextRequest) {
@@ -28,19 +27,12 @@ export async function POST(request: NextRequest) {
 
     // 2. Parse request body
     const body = (await request.json()) as SelectPlanRequest
-    const { planType, trialDays } = body
+    const { planType } = body
 
-    // 3. Validate input
-    if (!planType || !['free', 'basic', 'premium'].includes(planType)) {
+    // 3. Validate input — solo piano free ammesso (i piani a pagamento passano da create-trial-subscription con Stripe)
+    if (planType !== 'free') {
       return NextResponse.json(
-        { error: "Piano non valido" },
-        { status: 400 }
-      )
-    }
-
-    if (trialDays < 0 || trialDays > 7) {
-      return NextResponse.json(
-        { error: "Giorni trial non validi (0-7)" },
+        { error: "Questa API supporta solo il piano free. Per i piani a pagamento usa il flusso Stripe." },
         { status: 400 }
       )
     }
@@ -60,45 +52,29 @@ export async function POST(request: NextRequest) {
     // 5. Update agency piano
     await prisma.agency.update({
       where: { id: auth.agencyId },
-      data: { piano: planType }
+      data: { piano: 'free' }
     })
 
-    // 6. Create or update subscription
-    let trialEndsAt: Date | null = null
-    let status: string = 'active'
-
-    if (planType === 'free') {
-      // Piano free: nessun trial, attivo immediatamente
-      status = 'active'
-      trialEndsAt = null
-    } else {
-      // Piano a pagamento: crea trial
-      status = 'trial'
-      trialEndsAt = new Date()
-      trialEndsAt.setDate(trialEndsAt.getDate() + trialDays)
-    }
-
+    // 6. Create or update subscription (piano free: attivo immediatamente, nessun trial)
     if (existingSubscription) {
-      // Update existing subscription
       await prisma.subscription.update({
         where: { id: existingSubscription.id },
         data: {
-          planType,
-          status,
-          trialEndsAt,
-          trialDays,
+          planType: 'free',
+          status: 'active',
+          trialEndsAt: null,
+          trialDays: 0,
           onboardingCompletedAt: new Date()
         }
       })
     } else {
-      // Create new subscription
       await prisma.subscription.create({
         data: {
           agencyId: auth.agencyId,
-          planType,
-          status,
-          trialEndsAt,
-          trialDays,
+          planType: 'free',
+          status: 'active',
+          trialEndsAt: null,
+          trialDays: 0,
           onboardingCompletedAt: new Date()
         }
       })
@@ -108,10 +84,10 @@ export async function POST(request: NextRequest) {
       success: true,
       message: "Piano selezionato con successo",
       plan: {
-        planType,
-        status,
-        trialDays,
-        trialEndsAt
+        planType: 'free',
+        status: 'active',
+        trialDays: 0,
+        trialEndsAt: null
       }
     })
 

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAuth } from '@/lib/auth'
-import { stripe, STRIPE_PLANS, PlanType, isPaidPlan } from '@/lib/stripe'
+import { stripe, STRIPE_PLANS, PlanType, isPaidPlan, getStripeRecurring, getPlanPrice, VALID_BILLING_INTERVALS } from '@/lib/stripe'
+import type { BillingInterval } from '@/lib/plan-limits'
 import Stripe from 'stripe'
 
 // POST /api/subscription/checkout - Crea Stripe Checkout Session
@@ -22,11 +23,20 @@ export async function POST(request: Request) {
     console.log('Auth OK - AgencyId:', authResult.agencyId)
 
     const body = await request.json()
-    const { planType, promoCode } = body as { planType: PlanType; promoCode?: string }
+    const { planType, promoCode, billingInterval = 'monthly' } = body as {
+      planType: PlanType
+      promoCode?: string
+      billingInterval?: BillingInterval
+    }
 
     // Valida planType
     if (!planType || !['basic', 'premium'].includes(planType)) {
       return NextResponse.json({ error: 'Piano non valido' }, { status: 400 })
+    }
+
+    // Valida billingInterval
+    if (!VALID_BILLING_INTERVALS.includes(billingInterval)) {
+      return NextResponse.json({ error: 'Intervallo di fatturazione non valido' }, { status: 400 })
     }
 
     // Verifica che il piano richiesto sia a pagamento
@@ -47,7 +57,7 @@ export async function POST(request: Request) {
     // Ottieni info piano
     const plan = STRIPE_PLANS[planType]
 
-    console.log('📋 Piano richiesto:', planType, 'Prezzo:', plan.priceMonthly)
+    console.log('📋 Piano richiesto:', planType, 'Intervallo:', billingInterval, 'Prezzo base mensile:', plan.priceMonthly)
 
     // Crea o recupera Stripe Customer
     let stripeCustomerId = agency.subscription?.stripeCustomerId
@@ -85,6 +95,10 @@ export async function POST(request: Request) {
       throw new Error(`URL non valido: ${baseUrl}. Deve iniziare con http:// o https://`)
     }
 
+    // Calcola prezzo per intervallo scelto
+    const totalPriceCents = getPlanPrice(planType, billingInterval)
+    const stripeRecurring = getStripeRecurring(billingInterval)
+
     // Prepara parametri checkout con prezzo dinamico
     const checkoutParams: Stripe.Checkout.SessionCreateParams = {
       customer: stripeCustomerId,
@@ -95,14 +109,11 @@ export async function POST(request: Request) {
           price_data: {
             currency: 'eur',
             product_data: {
-              name: `Piano ${plan.name}`,
+              name: `Piano ${plan.name} (${billingInterval})`,
               description: plan.features.join(', '),
             },
-            unit_amount: plan.priceMonthly * 100, // Converti in centesimi
-            recurring: {
-              interval: 'month',
-              interval_count: 1,
-            },
+            unit_amount: totalPriceCents,
+            recurring: stripeRecurring,
           },
           quantity: 1,
         }
@@ -111,12 +122,14 @@ export async function POST(request: Request) {
       cancel_url: `${baseUrl}/dashboard/subscription?upgrade=cancelled`,
       metadata: {
         agencyId: agency.id,
-        planType
+        planType,
+        billingInterval
       },
       subscription_data: {
         metadata: {
           agencyId: agency.id,
-          planType
+          planType,
+          billingInterval
         }
       },
       allow_promotion_codes: true,
@@ -148,7 +161,8 @@ export async function POST(request: Request) {
     console.log('🚀 Creazione Checkout Session con parametri:', {
       mode: checkoutParams.mode,
       customer: stripeCustomerId,
-      amount: plan.priceMonthly * 100,
+      amount: totalPriceCents,
+      billingInterval,
       success_url: checkoutParams.success_url,
       cancel_url: checkoutParams.cancel_url
     })

@@ -2,23 +2,66 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { jwtVerify } from "jose"
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || "domusreport-jwt-secret-change-in-production"
-)
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("NEXTAUTH_SECRET environment variable is required")
+}
 
-// Routes that require authentication
-const protectedRoutes = ["/dashboard"]
+const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET)
 
-// Routes that should redirect to dashboard if already authenticated
+// Routes that require agency authentication
+const protectedRoutes = ["/dashboard", "/onboarding"]
+
+// Routes that should redirect to dashboard if already authenticated (agency)
 const authRoutes = ["/login", "/register"]
+
+// Routes that require affiliate authentication
+const affiliateProtectedRoutes = ["/affiliate/dashboard"]
+
+// Routes that should redirect to affiliate dashboard if already authenticated
+const affiliateAuthRoutes = ["/affiliate/login", "/affiliate/register"]
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Get auth token from cookies
+  // === AFFILIATE ROUTES ===
+  const isAffiliateProtected = affiliateProtectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  )
+  const isAffiliateAuth = affiliateAuthRoutes.some((route) =>
+    pathname.startsWith(route)
+  )
+
+  if (isAffiliateProtected || isAffiliateAuth) {
+    const affiliateToken = request.cookies.get("affiliate-auth-token")?.value
+    let isAffiliateAuthenticated = false
+
+    if (affiliateToken) {
+      try {
+        const verified = await jwtVerify(affiliateToken, JWT_SECRET)
+        if (verified.payload.role === 'affiliate') {
+          isAffiliateAuthenticated = true
+        }
+      } catch {
+        // Token invalid
+      }
+    }
+
+    if (isAffiliateProtected && !isAffiliateAuthenticated) {
+      const url = new URL("/affiliate/login", request.url)
+      url.searchParams.set("redirect", pathname)
+      return NextResponse.redirect(url)
+    }
+
+    if (isAffiliateAuth && isAffiliateAuthenticated) {
+      return NextResponse.redirect(new URL("/affiliate/dashboard", request.url))
+    }
+
+    return NextResponse.next()
+  }
+
+  // === AGENCY ROUTES ===
   const token = request.cookies.get("auth-token")?.value
 
-  // Verify token
   let isAuthenticated = false
   let agencyId: string | null = null
 
@@ -28,32 +71,26 @@ export async function middleware(request: NextRequest) {
       isAuthenticated = true
       agencyId = verified.payload.agencyId as string
     } catch (error) {
-      // Token is invalid or expired
       console.error("JWT verification failed:", error)
     }
   }
 
-  // Check if route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   )
 
-  // Check if route is auth route (login/register)
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route))
 
-  // Redirect to login if accessing protected route without auth
   if (isProtectedRoute && !isAuthenticated) {
     const url = new URL("/login", request.url)
     url.searchParams.set("redirect", pathname)
     return NextResponse.redirect(url)
   }
 
-  // Redirect to dashboard if accessing auth routes while authenticated
   if (isAuthRoute && isAuthenticated) {
     return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
-  // Add agency ID to request headers for API routes
   if (isAuthenticated && agencyId) {
     const requestHeaders = new Headers(request.headers)
     requestHeaders.set("x-agency-id", agencyId)
@@ -70,15 +107,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth (auth API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (images, etc.)
-     * - widget (public widget embed pages)
-     */
-    "/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\..*|widget).*)",
+    "/((?!api/auth|api/affiliate/register|api/affiliate/login|api/affiliate/track-click|api/affiliate/connect/callback|_next/static|_next/image|favicon.ico|.*\\..*|widget).*)",
   ],
 }

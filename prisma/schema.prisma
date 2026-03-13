@@ -33,6 +33,7 @@ model Agency {
   notifications  Notification[]
   subscription   Subscription?
   widgetConfigs  WidgetConfig[]
+  referral       Referral?
 
   @@map("agencies")
 }
@@ -195,6 +196,7 @@ model Subscription {
   valuationsUsedThisMonth  Int       @default(0) @map("valuations_used_this_month")
   onboardingCompletedAt    DateTime? @map("onboarding_completed_at")
   trialDays                Int?      @map("trial_days")
+  billingInterval          String    @default("monthly") @map("billing_interval") // monthly | quarterly | yearly
   agency                   Agency    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
   @@index([status])
@@ -447,4 +449,107 @@ model ZoneInsight {
   @@index([citta, zona])
   @@index([cap])
   @@map("zone_insights")
+}
+
+// ==========================================
+// AFFILIATE SYSTEM
+// ==========================================
+
+model Affiliate {
+  id                     String             @id @default(cuid())
+  nome                   String
+  cognome                String
+  email                  String             @unique
+  password               String
+  telefono               String?
+  attivo                 Boolean            @default(true)
+  stripeConnectId        String?            @unique @map("stripe_connect_id")
+  stripeConnectOnboarded Boolean            @default(false) @map("stripe_connect_onboarded")
+  payoutsEnabled         Boolean            @default(false) @map("payouts_enabled")
+  dataCreazione          DateTime           @default(now()) @map("data_creazione")
+  sessions               AffiliateSession[]
+  referralCodes          ReferralCode[]
+  referrals              Referral[]
+  commissions            Commission[]
+
+  @@index([email])
+  @@map("affiliates")
+}
+
+model AffiliateSession {
+  id             String    @id @default(cuid())
+  affiliateId    String    @map("affiliate_id")
+  tokenHash      String    @map("token_hash")
+  ipAddress      String?   @map("ip_address")
+  userAgent      String?   @map("user_agent")
+  loginAt        DateTime  @default(now()) @map("login_at")
+  expiresAt      DateTime  @map("expires_at")
+  lastActivityAt DateTime  @default(now()) @map("last_activity_at")
+  revokedAt      DateTime? @map("revoked_at")
+  affiliate      Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@index([affiliateId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("affiliate_sessions")
+}
+
+model ReferralCode {
+  id          String     @id @default(cuid())
+  affiliateId String     @map("affiliate_id")
+  code        String     @unique
+  label       String?
+  isActive    Boolean    @default(true) @map("is_active")
+  clicks      Int        @default(0)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  affiliate   Affiliate  @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  referrals   Referral[]
+
+  @@index([affiliateId])
+  @@index([code])
+  @@map("referral_codes")
+}
+
+model Referral {
+  id             String       @id @default(cuid())
+  affiliateId    String       @map("affiliate_id")
+  referralCodeId String       @map("referral_code_id")
+  agencyId       String       @unique @map("agency_id")
+  status         String       @default("registered")
+  convertedAt    DateTime?    @map("converted_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  affiliate      Affiliate    @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  referralCode   ReferralCode @relation(fields: [referralCodeId], references: [id], onDelete: Cascade)
+  agency         Agency       @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  commissions    Commission[]
+
+  @@index([affiliateId])
+  @@index([agencyId])
+  @@index([status])
+  @@map("referrals")
+}
+
+model Commission {
+  id                 String    @id @default(cuid())
+  affiliateId        String    @map("affiliate_id")
+  referralId         String    @map("referral_id")
+  stripeInvoiceId    String    @map("stripe_invoice_id")
+  stripeTransferId   String?   @map("stripe_transfer_id")
+  amountCents        Int       @map("amount_cents")
+  invoiceAmountCents Int       @map("invoice_amount_cents")
+  commissionRate     Float     @default(0.10) @map("commission_rate")
+  currency           String    @default("eur")
+  status             String    @default("pending")
+  paidAt             DateTime? @map("paid_at")
+  failReason         String?   @map("fail_reason")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  affiliate          Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  referral           Referral  @relation(fields: [referralId], references: [id], onDelete: Cascade)
+
+  @@unique([stripeInvoiceId, affiliateId], name: "Commission_invoice_affiliate")
+  @@index([affiliateId])
+  @@index([referralId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("commissions")
 }

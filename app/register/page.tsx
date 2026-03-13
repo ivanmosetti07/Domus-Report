@@ -28,9 +28,14 @@ export default function RegisterPage() {
 
   const calculatePasswordStrength = (password: string) => {
     if (password.length < 8) return 'weak'
-    if (password.length >= 8 && password.length < 12) return 'medium'
-    if (password.length >= 12) return 'strong'
-    return null
+    let score = 0
+    if (password.length >= 8) score++
+    if (password.length >= 12) score++
+    if (/[A-Z]/.test(password)) score++
+    if (/[0-9]/.test(password)) score++
+    if (/[^A-Za-z0-9]/.test(password)) score++
+    if (score <= 2) return 'medium'
+    return 'strong'
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {

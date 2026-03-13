@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Alert } from "@/components/ui/alert"
-import { PLAN_PRICES, planLimits, EXTRA_VALUATION_PRICE } from "@/lib/plan-limits"
+import { PLAN_PRICES, planLimits, EXTRA_VALUATION_PRICE, type BillingInterval, BILLING_INTERVALS, getPlanPrice, getMonthlyEquivalent, formatPlanPrice } from "@/lib/plan-limits"
+import { BillingIntervalToggle } from "@/components/ui/billing-interval-toggle"
 import {
   CreditCard,
   Check,
@@ -33,6 +34,7 @@ interface Subscription {
   id: string
   planType: 'free' | 'basic' | 'premium'
   status: 'active' | 'cancelled' | 'expired' | 'trial' | 'past_due'
+  billingInterval?: BillingInterval
   trialEndsAt: string | null
   nextBillingDate: string | null
   cancelledAt: string | null
@@ -131,6 +133,7 @@ export default function SubscriptionPage() {
   const [promoDiscount, setPromoDiscount] = useState<number>(0)
   const [extraQuantity, setExtraQuantity] = useState(10)
   const [buyingExtra, setBuyingExtra] = useState(false)
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly')
   const { toast } = useToast()
   const hasProcessedParams = useRef(false)
 
@@ -306,6 +309,7 @@ export default function SubscriptionPage() {
         },
         body: JSON.stringify({
           planType,
+          billingInterval,
           promoCode: promoValid ? promoCode : undefined
         })
       })
@@ -482,7 +486,9 @@ export default function SubscriptionPage() {
                 <CardDescription>
                   {CurrentPlanInfo.price === 0
                     ? 'Gratuito'
-                    : `€${CurrentPlanInfo.price}/mese`}
+                    : subscription?.billingInterval
+                      ? formatPlanPrice(currentPlan, subscription.billingInterval)
+                      : `€${CurrentPlanInfo.price}/mese`}
                 </CardDescription>
               </div>
             </div>
@@ -733,10 +739,27 @@ export default function SubscriptionPage() {
       {/* Plans Comparison */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Piani disponibili</h2>
+
+        <BillingIntervalToggle
+          value={billingInterval}
+          onChange={setBillingInterval}
+          className="mb-6"
+        />
+
         <div className="grid md:grid-cols-3 gap-6">
           {(Object.entries(PLANS) as [keyof typeof PLANS, typeof PLANS[keyof typeof PLANS]][]).map(([key, plan]) => {
             const isCurrentPlan = currentPlan === key
             const Icon = plan.icon
+            const intervalDiscount = BILLING_INTERVALS[billingInterval].discount
+            const dynamicPrice = key === 'free'
+              ? '€0'
+              : `€${(getPlanPrice(key, billingInterval) / 100).toFixed(2)}`
+            const intervalLabel = billingInterval === 'monthly' ? '/mese'
+              : billingInterval === 'quarterly' ? '/trimestre'
+              : '/anno'
+            const monthlyEquiv = key !== 'free' && billingInterval !== 'monthly'
+              ? `€${(getMonthlyEquivalent(key, billingInterval) / 100).toFixed(2)}/mese`
+              : null
 
             return (
               <Card
@@ -755,9 +778,17 @@ export default function SubscriptionPage() {
                   </div>
                   <CardDescription>{plan.description}</CardDescription>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">€{plan.price}</span>
-                    {plan.price > 0 && <span className="text-muted-foreground">/mese</span>}
+                    <span className="text-4xl font-bold">{dynamicPrice}</span>
+                    {plan.price > 0 && <span className="text-muted-foreground">{intervalLabel}</span>}
+                    {key !== 'free' && intervalDiscount > 0 && (
+                      <span className="ml-2 inline-block bg-success/20 text-success px-2 py-0.5 rounded-full text-xs font-semibold border border-success/30">
+                        -{intervalDiscount * 100}%
+                      </span>
+                    )}
                   </div>
+                  {monthlyEquiv && (
+                    <p className="text-sm text-muted-foreground mt-1">{monthlyEquiv}</p>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">

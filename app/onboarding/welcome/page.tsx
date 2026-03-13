@@ -10,11 +10,14 @@ export default async function OnboardingWelcomePage() {
     redirect('/login')
   }
 
-  // Get agency and subscription data
+  // Get agency with subscription, widgets, leads, and settings
   const agency = await prisma.agency.findUnique({
     where: { id: auth.agencyId },
     include: {
-      subscription: true
+      subscription: true,
+      widgetConfigs: { where: { isActive: true }, select: { id: true }, take: 1 },
+      leads: { select: { id: true }, take: 1 },
+      settings: { select: { brandColors: true } },
     }
   })
 
@@ -45,6 +48,13 @@ export default async function OnboardingWelcomePage() {
     ? 'Basic'
     : 'Premium'
 
+  // Determine real checklist progress
+  const checklistProgress = {
+    hasWidget: agency.widgetConfigs.length > 0,
+    hasBrandColors: agency.settings?.brandColors != null,
+    hasLead: agency.leads.length > 0,
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-surface to-background py-12 px-4">
       <WelcomeChecklist
@@ -52,6 +62,7 @@ export default async function OnboardingWelcomePage() {
         planName={planName}
         trialDaysRemaining={trialDaysRemaining}
         trialEndsAt={agency.subscription.trialEndsAt || undefined}
+        checklistProgress={checklistProgress}
       />
     </div>
   )

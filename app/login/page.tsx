@@ -15,7 +15,6 @@ export default function LoginPage() {
   const [formData, setFormData] = React.useState({
     email: "",
     password: "",
-    rememberMe: false
   })
   const [errors, setErrors] = React.useState<Record<string, string>>({})
   const [loading, setLoading] = React.useState(false)
@@ -145,19 +144,6 @@ export default function LoginPage() {
                   </button>
                 </div>
                 {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  checked={formData.rememberMe}
-                  onChange={(e) => setFormData(prev => ({ ...prev, rememberMe: e.target.checked }))}
-                  className="rounded border-border bg-transparent text-primary focus:ring-primary"
-                />
-                <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">
-                  Ricordami
-                </Label>
               </div>
 
               <Button type="submit" className="w-full" size="lg" loading={loading}>

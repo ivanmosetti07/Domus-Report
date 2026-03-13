@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
-import { stripe, PlanType } from '@/lib/stripe'
+import { stripe, PlanType, AFFILIATE_COMMISSION_RATE } from '@/lib/stripe'
 import Stripe from 'stripe'
 
 // Disabilita body parsing per Stripe webhooks
@@ -270,7 +270,14 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
     }
   }
 
-  console.log(`[processCheckout] Piano finale: ${finalPlanType}, StripeSubscriptionId: ${stripeSubscription?.id}`)
+  // Determina billingInterval dai metadata o dalla subscription Stripe
+  const billingInterval = session.metadata?.billingInterval
+    || subData?.metadata?.billingInterval
+    || (subData?.items?.data?.[0]?.price?.recurring?.interval === 'year' ? 'yearly'
+      : subData?.items?.data?.[0]?.price?.recurring?.interval_count === 3 ? 'quarterly'
+      : 'monthly')
+
+  console.log(`[processCheckout] Piano finale: ${finalPlanType}, Intervallo: ${billingInterval}, StripeSubscriptionId: ${stripeSubscription?.id}`)
 
   // Aggiorna subscription nel DB
   await prisma.subscription.upsert({
@@ -282,7 +289,8 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
       stripeCustomerId: session.customer as string,
       stripeSubscriptionId: stripeSubscription?.id || null,
       stripePriceId: priceId,
-      nextBillingDate: periodEnd
+      nextBillingDate: periodEnd,
+      billingInterval
     },
     update: {
       planType: finalPlanType,
@@ -291,7 +299,8 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
       stripeSubscriptionId: stripeSubscription?.id || null,
       stripePriceId: priceId,
       nextBillingDate: periodEnd,
-      cancelledAt: null
+      cancelledAt: null,
+      billingInterval
     }
   })
 
@@ -331,6 +340,12 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
       title: 'Abbonamento attivato',
       message: `Il tuo piano ${planType?.toUpperCase() || 'BASIC'} è ora attivo!`
     }
+  })
+
+  // Aggiorna referral se presente (registrata → abbonata)
+  await prisma.referral.updateMany({
+    where: { agencyId, status: 'registered' },
+    data: { status: 'subscribed', convertedAt: new Date() }
   })
 }
 
@@ -395,6 +410,12 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   else if (subData.status === 'trialing') status = 'trial'
   else if (subData.status === 'unpaid') status = 'expired'
 
+  // Determina billingInterval dai metadata o dal price Stripe
+  const billingInterval = subData.metadata?.billingInterval
+    || (subData.items?.data?.[0]?.price?.recurring?.interval === 'year' ? 'yearly'
+      : subData.items?.data?.[0]?.price?.recurring?.interval_count === 3 ? 'quarterly'
+      : 'monthly')
+
   // Aggiorna DB - Subscription
   await prisma.subscription.update({
     where: { agencyId },
@@ -406,7 +427,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       nextBillingDate: subData.current_period_end ? new Date(subData.current_period_end * 1000) : null,
       cancelledAt: subData.canceled_at
         ? new Date(subData.canceled_at * 1000)
-        : null
+        : null,
+      billingInterval
     }
   })
 
@@ -454,6 +476,12 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   await prisma.agency.update({
     where: { id: dbSubscription.agencyId },
     data: { piano: 'free' }
+  })
+
+  // Aggiorna referral status se presente
+  await prisma.referral.updateMany({
+    where: { agencyId: dbSubscription.agencyId, status: 'subscribed' },
+    data: { status: 'churned' }
   })
 
   // Invia email
@@ -568,6 +596,9 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   }
 
   console.log(`Crediti accreditati: ${planCredits} per agency ${dbSubscription.agencyId}`)
+
+  // === AFFILIATE COMMISSION ===
+  await processAffiliateCommission(dbSubscription.agencyId, invoiceData)
 }
 
 // Handler: setup_intent.succeeded
@@ -744,5 +775,93 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
       message: 'Il pagamento per il tuo abbonamento non è andato a buon fine. Aggiorna il metodo di pagamento.'
     }
   })
+}
+
+// === AFFILIATE COMMISSION PROCESSING ===
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function processAffiliateCommission(agencyId: string, invoiceData: any) {
+  try {
+    // 1. Cerca se questa agenzia è stata referita
+    const referral = await prisma.referral.findUnique({
+      where: { agencyId },
+      include: { affiliate: true },
+    })
+
+    if (!referral) return // Agenzia non referita
+
+    // 2. Verifica che l'affiliato sia attivo e onboarded
+    if (!referral.affiliate.attivo ||
+        !referral.affiliate.stripeConnectId ||
+        !referral.affiliate.payoutsEnabled) {
+      console.log(`[processAffiliateCommission] Affiliato ${referral.affiliateId} non può ricevere commissioni (attivo: ${referral.affiliate.attivo}, connect: ${referral.affiliate.stripeConnectId}, payouts: ${referral.affiliate.payoutsEnabled})`)
+      return
+    }
+
+    // 3. Evita commissioni duplicate
+    const existingCommission = await prisma.commission.findFirst({
+      where: {
+        stripeInvoiceId: invoiceData.id,
+        affiliateId: referral.affiliateId,
+      },
+    })
+    if (existingCommission) return
+
+    // 4. Calcola commissione
+    const invoiceAmount = invoiceData.amount_paid || 0
+    const commissionAmount = Math.round(invoiceAmount * AFFILIATE_COMMISSION_RATE)
+
+    if (commissionAmount < 100) return // Min 1 EUR
+
+    // 5. Crea record commissione
+    const commission = await prisma.commission.create({
+      data: {
+        affiliateId: referral.affiliateId,
+        referralId: referral.id,
+        stripeInvoiceId: invoiceData.id,
+        amountCents: commissionAmount,
+        invoiceAmountCents: invoiceAmount,
+        commissionRate: AFFILIATE_COMMISSION_RATE,
+        status: 'pending',
+      },
+    })
+
+    // 6. Esegui Transfer Stripe Connect
+    try {
+      const transfer = await stripe.transfers.create({
+        amount: commissionAmount,
+        currency: 'eur',
+        destination: referral.affiliate.stripeConnectId!,
+        transfer_group: `referral_${referral.id}`,
+        metadata: {
+          commissionId: commission.id,
+          affiliateId: referral.affiliateId,
+          agencyId,
+          invoiceId: invoiceData.id,
+        },
+      })
+
+      await prisma.commission.update({
+        where: { id: commission.id },
+        data: {
+          status: 'transferred',
+          stripeTransferId: transfer.id,
+          paidAt: new Date(),
+        },
+      })
+
+      console.log(`[processAffiliateCommission] ✅ Commissione €${(commissionAmount / 100).toFixed(2)} trasferita a affiliato ${referral.affiliateId}`)
+    } catch (transferError) {
+      await prisma.commission.update({
+        where: { id: commission.id },
+        data: {
+          status: 'failed',
+          failReason: transferError instanceof Error ? transferError.message : 'Errore trasferimento',
+        },
+      })
+      console.error('[processAffiliateCommission] Errore trasferimento:', transferError)
+    }
+  } catch (error) {
+    console.error('[processAffiliateCommission] Errore generale:', error)
+  }
 }
 

@@ -7,9 +7,10 @@ import { prisma } from "./prisma"
 const logger = createLogger('auth')
 
 // JWT secret - same as in login route
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || "domusreport-jwt-secret-change-in-production"
-)
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("NEXTAUTH_SECRET environment variable is required")
+}
+const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET)
 
 interface JWTPayload {
   agencyId: string

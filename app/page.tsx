@@ -34,6 +34,20 @@ import {
 export default function LandingPage() {
   const [showDemoWidget, setShowDemoWidget] = React.useState(false)
 
+  // Referral tracking: salva codice referral nel cookie
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const ref = params.get('ref')
+    if (ref) {
+      document.cookie = `domus_ref=${ref}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`
+      fetch('/api/affiliate/track-click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: ref }),
+      }).catch(() => {})
+    }
+  }, [])
+
   // Structured Data JSON-LD per SEO
   const structuredData = {
     "@context": "https://schema.org",

@@ -21,6 +21,7 @@ interface PlanCardProps {
   onSelect: () => void
   isLoading?: boolean
   isSelected?: boolean
+  discount?: number // percentuale sconto (es. 5, 10)
 }
 
 export function PlanCard({
@@ -34,7 +35,8 @@ export function PlanCard({
   ctaText,
   onSelect,
   isLoading,
-  isSelected
+  isSelected,
+  discount
 }: PlanCardProps) {
   return (
     <Card className={`relative h-full flex flex-col transition-all duration-240 ${
@@ -64,7 +66,12 @@ export function PlanCard({
         <div className="mb-2">
           <span className="text-4xl font-bold text-foreground">{price}</span>
           {priceSubtext && (
-            <span className="text-foreground-muted ml-2">{priceSubtext}</span>
+            <span className="text-sm text-foreground-muted ml-2">{priceSubtext}</span>
+          )}
+          {discount && discount > 0 && (
+            <span className="ml-2 inline-block bg-success/20 text-success px-2 py-0.5 rounded-full text-xs font-semibold border border-success/30">
+              -{discount}%
+            </span>
           )}
         </div>
 

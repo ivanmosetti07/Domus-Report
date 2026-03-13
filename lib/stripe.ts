@@ -88,7 +88,23 @@ export const STRIPE_PLANS = {
 // Prezzo valutazioni extra
 export const EXTRA_VALUATION_PRICE = 150 // €1.50 in centesimi
 
+// Commissione affiliati
+export const AFFILIATE_COMMISSION_RATE = 0.10 // 10%
+
 export type PlanType = keyof typeof STRIPE_PLANS
+
+// Re-export per comodità
+export type { BillingInterval } from '@/lib/plan-limits'
+export { BILLING_INTERVALS, VALID_BILLING_INTERVALS, getPlanPrice, getMonthlyEquivalent, formatPlanPrice } from '@/lib/plan-limits'
+
+/** Mappa BillingInterval ai parametri Stripe recurring */
+export function getStripeRecurring(interval: 'monthly' | 'quarterly' | 'yearly'): { interval: 'month' | 'year'; interval_count: number } {
+  switch (interval) {
+    case 'monthly': return { interval: 'month', interval_count: 1 }
+    case 'quarterly': return { interval: 'month', interval_count: 3 }
+    case 'yearly': return { interval: 'year', interval_count: 1 }
+  }
+}
 
 // Helper per ottenere info piano
 export function getPlanInfo(planType: PlanType) {

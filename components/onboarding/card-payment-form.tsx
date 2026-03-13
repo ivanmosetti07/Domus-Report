@@ -11,12 +11,18 @@ import {
 import { stripePromise } from '@/lib/stripe-client'
 import { Button } from '@/components/ui/button'
 import { trackPlanSelected, trackTrialStart } from '@/lib/gtag'
-import { PLAN_PRICES } from '@/lib/plan-limits'
+import { type BillingInterval, formatPlanPrice, getPlanPrice } from '@/lib/plan-limits'
 
 type PlanType = 'basic' | 'premium'
 
+interface PaymentFormProps {
+  planType: PlanType
+  billingInterval: BillingInterval
+  onCancel: () => void
+}
+
 // Form interno che usa gli hook Stripe
-function PaymentForm({ planType, onCancel }: { planType: PlanType; onCancel: () => void }) {
+function PaymentForm({ planType, billingInterval, onCancel }: PaymentFormProps) {
   const stripe = useStripe()
   const elements = useElements()
   const router = useRouter()
@@ -63,6 +69,7 @@ function PaymentForm({ planType, onCancel }: { planType: PlanType; onCancel: () 
           planType,
           paymentMethodId: paymentMethod.id,
           trialDays: 7,
+          billingInterval,
         }),
       })
 
@@ -72,7 +79,7 @@ function PaymentForm({ planType, onCancel }: { planType: PlanType; onCancel: () 
       }
 
       // GA4 tracking
-      const planValue = PLAN_PRICES[planType] / 100
+      const planValue = getPlanPrice(planType, billingInterval) / 100
       trackPlanSelected({ planType, value: planValue, hasTrial: true })
       trackTrialStart({ planType, trialDays: 7, value: planValue })
 
@@ -83,13 +90,15 @@ function PaymentForm({ planType, onCancel }: { planType: PlanType; onCancel: () 
     }
   }
 
+  const priceLabel = formatPlanPrice(planType, billingInterval)
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Riepilogo trial */}
       <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 space-y-2 text-sm text-foreground">
         <p className="flex items-center gap-2">
           <span className="text-primary font-bold">✓</span>
-          7 giorni gratuiti, poi €{PLAN_PRICES[planType] / 100}/mese
+          7 giorni gratuiti, poi {priceLabel}
         </p>
         <p className="flex items-center gap-2">
           <span className="text-primary font-bold">✓</span>
@@ -141,9 +150,11 @@ function PaymentForm({ planType, onCancel }: { planType: PlanType; onCancel: () 
 // Wrapper che fornisce il contesto Elements
 export function CardPaymentForm({
   planType,
+  billingInterval = 'monthly',
   onCancel,
 }: {
   planType: PlanType
+  billingInterval?: BillingInterval
   onCancel: () => void
 }) {
   return (
@@ -165,7 +176,7 @@ export function CardPaymentForm({
         },
       }}
     >
-      <PaymentForm planType={planType} onCancel={onCancel} />
+      <PaymentForm planType={planType} billingInterval={billingInterval} onCancel={onCancel} />
     </Elements>
   )
 }

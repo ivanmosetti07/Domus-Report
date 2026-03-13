@@ -26,11 +26,19 @@ export default async function DashboardLayout({
     select: {
       nome: true,
       logoUrl: true,
+      subscription: {
+        select: { onboardingCompletedAt: true }
+      }
     },
   })
 
   if (!agency) {
     redirect("/login")
+  }
+
+  // Redirect to onboarding if not completed
+  if (!agency.subscription?.onboardingCompletedAt) {
+    redirect("/onboarding/plan")
   }
 
   return (
