@@ -6,11 +6,13 @@ import { prisma } from "./prisma"
 
 const logger = createLogger('auth')
 
-// JWT secret - same as in login route
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error("NEXTAUTH_SECRET environment variable is required")
+// JWT secret - lazy initialization to avoid build-time errors
+function getJwtSecret() {
+  if (!process.env.NEXTAUTH_SECRET) {
+    throw new Error("NEXTAUTH_SECRET environment variable is required")
+  }
+  return new TextEncoder().encode(process.env.NEXTAUTH_SECRET)
 }
-const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET)
 
 interface JWTPayload {
   agencyId: string
@@ -26,7 +28,7 @@ interface JWTPayload {
 export async function verifyAuth(token: string): Promise<JWTPayload | null> {
   try {
     // 1. Verify JWT signature
-    const verified = await jwtVerify(token, JWT_SECRET)
+    const verified = await jwtVerify(token, getJwtSecret())
     const payload = verified.payload as unknown as JWTPayload
 
     // 2. Calculate token hash

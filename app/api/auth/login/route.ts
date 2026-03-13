@@ -10,11 +10,13 @@ export interface LoginRequest {
   password: string
 }
 
-// JWT secret from environment
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error("NEXTAUTH_SECRET environment variable is required")
+// JWT secret - lazy initialization to avoid build-time errors
+function getJwtSecret() {
+  if (!process.env.NEXTAUTH_SECRET) {
+    throw new Error("NEXTAUTH_SECRET environment variable is required")
+  }
+  return new TextEncoder().encode(process.env.NEXTAUTH_SECRET)
 }
-const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET)
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,7 +79,7 @@ export async function POST(request: NextRequest) {
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("7d") // Token expires in 7 days
-      .sign(JWT_SECRET)
+      .sign(getJwtSecret())
 
     // Calculate token hash for database storage
     const tokenHash = createHash("sha256").update(token).digest("hex")

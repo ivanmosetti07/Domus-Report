@@ -2,11 +2,12 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { jwtVerify } from "jose"
 
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error("NEXTAUTH_SECRET environment variable is required")
+function getJwtSecret() {
+  if (!process.env.NEXTAUTH_SECRET) {
+    throw new Error("NEXTAUTH_SECRET environment variable is required")
+  }
+  return new TextEncoder().encode(process.env.NEXTAUTH_SECRET)
 }
-
-const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET)
 
 // Routes that require agency authentication
 const protectedRoutes = ["/dashboard", "/onboarding"]
@@ -37,7 +38,7 @@ export async function middleware(request: NextRequest) {
 
     if (affiliateToken) {
       try {
-        const verified = await jwtVerify(affiliateToken, JWT_SECRET)
+        const verified = await jwtVerify(affiliateToken, getJwtSecret())
         if (verified.payload.role === 'affiliate') {
           isAffiliateAuthenticated = true
         }
@@ -67,7 +68,7 @@ export async function middleware(request: NextRequest) {
 
   if (token) {
     try {
-      const verified = await jwtVerify(token, JWT_SECRET)
+      const verified = await jwtVerify(token, getJwtSecret())
       isAuthenticated = true
       agencyId = verified.payload.agencyId as string
     } catch (error) {
