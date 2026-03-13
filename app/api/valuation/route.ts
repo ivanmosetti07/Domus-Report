@@ -141,20 +141,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Se l'AI suggerisce un aggiustamento, applicalo alla valutazione
+    // L'AI fornisce solo la spiegazione testuale, NON modifica i prezzi.
+    // I prezzi devono rimanere matematicamente coerenti:
+    // prezzoStimato = superficie × valoreOmiBase × coefficientePiano × coefficienteStato
     let finalValuation = { ...baseValuation }
-    if (aiAnalysis && aiAnalysis.adjustmentFactor !== 1.0) {
-      const adjustment = aiAnalysis.adjustmentFactor
-      finalValuation = {
-        ...baseValuation,
-        estimatedPrice: Math.round(baseValuation.estimatedPrice * adjustment),
-        minPrice: Math.round(baseValuation.minPrice * adjustment),
-        maxPrice: Math.round(baseValuation.maxPrice * adjustment),
-        // Aggiorna la spiegazione con l'analisi AI
-        explanation: aiAnalysis.analysis,
-      }
-    } else if (aiAnalysis) {
-      // Anche senza aggiustamento, usa l'analisi AI come spiegazione
+    if (aiAnalysis) {
       finalValuation.explanation = aiAnalysis.analysis
     }
 

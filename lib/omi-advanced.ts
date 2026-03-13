@@ -240,6 +240,46 @@ export function getOMIValueByZone(
   }
 
   if (cityFiltered.length === 0) {
+    // 4. Fallback finale: cerca per CAP su TUTTE le città del CSV.
+    // Utile quando il nome città fornito non corrisponde esattamente al CSV
+    // (es. "Milano" vs "Milano (MI)", varianti, accenti, ecc.)
+    if (cap) {
+      let capFiltered = allData.filter(record =>
+        record.cap === cap &&
+        record.tipoImmobile === tipoImmobile
+      )
+
+      if (categoria) {
+        capFiltered = capFiltered.filter(record =>
+          matchesCaseInsensitive(record.categoria, categoria)
+        )
+      }
+
+      if (capFiltered.length > 0) {
+        capFiltered.sort((a, b) => {
+          if (a.anno !== b.anno) return b.anno - a.anno
+          return b.semestre - a.semestre
+        })
+
+        const recentCap = capFiltered.slice(0, Math.min(5, capFiltered.length))
+        const avgMin = recentCap.reduce((sum, v) => sum + v.valoreMinMq, 0) / recentCap.length
+        const avgMax = recentCap.reduce((sum, v) => sum + v.valoreMaxMq, 0) / recentCap.length
+        const avgMedio = recentCap.reduce((sum, v) => sum + v.valoreMedioMq, 0) / recentCap.length
+
+        logger.warn("City not found in OMI data, using CAP fallback", { citta, cap })
+
+        return {
+          valoreMinMq: Math.round(avgMin),
+          valoreMaxMq: Math.round(avgMax),
+          valoreMedioMq: Math.round(avgMedio),
+          zona: "Media CAP",
+          fonte: "OMI (media CAP)",
+          semestre: recentCap[0].semestre,
+          anno: recentCap[0].anno,
+        }
+      }
+    }
+
     return null
   }
 
@@ -432,12 +472,17 @@ export function getZonesByCity(citta: string): Array<{
 export function mapPropertyTypeToOMI(propertyType: PropertyType): string {
   switch (propertyType) {
     case PropertyType.APARTMENT:
+    case PropertyType.ATTICO:
     case PropertyType.VILLA:
       return "residenziale"
     case PropertyType.OFFICE:
       return "uffici"
-    case PropertyType.OTHER:
+    case PropertyType.SHOP:
       return "commerciale"
+    case PropertyType.BOX:
+      return "box"
+    case PropertyType.OTHER:
+    case PropertyType.LAND:
     default:
       return "residenziale"
   }
