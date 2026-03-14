@@ -1,5 +1,7 @@
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
+import { FadeIn } from "@/components/animations/fade-in"
+import { SlideUp } from "@/components/animations/slide-up"
 
 export const metadata = {
   title: "Termini e Condizioni - DomusReport",
@@ -14,11 +16,17 @@ export default function TermsPage() {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      <main className="legal-page marketing-prose">
-        <h1>Termini e Condizioni</h1>
-        <p>Ultimo aggiornamento: Dicembre 2024</p>
+      <main className="min-h-screen py-10">
+        <FadeIn>
+          <div className="site-container max-w-4xl text-center py-12 sm:py-20 bg-surface/30 border border-border/50 rounded-3xl mb-12 shadow-sm">
+            <h1 className="text-4xl sm:text-5xl font-black mb-4 text-balance">Termini e Condizioni</h1>
+            <p className="text-foreground-muted text-lg">Ultimo aggiornamento: Dicembre 2024</p>
+          </div>
+        </FadeIn>
 
-        <section>
+        <SlideUp>
+          <div className="site-container max-w-3xl marketing-prose prose-slate dark:prose-invert prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-p:text-foreground-muted prose-li:text-foreground-muted">
+            <section>
           <h2>1. Accettazione dei Termini</h2>
           <p>
             Utilizzando DomusReport, accetti integralmente i presenti Termini e Condizioni. Se non accetti
@@ -166,6 +174,8 @@ export default function TermsPage() {
             Email: info@domusreport.com
           </p>
         </section>
+        </div>
+        </SlideUp>
       </main>
 
       <Footer />
