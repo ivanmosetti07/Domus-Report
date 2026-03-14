@@ -10,9 +10,11 @@ import { CheckCircle, X, ArrowRight, Sparkles } from "lucide-react"
 import { type BillingInterval, getMonthlyEquivalent, BILLING_INTERVALS } from "@/lib/plan-limits"
 import { SectionHeader } from "./section-header"
 import { PLANS } from "./landing-data"
+import { useReveal } from "./use-reveal"
 
 export function PricingSection() {
   const [billingInterval, setBillingInterval] = React.useState<BillingInterval>("monthly")
+  const ref = useReveal()
 
   const getDisplayPrice = (monthlyPrice: number): number => {
     if (monthlyPrice === 0) return 0
@@ -24,13 +26,12 @@ export function PricingSection() {
 
   return (
     <section className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-surface">
-      <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1600px] mx-auto">
+      <div ref={ref} className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1600px] mx-auto reveal-stagger">
         <SectionHeader
           badge={{ icon: Sparkles, label: "Prezzi trasparenti" }}
           title={
             <>
-              Piani senza vincoli,
-              <br className="hidden sm:block" />{" "}
+              Piani senza vincoli,{" "}
               <span className="text-primary">risultati concreti</span>
             </>
           }
@@ -38,7 +39,7 @@ export function PricingSection() {
         />
 
         {/* Billing Toggle */}
-        <div className="flex justify-center mb-12">
+        <div className="reveal flex justify-center mb-10 sm:mb-12">
           <BillingIntervalToggle
             value={billingInterval}
             onChange={setBillingInterval}
@@ -53,7 +54,7 @@ export function PricingSection() {
             return (
               <Card
                 key={plan.slug}
-                className={`border-2 transition-all ${
+                className={`reveal card-glow border-2 transition-all ${
                   isRecommended
                     ? "border-primary shadow-glow-primary relative lg:scale-105"
                     : "border-border hover:border-primary/50"
@@ -71,17 +72,17 @@ export function PricingSection() {
                   isRecommended ? "bg-gradient-to-b from-primary/5 to-transparent pt-8 sm:pt-10" : ""
                 }`}>
                   <div>
-                    <h3 className={`text-3xl font-black mb-2 ${isRecommended ? "text-primary" : "text-foreground"}`}>
+                    <h3 className={`text-2xl sm:text-3xl font-black mb-2 ${isRecommended ? "text-primary" : "text-foreground"}`}>
                       {plan.name}
                     </h3>
-                    <p className="text-foreground-muted">{plan.description}</p>
+                    <p className="text-sm sm:text-base text-foreground-muted">{plan.description}</p>
                   </div>
 
                   <div className="flex items-baseline gap-2">
-                    <span className={`text-6xl font-black ${isRecommended ? "text-primary" : "text-foreground"}`}>
+                    <span className={`text-4xl sm:text-5xl lg:text-6xl font-black ${isRecommended ? "text-primary" : "text-foreground"}`}>
                       €{displayPrice}
                     </span>
-                    <span className="text-xl text-foreground-muted">/mese</span>
+                    <span className="text-lg sm:text-xl text-foreground-muted">/mese</span>
                   </div>
 
                   {discount > 0 && plan.monthlyPrice > 0 && (
@@ -91,7 +92,7 @@ export function PricingSection() {
                     </div>
                   )}
 
-                  <ul className="space-y-4">
+                  <ul className="space-y-3 sm:space-y-4">
                     {plan.features.map((feature) => (
                       <li key={feature.text} className="flex items-center gap-3">
                         {feature.included ? (
@@ -99,7 +100,7 @@ export function PricingSection() {
                         ) : (
                           <X className="w-5 h-5 text-foreground-subtle flex-shrink-0" />
                         )}
-                        <span className={`${
+                        <span className={`text-sm sm:text-base ${
                           feature.included
                             ? isRecommended ? "text-foreground font-medium" : "text-foreground"
                             : "text-foreground-subtle"
@@ -114,7 +115,7 @@ export function PricingSection() {
                     <Button
                       size="lg"
                       variant={plan.ctaVariant as "outline" | "default"}
-                      className={`w-full text-lg py-6 ${isRecommended ? "shadow-xl" : ""}`}
+                      className={`w-full text-base sm:text-lg py-5 sm:py-6 ${isRecommended ? "shadow-xl" : ""}`}
                     >
                       {plan.ctaText}
                       {isRecommended && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -126,7 +127,7 @@ export function PricingSection() {
           })}
         </div>
 
-        <p className="text-center text-foreground-muted mt-12 text-lg">
+        <p className="reveal text-center text-foreground-muted mt-10 sm:mt-12 text-sm sm:text-base lg:text-lg">
           Tutti i piani &bull; 7 giorni gratis &bull; Nessuna carta richiesta &bull; Cancella quando vuoi
         </p>
       </div>

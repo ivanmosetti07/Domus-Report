@@ -475,4 +475,69 @@
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
+
+  /* Scroll-reveal animations */
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes reveal-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes reveal-scale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .reveal {
+    opacity: 0;
+  }
+
+  .reveal.in-view {
+    animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .reveal-fade.in-view {
+    animation: reveal-fade 0.6s ease-out forwards;
+  }
+
+  .reveal-scale.in-view {
+    animation: reveal-scale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Stagger children */
+  .reveal-stagger > .reveal:nth-child(1) { animation-delay: 0ms; }
+  .reveal-stagger > .reveal:nth-child(2) { animation-delay: 100ms; }
+  .reveal-stagger > .reveal:nth-child(3) { animation-delay: 200ms; }
+  .reveal-stagger > .reveal:nth-child(4) { animation-delay: 300ms; }
+  .reveal-stagger > .reveal:nth-child(5) { animation-delay: 400ms; }
+  .reveal-stagger > .reveal:nth-child(6) { animation-delay: 500ms; }
+
+  /* Gradient border glow for hover */
+  .card-glow {
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-glow:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 0 20px hsl(var(--primary) / 0.15),
+      0 8px 32px -8px rgba(0, 0, 0, 0.3);
+    border-color: hsl(var(--primary) / 0.5);
+  }
 }

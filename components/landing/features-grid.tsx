@@ -1,18 +1,22 @@
+"use client"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Target } from "lucide-react"
 import { SectionHeader } from "./section-header"
 import { FEATURES } from "./landing-data"
+import { useReveal } from "./use-reveal"
 
 export function FeaturesGrid() {
+  const ref = useReveal()
+
   return (
     <section className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-background">
-      <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1800px] mx-auto">
+      <div ref={ref} className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1600px] mx-auto reveal-stagger">
         <SectionHeader
           badge={{ icon: Target, label: "Tutto incluso" }}
           title={
             <>
-              Chatbot AI.
-              <br className="hidden sm:block" /> Valutazioni real-time.{" "}
+              Chatbot AI. Valutazioni real-time.{" "}
               <span className="text-primary">Incarichi automatici.</span>
             </>
           }
@@ -24,7 +28,7 @@ export function FeaturesGrid() {
           {FEATURES.map((feature) => (
             <Card
               key={feature.title}
-              className={`border-2 border-border hover:border-primary hover:shadow-2xl transition-all duration-300 group overflow-hidden ${
+              className={`reveal card-glow border-2 border-border hover:border-primary group overflow-hidden ${
                 feature.size === "large" ? "md:col-span-2" : ""
               }`}
             >
@@ -37,8 +41,8 @@ export function FeaturesGrid() {
                   </div>
                 </div>
                 <div className="space-y-2 sm:space-y-3">
-                  <h3 className="text-xl sm:text-2xl font-bold text-foreground">{feature.title}</h3>
-                  <p className="text-foreground-muted leading-relaxed">{feature.description}</p>
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground">{feature.title}</h3>
+                  <p className="text-sm sm:text-base text-foreground-muted leading-relaxed">{feature.description}</p>
                 </div>
               </CardContent>
             </Card>

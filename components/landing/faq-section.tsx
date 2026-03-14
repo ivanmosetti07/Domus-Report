@@ -4,13 +4,15 @@ import * as React from "react"
 import { HelpCircle, ChevronDown } from "lucide-react"
 import { SectionHeader } from "./section-header"
 import { FAQS } from "./landing-data"
+import { useReveal } from "./use-reveal"
 
 export function FaqSection() {
   const [openIndex, setOpenIndex] = React.useState<number | null>(null)
+  const ref = useReveal()
 
   return (
     <section className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-surface">
-      <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-3xl mx-auto">
+      <div ref={ref} className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-3xl mx-auto reveal-stagger">
         <SectionHeader
           badge={{ icon: HelpCircle, label: "FAQ" }}
           title={
@@ -22,28 +24,33 @@ export function FaqSection() {
           subtitle="Tutto quello che devi sapere su DomusReport"
         />
 
-        <div className="space-y-0">
+        <div className="reveal space-y-0">
           {FAQS.map((faq, i) => (
             <div key={faq.question} className="border-b border-border">
               <button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full flex items-center justify-between py-5 text-left group"
+                className="w-full flex items-center justify-between py-4 sm:py-5 text-left group"
               >
-                <span className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors pr-4">
+                <span className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors pr-4">
                   {faq.question}
                 </span>
                 <ChevronDown
-                  className={`w-5 h-5 text-foreground-muted flex-shrink-0 transition-transform duration-200 ${
+                  className={`w-5 h-5 text-foreground-muted flex-shrink-0 transition-transform duration-300 ${
                     openIndex === i ? "rotate-180" : ""
                   }`}
                 />
               </button>
               <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  openIndex === i ? "max-h-96 pb-5" : "max-h-0"
-                }`}
+                className="grid transition-all duration-300 ease-in-out"
+                style={{
+                  gridTemplateRows: openIndex === i ? "1fr" : "0fr",
+                }}
               >
-                <p className="text-foreground-muted leading-relaxed">{faq.answer}</p>
+                <div className="overflow-hidden">
+                  <p className="text-sm sm:text-base text-foreground-muted leading-relaxed pb-4 sm:pb-5">
+                    {faq.answer}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
