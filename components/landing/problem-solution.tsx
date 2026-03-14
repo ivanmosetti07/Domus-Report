@@ -9,8 +9,9 @@ export function ProblemSolution() {
   const ref = useReveal()
 
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-br from-foreground to-foreground/95 text-background py-16 sm:py-20 lg:py-24 xl:py-32">
-      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:30px_30px]" />
+    <section className="relative w-full overflow-hidden bg-[#0d1b1f] py-16 sm:py-20 lg:py-24 xl:py-32">
+      <div className="absolute inset-0 bg-grid-white/[0.03] bg-[size:30px_30px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
 
       <div ref={ref} className="reveal relative w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1800px] mx-auto">
         <div className="text-center max-w-4xl mx-auto mb-16">
