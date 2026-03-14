@@ -15,21 +15,12 @@ interface StatsChartProps {
 }
 
 export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 30 giorni" }: StatsChartProps) {
-  // Debug: mostra i dati in console
-  console.log('[StatsChart] Data received:', {
-    length: data.length,
-    sample: data.slice(0, 3),
-    totalLeads: data.reduce((sum, d) => sum + d.count, 0)
-  })
-
   if (data.length === 0) {
-    console.log('[StatsChart] No data, hiding chart')
     return null
   }
 
   // Calculate max value for scaling
   const maxCount = Math.max(...data.map(d => d.count), 1)
-  console.log('[StatsChart] Max count:', maxCount)
 
   // Calculate trend
   const firstHalf = data.slice(0, Math.floor(data.length / 2))
@@ -43,7 +34,9 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
 
   if (secondAvg > firstAvg * 1.1) {
     trendIcon = <TrendingUp className="w-4 h-4 text-success" />
-    trendText = `+${Math.round(((secondAvg - firstAvg) / firstAvg) * 100)}% rispetto a 15 giorni fa`
+    trendText = firstAvg > 0
+      ? `+${Math.round(((secondAvg - firstAvg) / firstAvg) * 100)}% rispetto a 15 giorni fa`
+      : `+${secondHalf.reduce((sum, d) => sum + d.count, 0)} lead in crescita`
     trendColor = "text-success"
   } else if (secondAvg < firstAvg * 0.9) {
     trendIcon = <TrendingDown className="w-4 h-4 text-destructive" />
@@ -121,7 +114,7 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
                   fontSize: 'clamp(0.625rem, 0.8vw, 0.75rem)'
                 }}>
                   {new Date(item.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
-                  : {item.count} lead{item.count !== 1 ? 's' : ''}
+                  : {item.count} lead
                 </div>
               </div>
             )
@@ -157,7 +150,7 @@ export function StatsChart({ data, title = "Trend Lead", description = "Ultimi 3
           <span className="font-semibold text-foreground" style={{
             fontSize: 'clamp(0.75rem, 1vw, 0.875rem)'
           }}>
-            {data.reduce((sum, d) => sum + d.count, 0)} lead{data.reduce((sum, d) => sum + d.count, 0) !== 1 ? 's' : ''}
+            {data.reduce((sum, d) => sum + d.count, 0)} lead
           </span>
         </div>
       </CardContent>
