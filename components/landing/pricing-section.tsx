@@ -2,19 +2,34 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { motion, Variants } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { BillingIntervalToggle } from "@/components/ui/billing-interval-toggle"
 import { CheckCircle, X, ArrowRight, Sparkles } from "lucide-react"
 import { type BillingInterval, getMonthlyEquivalent, BILLING_INTERVALS } from "@/lib/plan-limits"
 import { SectionHeader } from "./section-header"
 import { PLANS } from "./landing-data"
-import { useReveal } from "./use-reveal"
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+}
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 20 },
+  },
+}
 
 export function PricingSection() {
   const [billingInterval, setBillingInterval] = React.useState<BillingInterval>("monthly")
-  const ref = useReveal()
 
   const getDisplayPrice = (monthlyPrice: number): number => {
     if (monthlyPrice === 0) return 0
@@ -25,111 +40,135 @@ export function PricingSection() {
   const discount = BILLING_INTERVALS[billingInterval].discount
 
   return (
-    <section className="w-full py-16 sm:py-20 lg:py-24 xl:py-32 bg-surface">
-      <div ref={ref} className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1600px] mx-auto reveal-stagger">
+    <section className="w-full py-24 sm:py-32 bg-surface relative overflow-hidden">
+      {/* Decorative background */}
+      <div className="absolute top-0 right-1/4 w-[800px] h-[800px] bg-primary/5 blur-[150px] rounded-full pointer-events-none" />
+
+      <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1400px] mx-auto relative z-10">
         <SectionHeader
           badge={{ icon: Sparkles, label: "Prezzi trasparenti" }}
           title={
-            <>
+             <>
               Piani senza vincoli,{" "}
-              <span className="text-primary">risultati concreti</span>
+              <span className="text-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.3)]">risultati concreti</span>
             </>
           }
           subtitle="Tutti i piani includono 7 giorni di prova gratuita. Nessuna carta richiesta."
         />
 
-        {/* Billing Toggle */}
-        <div className="reveal flex justify-center mb-10 sm:mb-12">
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           className="flex justify-center mt-12 mb-16"
+        >
           <BillingIntervalToggle
             value={billingInterval}
             onChange={setBillingInterval}
           />
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center"
+        >
           {PLANS.map((plan) => {
             const displayPrice = getDisplayPrice(plan.monthlyPrice)
             const isRecommended = plan.recommended
 
             return (
-              <Card
-                key={plan.slug}
-                className={`reveal card-glow border-2 transition-all ${
-                  isRecommended
-                    ? "border-primary shadow-glow-primary relative lg:scale-105"
-                    : "border-border hover:border-primary/50"
-                }`}
-              >
+              <motion.div key={plan.slug} variants={itemVariants} className={`relative ${isRecommended ? 'z-10' : 'z-0'}`}>
                 {isRecommended && (
-                  <div className="absolute -top-4 sm:-top-5 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-bold shadow-xl">
-                      PIÙ POPOLARE
-                    </Badge>
-                  </div>
+                  <div className="absolute -inset-1 bg-gradient-to-b from-primary to-accent rounded-[32px] blur opacity-40" />
                 )}
-
-                <CardContent className={`p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8 ${
-                  isRecommended ? "bg-gradient-to-b from-primary/5 to-transparent pt-8 sm:pt-10" : ""
+                
+                <div className={`relative h-full flex flex-col bg-surface-2/80 backdrop-blur-xl border rounded-[32px] overflow-hidden ${
+                  isRecommended 
+                    ? "border-primary/50 shadow-2xl scale-100 lg:scale-105" 
+                    : "border-white/5 hover:border-white/10"
                 }`}>
-                  <div>
-                    <h3 className={`text-2xl sm:text-3xl font-black mb-2 ${isRecommended ? "text-primary" : "text-foreground"}`}>
-                      {plan.name}
-                    </h3>
-                    <p className="text-sm sm:text-base text-foreground-muted">{plan.description}</p>
-                  </div>
-
-                  <div className="flex items-baseline gap-2">
-                    <span className={`text-4xl sm:text-5xl lg:text-6xl font-black ${isRecommended ? "text-primary" : "text-foreground"}`}>
-                      €{displayPrice}
-                    </span>
-                    <span className="text-lg sm:text-xl text-foreground-muted">/mese</span>
-                  </div>
-
-                  {discount > 0 && plan.monthlyPrice > 0 && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm line-through text-foreground-muted">€{plan.monthlyPrice}/mese</span>
-                      <Badge variant="success" className="text-xs">-{discount * 100}%</Badge>
+                  {isRecommended && (
+                    <div className="bg-gradient-to-r from-primary to-accent py-2 text-center">
+                      <span className="text-primary-foreground text-xs font-black tracking-widest uppercase">
+                        Più Popolare
+                      </span>
                     </div>
                   )}
 
-                  <ul className="space-y-3 sm:space-y-4">
-                    {plan.features.map((feature) => (
-                      <li key={feature.text} className="flex items-center gap-3">
-                        {feature.included ? (
-                          <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-                        ) : (
-                          <X className="w-5 h-5 text-foreground-subtle flex-shrink-0" />
-                        )}
-                        <span className={`text-sm sm:text-base ${
-                          feature.included
-                            ? isRecommended ? "text-foreground font-medium" : "text-foreground"
-                            : "text-foreground-subtle"
-                        }`}>
-                          {feature.text}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className={`p-8 sm:p-10 flex flex-col flex-grow ${isRecommended ? 'bg-primary/5' : ''}`}>
+                    <div className="mb-8">
+                      <h3 className={`text-2xl font-bold mb-2 ${isRecommended ? "text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.4)]" : "text-foreground"}`}>
+                        {plan.name}
+                      </h3>
+                      <p className="text-foreground-muted">{plan.description}</p>
+                    </div>
 
-                  <Link href="/register" className="block">
-                    <Button
-                      size="lg"
-                      variant={plan.ctaVariant as "outline" | "default"}
-                      className={`w-full text-base sm:text-lg py-5 sm:py-6 ${isRecommended ? "shadow-xl" : ""}`}
-                    >
-                      {plan.ctaText}
-                      {isRecommended && <ArrowRight className="w-5 h-5 ml-2" />}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+                    <div className="mb-8">
+                      <div className="flex items-baseline gap-2">
+                        <span className={`text-5xl lg:text-6xl font-black ${isRecommended ? "text-primary" : "text-foreground"}`}>
+                          €{displayPrice}
+                        </span>
+                        <span className="text-xl text-foreground-muted">/mese</span>
+                      </div>
+                      
+                      {discount > 0 && plan.monthlyPrice > 0 && (
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-sm line-through text-foreground-muted">€{plan.monthlyPrice}/mese</span>
+                          <Badge variant="success" className="text-xs">Risparmia {discount * 100}%</Badge>
+                        </div>
+                      )}
+                    </div>
+
+                    <ul className="space-y-4 mb-10 flex-grow">
+                      {plan.features.map((feature) => (
+                         <li key={feature.text} className="flex items-start gap-4">
+                          {feature.included ? (
+                            <CheckCircle className="w-6 h-6 text-primary flex-shrink-0" />
+                          ) : (
+                            <X className="w-6 h-6 text-foreground-subtle flex-shrink-0" />
+                          )}
+                          <span className={`${
+                            feature.included
+                              ? isRecommended ? "text-foreground font-medium" : "text-foreground/90"
+                              : "text-foreground-subtle"
+                          }`}>
+                            {feature.text}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Link href="/register" className="block mt-auto">
+                      <Button
+                        size="lg"
+                        className={`w-full text-lg py-7 rounded-2xl font-bold ${
+                          isRecommended 
+                            ? "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.4)] hover:shadow-[0_0_30px_rgba(var(--primary),0.6)]" 
+                            : "bg-surface text-foreground border border-white/10 hover:bg-surface-2 hover:border-white/20"
+                        }`}
+                      >
+                        {plan.ctaText}
+                        {isRecommended && <ArrowRight className="w-5 h-5 ml-2" />}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
             )
           })}
-        </div>
+        </motion.div>
 
-        <p className="reveal text-center text-foreground-muted mt-10 sm:mt-12 text-sm sm:text-base lg:text-lg">
-          Tutti i piani &bull; 7 giorni gratis &bull; Nessuna carta richiesta &bull; Cancella quando vuoi
-        </p>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center text-foreground-muted mt-16 text-sm sm:text-base font-medium"
+        >
+          Tutti i piani includono &bull; 7 giorni gratis &bull; Nessuna carta richiesta &bull; Cancella quando vuoi
+        </motion.p>
       </div>
     </section>
   )
