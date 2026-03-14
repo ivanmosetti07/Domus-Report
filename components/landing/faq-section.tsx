@@ -31,8 +31,8 @@ export function FaqSection() {
                 key={faq.question}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className={`border rounded-2xl overflow-hidden transition-colors duration-300 ${
                   isOpen ? "bg-surface/60 border-primary/30" : "bg-surface/30 border-white/5 hover:bg-surface/50 hover:border-white/10"
                 }`}

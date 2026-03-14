@@ -12,10 +12,12 @@ import { PricingSection } from "@/components/landing/pricing-section"
 import { TestimonialsSection } from "@/components/landing/testimonials-section"
 import { FaqSection } from "@/components/landing/faq-section"
 import { FinalCta } from "@/components/landing/final-cta"
+import { DemoConversionBanner } from "@/components/landing/demo-conversion-banner"
 import { STRUCTURED_DATA } from "@/components/landing/landing-data"
 
 export default function LandingPage() {
   const [showDemoWidget, setShowDemoWidget] = React.useState(false)
+  const [demoCompleted, setDemoCompleted] = React.useState(false)
 
   // Referral tracking: salva codice referral nel cookie
   React.useEffect(() => {
@@ -59,7 +61,10 @@ export default function LandingPage() {
         <InteractiveDemoV2
           showWidget={showDemoWidget}
           onToggleWidget={setShowDemoWidget}
+          onDemoComplete={() => setDemoCompleted(true)}
         />
+
+        <DemoConversionBanner demoCompleted={demoCompleted} />
 
         <FeaturesTabs />
 

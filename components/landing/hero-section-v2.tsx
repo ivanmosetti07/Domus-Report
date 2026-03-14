@@ -60,7 +60,7 @@ export function HeroSectionV2({ onDemoClick }: HeroSectionV2Props) {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-surface/80 backdrop-blur-md border border-primary/30 rounded-full w-fit max-w-full"
             >
               <Sparkles className="w-4 h-4 text-primary animate-pulse flex-shrink-0" />
@@ -70,7 +70,7 @@ export function HeroSectionV2({ onDemoClick }: HeroSectionV2Props) {
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight"
             >
               Il chatbot AI che valuta immobili in <br className="hidden lg:block" />
@@ -82,7 +82,7 @@ export function HeroSectionV2({ onDemoClick }: HeroSectionV2Props) {
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="text-lg md:text-xl text-foreground-muted leading-relaxed max-w-xl"
             >
               <strong className="text-foreground font-semibold">Conversazione AI + Valutazione istantanea.</strong>{" "}
@@ -92,7 +92,7 @@ export function HeroSectionV2({ onDemoClick }: HeroSectionV2Props) {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-wrap gap-3"
             >
               {[
@@ -110,7 +110,7 @@ export function HeroSectionV2({ onDemoClick }: HeroSectionV2Props) {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.7, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-col sm:flex-row gap-4 pt-2"
             >
               <Link href="/register" className="w-full sm:w-auto group">
@@ -135,7 +135,7 @@ export function HeroSectionV2({ onDemoClick }: HeroSectionV2Props) {
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+              transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-wrap items-center gap-4 sm:gap-6 pt-4 text-sm text-foreground-muted"
             >
               {HERO_TRUST_ITEMS.map((item, i) => (
@@ -151,7 +151,7 @@ export function HeroSectionV2({ onDemoClick }: HeroSectionV2Props) {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, rotateY: -10 }}
             animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="relative lg:ml-auto w-full max-w-lg perspective-1000"
           >
             {/* Main Glass Card */}

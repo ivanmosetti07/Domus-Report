@@ -20,9 +20,10 @@ const ChatWidget = dynamic(
 interface InteractiveDemoV2Props {
   showWidget: boolean
   onToggleWidget: (show: boolean) => void
+  onDemoComplete?: () => void
 }
 
-export function InteractiveDemoV2({ showWidget, onToggleWidget }: InteractiveDemoV2Props) {
+export function InteractiveDemoV2({ showWidget, onToggleWidget, onDemoComplete }: InteractiveDemoV2Props) {
   return (
     <section id="demo" className="w-full py-20 lg:py-32 bg-background relative overflow-hidden">
       {/* Dynamic Background */}
@@ -36,8 +37,8 @@ export function InteractiveDemoV2({ showWidget, onToggleWidget }: InteractiveDem
         <motion.div 
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="lg:w-1/2 w-full space-y-8"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full w-fit">
@@ -66,8 +67,8 @@ export function InteractiveDemoV2({ showWidget, onToggleWidget }: InteractiveDem
                 key={i} 
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.2 + (i * 0.1) }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: 0.2 + (i * 0.1), ease: [0.22, 1, 0.36, 1] }}
                 className="flex items-center gap-3 bg-surface/30 p-3 rounded-xl border border-border/30 w-fit"
               >
                 <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
@@ -83,8 +84,8 @@ export function InteractiveDemoV2({ showWidget, onToggleWidget }: InteractiveDem
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, type: "spring" }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           className="lg:w-1/2 w-full flex justify-center lg:justify-end relative"
         >
           {/* Glowing Aura */}
@@ -115,7 +116,7 @@ export function InteractiveDemoV2({ showWidget, onToggleWidget }: InteractiveDem
                 </div>
               ) : (
                 <div className="absolute inset-0 pt-10">
-                  <ChatWidget widgetId="demo" mode="inline" isDemo={true} />
+                  <ChatWidget widgetId="demo" mode="inline" isDemo={true} onDemoComplete={onDemoComplete} />
                 </div>
               )}
             </div>

@@ -48,7 +48,7 @@ export function FeaturesTabs() {
                       layoutId="activeTabIndicator"
                       className="absolute inset-0 bg-primary/90 border border-primary shadow-[0_0_20px_rgba(var(--primary),0.4)] rounded-xl"
                       initial={false}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                     />
                   )}
                   <div className="relative z-10 flex items-center gap-2">
@@ -84,7 +84,7 @@ export function FeaturesTabs() {
                     <motion.div
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
+                      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
                       key={point} 
                       className="flex items-start gap-4"
                     >
@@ -119,7 +119,7 @@ export function FeaturesTabs() {
                         <motion.div
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: 0.2 + idx * 0.1 }}
+                          transition={{ duration: 0.5, delay: 0.2 + idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
                           key={point}
                           className="flex items-center gap-4 p-4 rounded-2xl bg-black/40 border border-white/5 hover:bg-black/60 transition-colors"
                         >

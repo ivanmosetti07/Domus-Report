@@ -156,7 +156,7 @@ interface ValuationResult {
   explanation: string
 }
 
-export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose, theme = {} }: ChatWidgetProps) {
+export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose, onDemoComplete, theme = {} }: ChatWidgetProps) {
   // Theme configuration with defaults
   const {
     primaryColor = '#2563eb',
@@ -610,15 +610,36 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   const handleQuickReply = (value: string, label: string) => {
     addUserMessage(label)
 
-    // Gestisci solo le azioni speciali (restart, download_pdf)
+    // Gestisci solo le azioni speciali (restart, download_pdf, demo CTA)
     if (conversationMode === "ask_restart") {
       if (value === "restart") {
-        addBotMessage("Perfetto! Ricominciamo da capo. 🔄")
+        addBotMessage("Perfetto! Ricominciamo da capo.")
         resetConversation()
       } else if (value === "download_pdf") {
         downloadPDF()
+      } else if (value === "demo_register") {
+        window.open("/register", "_blank")
+        addBotMessage("Ottimo! Ti ho aperto la pagina di registrazione. Ci vediamo nella dashboard!")
+      } else if (value === "demo_pricing") {
+        document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })
+        addBotMessage("Scorri in basso per vedere tutti i piani disponibili.")
+      } else if (value === "demo_email_optin") {
+        // Salva consenso email e enrolla nel flusso nurture
+        if (savedLeadId) {
+          fetch(`/api/demo-leads/${savedLeadId}/consent`, { method: "POST" })
+            .then(() => {
+              addBotMessage(
+                `Perfetto ${collectedData.firstName || ''}! Ti invieremo informazioni utili su come massimizzare la lead generation immobiliare. A presto!`
+              )
+            })
+            .catch(() => {
+              addBotMessage("Riceverai presto informazioni utili via email!")
+            })
+        } else {
+          addBotMessage("Riceverai presto informazioni utili via email!")
+        }
       } else {
-        addBotMessage("Grazie per aver usato il nostro servizio! A presto! 👋")
+        addBotMessage("Grazie per aver usato il nostro servizio! A presto!")
         if (mode === 'bubble' && onClose) {
           setTimeout(() => onClose(), 3000)
         }
@@ -1306,38 +1327,55 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         hasEmail: !!currentData.email,
       })
 
-      // Messaggio diverso per demo vs reale
-      const successMessage = isDemo
-        ? `Grazie ${firstName}! 🎉 Questa è una demo. Per ricevere lead reali, registrati gratuitamente!`
-        : `Grazie ${firstName}! 🎉 Sarai ricontattato a breve da un nostro consulente.`
-
       setConversationMode("completed")
-      addBotMessage(successMessage)
 
-      // Aggiungi opzione download PDF se NON è demo
-      if (!isDemo) {
+      if (isDemo) {
+        // Demo: messaggio con riepilogo + CTA conversione
+        const estimatedPrice = finalValuation?.estimatedPrice || 0
+        addBotMessage(
+          `Ecco fatto, ${firstName}! Il tuo immobile a ${currentData.city || 'questa zona'} vale circa ${formatCurrency(estimatedPrice)}. Questo è esattamente il tipo di valutazione che i tuoi clienti riceveranno sul tuo sito.`
+        )
+
+        // Notifica il parent che la demo è completata
+        onDemoComplete?.()
+
+        // CTA strutturata dopo 2 secondi
+        setTimeout(() => {
+          setConversationMode("ask_restart")
+          addBotMessage(
+            "Vuoi installare questo widget sul tuo sito? Le agenzie che lo usano ricevono in media 3x lead in più.",
+            [
+              { label: "Registrati Gratis", value: "demo_register" },
+              { label: "Vedi i piani", value: "demo_pricing" },
+              { label: "Ricevi info via email", value: "demo_email_optin" }
+            ]
+          )
+        }, 2000)
+      } else {
+        // Lead reale: messaggio di successo + download PDF
+        addBotMessage(`Grazie ${firstName}! Sarai ricontattato a breve da un nostro consulente.`)
+
         setTimeout(() => {
           addBotMessage(
             "Vuoi scaricare il PDF della valutazione?",
             [
-              { label: "📥 Scarica PDF", value: "download_pdf" },
+              { label: "Scarica PDF", value: "download_pdf" },
               { label: "No, grazie", value: "skip_pdf" }
             ]
           )
         }, 1500)
-      }
 
-      // Ask if user wants to restart instead of closing
-      setTimeout(() => {
-        setConversationMode("ask_restart")
-        addBotMessage(
-          "Vuoi fare una nuova valutazione?",
-          [
-            { label: "Sì, rifai valutazione", value: "restart" },
-            { label: "No, grazie", value: "done" }
-          ]
-        )
-      }, isDemo ? 2000 : 3500)
+        setTimeout(() => {
+          setConversationMode("ask_restart")
+          addBotMessage(
+            "Vuoi fare una nuova valutazione?",
+            [
+              { label: "Sì, rifai valutazione", value: "restart" },
+              { label: "No, grazie", value: "done" }
+            ]
+          )
+        }, 3500)
+      }
     } catch (error) {
       console.error('[ChatWidget] CRITICAL ERROR saving lead:', {
         error: error instanceof Error ? error.message : String(error),

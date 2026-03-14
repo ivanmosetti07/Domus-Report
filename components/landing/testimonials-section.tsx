@@ -20,7 +20,7 @@ const itemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 20 },
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
   },
 }
 
@@ -45,7 +45,7 @@ export function TestimonialsSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 mt-16"
         >
           {TESTIMONIALS.map((testimonial) => (

@@ -16,7 +16,7 @@ export function ShowcaseBento() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6 tracking-tight">
               Tutto quello che ti serve, <br className="hidden lg:block" />
@@ -38,8 +38,8 @@ export function ShowcaseBento() {
                 key={feature.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.7, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className={`group relative overflow-hidden rounded-3xl bg-surface/40 backdrop-blur-md border border-border hover:border-primary/50 transition-all duration-500 card-lift ${
                   isLarge ? "md:col-span-2" : ""
                 }`}

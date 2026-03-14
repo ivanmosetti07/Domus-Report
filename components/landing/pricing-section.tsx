@@ -24,7 +24,7 @@ const itemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 20 },
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
   },
 }
 
@@ -59,7 +59,8 @@ export function PricingSection() {
         <motion.div
            initial={{ opacity: 0, y: 20 }}
            whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
+           viewport={{ once: true, margin: "-50px" }}
+           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
            className="flex justify-center mt-12 mb-16"
         >
           <BillingIntervalToggle
@@ -72,7 +73,7 @@ export function PricingSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center"
         >
           {PLANS.map((plan) => {
@@ -164,7 +165,8 @@ export function PricingSection() {
         <motion.p 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center text-foreground-muted mt-16 text-sm sm:text-base font-medium"
         >
           Tutti i piani includono &bull; 7 giorni gratis &bull; Nessuna carta richiesta &bull; Cancella quando vuoi
