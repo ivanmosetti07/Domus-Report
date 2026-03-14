@@ -2,6 +2,9 @@ import Link from "next/link"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Button } from "@/components/ui/button"
+import { FadeIn } from "@/components/animations/fade-in"
+import { SlideUp } from "@/components/animations/slide-up"
+import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 import { Users, BarChart3, FileText, ArrowRight, CheckCircle, Mail, Download } from "lucide-react"
 import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
 
@@ -73,53 +76,66 @@ export default function CRMImmobiliarePage() {
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30" />
           </div>
           <div className="relative site-container text-center space-y-6 max-w-3xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl font-black leading-tight">
-              CRM Immobiliare con AI Integrata
-            </h1>
-            <p className="text-lg sm:text-xl text-foreground-muted">
-              Un gestionale immobiliare che non richiede inserimento manuale. I lead arrivano gi&agrave; completi di valutazione, dati immobile e storico conversazione AI.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register">
-                <Button size="lg">
-                  Prova gratis
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/#demo">
-                <Button size="lg" variant="outline">Vedi la demo</Button>
-              </Link>
-            </div>
+            <FadeIn>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-balance">
+                CRM Immobiliare con AI Integrata
+              </h1>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <p className="text-lg sm:text-xl text-foreground-muted mx-auto text-balance">
+                Un gestionale immobiliare che non richiede inserimento manuale. I lead arrivano gi&agrave; completi di valutazione, dati immobile e storico conversazione AI.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Link href="/register">
+                  <Button size="lg" className="w-full sm:w-auto text-base h-12 px-8 hover:scale-105 transition-transform">
+                    Prova gratis
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/#demo">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-base h-12 px-8 hover:scale-105 transition-transform bg-background/50 backdrop-blur-sm">
+                    Vedi la demo
+                  </Button>
+                </Link>
+              </div>
+            </FadeIn>
           </div>
         </section>
 
         {/* Funzionalità */}
-        <section className="site-container py-16 sm:py-20">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Tutto quello che serve per gestire i tuoi lead
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <section className="site-container py-16 sm:py-24">
+          <SlideUp>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-balance">
+              Tutto quello che serve per gestire i tuoi lead
+            </h2>
+          </SlideUp>
+          <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {funzionalita.map((f) => (
-              <div key={f.title} className="rounded-2xl border border-border bg-surface p-6 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <f.icon className="h-5 w-5" />
+              <StaggerItem key={f.title} className="rounded-2xl border border-border/50 bg-surface/50 backdrop-blur-sm p-8 space-y-4 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <f.icon className="h-6 w-6" />
                   </div>
                   <h3 className="text-lg font-semibold">{f.title}</h3>
                 </div>
-                <p className="text-foreground-muted text-sm">{f.description}</p>
-              </div>
+                <p className="text-foreground-muted text-sm leading-relaxed">{f.description}</p>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </section>
 
         {/* Differenza */}
-        <section className="w-full bg-surface border-y border-border py-16 sm:py-20">
-          <div className="site-container max-w-3xl mx-auto space-y-8">
-            <h2 className="text-3xl font-bold text-center">
-              Perch&eacute; non &egrave; un CRM qualsiasi
-            </h2>
-            <div className="space-y-4 text-lg text-foreground-muted">
+        <section className="w-full bg-surface/30 border-y border-border/50 py-16 sm:py-24 relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-3xl -z-10" />
+          <div className="site-container max-w-3xl mx-auto space-y-10">
+            <SlideUp>
+              <h2 className="text-3xl sm:text-4xl font-bold text-center text-balance">
+                Perch&eacute; non &egrave; un CRM qualsiasi
+              </h2>
+            </SlideUp>
+            <SlideUp delay={0.1} className="space-y-6 text-lg text-foreground-muted leading-relaxed">
               <p>
                 A differenza dei <strong className="text-foreground">CRM immobiliari tradizionali</strong> dove devi inserire
                 manualmente ogni contatto, con DomusReport i lead vengono creati automaticamente dal chatbot AI. Quando un
@@ -135,14 +151,16 @@ export default function CRMImmobiliarePage() {
                 vedono il widget, quante iniziano una conversazione, quante completano la valutazione e quante lasciano i propri contatti.
                 Cos&igrave; sai esattamente dove ottimizzare il tuo funnel di acquisizione.
               </p>
-            </div>
+            </SlideUp>
           </div>
         </section>
 
         {/* Cosa include */}
-        <section className="site-container py-16 sm:py-20 max-w-3xl mx-auto space-y-8">
-          <h2 className="text-3xl font-bold text-center">Cosa include il CRM</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
+        <section className="site-container py-16 sm:py-24 max-w-3xl mx-auto space-y-10">
+          <SlideUp>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center text-balance">Cosa include il CRM</h2>
+          </SlideUp>
+          <StaggerContainer className="grid gap-4 sm:grid-cols-2 bg-surface/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
             {[
               "Dashboard con KPI in tempo reale",
               "Lista lead con filtri e ricerca",
@@ -155,50 +173,69 @@ export default function CRMImmobiliarePage() {
               "Analytics: impression, click, conversioni",
               "Multi-widget per siti diversi",
             ].map((item) => (
-              <div key={item} className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="text-foreground-muted text-sm">{item}</span>
-              </div>
+              <StaggerItem key={item} className="flex items-center gap-3">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <CheckCircle className="h-4 w-4" />
+                </div>
+                <span className="text-foreground-muted font-medium text-sm">{item}</span>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </section>
 
         {/* Approfondisci */}
-        <section className="site-container py-16 sm:py-20 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8">Approfondisci sul blog</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Link href="/blog/strumenti-digitali-agenzie-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
-              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Strumenti</div>
-              <h3 className="text-sm font-semibold leading-snug">Strumenti Digitali per Agenzie Immobiliari</h3>
-              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
-            </Link>
-            <Link href="/blog/qualificare-lead-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
-              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Lead Management</div>
-              <h3 className="text-sm font-semibold leading-snug">Come Qualificare i Lead Immobiliari</h3>
-              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
-            </Link>
-            <Link href="/blog/marketing-digitale-agenzie-immobiliari" className="rounded-xl border border-border bg-surface p-4 space-y-2 hover:border-primary/30 transition-colors">
-              <div className="text-xs font-semibold uppercase tracking-wide text-primary">Marketing</div>
-              <h3 className="text-sm font-semibold leading-snug">Marketing Digitale per Agenzie Immobiliari</h3>
-              <span className="text-xs text-primary flex items-center gap-1">Leggi <ArrowRight className="h-3 w-3" /></span>
-            </Link>
-          </div>
+        <section className="site-container py-16 sm:py-24 max-w-4xl mx-auto">
+          <SlideUp>
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-10 text-balance">Approfondisci sul blog</h2>
+          </SlideUp>
+          <StaggerContainer className="grid gap-6 sm:grid-cols-3">
+            <StaggerItem>
+              <Link href="/blog/strumenti-digitali-agenzie-immobiliari" className="block h-full rounded-2xl border border-border/50 bg-surface/50 backdrop-blur-sm p-6 space-y-3 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300">
+                <div className="text-xs font-semibold uppercase tracking-wide text-primary">Strumenti</div>
+                <h3 className="text-base font-semibold leading-snug">Strumenti Digitali per Agenzie Immobiliari</h3>
+                <span className="text-sm font-medium text-primary flex items-center gap-1 pt-2">Leggi articolo <ArrowRight className="h-4 w-4" /></span>
+              </Link>
+            </StaggerItem>
+            <StaggerItem>
+              <Link href="/blog/qualificare-lead-immobiliari" className="block h-full rounded-2xl border border-border/50 bg-surface/50 backdrop-blur-sm p-6 space-y-3 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300">
+                <div className="text-xs font-semibold uppercase tracking-wide text-primary">Lead Management</div>
+                <h3 className="text-base font-semibold leading-snug">Come Qualificare i Lead Immobiliari</h3>
+                <span className="text-sm font-medium text-primary flex items-center gap-1 pt-2">Leggi articolo <ArrowRight className="h-4 w-4" /></span>
+              </Link>
+            </StaggerItem>
+            <StaggerItem>
+              <Link href="/blog/marketing-digitale-agenzie-immobiliari" className="block h-full rounded-2xl border border-border/50 bg-surface/50 backdrop-blur-sm p-6 space-y-3 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300">
+                <div className="text-xs font-semibold uppercase tracking-wide text-primary">Marketing</div>
+                <h3 className="text-base font-semibold leading-snug">Marketing Digitale per Agenzie Immobiliari</h3>
+                <span className="text-sm font-medium text-primary flex items-center gap-1 pt-2">Leggi articolo <ArrowRight className="h-4 w-4" /></span>
+              </Link>
+            </StaggerItem>
+          </StaggerContainer>
         </section>
 
         {/* CTA */}
-        <section className="site-container pb-16 sm:pb-20">
-          <div className="rounded-3xl bg-gradient-to-r from-primary to-primary-hover p-10 text-center text-primary-foreground space-y-6">
-            <h2 className="text-3xl font-bold">Inizia a gestire i lead con l&apos;AI</h2>
-            <p className="text-lg text-primary-foreground/80">
-              CRM incluso in tutti i piani. Piano Free con 5 valutazioni/mese.
-            </p>
-            <Link href="/register">
-              <Button size="lg" variant="secondary" className="text-primary">
-                Registrati gratis
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+        <section className="site-container pb-16 sm:pb-24">
+          <SlideUp>
+            <div className="rounded-3xl bg-gradient-to-br from-primary via-primary/90 to-primary-hover p-8 sm:p-12 text-center text-primary-foreground space-y-8 relative overflow-hidden shadow-2xl shadow-primary/20">
+              <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                <BarChart3 className="w-32 h-32" />
+              </div>
+              <div className="relative z-10 space-y-4 max-w-2xl mx-auto">
+                <h2 className="text-3xl sm:text-4xl font-bold text-balance">Inizia a gestire i lead con l&apos;AI</h2>
+                <p className="text-lg sm:text-xl text-primary-foreground/90 text-balance">
+                  CRM incluso in tutti i piani. Piano Free con 5 valutazioni/mese.
+                </p>
+              </div>
+              <div className="relative z-10 flex justify-center">
+                <Link href="/register">
+                  <Button size="lg" variant="secondary" className="text-primary font-semibold text-base h-12 px-8 hover:scale-105 transition-transform shadow-lg">
+                    Registrati gratis
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </SlideUp>
         </section>
       </main>
 

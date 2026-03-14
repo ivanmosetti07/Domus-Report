@@ -1,5 +1,5 @@
 -- DropIndex
-DROP INDEX "affiliates_stripe_connect_id_key";
+DROP INDEX IF EXISTS "affiliates_stripe_connect_id_key";
 
 -- AlterTable
 ALTER TABLE "affiliates" DROP COLUMN "payouts_enabled",

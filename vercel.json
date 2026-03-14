@@ -11,6 +11,14 @@
     {
       "path": "/api/cron/check-trial-expiry",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/process-email-queue",
+      "schedule": "0 */1 * * *"
+    },
+    {
+      "path": "/api/cron/enroll-email-campaigns",
+      "schedule": "0 6 * * *"
     }
   ],
   "headers": [

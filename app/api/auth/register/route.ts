@@ -136,6 +136,28 @@ export async function POST(request: NextRequest) {
       console.error('[POST /api/auth/register] Referral tracking error:', refErr)
     }
 
+    // === DEMO LEAD CONVERSION TRACKING ===
+    // Se l'email corrisponde a un DemoLead, traccia la conversione e cancella il flusso nurture
+    try {
+      const demoLead = await prisma.demoLead.findFirst({
+        where: { email: emailValidation.sanitized, convertedToAgencyId: null }
+      })
+      if (demoLead) {
+        await prisma.demoLead.update({
+          where: { id: demoLead.id },
+          data: { convertedToAgencyId: agency.id }
+        })
+        const { cancelCampaignForRecipient } = await import('@/lib/email-marketing')
+        await cancelCampaignForRecipient({
+          campaignName: 'demo_nurture',
+          recipientId: demoLead.id
+        })
+        console.log(`[register] DemoLead ${demoLead.id} converted to agency ${agency.id}`)
+      }
+    } catch (demoErr) {
+      console.error('[register] Demo lead conversion tracking error:', demoErr)
+    }
+
     // Notifica admin per nuova registrazione (Attendiamo l'invio per evitare terminazione precoce su Vercel)
     if (process.env.SMTP_HOST) {
       try {

@@ -169,6 +169,17 @@ export async function POST(request: Request) {
       },
     })
 
+    // Cancella flusso onboarding_completion se l'agenzia ha configurato il primo widget
+    try {
+      const { cancelCampaignForRecipient } = await import('@/lib/email-marketing')
+      await cancelCampaignForRecipient({
+        campaignName: 'onboarding_completion',
+        recipientId: agency.agencyId
+      })
+    } catch (err) {
+      console.error('[widget-config POST] Error cancelling onboarding campaign:', err)
+    }
+
     return NextResponse.json({ widgetConfig }, { status: 201 })
   } catch (error) {
     console.error('Errore POST widget-config:', error)

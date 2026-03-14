@@ -347,6 +347,17 @@ async function processCheckout(agencyId: string, session: Stripe.Checkout.Sessio
     where: { agencyId, status: 'registered' },
     data: { status: 'subscribed', convertedAt: new Date() }
   })
+
+  // Cancella flusso free_upgrade se l'agenzia ha fatto upgrade
+  try {
+    const { cancelCampaignForRecipient } = await import('@/lib/email-marketing')
+    await cancelCampaignForRecipient({
+      campaignName: 'free_upgrade',
+      recipientId: agencyId
+    })
+  } catch (err) {
+    console.error('[processCheckout] Error cancelling free_upgrade campaign:', err)
+  }
 }
 
 // Handler: customer.subscription.updated

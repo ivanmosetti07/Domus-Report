@@ -4,6 +4,9 @@ import { Footer } from "@/components/layout/footer"
 import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, CheckCircle, Clock, DollarSign, MessageSquare, UserCheck } from "lucide-react"
+import { FadeIn } from "@/components/animations/fade-in"
+import { SlideUp } from "@/components/animations/slide-up"
+import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 
 export const metadata = {
   title: "Chatbot Immobiliare: Sito Web vs WhatsApp",
@@ -79,12 +82,16 @@ export default function ChatbotWhatsAppPage() {
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30" />
           </div>
           <div className="relative site-container text-center space-y-6 max-w-3xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl font-black leading-tight">
-              Chatbot Immobiliare: Sito Web vs WhatsApp
-            </h1>
-            <p className="text-lg sm:text-xl text-foreground-muted">
-              Quale chatbot converte di pi&ugrave; per la tua agenzia? Confronto completo tra chatbot AI sul sito web e automazioni WhatsApp Business: costi, funzionalit&agrave; e risultati concreti.
-            </p>
+            <FadeIn>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-balance">
+                Chatbot Immobiliare: Sito Web vs WhatsApp
+              </h1>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <p className="text-lg sm:text-xl text-foreground-muted text-balance mx-auto">
+                Quale chatbot converte di pi&ugrave; per la tua agenzia? Confronto completo tra chatbot AI sul sito web e automazioni WhatsApp Business: costi, funzionalit&agrave; e risultati concreti.
+              </p>
+            </FadeIn>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register">
                 <Button size="lg">
@@ -101,92 +108,113 @@ export default function ChatbotWhatsAppPage() {
 
         {/* Features 2x2 */}
         <section className="site-container py-16 sm:py-20">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Vantaggi del chatbot sul sito web
-          </h2>
-          <div className="grid gap-8 md:grid-cols-2">
+          <SlideUp>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-balance">
+              Vantaggi del chatbot sul sito web
+            </h2>
+          </SlideUp>
+          <StaggerContainer className="grid gap-8 md:grid-cols-2">
             {features.map((f) => (
-              <div key={f.title} className="rounded-2xl border border-border bg-surface p-6 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <f.icon className="h-5 w-5" />
+              <StaggerItem key={f.title}>
+                <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 space-y-4 h-full transition-all duration-300 hover:border-primary/30 hover:bg-surface-hover hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 group">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                      <f.icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-xl font-semibold">{f.title}</h3>
                   </div>
-                  <h3 className="text-lg font-semibold">{f.title}</h3>
+                  <p className="text-foreground-muted leading-relaxed">{f.description}</p>
                 </div>
-                <p className="text-foreground-muted">{f.description}</p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </section>
 
         {/* Tabella confronto */}
         <section className="w-full bg-surface border-y border-border py-16 sm:py-20">
-          <div className="site-container max-w-4xl mx-auto space-y-8">
-            <h2 className="text-3xl font-bold text-center">
-              Confronto diretto: Sito Web vs WhatsApp
-            </h2>
-            <p className="text-center text-foreground-muted text-lg">
-              Ecco come si confrontano le due soluzioni sui criteri pi&ugrave; importanti per un&apos;agenzia immobiliare.
-            </p>
-            <div className="overflow-x-auto">
+          <div className="site-container max-w-4xl mx-auto space-y-12">
+            <SlideUp>
+              <h2 className="text-3xl sm:text-4xl font-bold text-center text-balance">
+                Confronto diretto: Sito Web vs WhatsApp
+              </h2>
+            </SlideUp>
+            <SlideUp delay={0.1}>
+              <p className="text-center text-foreground-muted text-lg sm:text-xl text-balance max-w-2xl mx-auto">
+                Ecco come si confrontano le due soluzioni sui criteri pi&ugrave; importanti per un&apos;agenzia immobiliare.
+              </p>
+            </SlideUp>
+            <SlideUp delay={0.2} className="overflow-x-auto rounded-2xl border border-border bg-background/50 backdrop-blur-sm">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 font-semibold">Criterio</th>
-                    <th className="text-left py-3 px-4 font-semibold text-primary">Chatbot Sito Web</th>
-                    <th className="text-left py-3 px-4 font-semibold">WhatsApp Business</th>
+                  <tr className="border-b border-border bg-surface/50">
+                    <th className="text-left py-4 px-6 font-semibold">Criterio</th>
+                    <th className="text-left py-4 px-6 font-semibold text-primary">Chatbot Sito Web</th>
+                    <th className="text-left py-4 px-6 font-semibold text-foreground-muted">WhatsApp Business</th>
                   </tr>
                 </thead>
                 <tbody>
                   {confronto.map((row) => (
-                    <tr key={row.criterio} className="border-b border-border/50">
-                      <td className="py-3 px-4 font-medium">{row.criterio}</td>
-                      <td className="py-3 px-4 text-foreground-muted">{row.sito}</td>
-                      <td className="py-3 px-4 text-foreground-muted">{row.whatsapp}</td>
+                    <tr key={row.criterio} className="border-b border-border/50 transition-colors hover:bg-surface">
+                      <td className="py-4 px-6 font-medium">{row.criterio}</td>
+                      <td className="py-4 px-6 text-foreground-muted font-medium bg-primary/5">{row.sito}</td>
+                      <td className="py-4 px-6 text-foreground-muted">{row.whatsapp}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
+            </SlideUp>
           </div>
         </section>
 
         {/* Contenuto SEO */}
-        <section className="site-container py-16 sm:py-20 max-w-3xl mx-auto space-y-8">
-          <h2 className="text-3xl font-bold text-center">
-            Quando scegliere il chatbot sul sito
-          </h2>
-          <div className="space-y-4 text-lg text-foreground-muted">
-            <p>
-              Un <strong className="text-foreground">chatbot immobiliare su WhatsApp</strong> pu&ograve; essere utile per gestire richieste di clienti gi&agrave; acquisiti, ma presenta limiti importanti nella fase di acquisizione. WhatsApp Business API ha costi variabili per messaggio, richiede un numero telefonico verificato e non supporta nativamente la valutazione immobiliare.
-            </p>
-            <p>
-              Il <Link href="/funzionalita/chatbot-immobiliare" className="text-primary hover:underline">chatbot sul sito web</Link>, al contrario, intercetta i visitatori nel momento in cui stanno cercando informazioni sulla vendita del proprio immobile. La conversazione AI raccoglie i dati, calcola la valutazione e genera un <Link href="/funzionalita/lead-generation-immobiliare" className="text-primary hover:underline">lead qualificato</Link> in modo automatico.
-            </p>
-            <p>
-              L&apos;approccio conversazionale funziona perch&eacute; offre <strong className="text-foreground">valore immediato al visitatore</strong>. Invece di compilare un form freddo, il proprietario interagisce con un assistente che gli fornisce una stima del valore del suo immobile. Questo aumenta il tasso di conversione e la qualit&agrave; dei lead ricevuti.
-            </p>
-            <p>
-              Per approfondire come l&apos;intelligenza artificiale sta trasformando il settore immobiliare, leggi il nostro articolo su{" "}
-              <Link href="/blog/intelligenza-artificiale-immobiliare" className="text-primary hover:underline">AI e immobiliare</Link>.
-            </p>
-          </div>
+        <section className="site-container py-16 sm:py-20 max-w-3xl mx-auto space-y-12">
+          <SlideUp>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center text-balance">
+              Quando scegliere il chatbot sul sito
+            </h2>
+          </SlideUp>
+          <SlideUp delay={0.1}>
+            <div className="space-y-6 text-lg text-foreground-muted leading-relaxed">
+              <p>
+                Un <strong className="text-foreground">chatbot immobiliare su WhatsApp</strong> pu&ograve; essere utile per gestire richieste di clienti gi&agrave; acquisiti, ma presenta limiti importanti nella fase di acquisizione. WhatsApp Business API ha costi variabili per messaggio, richiede un numero telefonico verificato e non supporta nativamente la valutazione immobiliare.
+              </p>
+              <p>
+                Il <Link href="/funzionalita/chatbot-immobiliare" className="text-primary hover:underline font-medium">chatbot sul sito web</Link>, al contrario, intercetta i visitatori nel momento in cui stanno cercando informazioni sulla vendita del proprio immobile. La conversazione AI raccoglie i dati, calcola la valutazione e genera un <Link href="/funzionalita/lead-generation-immobiliare" className="text-primary hover:underline font-medium">lead qualificato</Link> in modo automatico.
+              </p>
+              <p>
+                L&apos;approccio conversazionale funziona perch&eacute; offre <strong className="text-foreground">valore immediato al visitatore</strong>. Invece di compilare un form freddo, il proprietario interagisce con un assistente che gli fornisce una stima del valore del suo immobile. Questo aumenta il tasso di conversione e la qualit&agrave; dei lead ricevuti.
+              </p>
+              <p>
+                Per approfondire come l&apos;intelligenza artificiale sta trasformando il settore immobiliare, leggi il nostro articolo su{" "}
+                <Link href="/blog/intelligenza-artificiale-immobiliare" className="text-primary hover:underline font-medium">AI e immobiliare</Link>.
+              </p>
+            </div>
+          </SlideUp>
         </section>
 
         {/* CTA */}
         <section className="site-container pb-16 sm:pb-20">
-          <div className="rounded-3xl bg-gradient-to-r from-primary to-primary-hover p-10 text-center text-primary-foreground space-y-6">
-            <h2 className="text-3xl font-bold">Prova il chatbot sul tuo sito</h2>
-            <p className="text-lg text-primary-foreground/80">
-              Costo fisso, conversazioni illimitate, valutazione OMI integrata. Setup in 2 minuti.
-            </p>
-            <Link href="/register">
-              <Button size="lg" variant="secondary" className="text-primary">
-                Registrati gratis
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+          <SlideUp>
+            <div className="rounded-3xl bg-gradient-to-br from-primary via-primary/90 to-primary-hover p-8 sm:p-12 text-center text-primary-foreground space-y-8 relative overflow-hidden">
+              <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+              <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+                <h2 className="text-3xl sm:text-4xl font-bold text-balance leading-tight">
+                  Prova il chatbot sul tuo sito
+                </h2>
+                <p className="text-lg text-primary-foreground/90 font-medium text-balance">
+                  Costo fisso, conversazioni illimitate, valutazione OMI integrata. Setup in 2 minuti.
+                </p>
+                <div className="flex justify-center pt-4">
+                  <Link href="/register">
+                    <button className="flex h-12 items-center justify-center rounded-full bg-white px-8 text-base font-semibold text-primary shadow-lg transition-transform hover:scale-105">
+                      Inizia la prova gratuita
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </SlideUp>
         </section>
       </main>
 

@@ -3,6 +3,9 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { BreadcrumbSchema } from "@/components/seo/breadcrumb-schema"
 import { Button } from "@/components/ui/button"
+import { FadeIn } from "@/components/animations/fade-in"
+import { SlideUp } from "@/components/animations/slide-up"
+import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 import { ArrowRight, CheckCircle, Database, Layers, MessageSquare, Settings, X } from "lucide-react"
 
 export const metadata = {
@@ -80,56 +83,68 @@ export default function MiglioriSoftwarePage() {
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30" />
           </div>
           <div className="relative site-container text-center space-y-6 max-w-3xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl font-black leading-tight">
-              Migliori Software di Valutazione Immobiliare
-            </h1>
-            <p className="text-lg sm:text-xl text-foreground-muted">
-              Come scegliere il software di stima immobiliare giusto per la tua agenzia. Guida ai criteri fondamentali: dati ufficiali, AI, personalizzazione, integrazioni e modello di prezzo.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register">
-                <Button size="lg">
-                  Prova DomusReport gratis
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/#demo">
-                <Button size="lg" variant="outline">Vedi la demo</Button>
-              </Link>
-            </div>
+            <FadeIn>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-balance">
+                Migliori Software di Valutazione Immobiliare
+              </h1>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <p className="text-lg sm:text-xl text-foreground-muted mx-auto text-balance">
+                Come scegliere il software di stima immobiliare giusto per la tua agenzia. Guida ai criteri fondamentali: dati ufficiali, AI, personalizzazione, integrazioni e modello di prezzo.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Link href="/register">
+                  <Button size="lg" className="w-full sm:w-auto text-base h-12 px-8 hover:scale-105 transition-transform">
+                    Prova DomusReport gratis
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/#demo">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-base h-12 px-8 hover:scale-105 transition-transform bg-background/50 backdrop-blur-sm">
+                    Vedi la demo
+                  </Button>
+                </Link>
+              </div>
+            </FadeIn>
           </div>
         </section>
 
         {/* Criteri 2x2 */}
-        <section className="site-container py-16 sm:py-20">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            I 4 criteri fondamentali per la scelta
-          </h2>
-          <div className="grid gap-8 md:grid-cols-2">
+        <section className="site-container py-16 sm:py-24">
+          <SlideUp>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-balance">
+              I 4 criteri fondamentali per la scelta
+            </h2>
+          </SlideUp>
+          <StaggerContainer className="grid gap-8 md:grid-cols-2">
             {criteri.map((c) => (
-              <div key={c.title} className="rounded-2xl border border-border bg-surface p-6 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <c.icon className="h-5 w-5" />
+              <StaggerItem key={c.title} className="rounded-2xl border border-border/50 bg-surface/50 backdrop-blur-sm p-8 space-y-4 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 transition-all duration-300">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <c.icon className="h-6 w-6" />
                   </div>
-                  <h3 className="text-lg font-semibold">{c.title}</h3>
+                  <h3 className="text-xl font-semibold">{c.title}</h3>
                 </div>
-                <p className="text-foreground-muted">{c.description}</p>
-              </div>
+                <p className="text-foreground-muted leading-relaxed">{c.description}</p>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </section>
 
         {/* Tabella confronto */}
-        <section className="w-full bg-surface border-y border-border py-16 sm:py-20">
-          <div className="site-container max-w-4xl mx-auto space-y-8">
-            <h2 className="text-3xl font-bold text-center">
-              Tabella comparativa delle funzionalit&agrave;
-            </h2>
-            <p className="text-center text-foreground-muted text-lg">
-              Confronto tra le funzionalit&agrave; tipiche di un software completo come DomusReport e le soluzioni generiche presenti sul mercato.
-            </p>
-            <div className="overflow-x-auto">
+        <section className="w-full bg-surface/30 border-y border-border/50 py-16 sm:py-24">
+          <div className="site-container max-w-4xl mx-auto space-y-10">
+            <SlideUp className="space-y-4">
+              <h2 className="text-3xl sm:text-4xl font-bold text-center text-balance">
+                Tabella comparativa delle funzionalit&agrave;
+              </h2>
+              <p className="text-center text-foreground-muted text-lg max-w-2xl mx-auto text-balance">
+                Confronto tra le funzionalit&agrave; tipiche di un software completo come DomusReport e le soluzioni generiche presenti sul mercato.
+              </p>
+            </SlideUp>
+            <SlideUp delay={0.1} className="overflow-x-auto rounded-2xl border border-border/50 bg-background/50 backdrop-blur-sm">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="border-b border-border">
@@ -158,16 +173,19 @@ export default function MiglioriSoftwarePage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </SlideUp>
           </div>
         </section>
 
         {/* Contenuto SEO */}
-        <section className="site-container py-16 sm:py-20 max-w-3xl mx-auto space-y-8">
-          <h2 className="text-3xl font-bold text-center">
-            Cosa cercare in un software di valutazione
-          </h2>
-          <div className="space-y-4 text-lg text-foreground-muted">
+        <section className="site-container py-16 sm:py-24 max-w-3xl mx-auto space-y-8 relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-3xl -z-10" />
+          <SlideUp>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center text-balance pb-4">
+              Cosa cercare in un software di valutazione
+            </h2>
+          </SlideUp>
+          <SlideUp delay={0.1} className="space-y-6 text-lg text-foreground-muted leading-relaxed">
             <p>
               Il mercato dei <strong className="text-foreground">software di valutazione immobiliare</strong> &egrave; cresciuto significativamente negli ultimi anni. Tuttavia, non tutte le soluzioni offrono lo stesso livello di accuratezza, personalizzazione e funzionalit&agrave;. Ecco cosa valutare nella scelta.
             </p>
@@ -183,23 +201,32 @@ export default function MiglioriSoftwarePage() {
             <p>
               DomusReport combina tutti questi elementi: dati OMI ufficiali su 7.889 comuni, AI conversazionale, CRM integrato, white label completo e setup in 2 minuti. Per scoprire altri <Link href="/blog/strumenti-digitali-agenzie-immobiliari" className="text-primary hover:underline">strumenti digitali per agenzie immobiliari</Link>, consulta la nostra guida dedicata.
             </p>
-          </div>
+          </SlideUp>
         </section>
 
         {/* CTA */}
-        <section className="site-container pb-16 sm:pb-20">
-          <div className="rounded-3xl bg-gradient-to-r from-primary to-primary-hover p-10 text-center text-primary-foreground space-y-6">
-            <h2 className="text-3xl font-bold">Scegli il software giusto per la tua agenzia</h2>
-            <p className="text-lg text-primary-foreground/80">
-              Prova DomusReport gratis e confrontalo con qualsiasi altra soluzione. 5 valutazioni gratuite al mese, nessun vincolo.
-            </p>
-            <Link href="/register">
-              <Button size="lg" variant="secondary" className="text-primary">
-                Registrati gratis
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+        <section className="site-container pb-16 sm:pb-24">
+          <SlideUp>
+            <div className="rounded-3xl bg-gradient-to-br from-primary via-primary/90 to-primary-hover p-8 sm:p-12 text-center text-primary-foreground space-y-8 relative overflow-hidden shadow-2xl shadow-primary/20">
+              <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                <Database className="w-32 h-32" />
+              </div>
+              <div className="relative z-10 space-y-4 max-w-2xl mx-auto">
+                <h2 className="text-3xl sm:text-4xl font-bold text-balance">Scegli il software giusto per la tua agenzia</h2>
+                <p className="text-lg sm:text-xl text-primary-foreground/90 text-balance">
+                  Prova DomusReport gratis e confrontalo con qualsiasi altra soluzione. 5 valutazioni gratuite al mese, nessun vincolo.
+                </p>
+              </div>
+              <div className="relative z-10 flex justify-center">
+                <Link href="/register">
+                  <Button size="lg" variant="secondary" className="text-primary font-semibold text-base h-12 px-8 hover:scale-105 transition-transform shadow-lg">
+                    Registrati gratis
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </SlideUp>
         </section>
       </main>
 
