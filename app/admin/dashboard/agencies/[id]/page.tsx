@@ -5,7 +5,16 @@ import { useParams, useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Building2, Mail, MapPin, Phone, Globe, CreditCard } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { ArrowLeft, Building2, Mail, MapPin, Phone, Globe, CreditCard, Pencil, Trash2, CheckCircle, Save, X } from "lucide-react"
 
 interface AgencyDetail {
   id: string
@@ -55,6 +64,31 @@ export default function AgencyDetailPage() {
   const [agency, setAgency] = React.useState<AgencyDetail | null>(null)
   const [leads, setLeads] = React.useState<RecentLead[]>([])
   const [loading, setLoading] = React.useState(true)
+  const [editing, setEditing] = React.useState(false)
+  const [saveLoading, setSaveLoading] = React.useState(false)
+  const [success, setSuccess] = React.useState("")
+  const [error, setError] = React.useState("")
+
+  const [editForm, setEditForm] = React.useState({
+    nome: "",
+    email: "",
+    citta: "",
+    telefono: "",
+    indirizzo: "",
+    sitoWeb: "",
+    partitaIva: "",
+    piano: "free",
+  })
+
+  const showMsg = (msg: string, isError = false) => {
+    if (isError) {
+      setError(msg)
+      setTimeout(() => setError(""), 5000)
+    } else {
+      setSuccess(msg)
+      setTimeout(() => setSuccess(""), 5000)
+    }
+  }
 
   React.useEffect(() => {
     fetch(`/api/admin/agencies/${params.id}`)
@@ -62,6 +96,18 @@ export default function AgencyDetailPage() {
       .then((data) => {
         setAgency(data.agency)
         setLeads(data.recentLeads || [])
+        if (data.agency) {
+          setEditForm({
+            nome: data.agency.nome || "",
+            email: data.agency.email || "",
+            citta: data.agency.citta || "",
+            telefono: data.agency.telefono || "",
+            indirizzo: data.agency.indirizzo || "",
+            sitoWeb: data.agency.sitoWeb || "",
+            partitaIva: data.agency.partitaIva || "",
+            piano: data.agency.piano || "free",
+          })
+        }
       })
       .catch(console.error)
       .finally(() => setLoading(false))
@@ -75,6 +121,46 @@ export default function AgencyDetailPage() {
       body: JSON.stringify({ attiva: !agency.attiva }),
     })
     setAgency((prev) => (prev ? { ...prev, attiva: !prev.attiva } : null))
+  }
+
+  const saveChanges = async () => {
+    if (!agency) return
+    setSaveLoading(true)
+    try {
+      const res = await fetch(`/api/admin/agencies/${agency.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setAgency((prev) => (prev ? { ...prev, ...data.agency } : null))
+        setEditing(false)
+        showMsg("Agenzia aggiornata con successo")
+      } else {
+        showMsg(data.error || "Errore", true)
+      }
+    } catch {
+      showMsg("Errore di connessione", true)
+    } finally {
+      setSaveLoading(false)
+    }
+  }
+
+  const deleteAgency = async () => {
+    if (!agency) return
+    if (!confirm(`Sei sicuro di voler disattivare l'agenzia "${agency.nome}"? L'agenzia verrà disattivata ma non eliminata.`)) return
+    try {
+      const res = await fetch(`/api/admin/agencies/${agency.id}`, { method: "DELETE" })
+      const data = await res.json()
+      if (data.success) {
+        router.push("/admin/dashboard/agencies")
+      } else {
+        showMsg(data.error || "Errore", true)
+      }
+    } catch {
+      showMsg("Errore di connessione", true)
+    }
   }
 
   if (loading) {
@@ -105,76 +191,215 @@ export default function AgencyDetailPage() {
 
   return (
     <div className="page-stack">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <PageHeader title={agency.nome} subtitle={agency.email} />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <Button variant="ghost" size="sm" className="shrink-0" onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="min-w-0">
+            <PageHeader title={agency.nome} subtitle={agency.email} />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 pl-10 sm:pl-0">
+          {!editing && (
+            <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+              <Pencil className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Modifica</span>
+            </Button>
+          )}
+          <Button variant="ghost" size="sm" onClick={deleteAgency} className="text-destructive hover:text-destructive">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
+      {success && (
+        <div className="rounded-xl border border-success/40 bg-success/10 p-3 flex items-center gap-2">
+          <CheckCircle className="h-4 w-4 text-success" />
+          <p className="text-sm text-success">{success}</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3">
+          <p className="text-sm text-destructive">{error}</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Info Agenzia */}
+        {/* Info Agenzia / Edit form */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
-              Informazioni
+              {editing ? "Modifica Informazioni" : "Informazioni"}
             </CardTitle>
-            <button
-              onClick={toggleActive}
-              className={`inline-flex px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition-colors ${
-                agency.attiva
-                  ? "bg-success/20 text-success hover:bg-success/30"
-                  : "bg-destructive/20 text-destructive hover:bg-destructive/30"
-              }`}
-            >
-              {agency.attiva ? "Attiva" : "Inattiva"}
-            </button>
+            {!editing && (
+              <button
+                onClick={toggleActive}
+                className={`inline-flex px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition-colors ${
+                  agency.attiva
+                    ? "bg-success/20 text-success hover:bg-success/30"
+                    : "bg-destructive/20 text-destructive hover:bg-destructive/30"
+                }`}
+              >
+                {agency.attiva ? "Attiva" : "Inattiva"}
+              </button>
+            )}
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4 text-foreground-muted" />
-                {agency.email}
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-foreground-muted" />
-                {agency.citta}
-                {agency.indirizzo && ` - ${agency.indirizzo}`}
-              </div>
-              {agency.telefono && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-foreground-muted" />
-                  {agency.telefono}
+          <CardContent>
+            {editing ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Nome Agenzia</Label>
+                    <Input
+                      value={editForm.nome}
+                      onChange={(e) => setEditForm((f) => ({ ...f, nome: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      value={editForm.email}
+                      onChange={(e) => setEditForm((f) => ({ ...f, email: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Città</Label>
+                    <Input
+                      value={editForm.citta}
+                      onChange={(e) => setEditForm((f) => ({ ...f, citta: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Telefono</Label>
+                    <Input
+                      value={editForm.telefono}
+                      onChange={(e) => setEditForm((f) => ({ ...f, telefono: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Indirizzo</Label>
+                    <Input
+                      value={editForm.indirizzo}
+                      onChange={(e) => setEditForm((f) => ({ ...f, indirizzo: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Sito Web</Label>
+                    <Input
+                      value={editForm.sitoWeb}
+                      onChange={(e) => setEditForm((f) => ({ ...f, sitoWeb: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Partita IVA</Label>
+                    <Input
+                      value={editForm.partitaIva}
+                      onChange={(e) => setEditForm((f) => ({ ...f, partitaIva: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Piano</Label>
+                    <Select
+                      value={editForm.piano}
+                      onValueChange={(v) => setEditForm((f) => ({ ...f, piano: v }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="free">Free</SelectItem>
+                        <SelectItem value="basic">Basic</SelectItem>
+                        <SelectItem value="premium">Premium</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              )}
-              {agency.sitoWeb && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Globe className="h-4 w-4 text-foreground-muted" />
-                  {agency.sitoWeb}
+                <div className="flex gap-2 pt-2">
+                  <Button onClick={saveChanges} loading={saveLoading}>
+                    <Save className="h-4 w-4 mr-2" />
+                    Salva
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEditing(false)
+                      setEditForm({
+                        nome: agency.nome,
+                        email: agency.email,
+                        citta: agency.citta,
+                        telefono: agency.telefono || "",
+                        indirizzo: agency.indirizzo || "",
+                        sitoWeb: agency.sitoWeb || "",
+                        partitaIva: agency.partitaIva || "",
+                        piano: agency.piano,
+                      })
+                    }}
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Annulla
+                  </Button>
                 </div>
-              )}
-            </div>
-            <div className="pt-3 border-t border-border grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-              <div>
-                <p className="text-lg font-bold">{agency.leadsCount}</p>
-                <p className="text-xs text-foreground-muted">Lead</p>
               </div>
-              <div>
-                <p className="text-lg font-bold">{agency.widgetsCount}</p>
-                <p className="text-xs text-foreground-muted">Widget</p>
+            ) : (
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-4 w-4 text-foreground-muted" />
+                    {agency.email}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin className="h-4 w-4 text-foreground-muted" />
+                    {agency.citta}
+                    {agency.indirizzo && ` - ${agency.indirizzo}`}
+                  </div>
+                  {agency.telefono && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="h-4 w-4 text-foreground-muted" />
+                      {agency.telefono}
+                    </div>
+                  )}
+                  {agency.sitoWeb && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Globe className="h-4 w-4 text-foreground-muted" />
+                      {agency.sitoWeb}
+                    </div>
+                  )}
+                </div>
+                {agency.partitaIva && (
+                  <p className="text-sm text-foreground-muted">P.IVA: {agency.partitaIva}</p>
+                )}
+                <div className="pt-3 border-t border-border grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                  <div>
+                    <p className="text-lg font-bold">{agency.leadsCount}</p>
+                    <p className="text-xs text-foreground-muted">Lead</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold">{agency.widgetsCount}</p>
+                    <p className="text-xs text-foreground-muted">Widget</p>
+                  </div>
+                  <div>
+                    <span
+                      className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                        planBadge[agency.piano] || planBadge.free
+                      }`}
+                    >
+                      {agency.piano.charAt(0).toUpperCase() + agency.piano.slice(1)}
+                    </span>
+                    <p className="text-xs text-foreground-muted mt-1">Piano</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">
+                      {new Date(agency.dataCreazione).toLocaleDateString("it-IT")}
+                    </p>
+                    <p className="text-xs text-foreground-muted">Registrata</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${planBadge[agency.piano] || planBadge.free}`}>
-                  {agency.piano.charAt(0).toUpperCase() + agency.piano.slice(1)}
-                </span>
-                <p className="text-xs text-foreground-muted mt-1">Piano</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium">{new Date(agency.dataCreazione).toLocaleDateString("it-IT")}</p>
-                <p className="text-xs text-foreground-muted">Registrata</p>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
@@ -195,7 +420,11 @@ export default function AgencyDetailPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-foreground-muted">Stato</span>
-                  <span className={`font-medium ${agency.subscription.status === "active" ? "text-success" : "text-warning"}`}>
+                  <span
+                    className={`font-medium ${
+                      agency.subscription.status === "active" ? "text-success" : "text-warning"
+                    }`}
+                  >
                     {agency.subscription.status}
                   </span>
                 </div>
@@ -206,7 +435,9 @@ export default function AgencyDetailPage() {
                 {agency.subscription.nextBillingDate && (
                   <div className="flex justify-between">
                     <span className="text-foreground-muted">Prossimo rinnovo</span>
-                    <span>{new Date(agency.subscription.nextBillingDate).toLocaleDateString("it-IT")}</span>
+                    <span>
+                      {new Date(agency.subscription.nextBillingDate).toLocaleDateString("it-IT")}
+                    </span>
                   </div>
                 )}
                 <div className="flex justify-between">
@@ -252,13 +483,16 @@ export default function AgencyDetailPage() {
                   {leads.map((lead) => (
                     <tr key={lead.id} className="border-b border-border">
                       <td className="p-4">
-                        <p className="text-sm font-medium">{lead.nome} {lead.cognome}</p>
+                        <p className="text-sm font-medium">
+                          {lead.nome} {lead.cognome}
+                        </p>
                         <p className="text-xs text-foreground-muted">{lead.email}</p>
                       </td>
                       <td className="p-4 text-sm">
                         {lead.property ? (
                           <>
-                            {lead.property.citta} - {lead.property.tipo} ({lead.property.superficieMq}mq)
+                            {lead.property.citta} - {lead.property.tipo} ({lead.property.superficieMq}
+                            mq)
                           </>
                         ) : (
                           <span className="text-foreground-muted">N/D</span>

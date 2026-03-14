@@ -14,7 +14,7 @@ export default function AdminDashboardLayout({
     <div className="min-h-screen bg-background">
       <AdminSidebar />
       <main className="lg:pl-64">
-        <div className="page-container">{children}</div>
+        <div className="page-container pt-16 lg:pt-6">{children}</div>
       </main>
     </div>
   )

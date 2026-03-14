@@ -105,7 +105,7 @@ export default function AdminAgenciesPage() {
                 setPlan(e.target.value)
                 setPage(1)
               }}
-              className="px-3 py-2 rounded-xl border border-border bg-surface text-sm text-foreground"
+              className="w-full sm:w-auto px-3 py-2 rounded-xl border border-border bg-surface text-sm text-foreground"
             >
               <option value="">Tutti i piani</option>
               <option value="free">Free</option>
@@ -118,7 +118,7 @@ export default function AdminAgenciesPage() {
                 setStatus(e.target.value)
                 setPage(1)
               }}
-              className="px-3 py-2 rounded-xl border border-border bg-surface text-sm text-foreground"
+              className="w-full sm:w-auto px-3 py-2 rounded-xl border border-border bg-surface text-sm text-foreground"
             >
               <option value="">Tutti gli stati</option>
               <option value="active">Attive</option>
@@ -132,7 +132,7 @@ export default function AdminAgenciesPage() {
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px]">
+            <table className="w-full min-w-[600px]">
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left p-4 text-sm font-medium text-foreground-muted">

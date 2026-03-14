@@ -14,6 +14,7 @@ import {
   X,
   Menu,
   Shield,
+  LayoutGrid,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import * as React from "react"
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Agenzie", href: "/admin/dashboard/agencies", icon: Building2 },
   { name: "Lead", href: "/admin/dashboard/leads", icon: Users },
   { name: "Affiliati", href: "/admin/dashboard/affiliates", icon: Handshake },
+  { name: "Widget", href: "/admin/dashboard/widgets", icon: LayoutGrid },
   { name: "Coupon", href: "/admin/dashboard/coupons", icon: Tag },
   {
     name: "Email Marketing",
@@ -115,7 +117,7 @@ export function AdminSidebar() {
             className="fixed inset-0 bg-black/50"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="relative w-64 bg-background border-r border-border flex flex-col h-full">
+          <div className="relative w-[80vw] max-w-64 bg-background border-r border-border flex flex-col h-full">
             <button
               onClick={() => setMobileOpen(false)}
               className="absolute top-4 right-4 text-foreground-muted hover:text-foreground"

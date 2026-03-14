@@ -296,32 +296,35 @@ export default function AdminProfilePage() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[500px]">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left p-4 text-sm font-medium text-foreground-muted">Nome</th>
-                    <th className="text-left p-4 text-sm font-medium text-foreground-muted">Email</th>
-                    <th className="text-left p-4 text-sm font-medium text-foreground-muted">Ruolo</th>
-                    <th className="text-left p-4 text-sm font-medium text-foreground-muted">Data</th>
-                    <th className="text-right p-4 text-sm font-medium text-foreground-muted">Azioni</th>
+                    <th className="text-left p-3 sm:p-4 text-sm font-medium text-foreground-muted">Nome</th>
+                    <th className="text-left p-3 sm:p-4 text-sm font-medium text-foreground-muted hidden sm:table-cell">Email</th>
+                    <th className="text-left p-3 sm:p-4 text-sm font-medium text-foreground-muted">Ruolo</th>
+                    <th className="text-left p-3 sm:p-4 text-sm font-medium text-foreground-muted hidden sm:table-cell">Data</th>
+                    <th className="text-right p-3 sm:p-4 text-sm font-medium text-foreground-muted">Azioni</th>
                   </tr>
                 </thead>
                 <tbody>
                   {members.map((m) => (
                     <tr key={m.id} className="border-b border-border">
-                      <td className="p-4 text-sm font-medium">{m.nome} {m.cognome}</td>
-                      <td className="p-4 text-sm text-foreground-muted">{m.email}</td>
-                      <td className="p-4">
+                      <td className="p-3 sm:p-4">
+                        <p className="text-sm font-medium">{m.nome} {m.cognome}</p>
+                        <p className="text-xs text-foreground-muted sm:hidden">{m.email}</p>
+                      </td>
+                      <td className="p-3 sm:p-4 text-sm text-foreground-muted hidden sm:table-cell">{m.email}</td>
+                      <td className="p-3 sm:p-4">
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                           m.ruolo === "superadmin" ? "bg-warning/20 text-warning" : "bg-primary/20 text-primary"
                         }`}>
                           {m.ruolo}
                         </span>
                       </td>
-                      <td className="p-4 text-sm text-foreground-muted">
+                      <td className="p-3 sm:p-4 text-sm text-foreground-muted hidden sm:table-cell">
                         {new Date(m.dataCreazione).toLocaleDateString("it-IT")}
                       </td>
-                      <td className="p-4 text-right">
+                      <td className="p-3 sm:p-4 text-right">
                         {m.id !== profile?.id && (
                           <Button
                             variant="ghost"
@@ -352,7 +355,7 @@ export default function AdminProfilePage() {
                 Aggiungi Admin
               </h3>
               <form onSubmit={addMember} className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label>Nome</Label>
                     <Input
