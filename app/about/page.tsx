@@ -156,6 +156,13 @@ export default function AboutPage() {
             </div>
           </section>
         </div>
+
+        {/* Admin access */}
+        <div className="text-center py-4">
+          <Link href="/admin/login" className="text-xs text-foreground-muted/40 hover:text-foreground-muted transition-colors">
+            Admin
+          </Link>
+        </div>
       </main>
 
       <Footer />
