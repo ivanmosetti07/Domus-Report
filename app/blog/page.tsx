@@ -2,6 +2,9 @@ import Link from "next/link"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { ArrowRight } from "lucide-react"
+import { FadeIn } from "@/components/animations/fade-in"
+import { SlideUp } from "@/components/animations/slide-up"
+import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 
 export const metadata = {
   title: "Blog - Risorse per Agenzie Immobiliari",
@@ -161,68 +164,83 @@ export default function BlogPage() {
       <div className="h-20" />
 
       <main className="w-full">
-        <section className="relative w-full overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background py-16 sm:py-20">
-          <div className="relative site-container text-center space-y-4 max-w-3xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl font-black leading-tight">Blog</h1>
-            <p className="text-lg text-foreground-muted">
-              Guide, strategie e approfondimenti per agenzie immobiliari che vogliono crescere con la tecnologia.
-            </p>
+        <section className="relative w-full overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background py-16 sm:py-24 lg:py-32">
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30" />
+            <div className="absolute top-40 -left-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl opacity-40" />
+          </div>
+          <div className="relative site-container text-center space-y-6 max-w-3xl mx-auto">
+            <FadeIn>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight text-balance">Blog</h1>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <p className="text-lg sm:text-xl text-foreground-muted text-balance mx-auto">
+                Guide, strategie e approfondimenti per professionisti immobiliari che vogliono crescere con la tecnologia.
+              </p>
+            </FadeIn>
           </div>
         </section>
 
         {/* Guide Complete */}
-        <section className="site-container py-8 sm:py-12">
-          <h2 className="text-2xl font-bold mb-6">Guide Complete</h2>
-          <div className="grid gap-6 md:grid-cols-2">
+        <section className="site-container py-12 sm:py-16">
+          <SlideUp>
+            <h2 className="text-3xl font-bold mb-8 text-balance">Guide Complete</h2>
+          </SlideUp>
+          <StaggerContainer className="grid gap-6 md:grid-cols-2">
             {articoli.filter(a => a.categoria === "Guida Completa").map((art) => (
-              <Link
-                key={art.slug}
-                href={`/blog/${art.slug}`}
-                className="group rounded-2xl border-2 border-primary/20 bg-surface p-8 space-y-4 transition-colors hover:border-primary/40"
-              >
-                <div className="text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 px-2 py-1 rounded-full w-fit">
-                  {art.categoria}
-                </div>
-                <h2 className="text-xl font-bold group-hover:text-primary transition-colors">
-                  {art.titolo}
-                </h2>
-                <p className="text-sm text-foreground-muted">{art.descrizione}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-foreground-muted">{art.data}</span>
-                  <span className="text-primary flex items-center gap-1">
-                    Leggi la guida <ArrowRight className="h-3 w-3" />
-                  </span>
-                </div>
-              </Link>
+              <StaggerItem key={art.slug}>
+                <Link
+                  href={`/blog/${art.slug}`}
+                  className="group flex flex-col h-full rounded-2xl border border-border/50 bg-background/50 backdrop-blur-sm p-8 space-y-4 transition-all hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+                >
+                  <div className="text-xs font-semibold uppercase tracking-wide text-primary bg-primary/10 px-3 py-1.5 rounded-full w-fit">
+                    {art.categoria}
+                  </div>
+                  <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+                    {art.titolo}
+                  </h3>
+                  <p className="text-sm text-foreground-muted leading-relaxed line-clamp-3">{art.descrizione}</p>
+                  <div className="flex items-center justify-between text-sm pt-4 mt-auto border-t border-border/50">
+                    <span className="text-foreground-muted font-medium">{art.data}</span>
+                    <span className="text-primary font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                      Leggi la guida <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </div>
+                </Link>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </section>
 
-        <section className="site-container py-12 sm:py-16">
-          <h2 className="text-2xl font-bold mb-6">Tutti gli articoli</h2>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Tutti gli articoli */}
+        <section className="site-container py-12 sm:py-20">
+          <SlideUp>
+            <h2 className="text-3xl font-bold mb-8 text-balance">Tutti gli articoli</h2>
+          </SlideUp>
+          <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {articoli.filter(a => a.categoria !== "Guida Completa").map((art) => (
-              <Link
-                key={art.slug}
-                href={`/blog/${art.slug}`}
-                className="group rounded-2xl border border-border bg-surface p-6 space-y-4 transition-colors hover:border-primary/30"
-              >
-                <div className="text-xs font-semibold uppercase tracking-wide text-primary">
-                  {art.categoria}
-                </div>
-                <h2 className="text-xl font-bold group-hover:text-primary transition-colors">
-                  {art.titolo}
-                </h2>
-                <p className="text-sm text-foreground-muted">{art.descrizione}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-foreground-muted">{art.data}</span>
-                  <span className="text-primary flex items-center gap-1">
-                    Leggi <ArrowRight className="h-3 w-3" />
-                  </span>
-                </div>
-              </Link>
+              <StaggerItem key={art.slug}>
+                <Link
+                  href={`/blog/${art.slug}`}
+                  className="group flex flex-col h-full rounded-2xl border border-border/50 bg-surface/50 backdrop-blur-sm p-6 space-y-4 transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
+                >
+                  <div className="text-xs font-semibold uppercase tracking-wide text-primary">
+                    {art.categoria}
+                  </div>
+                  <h3 className="text-lg font-bold group-hover:text-primary transition-colors line-clamp-2">
+                    {art.titolo}
+                  </h3>
+                  <p className="text-sm text-foreground-muted leading-relaxed line-clamp-3 mb-4">{art.descrizione}</p>
+                  <div className="flex items-center justify-between text-sm pt-4 mt-auto border-t border-border/50">
+                    <span className="text-foreground-muted font-medium">{art.data}</span>
+                    <span className="text-primary font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                      Leggi <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </div>
+                </Link>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </section>
       </main>
 

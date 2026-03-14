@@ -1,9 +1,8 @@
 "use client"
 
-import { motion, Easing } from "framer-motion"
+import { useInView } from "@/components/landing/use-in-view"
 
 export const DURATION = 0.8
-export const EASING: Easing = [0.22, 1, 0.36, 1]
 
 interface FadeInProps {
   children: React.ReactNode
@@ -12,19 +11,15 @@ interface FadeInProps {
 }
 
 export function FadeIn({ children, delay = 0, className }: FadeInProps) {
+  const [ref, inView] = useInView({ rootMargin: "-10%" })
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true, margin: "-10%" }}
-      transition={{
-        duration: DURATION,
-        ease: EASING,
-        delay,
-      }}
-      className={className}
+    <div
+      ref={ref}
+      className={`reveal reveal-fade ${inView ? "in-view" : ""} ${className || ""}`}
+      style={delay ? { animationDelay: `${delay * 1000}ms` } : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }

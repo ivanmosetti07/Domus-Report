@@ -1,7 +1,6 @@
 "use client"
 
-import { motion, Easing } from "framer-motion"
-import { DURATION, EASING } from "./fade-in"
+import { useInView } from "@/components/landing/use-in-view"
 
 interface SlideUpProps {
   children: React.ReactNode
@@ -10,19 +9,15 @@ interface SlideUpProps {
 }
 
 export function SlideUp({ children, delay = 0, className }: SlideUpProps) {
+  const [ref, inView] = useInView({ rootMargin: "-10%" })
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-10%" }}
-      transition={{
-        duration: DURATION,
-        ease: EASING as Easing,
-        delay,
-      }}
-      className={className}
+    <div
+      ref={ref}
+      className={`reveal ${inView ? "in-view" : ""} ${className || ""}`}
+      style={delay ? { animationDelay: `${delay * 1000}ms` } : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }

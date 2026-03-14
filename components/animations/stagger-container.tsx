@@ -1,7 +1,6 @@
 "use client"
 
-import { motion, Easing } from "framer-motion"
-import { DURATION, EASING } from "./fade-in"
+import { useInView } from "@/components/landing/use-in-view"
 
 interface StaggerContainerProps {
   children: React.ReactNode
@@ -10,50 +9,31 @@ interface StaggerContainerProps {
   delayChildren?: number
 }
 
-export function StaggerContainer({ 
-  children, 
-  className, 
-  staggerDelay = 0.1,
-  delayChildren = 0
+export function StaggerContainer({
+  children,
+  className,
 }: StaggerContainerProps) {
+  const [ref, inView] = useInView({ rootMargin: "-10%" })
+
   return (
-    <motion.div
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-10%" }}
-      variants={{
-        hidden: {},
-        show: {
-          transition: {
-            staggerChildren: staggerDelay,
-            delayChildren: delayChildren,
-          },
-        },
-      }}
-      className={className}
+    <div
+      ref={ref}
+      className={`reveal-stagger ${inView ? "in-view" : ""} ${className || ""}`}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
 
 export function StaggerItem({ children, className }: { children: React.ReactNode, className?: string }) {
+  const [ref, inView] = useInView({ rootMargin: "-10%" })
+
   return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 20 },
-        show: { 
-          opacity: 1, 
-          y: 0,
-          transition: {
-            duration: DURATION,
-            ease: EASING as Easing
-          }
-        },
-      }}
-      className={className}
+    <div
+      ref={ref}
+      className={`reveal ${inView ? "in-view" : ""} ${className || ""}`}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
