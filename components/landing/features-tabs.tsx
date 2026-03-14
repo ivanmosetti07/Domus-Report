@@ -22,7 +22,7 @@ export function FeaturesTabs() {
           badge={{ icon: Sparkles, label: "Approfondisci" }}
           title={
             <>
-              Scopri cosa puoi fare con{" "}
+              Scopri cosa puoi fare con <br className="hidden md:block" />
               <span className="text-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.3)]">DomusReport</span>
             </>
           }

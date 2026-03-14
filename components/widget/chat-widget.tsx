@@ -109,6 +109,7 @@ interface ChatWidgetProps {
   mode?: 'bubble' | 'inline'
   isDemo?: boolean
   onClose?: () => void
+  onDemoComplete?: () => void
   theme?: WidgetThemeConfig
 }
 

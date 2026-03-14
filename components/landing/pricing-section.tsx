@@ -48,8 +48,8 @@ export function PricingSection() {
         <SectionHeader
           badge={{ icon: Sparkles, label: "Prezzi trasparenti" }}
           title={
-             <>
-              Piani senza vincoli,{" "}
+            <>
+              Piani senza vincoli, <br className="hidden md:block" />
               <span className="text-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.3)]">risultati concreti</span>
             </>
           }

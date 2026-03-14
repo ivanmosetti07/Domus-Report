@@ -35,7 +35,7 @@ export function TestimonialsSection() {
           badge={{ icon: Users, label: "Risultati reali" }}
           title={
             <>
-              Agenzie che hanno smesso di{" "}
+              Agenzie che hanno smesso di <br className="hidden md:block" />
               <span className="text-primary drop-shadow-[0_0_15px_rgba(var(--primary),0.3)]">rincorrere clienti</span>
             </>
           }

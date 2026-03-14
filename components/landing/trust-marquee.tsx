@@ -4,14 +4,14 @@ import { motion } from "framer-motion"
 import { TRUST_STATS } from "./landing-data"
 
 const BRANDS = [
-  "Immobiliare.it",
-  "Idealista",
-  "Casa.it",
-  "Re/Max",
-  "Tecnocasa",
-  "Engel & Völkers",
-  "Gabetti",
-  "Coldwell Banker",
+  "Agenzia Premium",
+  "Gruppo Case Italia",
+  "Studio Immobiliare Centro",
+  "Immobiliare Plus",
+  "Real Estate Partners",
+  "Global Case",
+  "Progetto Casa",
+  "Domus Partner",
 ]
 
 export function TrustMarquee() {

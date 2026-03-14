@@ -19,7 +19,7 @@ export function ShowcaseBento() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6 tracking-tight">
-              Tutto quello che ti serve,{" "}
+              Tutto quello che ti serve, <br className="hidden lg:block" />
               <span className="text-primary">in un unico strumento.</span>
             </h2>
             <p className="text-lg sm:text-xl text-foreground-muted">

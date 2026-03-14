@@ -73,7 +73,7 @@ export function HeroSectionV2({ onDemoClick }: HeroSectionV2Props) {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight"
             >
-              Il chatbot AI che valuta immobili in{" "}
+              Il chatbot AI che valuta immobili in <br className="hidden lg:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-hover to-primary">
                 tempo reale
               </span>

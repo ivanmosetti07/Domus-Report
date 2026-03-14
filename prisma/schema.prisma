@@ -120,23 +120,26 @@ model Conversation {
 }
 
 model DemoLead {
-  id            String   @id @default(cuid())
-  nome          String
-  cognome       String
-  email         String
-  telefono      String?
-  indirizzo     String
-  citta         String
-  tipo          String
-  superficieMq  Int      @map("superficie_mq")
-  piano         Int?
-  ascensore     Boolean?
-  stato         String
-  prezzoMinimo  Int      @map("prezzo_minimo")
-  prezzoMassimo Int      @map("prezzo_massimo")
-  prezzoStimato Int      @map("prezzo_stimato")
-  messaggi      Json
-  dataRichiesta DateTime @default(now()) @map("data_richiesta")
+  id                  String   @id @default(cuid())
+  nome                String
+  cognome             String
+  email               String
+  telefono            String?
+  indirizzo           String
+  citta               String
+  tipo                String
+  superficieMq        Int      @map("superficie_mq")
+  piano               Int?
+  ascensore           Boolean?
+  stato               String
+  prezzoMinimo        Int      @map("prezzo_minimo")
+  prezzoMassimo       Int      @map("prezzo_massimo")
+  prezzoStimato       Int      @map("prezzo_stimato")
+  messaggi            Json
+  dataRichiesta       DateTime @default(now()) @map("data_richiesta")
+  convertedToAgencyId String?  @unique @map("converted_to_agency_id")
+  emailConsent        Boolean  @default(false) @map("email_consent")
+  source              String   @default("landing_demo")
 
   @@index([dataRichiesta])
   @@index([email])
@@ -551,4 +554,76 @@ model Commission {
   @@index([status])
   @@index([createdAt])
   @@map("commissions")
+}
+
+// ==========================================
+// EMAIL MARKETING SYSTEM
+// ==========================================
+
+model EmailCampaign {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  description String?
+  flowType    String              @map("flow_type")
+  isActive    Boolean             @default(true) @map("is_active")
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
+  steps       EmailCampaignStep[]
+  sends       EmailSend[]
+
+  @@index([flowType])
+  @@index([isActive])
+  @@map("email_campaigns")
+}
+
+model EmailCampaignStep {
+  id          String        @id @default(cuid())
+  campaignId  String        @map("campaign_id")
+  stepOrder   Int           @map("step_order")
+  delayHours  Int           @map("delay_hours")
+  subject     String
+  templateKey String        @map("template_key")
+  isActive    Boolean       @default(true) @map("is_active")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  campaign    EmailCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  sends       EmailSend[]
+
+  @@unique([campaignId, stepOrder])
+  @@index([campaignId])
+  @@map("email_campaign_steps")
+}
+
+model EmailSend {
+  id             String            @id @default(cuid())
+  campaignId     String            @map("campaign_id")
+  stepId         String            @map("step_id")
+  recipientEmail String            @map("recipient_email")
+  recipientName  String?           @map("recipient_name")
+  recipientType  String            @map("recipient_type")
+  recipientId    String            @map("recipient_id")
+  status         String            @default("pending")
+  scheduledAt    DateTime          @map("scheduled_at")
+  sentAt         DateTime?         @map("sent_at")
+  failReason     String?           @map("fail_reason")
+  messageId      String?           @map("message_id")
+  metadata       Json?
+  createdAt      DateTime          @default(now()) @map("created_at")
+  campaign       EmailCampaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  step           EmailCampaignStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([stepId])
+  @@index([recipientEmail])
+  @@index([recipientId, recipientType])
+  @@index([status, scheduledAt])
+  @@map("email_sends")
+}
+
+model EmailUnsubscribe {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  reason    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("email_unsubscribes")
 }
