@@ -1,9 +1,8 @@
 "use client"
 
-import { Suspense } from "react"
 import dynamic from "next/dynamic"
-import { motion } from "framer-motion"
-import { Smartphone, Play, Sparkles, CheckCircle, Code, Zap, Loader2 } from "lucide-react"
+import { Smartphone, Play, CheckCircle, Code, Zap, Loader2 } from "lucide-react"
+import { ScrollReveal } from "./use-in-view"
 
 const ChatWidget = dynamic(
   () => import("@/components/widget/chat-widget").then((m) => ({ default: m.ChatWidget })),
@@ -32,15 +31,9 @@ export function InteractiveDemoV2({ showWidget, onToggleWidget, onDemoComplete }
       <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1600px] mx-auto relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-        
+
         {/* Left Content */}
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="lg:w-1/2 w-full space-y-8"
-        >
+        <ScrollReveal className="lg:w-1/2 w-full space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full w-fit">
             <Smartphone className="w-4 h-4 text-primary" />
             <span className="text-sm font-semibold text-primary">Demo Live Interattiva</span>
@@ -63,29 +56,22 @@ export function InteractiveDemoV2({ showWidget, onToggleWidget, onDemoComplete }
               { icon: Code, text: "Completamente white-label e personalizzabile" },
               { icon: Zap, text: "Velocità di risposta AI < 1 secondo" },
             ].map((item, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: 0.2 + (i * 0.1), ease: [0.22, 1, 0.36, 1] }}
+              <div
+                key={i}
                 className="flex items-center gap-3 bg-surface/30 p-3 rounded-xl border border-border/30 w-fit"
               >
                 <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                   <item.icon className="w-4 h-4 text-primary" />
                 </div>
                 <span className="font-semibold text-sm sm:text-base text-foreground">{item.text}</span>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </ScrollReveal>
 
         {/* Right Content - Phone Mockup */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        <ScrollReveal
+          animation="reveal-scale"
           className="lg:w-1/2 w-full flex justify-center lg:justify-end relative"
         >
           {/* Glowing Aura */}
@@ -100,17 +86,13 @@ export function InteractiveDemoV2({ showWidget, onToggleWidget, onDemoComplete }
 
             <div className="flex-1 w-full bg-white relative overflow-hidden">
               {!showWidget ? (
-                <div 
+                <div
                   className="absolute inset-0 bg-surface flex flex-col items-center justify-center p-8 text-center cursor-pointer group hover:bg-surface-2 transition-colors"
                   onClick={() => onToggleWidget(true)}
                 >
-                  <motion.div 
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center mb-8 shadow-xl shadow-primary/30 group-hover:shadow-primary/50 transition-shadow"
-                  >
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center mb-8 shadow-xl shadow-primary/30 group-hover:shadow-primary/50 transition-shadow animate-pulse">
                     <Play className="w-10 h-10 text-primary-foreground ml-1" />
-                  </motion.div>
+                  </div>
                   <h3 className="text-2xl font-bold text-foreground mb-2">Avvia Demo</h3>
                   <p className="text-foreground-muted text-sm px-4">Tocca per iniziare una conversazione AI live</p>
                 </div>
@@ -121,7 +103,7 @@ export function InteractiveDemoV2({ showWidget, onToggleWidget, onDemoComplete }
               )}
             </div>
           </div>
-        </motion.div>
+        </ScrollReveal>
 
       </div>
     </section>

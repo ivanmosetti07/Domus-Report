@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
@@ -7,6 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users, DollarSign, Link2, ArrowRight, CheckCircle, Sparkles } from "lucide-react"
+
+export const metadata = {
+  title: "Programma Affiliati | DomusReport",
+  description: "Guadagna il 10% ricorrente referendo agenzie immobiliari a DomusReport. Registrazione gratuita, payout automatici.",
+  alternates: {
+    canonical: "https://domusreport.com/affiliate",
+  },
+}
 
 export default function AffiliateLandingPage() {
   return (

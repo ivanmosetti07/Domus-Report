@@ -1,6 +1,3 @@
-"use client"
-
-import { motion } from "framer-motion"
 import { TRUST_STATS } from "./landing-data"
 
 const BRANDS = [
@@ -25,7 +22,7 @@ export function TrustMarquee() {
         <h3 className="text-center text-sm font-semibold tracking-wider text-foreground-subtle uppercase mb-8">
           Affidabilità e performance comprovate
         </h3>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {TRUST_STATS.map((stat, i) => (
             <div key={i} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-surface/30 border border-border/50 hover:bg-surface/50 hover:border-primary/30 transition-colors">
@@ -41,15 +38,7 @@ export function TrustMarquee() {
       </div>
 
       <div className="relative flex overflow-x-hidden">
-        <motion.div
-          className="flex whitespace-nowrap gap-12 sm:gap-20 items-center px-6"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        >
+        <div className="flex whitespace-nowrap gap-12 sm:gap-20 items-center px-6 animate-marquee">
           {/* Double array for infinite loop effect */}
           {[...BRANDS, ...BRANDS].map((brand, i) => (
             <span
@@ -59,7 +48,7 @@ export function TrustMarquee() {
               {brand}
             </span>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

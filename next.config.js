@@ -4,6 +4,9 @@ const { withSentryConfig } = require("@sentry/nextjs")
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
   images: {
     remotePatterns: [
       {

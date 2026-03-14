@@ -1,28 +1,9 @@
 "use client"
 
-import { motion, Variants } from "framer-motion"
 import { Users, Star, Quote } from "lucide-react"
 import { SectionHeader } from "./section-header"
 import { TESTIMONIALS } from "./landing-data"
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-}
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
-  },
-}
+import { ScrollReveal } from "./use-in-view"
 
 export function TestimonialsSection() {
   return (
@@ -41,27 +22,20 @@ export function TestimonialsSection() {
           }
         />
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 mt-16"
-        >
-          {TESTIMONIALS.map((testimonial) => (
-            <motion.div
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 mt-16">
+          {TESTIMONIALS.map((testimonial, i) => (
+            <ScrollReveal
               key={testimonial.author}
-              variants={itemVariants}
-              whileHover={{ y: -5 }}
+              delay={i * 150}
               className="relative group h-full"
             >
               <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/30 to-transparent rounded-3xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
-              <div className="relative h-full bg-surface-2/80 backdrop-blur-xl border border-white/5 p-8 rounded-3xl flex flex-col shadow-xl">
+              <div className="relative h-full bg-surface-2/80 backdrop-blur-xl border border-white/5 p-8 rounded-3xl flex flex-col shadow-xl hover:-translate-y-[5px] transition-transform duration-300">
                 <Quote className="absolute top-6 right-6 w-10 h-10 text-primary/10" />
-                
+
                 <div className="flex items-center gap-1 mb-6">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                     <Star key={i} className="w-5 h-5 fill-primary text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+                    <Star key={i} className="w-5 h-5 fill-primary text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
                   ))}
                 </div>
 
@@ -84,9 +58,9 @@ export function TestimonialsSection() {
                   <div className="text-xl font-black text-primary drop-shadow-sm">{testimonial.stat}</div>
                 </div>
               </div>
-            </motion.div>
+            </ScrollReveal>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )
