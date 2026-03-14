@@ -1,24 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { verifyAuth } from "@/lib/auth"
-
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "ivan@mainstreamagency.it")
-  .split(",")
-  .map((e) => e.trim().toLowerCase())
+import { requireAdmin } from "@/lib/admin-auth"
 
 export async function POST(request: NextRequest) {
   try {
-    const token = request.headers.get("authorization")?.replace("Bearer ", "") ||
-      request.cookies.get("auth-token")?.value
-
-    if (!token) {
-      return NextResponse.json({ error: "Non autorizzato" }, { status: 401 })
-    }
-
-    const auth = await verifyAuth(token)
-    if (!auth || !ADMIN_EMAILS.includes(auth.email.toLowerCase())) {
-      return NextResponse.json({ error: "Accesso negato" }, { status: 403 })
-    }
+    const authResult = await requireAdmin(request)
+    if (authResult instanceof NextResponse) return authResult
 
     const body = await request.json()
     const { affiliateId, paymentReference } = body

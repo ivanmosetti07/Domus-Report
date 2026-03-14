@@ -15,6 +15,12 @@ const protectedRoutes = ["/dashboard", "/onboarding"]
 // Routes that should redirect to dashboard if already authenticated (agency)
 const authRoutes = ["/login", "/register"]
 
+// Routes that require admin authentication
+const adminProtectedRoutes = ["/admin/dashboard"]
+
+// Routes that should redirect to admin dashboard if already authenticated
+const adminAuthRoutes = ["/admin/login"]
+
 // Routes that require affiliate authentication
 const affiliateProtectedRoutes = ["/affiliate/dashboard"]
 
@@ -23,6 +29,44 @@ const affiliateAuthRoutes = ["/affiliate/login", "/affiliate/register"]
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // === ADMIN ROUTES ===
+  const isAdminProtected = adminProtectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  )
+  const isAdminAuth = adminAuthRoutes.some((route) =>
+    pathname.startsWith(route)
+  )
+
+  if (isAdminProtected || isAdminAuth) {
+    const adminToken = request.cookies.get("admin-auth-token")?.value
+    let isAdminAuthenticated = false
+
+    if (adminToken) {
+      try {
+        const verified = await jwtVerify(adminToken, getJwtSecret())
+        if (verified.payload.role === "admin") {
+          isAdminAuthenticated = true
+        }
+      } catch {
+        // Token invalid
+      }
+    }
+
+    if (isAdminProtected && !isAdminAuthenticated) {
+      const url = new URL("/admin/login", request.url)
+      url.searchParams.set("redirect", pathname)
+      return NextResponse.redirect(url)
+    }
+
+    if (isAdminAuth && isAdminAuthenticated) {
+      return NextResponse.redirect(
+        new URL("/admin/dashboard", request.url)
+      )
+    }
+
+    return NextResponse.next()
+  }
 
   // === AFFILIATE ROUTES ===
   const isAffiliateProtected = affiliateProtectedRoutes.some((route) =>
@@ -108,6 +152,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api/auth|api/affiliate/register|api/affiliate/login|api/affiliate/track-click|api/affiliate/connect/callback|_next/static|_next/image|favicon.ico|.*\\..*|widget).*)",
+    "/((?!api/auth|api/admin/login|api/admin/logout|api/affiliate/register|api/affiliate/login|api/affiliate/track-click|api/affiliate/connect/callback|_next/static|_next/image|favicon.ico|.*\\..*|widget).*)",
   ],
 }
