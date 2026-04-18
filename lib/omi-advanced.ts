@@ -161,26 +161,24 @@ export function getOMIValueByZone(
 
   // 1. Cerca prima per ZONA specifica (con categoria se fornita)
   if (zona) {
-    let filtered = allData.filter(record =>
+    const zoneRecords = allData.filter(record =>
       matchesCaseInsensitive(record.citta, cittaNormalized) &&
       matchesCaseInsensitive(record.zona, zona) &&
       record.tipoImmobile === tipoImmobile
     )
 
-    // Aggiungi filtro categoria se fornito
+    let filtered = zoneRecords
     if (categoria) {
-      filtered = filtered.filter(record =>
+      filtered = zoneRecords.filter(record =>
         matchesCaseInsensitive(record.categoria, categoria)
       )
     }
 
     if (filtered.length > 0) {
-      // Ordina per anno e semestre decrescente, prendi il più recente
       filtered.sort((a, b) => {
         if (a.anno !== b.anno) return b.anno - a.anno
         return b.semestre - a.semestre
       })
-
       const latest = filtered[0]
       return {
         valoreMinMq: latest.valoreMinMq,
@@ -190,6 +188,44 @@ export function getOMIValueByZone(
         fonte: latest.fonte,
         semestre: latest.semestre,
         anno: latest.anno,
+      }
+    }
+
+    // 1b. La zona esiste nel CSV ma NON con la categoria richiesta
+    // (es. zona B14 Roma ha "civili" ma non "economico"). Invece di cadere
+    // in step 2 (CAP, che potrebbe portarci in una zona diversa), restiamo
+    // nella zona corretta e applichiamo l'adjustment di categoria.
+    if (categoria && zoneRecords.length > 0) {
+      const civili = zoneRecords.filter(r =>
+        matchesCaseInsensitive(r.categoria, "Abitazioni civili")
+      )
+      const baseline = civili.length > 0 ? civili : zoneRecords
+      baseline.sort((a, b) => {
+        if (a.anno !== b.anno) return b.anno - a.anno
+        return b.semestre - a.semestre
+      })
+      const base = baseline[0]
+      const cat = categoria.toLowerCase()
+      let ratio = 1.0
+      if (cat.includes("signorili")) ratio = 1.15
+      else if (cat.includes("economic")) ratio = 0.80
+      const baseIsSignorili = base.categoria.toLowerCase().includes("signorili")
+      const baseIsEconomico = base.categoria.toLowerCase().includes("economic")
+      let normalizationFactor = 1.0
+      if (baseIsSignorili) normalizationFactor = 1 / 1.15
+      else if (baseIsEconomico) normalizationFactor = 1 / 0.80
+      const adj = normalizationFactor * ratio
+      logger.info("OMI zone found but category missing, adjusted from sibling", {
+        zona, requested: categoria, base: base.categoria, ratio: adj,
+      })
+      return {
+        valoreMinMq: Math.round(base.valoreMinMq * adj),
+        valoreMaxMq: Math.round(base.valoreMaxMq * adj),
+        valoreMedioMq: Math.round(base.valoreMedioMq * adj),
+        zona: base.zona,
+        fonte: `OMI (${base.zona}, categoria adattata da ${base.categoria})`,
+        semestre: base.semestre,
+        anno: base.anno,
       }
     }
   }
