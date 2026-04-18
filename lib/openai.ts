@@ -1,5 +1,5 @@
 import { Message, PropertyType, PropertyCondition } from "@/types"
-import { DEFAULT_OPENAI_MODEL } from "./openai-config"
+import { DEFAULT_OPENAI_MODEL, REASONING_EFFORT } from "./openai-config"
 
 
 export interface PropertyValuationData {
@@ -104,8 +104,9 @@ Rispondi in formato JSON:
           }
         ],
         // GPT-5: usa max_completion_tokens, no temperature custom.
-        // Budget alto per dare spazio al reasoning interno.
+        // reasoning_effort=minimal per rispondere rapidamente.
         max_completion_tokens: 1500,
+        reasoning_effort: REASONING_EFFORT,
         response_format: { type: "json_object" }
       }),
     })

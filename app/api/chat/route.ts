@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Message } from "@/types"
-import { DEFAULT_OPENAI_MODEL } from "@/lib/openai-config"
+import { DEFAULT_OPENAI_MODEL, REASONING_EFFORT } from "@/lib/openai-config"
 
 // Runtime Node.js: GPT-5 è più lento dei modelli precedenti (reasoning model),
 // l'edge runtime con timeout max ~25s causava 504. Serverless Node permette
@@ -773,12 +773,11 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         model: DEFAULT_OPENAI_MODEL,
         messages: openAIMessages,
-        // GPT-5 richiede max_completion_tokens (max_tokens deprecato) e
-        // non supporta temperature custom (usa default 1).
-        // Budget alto perché parte dei token viene usata per il reasoning
-        // interno: se il limite è troppo basso, la risposta testuale arriva
-        // vuota o troncata.
+        // GPT-5: max_completion_tokens (max_tokens deprecato).
+        // reasoning_effort=minimal azzera il thinking interno per
+        // massimizzare la velocità di risposta nella chat widget.
         max_completion_tokens: 2000,
+        reasoning_effort: REASONING_EFFORT,
         response_format: { type: "json_object" },
       }),
     })
