@@ -37,6 +37,7 @@ export interface WidgetThemeConfig {
   sendButtonIconColor?: string
   agencyName?: string
   questionMode?: 'long' | 'short'
+  valuationMode?: 'hybrid' | 'omi' | 'ai_market'
 }
 
 // ─── Short mode: definizione dei passi ────────────────────────────────────────
@@ -198,6 +199,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   } = theme
 
   const questionMode = theme.questionMode || 'long'
+  const valuationMode = theme.valuationMode || 'hybrid'
 
   // CSS variables for theming
   const themeStyles: React.CSSProperties = {
@@ -928,6 +930,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           buildYear: currentData.buildYear,
           // Abilita analisi AI
           useAI: true,
+          // Modalità di valutazione configurata lato admin per il widget
+          valuationMode,
         }),
         signal: controller.signal,
       })

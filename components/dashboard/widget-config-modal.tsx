@@ -61,6 +61,7 @@ interface WidgetConfig {
   sendButtonColor?: string
   sendButtonIconColor?: string
   questionMode?: 'long' | 'short'
+  valuationMode?: 'hybrid' | 'omi' | 'ai_market'
 }
 
 interface WidgetConfigModalProps {
@@ -90,6 +91,7 @@ const defaultConfig: Omit<WidgetConfig, 'id' | 'widgetId'> = {
   sendButtonColor: '#2563eb',
   sendButtonIconColor: '#ffffff',
   questionMode: 'long',
+  valuationMode: 'hybrid',
 }
 
 export function WidgetConfigModal({
@@ -359,6 +361,63 @@ export function WidgetConfigModal({
                     </div>
                     <p className="text-xs text-foreground-muted">
                       Domande guidate: città, tipo, mq, piano, esterni, auto, riscaldamento e contatti
+                    </p>
+                  </button>
+                </div>
+              </div>
+
+              {/* Valuation mode toggle */}
+              <div className="space-y-3">
+                <Label>Motore di Valutazione</Label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
+                      (config.valuationMode ?? 'hybrid') === 'hybrid'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/40 hover:bg-primary/5'
+                    }`}
+                    onClick={() => setConfig({ ...config, valuationMode: 'hybrid' })}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-sm">Ibrido (consigliato)</span>
+                    </div>
+                    <p className="text-xs text-foreground-muted">
+                      OMI ufficiale + cross-check con annunci reali. Bilanciamento precisione/affidabilità.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
+                      config.valuationMode === 'omi'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/40 hover:bg-primary/5'
+                    }`}
+                    onClick={() => setConfig({ ...config, valuationMode: 'omi' })}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-sm">Solo OMI</span>
+                    </div>
+                    <p className="text-xs text-foreground-muted">
+                      Solo dati ufficiali Agenzia delle Entrate. Veloce e deterministico.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
+                      config.valuationMode === 'ai_market'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/40 hover:bg-primary/5'
+                    }`}
+                    onClick={() => setConfig({ ...config, valuationMode: 'ai_market' })}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-sm">Solo AI + mercato</span>
+                    </div>
+                    <p className="text-xs text-foreground-muted">
+                      Solo annunci reali via AI web search. ⚠️ Sperimentale: latenza alta, può fallire.
                     </p>
                   </button>
                 </div>

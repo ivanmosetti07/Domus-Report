@@ -266,3 +266,87 @@ export function applyComparablesRefinement(
       )}€/m² (delta OMI ${crossCheck.deltaPct > 0 ? "+" : ""}${crossCheck.deltaPct}%).`,
   }
 }
+
+// ============================================================================
+// AI MARKET MODE: costruisce ValuationResult solo da comparables (no OMI)
+// ============================================================================
+
+/**
+ * Costruisce una ValuationResult basata esclusivamente sui comparables reali
+ * recuperati via AI (modalità `ai_market`). Non usa dati OMI.
+ *
+ * Applica i coefficienti di piano e condition pura (costi di ristrutturazione)
+ * al prezzo mediano dei comparables, che già riflettono il mercato reale di
+ * immobili mediamente in stato "Buono-Ristrutturato".
+ *
+ * ATTENZIONE: affidabilità inferiore all'ibrido. Con pochi annunci (<3) o
+ * annunci fuori zona target, il risultato può essere fuorviante. Pensato per
+ * test / override premium, non come default.
+ */
+export function buildValuationFromComparables(
+  comparables: ComparablesResult,
+  surfaceSqm: number,
+  floorCoefficient: number,
+  pureConditionCoefficient: number,
+  conditionCompositeCoefficient: number
+): ValuationResult {
+  const marketQualityBaseline = 1.05
+  const qualityAdjustment = pureConditionCoefficient / marketQualityBaseline
+  const combinedAdjustment = qualityAdjustment * floorCoefficient
+
+  const medianPPS = comparables.medianPricePerSqm
+  const adjustedPPS = Math.round(medianPPS * combinedAdjustment)
+  const estimatedPrice = Math.round(adjustedPPS * surfaceSqm)
+
+  // Range: usa min/max comparables se >=2, altrimenti ±10% dalla stima
+  let minPrice: number
+  let maxPrice: number
+  if (comparables.sampleSize >= 2) {
+    minPrice = Math.round(comparables.minPricePerSqm * combinedAdjustment * surfaceSqm)
+    maxPrice = Math.round(comparables.maxPricePerSqm * combinedAdjustment * surfaceSqm)
+  } else {
+    minPrice = Math.round(estimatedPrice * 0.9)
+    maxPrice = Math.round(estimatedPrice * 1.1)
+  }
+
+  // Confidence basata su sampleSize
+  let confidenceScore = 50
+  if (comparables.sampleSize >= 5) confidenceScore = 80
+  else if (comparables.sampleSize >= 3) confidenceScore = 70
+  else if (comparables.sampleSize >= 2) confidenceScore = 60
+  else confidenceScore = 45
+  const level: ValuationResult["confidence"] =
+    confidenceScore >= 80 ? "alta" : confidenceScore >= 60 ? "media" : "bassa"
+
+  const warnings: ValuationResult["warnings"] = [
+    {
+      code: "AI_MARKET_MODE",
+      message: `Valutazione basata solo su ${comparables.sampleSize} annunci reali (modalità sperimentale, no OMI).`,
+      severity: "info",
+    },
+  ]
+  if (comparables.sampleSize < 3) {
+    warnings.push({
+      code: "FEW_COMPARABLES",
+      message: `Campione di comparables limitato (${comparables.sampleSize}): stima a bassa confidenza.`,
+      severity: "warning",
+    })
+  }
+
+  return {
+    minPrice: Math.min(minPrice, estimatedPrice),
+    maxPrice: Math.max(maxPrice, estimatedPrice),
+    estimatedPrice,
+    baseOMIValue: medianPPS, // proxy: mediana comparables (anche se non OMI)
+    floorCoefficient,
+    conditionCoefficient: conditionCompositeCoefficient,
+    pureConditionCoefficient,
+    explanation: `Valutazione basata esclusivamente sul mercato reale: ${comparables.sampleSize} annunci analizzati, €/m² mediano ${Math.round(medianPPS)}. OMI non utilizzato (modalità ai_market).`,
+    confidence: level,
+    confidenceScore,
+    warnings,
+    omiZoneMatch: "not_found", // indica che non è OMI-based
+    dataCompleteness: 100,
+    pricePerSqm: adjustedPPS,
+  }
+}

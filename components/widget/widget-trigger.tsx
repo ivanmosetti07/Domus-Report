@@ -29,6 +29,7 @@ export interface WidgetThemeConfig {
   sendButtonIconColor?: string
   agencyName?: string
   questionMode?: 'long' | 'short'
+  valuationMode?: 'hybrid' | 'omi' | 'ai_market'
 }
 
 interface WidgetTriggerProps {

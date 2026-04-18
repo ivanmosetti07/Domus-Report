@@ -31,6 +31,7 @@ interface WidgetConfigData {
   sendButtonIconColor?: string
   agencyName?: string
   questionMode?: 'long' | 'short'
+  valuationMode?: 'hybrid' | 'omi' | 'ai_market'
 }
 
 /**
@@ -147,6 +148,7 @@ export default function WidgetInlinePage() {
     sendButtonIconColor: config.sendButtonIconColor,
     agencyName: config.agencyName,
     questionMode: config.questionMode,
+    valuationMode: config.valuationMode,
   }
 
   return (

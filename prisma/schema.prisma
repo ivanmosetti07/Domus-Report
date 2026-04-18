@@ -403,6 +403,7 @@ model WidgetConfig {
   sendButtonColor     String?  @map("send_button_color")
   sendButtonIconColor String?  @map("send_button_icon_color")
   questionMode        String   @default("long") @map("question_mode")
+  valuationMode       String   @default("hybrid") @map("valuation_mode") // "hybrid" | "omi" | "ai_market"
   impressions         Int      @default(0)
   leadsGenerated      Int      @default(0) @map("leads_generated")
   createdAt           DateTime @default(now()) @map("created_at")

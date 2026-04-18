@@ -13,11 +13,12 @@ import type {
   ComparablesResult,
 } from "./types"
 import { createLogger } from "../logger"
+import { COMPARABLES_MODEL } from "../openai-config"
 
 const logger = createLogger("comparables:openai")
 
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
-const DEFAULT_MODEL = process.env.OPENAI_COMPARABLES_MODEL || "gpt-4o-mini"
+const DEFAULT_MODEL = COMPARABLES_MODEL
 
 function buildPrompt(query: ComparablesQuery): string {
   const parts: string[] = []

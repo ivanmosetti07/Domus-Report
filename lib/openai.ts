@@ -1,4 +1,5 @@
 import { Message, PropertyType, PropertyCondition } from "@/types"
+import { DEFAULT_OPENAI_MODEL } from "./openai-config"
 
 
 export interface PropertyValuationData {
@@ -73,7 +74,7 @@ export async function generateAIValuationAnalysis(
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: DEFAULT_OPENAI_MODEL,
         messages: [
           { role: "system", content: VALUATION_SYSTEM_PROMPT },
           {

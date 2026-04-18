@@ -106,6 +106,9 @@ export async function POST(request: NextRequest) {
       sendButtonColor: body.sendButtonColor || undefined,
       sendButtonIconColor: body.sendButtonIconColor || undefined,
       questionMode: body.questionMode || "long",
+      valuationMode: ["hybrid", "omi", "ai_market"].includes(body.valuationMode)
+        ? body.valuationMode
+        : "hybrid",
     },
   })
 

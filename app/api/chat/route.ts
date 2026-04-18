@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Message } from "@/types"
+import { DEFAULT_OPENAI_MODEL } from "@/lib/openai-config"
 
 export const runtime = "edge"
 
@@ -766,7 +767,7 @@ export async function POST(request: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: DEFAULT_OPENAI_MODEL,
         messages: openAIMessages,
         temperature: 0.7,
         max_tokens: 800,
