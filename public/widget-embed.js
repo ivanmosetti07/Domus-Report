@@ -262,13 +262,13 @@
         height: 600px;
         max-height: 100vh;
         z-index: 999999;
-        box-shadow: 0 4px 24px rgba(0,0,0,0.15);
-        border-radius: 12px 12px 0 0;
         background: transparent;
+        box-shadow: none;
         opacity: 1;
       `;
       iframe.id = 'domusreport-widget-iframe';
       iframe.setAttribute('allowTransparency', 'true');
+      iframe.setAttribute('aria-label', 'DomusReport Chat');
 
       // Usa src diretto invece di scrivere contenuto e fare redirect
       iframe.src = `${baseUrl}/widget/${widgetId}?embed=bubble&v=${WIDGET_VERSION}`;

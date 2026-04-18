@@ -118,12 +118,12 @@
       'border:none',
       'z-index:2147483647',
       'display:none',
-      'border-radius:12px 12px 0 0',
-      'box-shadow:0 8px 32px rgba(0,0,0,0.2)',
+      'background:transparent',
+      'box-shadow:none',
     ].join(';');
     iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads');
     iframe.setAttribute('allow', 'clipboard-write');
-    iframe.setAttribute('title', 'DomusReport Chat');
+    iframe.setAttribute('aria-label', 'DomusReport Chat');
 
     // Quando l'iframe è caricato, invia il comando di apertura automatica
     iframe.onload = function () {
