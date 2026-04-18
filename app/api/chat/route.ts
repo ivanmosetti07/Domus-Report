@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Message } from "@/types"
-import { DEFAULT_OPENAI_MODEL, REASONING_EFFORT } from "@/lib/openai-config"
+import { DEFAULT_OPENAI_MODEL, REASONING_EFFORT_CHAT } from "@/lib/openai-config"
 
 // Runtime Node.js: GPT-5 è più lento dei modelli precedenti (reasoning model),
 // l'edge runtime con timeout max ~25s causava 504. Serverless Node permette
@@ -777,7 +777,7 @@ export async function POST(request: NextRequest) {
         // reasoning_effort=minimal azzera il thinking interno per
         // massimizzare la velocità di risposta nella chat widget.
         max_completion_tokens: 2000,
-        reasoning_effort: REASONING_EFFORT,
+        reasoning_effort: REASONING_EFFORT_CHAT,
         response_format: { type: "json_object" },
       }),
     })

@@ -22,8 +22,14 @@ export const COMPARABLES_MODEL = "gpt-5-mini"
 
 /**
  * Livello di ragionamento interno per modelli GPT-5.
- * "minimal" → risposta veloce (<5s tipico), minimo reasoning, adatto a
- * estrazione dati e conversazione strutturata.
- * "low" | "medium" | "high" → più profondità ma più latenza/costo.
+ * Differenziato per tipo di task:
+ *
+ * - CHAT: "minimal" — risposta veloce (<5s tipico), la chat deve solo
+ *   estrarre dati strutturati dal messaggio utente, non serve ragionare.
+ *
+ * - VALUATION: "high" — l'analisi finale della valutazione beneficia di
+ *   ragionamento profondo (+latenza, ma chiamato solo una volta a fine
+ *   conversazione quando l'utente aspetta il risultato).
  */
-export const REASONING_EFFORT = "minimal" as const
+export const REASONING_EFFORT_CHAT = "minimal" as const
+export const REASONING_EFFORT_VALUATION = "high" as const

@@ -26,6 +26,10 @@ import {
 // IMPORTANTE: Non usare Edge Runtime perché il sistema OMI legge dal filesystem (CSV)
 // export const runtime = "edge"
 
+// reasoning_effort "high" per l'analisi finale + eventuale web search
+// comparables può richiedere 30-60s. maxDuration 90s dà margine.
+export const maxDuration = 90
+
 interface ExtendedValuationInput extends ValuationInput {
   hasAirConditioning?: boolean
   useAI?: boolean
