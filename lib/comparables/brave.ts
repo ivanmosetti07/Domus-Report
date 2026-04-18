@@ -36,7 +36,7 @@ interface BraveWebResult {
   url: string
 }
 
-function buildBraveQuery(query: ComparablesQuery): string {
+function buildBraveQueries(query: ComparablesQuery): string[] {
   const parts: string[] = []
   parts.push(query.propertyType.toLowerCase())
   parts.push(`${query.surfaceSqm}mq`)
@@ -44,9 +44,13 @@ function buildBraveQuery(query: ComparablesQuery): string {
   if (query.neighborhood) parts.push(query.neighborhood)
   parts.push(query.city)
   parts.push("vendita prezzo")
-  // Site filter per portali italiani (OR implicito su Brave)
-  parts.push("site:immobiliare.it OR site:idealista.it OR site:casa.it")
-  return parts.join(" ")
+  const base = parts.join(" ")
+
+  return [
+    `${base} site:immobiliare.it/annunci`,
+    `${base} site:idealista.it/immobile`,
+    `${base} site:casa.it/immobile`,
+  ]
 }
 
 async function braveSearch(
@@ -80,6 +84,116 @@ async function braveSearch(
     url: x.url || "",
   }))
   return results
+}
+
+function sourceFromUrl(url: string): string {
+  if (url.includes("immobiliare.it")) return "immobiliare.it"
+  if (url.includes("idealista.it")) return "idealista.it"
+  if (url.includes("casa.it")) return "casa.it"
+  return "web"
+}
+
+function cleanText(value: string): string {
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
+function parseItalianNumber(value: string): number {
+  const compact = value
+    .replace(/\s/g, "")
+    .replace(/\.(?=\d{3}(\D|$))/g, "")
+    .replace(/,(?=\d{3}(\D|$))/g, "")
+    .replace(/[,.]\d{1,2}$/g, "")
+    .replace(/\D/g, "")
+  return Number(compact)
+}
+
+function parsePrice(text: string): number | null {
+  const patterns = [
+    /(?:€|eur|euro)\s*([0-9][0-9.\s,]{3,})/i,
+    /([0-9][0-9.\s,]{3,})\s*(?:€|eur|euro)/i,
+  ]
+  for (const pattern of patterns) {
+    const match = text.match(pattern)
+    if (!match) continue
+    const price = parseItalianNumber(match[1])
+    if (price >= 5000 && price <= 20_000_000) return price
+  }
+  return null
+}
+
+function parseSurface(text: string): number | null {
+  const match = text.match(/(\d{2,4})\s*(?:m²|mq|m2|metri quadrati)/i)
+  if (!match) return null
+  const surface = Number(match[1])
+  return surface >= 10 && surface <= 2000 ? surface : null
+}
+
+function parseRooms(text: string): number | undefined {
+  const match = text.match(/(\d{1,2})\s*(?:locali|locale|stanze|vani)/i)
+  if (!match) return undefined
+  const rooms = Number(match[1])
+  return rooms > 0 && rooms <= 30 ? rooms : undefined
+}
+
+function comparableFromSearchResult(result: BraveWebResult): Comparable | null {
+  const text = cleanText(`${result.title} ${result.description}`)
+  const lower = text.toLowerCase()
+  if (/asta|nuda propriet|usufrutto|intero stabile|palazzo|terreno/.test(lower)) {
+    return null
+  }
+  const price = parsePrice(text)
+  const surfaceSqm = parseSurface(text)
+  if (!price || !surfaceSqm) return null
+  const pricePerSqm = Math.round(price / surfaceSqm)
+  if (pricePerSqm < 300 || pricePerSqm > 30000) return null
+  return {
+    title: cleanText(result.title).slice(0, 160) || "Annuncio",
+    url: result.url,
+    source: sourceFromUrl(result.url),
+    price,
+    surfaceSqm,
+    pricePerSqm,
+    rooms: parseRooms(text),
+  }
+}
+
+function normalizeUrl(url?: string): string {
+  if (!url) return ""
+  try {
+    const u = new URL(url)
+    u.hash = ""
+    u.search = ""
+    return u.toString().replace(/\/$/, "")
+  } catch {
+    return url
+  }
+}
+
+function filterAndDedupeComparables(
+  comparables: Comparable[],
+  query: ComparablesQuery
+): Comparable[] {
+  const minSqm = Math.round(query.surfaceSqm * 0.65)
+  const maxSqm = Math.round(query.surfaceSqm * 1.35)
+  const seen = new Set<string>()
+  const filtered: Comparable[] = []
+
+  for (const comparable of comparables) {
+    if (comparable.surfaceSqm < minSqm || comparable.surfaceSqm > maxSqm) continue
+    const title = comparable.title.toLowerCase()
+    if (/asta|nuda propriet|usufrutto|intero stabile|palazzo|terreno/.test(title)) continue
+    const key = normalizeUrl(comparable.url) ||
+      `${title}|${comparable.price}|${comparable.surfaceSqm}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    filtered.push(comparable)
+  }
+
+  return filtered
 }
 
 function buildExtractionPrompt(
@@ -201,18 +315,28 @@ export class BraveComparablesProvider implements ComparablesProvider {
     if (!braveKey) throw new Error("BRAVE_API_KEY non configurata")
     if (!openaiKey) throw new Error("OPENAI_API_KEY non configurata (serve per parsing)")
 
-    const q = buildBraveQuery(query)
+    const queries = buildBraveQueries(query)
     logger.info("Brave search starting", {
       city: query.city,
       sqm: query.surfaceSqm,
       neighborhood: query.neighborhood,
-      query: q,
+      queries,
     })
 
     const warnings: string[] = []
     let webResults: BraveWebResult[] = []
     try {
-      webResults = await braveSearch(braveKey, q, query.maxResults ? Math.max(query.maxResults * 2, 15) : 20)
+      const resultsByQuery = await Promise.all(
+        queries.map((q) =>
+          braveSearch(braveKey, q, query.maxResults ? Math.max(query.maxResults, 8) : 10)
+        )
+      )
+      const byUrl = new Map<string, BraveWebResult>()
+      for (const result of resultsByQuery.flat()) {
+        if (!result.url) continue
+        byUrl.set(normalizeUrl(result.url), result)
+      }
+      webResults = [...byUrl.values()]
       logger.info("Brave results", { count: webResults.length })
     } catch (err) {
       logger.error("Brave Search API error", { error: String(err) })
@@ -243,13 +367,29 @@ export class BraveComparablesProvider implements ComparablesProvider {
       }
     }
 
-    let comparables: Comparable[] = []
+    const snippetComparables = webResults
+      .map(comparableFromSearchResult)
+      .filter((c: Comparable | null): c is Comparable => c !== null)
+
+    let comparables: Comparable[] = snippetComparables
     try {
-      comparables = await extractComparablesFromResults(openaiKey, webResults, query)
-      logger.info("LLM extraction done", { extracted: comparables.length })
+      const llmComparables = await extractComparablesFromResults(openaiKey, webResults, query)
+      comparables = [...comparables, ...llmComparables]
+      logger.info("Extraction done", {
+        snippets: snippetComparables.length,
+        llm: llmComparables.length,
+      })
     } catch (err) {
       logger.error("LLM extraction error", { error: String(err) })
       warnings.push(`Parsing LLM fallito: ${String(err).slice(0, 80)}`)
+    }
+
+    const beforeFilter = comparables.length
+    comparables = filterAndDedupeComparables(comparables, query)
+    if (beforeFilter > comparables.length) {
+      warnings.push(
+        `${beforeFilter - comparables.length} annunci scartati per duplicati, superficie fuori range o tipologia non pertinente.`
+      )
     }
 
     if (comparables.length === 0) {

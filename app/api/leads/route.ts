@@ -331,6 +331,58 @@ export async function POST(request: NextRequest) {
       return reject(403, "WIDGET_INACTIVE", "Widget non attivo")
     }
 
+    // Idempotenza: il widget può tentare più salvataggi ravvicinati mentre
+    // mostra PDF/restart. Riusa il lead appena creato invece di consumare
+    // altri crediti o mostrare errori di limite mensile.
+    const duplicateWindowStart = new Date(Date.now() - 10 * 60 * 1000)
+    const duplicateLead = await prisma.lead.findFirst({
+      where: {
+        agenziaId: agency.id,
+        email: emailValidation.sanitized,
+        nome: firstNameValidation.sanitized,
+        cognome: lastNameValidation.sanitized,
+        dataRichiesta: { gte: duplicateWindowStart },
+        property: { is: {
+          citta: finalCity,
+          superficieMq: finalSurface,
+          tipo: finalType,
+        } },
+      },
+      include: {
+        property: { include: { valuation: true } },
+        conversation: true,
+      },
+      orderBy: { dataRichiesta: "desc" },
+    })
+
+    if (duplicateLead) {
+      await recordLeadSubmission({
+        widgetId: body.widgetId,
+        agencyId: agency.id,
+        email: body.email,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        ipAddress: clientIP,
+        status: "success",
+        errorCode: "DUPLICATE_REUSED",
+        errorMessage: "Richiesta duplicata ravvicinata: lead esistente riutilizzato",
+        savedLeadId: duplicateLead.id,
+        httpStatus: 200,
+        bodySnapshot: body as Record<string, unknown>,
+      })
+
+      return NextResponse.json({
+        success: true,
+        leadId: duplicateLead.id,
+        lead: duplicateLead,
+        deduplicated: true,
+        valuationFailed: duplicateLead.property?.valuation
+          ? duplicateLead.property.valuation.prezzoStimato <= 0
+          : true,
+        message: "Lead già salvato, richiesta duplicata ignorata",
+      })
+    }
+
     // Limite valutazioni mensili (bloccante per agenzia)
     const valuationLimit = await checkValuationLimit(agency.id)
     if (!valuationLimit.allowed) {

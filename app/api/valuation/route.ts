@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { calculateValuation, ValuationInput, ValuationResult } from "@/lib/valuation"
+import { calculateValuation, ValuationInput, ValuationResult, ValuationWarning } from "@/lib/valuation"
 import { geocodeAddress } from "@/lib/geocoding"
 import { generateAIValuationAnalysis, PropertyValuationData } from "@/lib/openai"
 import { inferCity } from "@/lib/postal-code"
@@ -35,6 +35,23 @@ interface ExtendedValuationInput extends ValuationInput {
   useAI?: boolean
   useComparables?: boolean // Abilita cross-check con comparables reali
   valuationMode?: "hybrid" | "omi" | "ai_market" // Modalità motore (default: hybrid)
+}
+
+function capConfidence(
+  valuation: ValuationResult,
+  maxScore: number,
+  warning: ValuationWarning
+): ValuationResult {
+  const confidenceScore = Math.min(valuation.confidenceScore, maxScore)
+  const confidence: ValuationResult["confidence"] =
+    confidenceScore >= 80 ? "alta" : confidenceScore >= 60 ? "media" : "bassa"
+
+  return {
+    ...valuation,
+    confidence,
+    confidenceScore,
+    warnings: [...valuation.warnings, warning],
+  }
 }
 
 // applyComparablesRefinement ora è esportata da lib/comparables per essere
@@ -231,6 +248,7 @@ export async function POST(request: NextRequest) {
 
     let finalValuation = { ...baseValuation }
     let crossCheck: CrossCheckResult | null = null
+    let effectiveValuationMode: string = valuationMode
 
     if (valuationMode === "ai_market") {
       // Modalità "solo AI + mercato": tenta di ricostruire la valutazione
@@ -240,18 +258,13 @@ export async function POST(request: NextRequest) {
         console.warn(
           "[Valuation] ai_market mode: no comparables found, falling back to OMI baseline"
         )
-        finalValuation = {
-          ...baseValuation,
-          warnings: [
-            ...baseValuation.warnings,
-            {
-              code: "AI_MARKET_FALLBACK",
-              message:
-                "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
-              severity: "warning",
-            },
-          ],
-        }
+        finalValuation = capConfidence(baseValuation, 45, {
+          code: "AI_MARKET_FALLBACK",
+          message:
+            "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali con bassa confidenza.",
+          severity: "warning",
+        })
+        effectiveValuationMode = "omi_fallback"
       } else {
         // Serve recuperare i coefficienti senza passare per l'OMI
         const floorCoef = calculateFloorCoefficient(
@@ -276,6 +289,18 @@ export async function POST(request: NextRequest) {
           crossCheck,
           body.surfaceSqm
         )
+      } else {
+        const confidenceCap = baseValuation.omiZoneMatch === "city_average" ||
+          baseValuation.omiZoneMatch === "cap_global"
+          ? 55
+          : 70
+        finalValuation = capConfidence(finalValuation, confidenceCap, {
+          code: "NO_MARKET_COMPARABLES",
+          message:
+            "Nessun annuncio comparabile reale disponibile: stima basata solo su dati OMI, con confidenza ridotta.",
+          severity: "warning",
+        })
+        effectiveValuationMode = "omi_only"
       }
     }
     // valuationMode === "omi": nessun refinement, finalValuation = baseValuation
@@ -312,6 +337,7 @@ export async function POST(request: NextRequest) {
       success: true,
       valuation: finalValuation,
       valuationMode,
+      effectiveValuationMode,
       geocoded: geocodeData !== null,
       ai: aiAnalysis
         ? { enabled: true, confidence: aiAnalysis.confidence }

@@ -352,8 +352,8 @@ function calculateConfidence(
   else if (zoneMatch === "city_average") score -= 15
   else if (zoneMatch === "cap") score -= 5
 
-  if (omiVariancePct > 40) score -= 15
-  else if (omiVariancePct > 25) score -= 8
+  if (omiVariancePct > 40) score -= 35
+  else if (omiVariancePct > 25) score -= 25
 
   if (!input.condition) score -= 10
   if (!input.energyClass || input.energyClass === 'UNKNOWN') score -= 5
@@ -623,9 +623,9 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
   else if (omiAdvanced.zona === "Media CAP") zoneMatch = "cap_global"
   else if (omiAdvanced.fonte?.includes("CAP") && resolvedZone === undefined) zoneMatch = "cap"
 
-  // Sprint 1.2 + fix range: stretto quando la zona è poco specifica o la
-  // variance OMI è anormalmente elevata. La larghezza finale del range dipende
-  // dalla confidence (calcolata qui per permettere adjustment dinamico).
+  // Sprint 1.2 + fix range: più largo quando la zona è poco specifica o la
+  // variance OMI è elevata. La larghezza finale del range dipende dalla
+  // confidence (calcolata qui per permettere adjustment dinamico).
   const estimatedPrice = Math.round(
     baseOMIValue * input.surfaceSqm * floorCoefficient * qualityCoefficient
   )
@@ -642,27 +642,36 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
   const completeness = calculateDataCompleteness(input)
   const confidence = calculateConfidence(input, completeness, zoneMatch, rawOmiVariancePct)
 
-  const shouldTightenRange = isGenericZone || rawOmiVariancePct > VARIANCE_THRESHOLD
+  const shouldUseUncertaintyRange = isGenericZone
+  const shouldUseOMIRange = rawOmiVariancePct > VARIANCE_THRESHOLD
 
   let minPrice: number
   let maxPrice: number
-  if (shouldTightenRange) {
-    // Range dinamico in base a confidence:
-    // - alta  → ±6%  (stima precisa, meno incertezza)
-    // - media → ±9%
-    // - bassa → ±12% (più incertezza, range più ampio)
-    const tightRange =
-      confidence.level === "alta" ? 0.06 :
-      confidence.level === "bassa" ? 0.12 :
-      0.09
-    minPrice = Math.round(estimatedPrice * (1 - tightRange))
-    maxPrice = Math.round(estimatedPrice * (1 + tightRange))
+  if (shouldUseUncertaintyRange) {
+    // Zone generiche: la media città/CAP non rappresenta bene micro-zone e
+    // frazioni. Qui il range deve allargarsi, non stringersi.
+    const uncertaintyRange =
+      confidence.level === "alta" ? 0.18 :
+      confidence.level === "bassa" ? 0.35 :
+      0.25
+    minPrice = Math.round(estimatedPrice * (1 - uncertaintyRange))
+    maxPrice = Math.round(estimatedPrice * (1 + uncertaintyRange))
     warnings.push({
-      code: "RANGE_TIGHTENED",
-      message: isGenericZone
-        ? `Zona OMI poco specifica (${omiAdvanced.zona}): range ristretto a ±${Math.round(tightRange * 100)}% (confidence ${confidence.level}).`
-        : `Variance OMI elevata (${Math.round(rawOmiVariancePct)}%): range ristretto a ±${Math.round(tightRange * 100)}% (confidence ${confidence.level}).`,
-      severity: "info",
+      code: "RANGE_WIDENED_GENERIC_ZONE",
+      message: `Zona OMI poco specifica (${omiAdvanced.zona}): range allargato a ±${Math.round(uncertaintyRange * 100)}% (confidence ${confidence.level}).`,
+      severity: "warning",
+    })
+  } else if (shouldUseOMIRange) {
+    minPrice = Math.round(
+      minOMI * input.surfaceSqm * floorCoefficient * qualityCoefficient
+    )
+    maxPrice = Math.round(
+      maxOMI * input.surfaceSqm * floorCoefficient * qualityCoefficient
+    )
+    warnings.push({
+      code: "OMI_RANGE_USED_HIGH_VARIANCE",
+      message: `Variance OMI elevata (${Math.round(rawOmiVariancePct)}%): usato range OMI pieno invece di restringere artificialmente.`,
+      severity: "warning",
     })
   } else {
     minPrice = Math.round(

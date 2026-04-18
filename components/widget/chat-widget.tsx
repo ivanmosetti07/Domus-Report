@@ -237,6 +237,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
   }>>([])
   const batchTimerRef = React.useRef<NodeJS.Timeout | null>(null)
   const leadIdRef = React.useRef<string | null>(null)
+  const isSavingLeadRef = React.useRef(false)
 
   // FIX CRITICO: Ref per tutti i dati raccolti per evitare problemi di React state batching
   const phoneRef = React.useRef<string | undefined>(undefined)
@@ -1248,6 +1249,17 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
 
 
   const completeConversation = async (valuationResult?: ValuationResult) => {
+    if (isSavingLeadRef.current || leadIdRef.current || savedLeadId) {
+      console.log('[completeConversation] Lead already saving/saved, skipping duplicate submit', {
+        isSaving: isSavingLeadRef.current,
+        leadIdRef: leadIdRef.current,
+        savedLeadId,
+      })
+      return
+    }
+
+    isSavingLeadRef.current = true
+
     // FIX CRITICO: Usa collectedDataRef.current per evitare problemi di stale closure
     const currentData = collectedDataRef.current
     const firstName = currentData.firstName || "Amico"
@@ -1521,6 +1533,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           ]
         )
       }, 2000)
+    } finally {
+      if (!leadIdRef.current && !savedLeadId) {
+        isSavingLeadRef.current = false
+      }
     }
   }
 
@@ -1533,9 +1549,11 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     setConversationMode("chatting")
     setInputValue("")
     setSavedLeadId(null)
+    isSavingLeadRef.current = false
     // FIX CRITICO: Resetta anche i ref
     phoneRef.current = undefined
     collectedDataRef.current = {}
+    leadIdRef.current = null
 
     // Clear localStorage
     if (!isDemo) {
