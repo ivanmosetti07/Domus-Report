@@ -27,9 +27,10 @@ export const COMPARABLES_MODEL = "gpt-5-mini"
  * - CHAT: "minimal" — risposta veloce (<5s tipico), la chat deve solo
  *   estrarre dati strutturati dal messaggio utente, non serve ragionare.
  *
- * - VALUATION: "high" — l'analisi finale della valutazione beneficia di
- *   ragionamento profondo (+latenza, ma chiamato solo una volta a fine
- *   conversazione quando l'utente aspetta il risultato).
+ * - VALUATION: "medium" — buon compromesso qualità/latenza per l'analisi
+ *   finale. Latenza tipica 15-25s per il solo AI analysis; con web
+ *   search comparables in parallelo il totale /api/valuation è ~25-45s.
+ *   "high" era sopra i 60s e causava timeout frequenti.
  */
 export const REASONING_EFFORT_CHAT = "minimal" as const
-export const REASONING_EFFORT_VALUATION = "high" as const
+export const REASONING_EFFORT_VALUATION = "medium" as const
