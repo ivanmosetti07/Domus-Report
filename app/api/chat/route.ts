@@ -769,8 +769,9 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         model: DEFAULT_OPENAI_MODEL,
         messages: openAIMessages,
-        temperature: 0.7,
-        max_tokens: 800,
+        // GPT-5 richiede max_completion_tokens (max_tokens deprecato) e
+        // non supporta temperature custom (usa default 1).
+        max_completion_tokens: 800,
         response_format: { type: "json_object" },
       }),
     })
