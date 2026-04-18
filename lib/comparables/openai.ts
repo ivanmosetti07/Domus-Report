@@ -148,6 +148,11 @@ export class OpenAIComparablesProvider implements ComparablesProvider {
           .map((c: any) => c?.text || "")
           .join("")
       }
+      logger.info("OpenAI comparables raw response", {
+        contentLength: content.length,
+        contentSample: content.slice(0, 500),
+        outputShape: Array.isArray(data.output) ? `array[${data.output.length}]` : typeof data.output,
+      })
     } catch (error) {
       logger.error("OpenAI comparables provider failed", { error: String(error) })
       return {

@@ -18,7 +18,15 @@
 
 export const DEFAULT_OPENAI_MODEL = "gpt-5-mini"
 
-export const COMPARABLES_MODEL = "gpt-5-mini"
+// Per la ricerca comparables usiamo gpt-4o: il tool web_search_preview
+// sulla Responses API è documentato e testato con gpt-4o, non con gpt-5-mini
+// (dove ritornava sempre 0 annunci). gpt-4o-mini è il compromesso
+// velocità/costo dopo che si è verificato il supporto al tool.
+export const COMPARABLES_MODEL = "gpt-4o"
+
+// Modello leggero per parsing/estrazione da testo web (Brave Search snippets).
+// Richiede solo JSON output strutturato, no reasoning.
+export const PARSING_MODEL = "gpt-4o-mini"
 
 /**
  * Livello di ragionamento interno per modelli GPT-5.

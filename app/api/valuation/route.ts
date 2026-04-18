@@ -209,7 +209,8 @@ export async function POST(request: NextRequest) {
       ? withTimeout(generateAIValuationAnalysis(aiInput), 20_000, "AI analysis")
       : Promise.resolve(null)
 
-    // Comparables con timeout 35s (web_search_preview ~15-25s tipico)
+    // Comparables con timeout 55s (Brave search ~5-10s + LLM parsing ~5s,
+    // oppure OpenAI web_search_preview ~30-45s come fallback)
     const comparablesPromise: Promise<ComparablesResult | null> = useComparables
       ? withTimeout(
           searchComparables({
@@ -221,7 +222,7 @@ export async function POST(request: NextRequest) {
             condition: body.condition,
             rooms: body.rooms,
           }),
-          35_000,
+          55_000,
           "Comparables search"
         )
       : Promise.resolve(null)

@@ -1,9 +1,12 @@
 /**
  * Comparables Module - Facade
  *
+ * Provider chain:
+ * 1. Brave Search + gpt-4o-mini parsing (primary, veloce e affidabile)
+ * 2. OpenAI web_search_preview (fallback, più lento)
+ *
  * Espone:
- * - getComparablesProvider(): ritorna il provider OpenAI se disponibile
- * - searchComparables(query): wrapper con cache in-memory
+ * - searchComparables(query): wrapper con cache + chain provider
  * - crossCheckWithOMI(omiPPS, comparablesPPS): confronta OMI vs mercato reale
  */
 
@@ -15,6 +18,7 @@ import type {
 } from "./types"
 import type { ValuationResult } from "../valuation"
 import { OpenAIComparablesProvider } from "./openai"
+import { BraveComparablesProvider } from "./brave"
 import { createLogger } from "../logger"
 
 const logger = createLogger("comparables")
@@ -22,28 +26,42 @@ const logger = createLogger("comparables")
 export type { Comparable, ComparablesQuery, ComparablesResult, CrossCheckResult } from "./types"
 
 // ============================================================================
-// PROVIDER SELECTION (OpenAI only)
+// PROVIDER SELECTION — chain Brave → OpenAI
 // ============================================================================
 
-let cachedProvider: ComparablesProvider | null | undefined = undefined
+let cachedProviders: ComparablesProvider[] | undefined = undefined
 
-export function getComparablesProvider(): ComparablesProvider | null {
-  if (cachedProvider !== undefined) return cachedProvider
+function getProviders(): ComparablesProvider[] {
+  if (cachedProviders !== undefined) return cachedProviders
+  const providers: ComparablesProvider[] = []
+
+  const brave = new BraveComparablesProvider()
+  if (brave.isAvailable()) {
+    providers.push(brave)
+    logger.info("Brave provider available (primary)")
+  }
 
   const openai = new OpenAIComparablesProvider()
   if (openai.isAvailable()) {
-    cachedProvider = openai
-    return openai
+    providers.push(openai)
+    logger.info("OpenAI provider available (fallback)")
   }
 
-  logger.info("No comparables provider available (missing OPENAI_API_KEY)")
-  cachedProvider = null
-  return null
+  if (providers.length === 0) {
+    logger.info("No comparables provider available (missing BRAVE_API_KEY and OPENAI_API_KEY)")
+  }
+  cachedProviders = providers
+  return providers
+}
+
+export function getComparablesProvider(): ComparablesProvider | null {
+  const providers = getProviders()
+  return providers[0] ?? null
 }
 
 export function isComparablesEnabled(): boolean {
   if (process.env.COMPARABLES_ENABLED === "false") return false
-  return getComparablesProvider() !== null
+  return getProviders().length > 0
 }
 
 // ============================================================================
@@ -86,29 +104,44 @@ function bucketSqm(sqm: number): string {
 export async function searchComparables(
   query: ComparablesQuery
 ): Promise<ComparablesResult | null> {
-  const provider = getComparablesProvider()
-  if (!provider) return null
+  const providers = getProviders()
+  if (providers.length === 0) return null
 
   const key = getCacheKey(query)
   const cached = comparablesCache.get(key)
   if (cached && Date.now() - cached.timestamp < COMPARABLES_CACHE_TTL) {
-    logger.info("Comparables cache hit", { key })
+    logger.info("Comparables cache hit", { key, provider: cached.result.provider })
     return cached.result
   }
 
-  try {
-    const result = await provider.searchComparables({
-      maxResults: 8,
-      ...query,
-    })
-    if (result.sampleSize > 0) {
-      comparablesCache.set(key, { result, timestamp: Date.now() })
+  // Prova i provider in ordine: primary → fallback.
+  // Ritorna il primo risultato con sampleSize >= 1. Se il primary non trova
+  // nulla, prova il fallback (potrebbe avere più copertura per zone rare).
+  let lastResult: ComparablesResult | null = null
+  for (const provider of providers) {
+    try {
+      const result = await provider.searchComparables({
+        maxResults: 8,
+        ...query,
+      })
+      lastResult = result
+      logger.info("Provider result", {
+        provider: provider.name,
+        sampleSize: result.sampleSize,
+        elapsedMs: result.executionTimeMs,
+      })
+      if (result.sampleSize > 0) {
+        comparablesCache.set(key, { result, timestamp: Date.now() })
+        return result
+      }
+    } catch (error) {
+      logger.warn("Provider failed", { provider: provider.name, error: String(error) })
     }
-    return result
-  } catch (error) {
-    logger.error("Comparables search failed", { error: String(error) })
-    return null
   }
+
+  // Tutti i provider hanno ritornato 0 o hanno fallito — ritorna l'ultimo
+  // risultato (vuoto) per coerenza con il chiamante (che gestisce sampleSize=0).
+  return lastResult
 }
 
 // ============================================================================
