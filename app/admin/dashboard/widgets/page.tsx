@@ -147,7 +147,38 @@ export default function AdminWidgetsPage() {
     setEmbedModalOpen(true)
   }
 
-  const handleStartCreate = () => {
+  const [ensuringInternal, setEnsuringInternal] = React.useState(false)
+
+  const ensureInternalAgency = async (): Promise<AgencyOption | null> => {
+    setEnsuringInternal(true)
+    try {
+      const res = await fetch("/api/admin/internal-agency/ensure", { method: "POST" })
+      if (!res.ok) throw new Error("Creazione agenzia interna fallita")
+      const data = await res.json()
+      showMsg(data.created ? "Agenzia interna Domus Report creata" : "Agenzia interna già presente")
+      await fetchAgencies()
+      return { id: data.agency.id, nome: data.agency.nome, email: data.agency.email }
+    } catch (err) {
+      console.error(err)
+      showMsg("Errore creando l'agenzia interna")
+      return null
+    } finally {
+      setEnsuringInternal(false)
+    }
+  }
+
+  const handleStartCreate = async () => {
+    // Nel tab Domus: se esiste una sola agenzia interna, auto-selezionala.
+    // Se non ne esiste nessuna, creala al volo.
+    if (activeTab === "domus") {
+      const internal: AgencyOption | null =
+        domusAgencies[0] ?? (await ensureInternalAgency())
+      if (!internal) return
+      setCreateAgencyId(internal.id)
+      setSelectedWidget(null)
+      setConfigModalOpen(true)
+      return
+    }
     setCreateAgencyId("")
     setShowCreatePicker(true)
   }
@@ -394,14 +425,19 @@ export default function AdminWidgetsPage() {
                 </SelectContent>
               </Select>
             )}
-            <Button onClick={handleStartCreate}>
-              <Plus className="w-4 h-4 mr-2" />
+            <Button onClick={handleStartCreate} disabled={ensuringInternal}>
+              {ensuringInternal ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Plus className="w-4 h-4 mr-2" />
+              )}
               Nuovo Widget
             </Button>
           </div>
 
           <p className="text-sm text-foreground-muted">
-            Widget interni per test e demo. Condividili con chi vuole provare Domus Report.
+            Widget interni per test e demo. Condividili con chi vuole provare Domus Report:
+            usa il link "Testa widget" di ogni card per aprirli in una nuova scheda.
           </p>
 
           {renderWidgetGrid(filteredDomus, "Crea il primo widget interno per test e demo")}
@@ -461,17 +497,11 @@ export default function AdminWidgetsPage() {
                     <SelectValue placeholder="Seleziona un'agenzia..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {(activeTab === "domus" ? domusAgencies : externalAgencies).length > 0
-                      ? (activeTab === "domus" ? domusAgencies : externalAgencies).map((a) => (
-                          <SelectItem key={a.id} value={a.id}>
-                            {a.nome} ({a.email})
-                          </SelectItem>
-                        ))
-                      : agencies.map((a) => (
-                          <SelectItem key={a.id} value={a.id}>
-                            {a.nome} ({a.email})
-                          </SelectItem>
-                        ))}
+                    {externalAgencies.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.nome} ({a.email})
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
