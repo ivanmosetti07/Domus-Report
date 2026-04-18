@@ -906,12 +906,12 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     })
 
     try {
-      // Call valuation API with timeout.
-      // Il server ha maxDuration 90s (reasoning_effort=high + comparables
-      // via web_search_preview può richiedere 45-70s). Il client deve
-      // attendere almeno quanto il server.
+      // Call valuation API with timeout largo (180s).
+      // Il server tipicamente risponde entro 30s, ma se per qualche motivo
+      // va oltre, il widget attende ugualmente invece di mostrare errore.
+      // Il timeout esiste solo come safety net per richieste hanging.
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 90000) // 90s
+      const timeoutId = setTimeout(() => controller.abort(), 180000) // 180s
 
       // Invia TUTTI i dati raccolti per un'analisi AI più accurata
       // Normalizzazione centralizzata: mappa varianti italiane/AI verso enum validi.

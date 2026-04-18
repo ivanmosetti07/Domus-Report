@@ -183,26 +183,47 @@ export async function POST(request: NextRequest) {
       conditionCoefficient: baseValuation.conditionCoefficient,
     }
 
-    const aiPromise = useAI
-      ? generateAIValuationAnalysis(aiInput).catch((err) => {
-          console.warn("AI analysis failed:", err)
-          return null
+    // Helper per timeout individuale: se una chiamata esterna supera il
+    // tempo massimo accettabile, la risolviamo con null invece di bloccare
+    // tutto il flusso. Così l'utente riceve sempre una valutazione OMI
+    // anche se AI analysis o comparables sono lente/giù.
+    function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T | null> {
+      return new Promise((resolve) => {
+        const timer = setTimeout(() => {
+          console.warn(`[Valuation] ${label} timeout (${ms}ms), skipping`)
+          resolve(null)
+        }, ms)
+        p.then((v) => {
+          clearTimeout(timer)
+          resolve(v)
+        }).catch((err) => {
+          clearTimeout(timer)
+          console.warn(`[Valuation] ${label} failed:`, err)
+          resolve(null)
         })
+      })
+    }
+
+    // AI analysis con timeout 20s (reasoning_effort=low dovrebbe stare sotto 10s)
+    const aiPromise: Promise<Awaited<ReturnType<typeof generateAIValuationAnalysis>> | null> = useAI
+      ? withTimeout(generateAIValuationAnalysis(aiInput), 20_000, "AI analysis")
       : Promise.resolve(null)
 
-    const comparablesPromise = useComparables
-      ? searchComparables({
-          city: body.city,
-          neighborhood: body.neighborhood,
-          postalCode: body.postalCode,
-          propertyType: body.propertyType,
-          surfaceSqm: body.surfaceSqm,
-          condition: body.condition,
-          rooms: body.rooms,
-        }).catch((err) => {
-          console.warn("Comparables search failed:", err)
-          return null
-        })
+    // Comparables con timeout 35s (web_search_preview ~15-25s tipico)
+    const comparablesPromise: Promise<ComparablesResult | null> = useComparables
+      ? withTimeout(
+          searchComparables({
+            city: body.city,
+            neighborhood: body.neighborhood,
+            postalCode: body.postalCode,
+            propertyType: body.propertyType,
+            surfaceSqm: body.surfaceSqm,
+            condition: body.condition,
+            rooms: body.rooms,
+          }),
+          35_000,
+          "Comparables search"
+        )
       : Promise.resolve(null)
 
     const [aiAnalysis, comparablesResult] = await Promise.all([aiPromise, comparablesPromise])
