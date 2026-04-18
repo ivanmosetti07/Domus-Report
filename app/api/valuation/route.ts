@@ -279,6 +279,29 @@ export async function POST(request: NextRequest) {
     }
     // valuationMode === "omi": nessun refinement, finalValuation = baseValuation
 
+    // G5: downgrade confidence quando i comparables NON sono stati trovati.
+    // Senza verifica mercato reale, non possiamo dire "alta" anche con zone_specific:
+    // la stima è solo OMI teorico, potenzialmente fuori dalla realtà di ±50%.
+    const hasMarketVerification =
+      comparablesResult && comparablesResult.sampleSize >= 2
+    if (!hasMarketVerification && finalValuation.confidence === "alta") {
+      finalValuation = {
+        ...finalValuation,
+        confidence: "media",
+        confidenceScore: Math.min(finalValuation.confidenceScore, 70),
+        warnings: [
+          ...finalValuation.warnings,
+          {
+            code: "NO_MARKET_VERIFICATION",
+            message: comparablesResult && comparablesResult.sampleSize === 1
+              ? "Solo 1 annuncio di mercato trovato: verifica limitata, confidence abbassata."
+              : "Nessun annuncio di mercato trovato per il cross-check: valutazione basata solo su OMI teorico.",
+            severity: "warning",
+          },
+        ],
+      }
+    }
+
     // AI fornisce solo testo analitico (NON modifica i prezzi, che sono data-driven)
     if (aiAnalysis) {
       finalValuation.explanation = aiAnalysis.analysis + " " + (finalValuation.explanation || "")

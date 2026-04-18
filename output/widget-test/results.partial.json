@@ -1,0 +1,3283 @@
+{
+  "results": [
+    {
+      "ok": true,
+      "widget": "hybrid",
+      "widgetLabel": "Ibrido",
+      "propertyId": "roma-montespertoli",
+      "title": "Quadrilocale via Montespertoli, Grottarossa - Saxa Rubra, Roma",
+      "cityGroup": "Roma",
+      "listingUrl": "https://www.immobiliare.it/annunci/124816915/",
+      "askingPrice": 259000,
+      "askingPricePerSqm": 2616,
+      "startedAt": "2026-04-18T15:23:44.359Z",
+      "endedAt": "2026-04-18T15:24:37.324Z",
+      "valuationMode": "hybrid",
+      "valuation": {
+        "minPrice": 394998,
+        "maxPrice": 445424,
+        "estimatedPrice": 420211,
+        "baseOMIValue": 4250,
+        "floorCoefficient": 0.98,
+        "conditionCoefficient": 1.0191,
+        "pureConditionCoefficient": 1,
+        "explanation": "Punti di forza: attico ben tenuto con balcone, riscaldamento autonomo e aria condizionata che migliorano confort e appetibilità; superficie e distribuzione (2 camere) adatte a coppie o famiglie. Punti di debolezza: terzo piano senza ascensore e classe energetica E riducono mercato potenziale e costi di gestione; un solo bagno può limitare la domanda. Il mercato locale (Grottarossa–Saxa Rubra) mostra domanda stabile per immobili residenziali rivolti a pendolari verso il centro/nord di Roma, ma la concorrenza su classe energetica e accessibilità penalizza leggermente il prezzo. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+        "confidence": "alta",
+        "confidenceScore": 92,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+            "severity": "info"
+          }
+        ],
+        "omiZoneMatch": "zone_specific",
+        "dataCompleteness": 100,
+        "pricePerSqm": 4245
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {
+        "success": true,
+        "leadId": "cmo4hmwft000dk1uy6ez9r95b",
+        "valuationFailed": false,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+            "severity": "info"
+          }
+        ]
+      },
+      "finalTextTail": "Valuta la tua casa\n\nTi rispondo in pochi secondi\n\nAssistente\n\nCiao, sono DomusBot di Domus Report. In quale città si trova l'immobile?\n\n17:23\n\nVorrei una valutazione. Ti do tutti i dati in una volta per un test interno. Citta: Roma. CAP: 00189. Zona: Grottarossa - Saxa Rubra. Indirizzo: Via Montespertoli. Tipologia: Attico. Superficie commerciale: 99 mq. Camere: 2. Bagni: 1. Piano: 3. Ascensore: no. Spazi esterni: Balcone. Posto auto o box: no. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: si. Classe energetica: E. Anno costruzione: 1980. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+roma-montespertoli-hybrid@example.com, telefono 3337701201. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:23\n\nAssistente\n\nPerfetto, grazie Luca — ho registrato tutti i dati e procedo con la valutazione come richiesto.\n\n17:23\n\nSi, corretto. Procedi con la valutazione.\n\n17:23\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:23\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile.\n\n17:23\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:23\n\nAssistente\nVALORE STIMATO\n420.211 €\nRange: 394.998 € – 445.424 € · 4245 €/m²\nAFFIDABILITÀ ALTA · 92\n\nAttico in buono stato con balcone, impianto di climatizzazione e riscaldamento autonomo che supportano il valore; la posizione a Grottarossa/Saxa Rubra è favorevole per collegamenti e domanda residenziale ma non in centro storico. Il terzo piano senza ascensore e la classe energetica E sono elementi che riducono l'attrattività per fasce di mercato più esigenti; l'anno di costruzione e lo stato decoroso limitano la necessità di interventi immediati. Sul mercato locale la domanda residenziale periferica è stabile con una lieve tendenza al rialzo per immobili ben mantenuti, tuttavia il difetto energetico può comprimere il prezzo rispetto a comparabili più efficienti. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.\n\nCoefficiente qualità limitato (raw: 1.019 → clamp: 1.0191). Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).\n\n17:24\n\nAssistente\nVALORE STIMATO\n420.211 €\nRange: 394.998 € – 445.424 € · 4245 €/m²\nAFFIDABILITÀ ALTA · 92\n\nPunti di forza: attico ben tenuto con balcone, riscaldamento autonomo e aria condizionata che migliorano confort e appetibilità; superficie e distribuzione (2 camere) adatte a coppie o famiglie. Punti di debolezza: terzo piano senza ascensore e classe energetica E riducono mercato potenziale e costi di gestione; un solo bagno può limitare la domanda. Il mercato locale (Grottarossa–Saxa Rubra) mostra domanda stabile per immobili residenziali rivolti a pendolari verso il centro/nord di Roma, ma la concorrenza su classe energetica e accessibilità penalizza leggermente il prezzo. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.\n\nCoefficiente qualità limitato (raw: 1.019 → clamp: 1.0191). Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).\n\n17:24\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:24\n\nAssistente\n\nGrazie Luca! Sarai ricontattato a breve da un nostro consulente.\n\n17:24\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:24\n\nAssistente\n\nGrazie Luca! Sarai ricontattato a breve da un nostro consulente.\n\n17:24\n\nAssistente\n\nVuoi scaricare il PDF della valutazione?\n\nScarica PDF\nNo, grazie\n\n17:24\n\nAssistente\n\nVuoi scaricare il PDF della valutazione?\n\nScarica PDF\nNo, grazie\n\n17:24\n\nAssistente\n\nVuoi fare una nuova valutazione?\n\nSì, rifai valutazione\nNo, grazie\n\n17:24\n\nAssistente\n\nVuoi fare una nuova valutazione?\n\nSì, rifai valutazione\nNo, grazie\n\n17:24\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-montespertoli-hybrid.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:23:48.557Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:23:51.812Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto, grazie Luca — ho registrato tutti i dati e procedo con la valutazione come richiesto.",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via Montespertoli",
+              "neighborhood": "Grottarossa - Saxa Rubra",
+              "postalCode": "00189",
+              "propertyType": "Attico",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 99,
+              "rooms": 2,
+              "bathrooms": 1,
+              "floor": 3,
+              "hasElevator": false,
+              "outdoorSpace": "Balcone",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "E",
+              "buildYear": 1980,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-montespertoli-hybrid@example.com",
+              "phone": "3337701201"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:23:55.108Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile.",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via Montespertoli",
+              "neighborhood": "Grottarossa - Saxa Rubra",
+              "postalCode": "00189",
+              "propertyType": "Attico",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 99,
+              "rooms": 2,
+              "bathrooms": 1,
+              "floor": 3,
+              "hasElevator": false,
+              "outdoorSpace": "Balcone",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "E",
+              "buildYear": 1980,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-montespertoli-hybrid@example.com",
+              "phone": "3337701201"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:24:29.829Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 394998,
+              "maxPrice": 445424,
+              "estimatedPrice": 420211,
+              "baseOMIValue": 4250,
+              "floorCoefficient": 0.98,
+              "conditionCoefficient": 1.0191,
+              "pureConditionCoefficient": 1,
+              "explanation": "Attico in buono stato con balcone, impianto di climatizzazione e riscaldamento autonomo che supportano il valore; la posizione a Grottarossa/Saxa Rubra è favorevole per collegamenti e domanda residenziale ma non in centro storico. Il terzo piano senza ascensore e la classe energetica E sono elementi che riducono l'attrattività per fasce di mercato più esigenti; l'anno di costruzione e lo stato decoroso limitano la necessità di interventi immediati. Sul mercato locale la domanda residenziale periferica è stabile con una lieve tendenza al rialzo per immobili ben mantenuti, tuttavia il difetto energetico può comprimere il prezzo rispetto a comparabili più efficienti. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 4245
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:24:31.219Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 394998,
+              "maxPrice": 445424,
+              "estimatedPrice": 420211,
+              "baseOMIValue": 4250,
+              "floorCoefficient": 0.98,
+              "conditionCoefficient": 1.0191,
+              "pureConditionCoefficient": 1,
+              "explanation": "Punti di forza: attico ben tenuto con balcone, riscaldamento autonomo e aria condizionata che migliorano confort e appetibilità; superficie e distribuzione (2 camere) adatte a coppie o famiglie. Punti di debolezza: terzo piano senza ascensore e classe energetica E riducono mercato potenziale e costi di gestione; un solo bagno può limitare la domanda. Il mercato locale (Grottarossa–Saxa Rubra) mostra domanda stabile per immobili residenziali rivolti a pendolari verso il centro/nord di Roma, ma la concorrenza su classe energetica e accessibilità penalizza leggermente il prezzo. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 4245
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 200,
+          "at": "2026-04-18T15:24:32.059Z",
+          "body": {
+            "success": true,
+            "leadId": "cmo4hmvjm0006k1uy52176cg0",
+            "lead": {
+              "id": "cmo4hmvjm0006k1uy52176cg0",
+              "agenziaId": "cmo4acrle0000s7nx2fg87sfh",
+              "nome": "Luca",
+              "cognome": "Testdomus",
+              "email": "luca.testdomus+roma-montespertoli-hybrid@example.com",
+              "telefono": "3337701201",
+              "dataRichiesta": "2026-04-18T15:24:31.666Z",
+              "property": {
+                "id": "cmo4hmvjm0007k1uyv9i0j6n3",
+                "leadId": "cmo4hmvjm0006k1uy52176cg0",
+                "indirizzo": "Via Montespertoli, Grottarossa - Saxa Rubra, Roma, 00189",
+                "citta": "Roma",
+                "cap": "00189",
+                "latitudine": 41.9771196,
+                "longitudine": 12.4392021,
+                "tipo": "Attico",
+                "superficieMq": 99,
+                "piano": 3,
+                "ascensore": false,
+                "stato": "Buono",
+                "quartiere": "Grottarossa - Saxa Rubra",
+                "locali": 2,
+                "bagni": 1,
+                "tipoPiano": null,
+                "spaziEsterni": "Balcone",
+                "postoAuto": false,
+                "riscaldamento": "Autonomo",
+                "ariaCondizionata": true,
+                "classeEnergetica": "E",
+                "annoCostruzione": 1980,
+                "statoOccupazione": "Libero",
+                "dataScadenza": null,
+                "valuation": {
+                  "id": "cmo4hmvjm0008k1uyz5u6b5cq",
+                  "immobileId": "cmo4hmvjm0007k1uyv9i0j6n3",
+                  "prezzoMinimo": 394998,
+                  "prezzoMassimo": 445424,
+                  "prezzoStimato": 420211,
+                  "valoreOmiBase": 4250,
+                  "coefficientePiano": 0.98,
+                  "coefficienteStato": 1.0191,
+                  "spiegazione": "Attico in buono stato con balcone, impianto di climatizzazione e riscaldamento autonomo che supportano il valore; la posizione a Grottarossa/Saxa Rubra è favorevole per collegamenti e domanda residenziale ma non in centro storico. Il terzo piano senza ascensore e la classe energetica E sono elementi che riducono l'attrattività per fasce di mercato più esigenti; l'anno di costruzione e lo stato decoroso limitano la necessità di interventi immediati. Sul mercato locale la domanda residenziale periferica è stabile con una lieve tendenza al rialzo per immobili ben mantenuti, tuttavia il difetto energetico può comprimere il prezzo rispetto a comparabili più efficienti. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+                  "dataCalcolo": "2026-04-18T15:24:31.666Z",
+                  "confidence": "alta",
+                  "confidenceScore": 92,
+                  "warnings": [
+                    {
+                      "code": "QUALITY_COEF_CAPPED",
+                      "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                      "severity": "info"
+                    },
+                    {
+                      "code": "RANGE_TIGHTENED",
+                      "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                      "severity": "info"
+                    }
+                  ],
+                  "omiZoneMatch": "zone_specific",
+                  "dataCompleteness": 100,
+                  "pricePerSqm": 4245,
+                  "comparablesData": null
+                }
+              },
+              "conversation": {
+                "id": "cmo4hmvjm0009k1uyywrmrmtu",
+                "leadId": "cmo4hmvjm0006k1uy52176cg0",
+                "messaggi": [
+                  {
+                    "role": "bot",
+                    "text": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+                    "timestamp": "2026-04-18T15:23:48.539Z"
+                  }
+                ],
+                "createdAt": "2026-04-18T15:24:31.666Z",
+                "updatedAt": "2026-04-18T15:24:31.666Z"
+              }
+            },
+            "valuationFailed": false,
+            "warnings": [
+              {
+                "code": "QUALITY_COEF_CAPPED",
+                "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                "severity": "info"
+              },
+              {
+                "code": "RANGE_TIGHTENED",
+                "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                "severity": "info"
+              }
+            ],
+            "message": "Lead creato con successo"
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 200,
+          "at": "2026-04-18T15:24:33.039Z",
+          "body": {
+            "success": true,
+            "leadId": "cmo4hmwft000dk1uy6ez9r95b",
+            "lead": {
+              "id": "cmo4hmwft000dk1uy6ez9r95b",
+              "agenziaId": "cmo4acrle0000s7nx2fg87sfh",
+              "nome": "Luca",
+              "cognome": "Testdomus",
+              "email": "luca.testdomus+roma-montespertoli-hybrid@example.com",
+              "telefono": "3337701201",
+              "dataRichiesta": "2026-04-18T15:24:32.825Z",
+              "property": {
+                "id": "cmo4hmwft000ek1uyogfv3brn",
+                "leadId": "cmo4hmwft000dk1uy6ez9r95b",
+                "indirizzo": "Via Montespertoli, Grottarossa - Saxa Rubra, Roma, 00189",
+                "citta": "Roma",
+                "cap": "00189",
+                "latitudine": 41.9771196,
+                "longitudine": 12.4392021,
+                "tipo": "Attico",
+                "superficieMq": 99,
+                "piano": 3,
+                "ascensore": false,
+                "stato": "Buono",
+                "quartiere": "Grottarossa - Saxa Rubra",
+                "locali": 2,
+                "bagni": 1,
+                "tipoPiano": null,
+                "spaziEsterni": "Balcone",
+                "postoAuto": false,
+                "riscaldamento": "Autonomo",
+                "ariaCondizionata": true,
+                "classeEnergetica": "E",
+                "annoCostruzione": 1980,
+                "statoOccupazione": "Libero",
+                "dataScadenza": null,
+                "valuation": {
+                  "id": "cmo4hmwft000fk1uyusm2sip4",
+                  "immobileId": "cmo4hmwft000ek1uyogfv3brn",
+                  "prezzoMinimo": 394998,
+                  "prezzoMassimo": 445424,
+                  "prezzoStimato": 420211,
+                  "valoreOmiBase": 4250,
+                  "coefficientePiano": 0.98,
+                  "coefficienteStato": 1.0191,
+                  "spiegazione": "Punti di forza: attico ben tenuto con balcone, riscaldamento autonomo e aria condizionata che migliorano confort e appetibilità; superficie e distribuzione (2 camere) adatte a coppie o famiglie. Punti di debolezza: terzo piano senza ascensore e classe energetica E riducono mercato potenziale e costi di gestione; un solo bagno può limitare la domanda. Il mercato locale (Grottarossa–Saxa Rubra) mostra domanda stabile per immobili residenziali rivolti a pendolari verso il centro/nord di Roma, ma la concorrenza su classe energetica e accessibilità penalizza leggermente il prezzo. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+                  "dataCalcolo": "2026-04-18T15:24:32.825Z",
+                  "confidence": "alta",
+                  "confidenceScore": 92,
+                  "warnings": [
+                    {
+                      "code": "QUALITY_COEF_CAPPED",
+                      "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                      "severity": "info"
+                    },
+                    {
+                      "code": "RANGE_TIGHTENED",
+                      "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                      "severity": "info"
+                    }
+                  ],
+                  "omiZoneMatch": "zone_specific",
+                  "dataCompleteness": 100,
+                  "pricePerSqm": 4245,
+                  "comparablesData": null
+                }
+              },
+              "conversation": {
+                "id": "cmo4hmwft000gk1uyvyfly35u",
+                "leadId": "cmo4hmwft000dk1uy6ez9r95b",
+                "messaggi": [
+                  {
+                    "role": "bot",
+                    "text": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+                    "timestamp": "2026-04-18T15:23:48.539Z"
+                  },
+                  {
+                    "role": "user",
+                    "text": "Vorrei una valutazione. Ti do tutti i dati in una volta per un test interno. Citta: Roma. CAP: 00189. Zona: Grottarossa - Saxa Rubra. Indirizzo: Via Montespertoli. Tipologia: Attico. Superficie commerciale: 99 mq. Camere: 2. Bagni: 1. Piano: 3. Ascensore: no. Spazi esterni: Balcone. Posto auto o box: no. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: si. Classe energetica: E. Anno costruzione: 1980. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+roma-montespertoli-hybrid@example.com, telefono 3337701201. Confermo che i dati sono corretti, puoi procedere con la valutazione.",
+                    "timestamp": "2026-04-18T15:23:48.943Z"
+                  },
+                  {
+                    "role": "bot",
+                    "text": "Perfetto, grazie Luca — ho registrato tutti i dati e procedo con la valutazione come richiesto.",
+                    "timestamp": "2026-04-18T15:23:51.808Z"
+                  }
+                ],
+                "createdAt": "2026-04-18T15:24:32.825Z",
+                "updatedAt": "2026-04-18T15:24:32.825Z"
+              }
+            },
+            "valuationFailed": false,
+            "warnings": [
+              {
+                "code": "QUALITY_COEF_CAPPED",
+                "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                "severity": "info"
+              },
+              {
+                "code": "RANGE_TIGHTENED",
+                "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                "severity": "info"
+              }
+            ],
+            "message": "Lead creato con successo"
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "ai_market",
+      "widgetLabel": "Solo AI",
+      "propertyId": "roma-montespertoli",
+      "title": "Quadrilocale via Montespertoli, Grottarossa - Saxa Rubra, Roma",
+      "cityGroup": "Roma",
+      "listingUrl": "https://www.immobiliare.it/annunci/124816915/",
+      "askingPrice": 259000,
+      "askingPricePerSqm": 2616,
+      "startedAt": "2026-04-18T15:24:37.430Z",
+      "endedAt": "2026-04-18T15:25:31.418Z",
+      "valuationMode": "ai_market",
+      "valuation": {
+        "minPrice": 394998,
+        "maxPrice": 445424,
+        "estimatedPrice": 420211,
+        "baseOMIValue": 4250,
+        "floorCoefficient": 0.98,
+        "conditionCoefficient": 1.0191,
+        "pureConditionCoefficient": 1,
+        "explanation": "Proprietà con punti di forza rappresentati dalla tipologia attico, balcone e riscaldamento autonomo che migliorano vivibilità e appeal per famiglie/pendolari; lo stato buono e la presenza di aria condizionata sostengono il valore. Debolezze rilevanti sono il terzo piano senza ascensore e la classe energetica E che penalizzano costi di gestione e accessibilità. Il contesto Grottarossa–Saxa Rubra mostra domanda residenziale stabile con leggera crescita per la vicinanza a collegamenti e servizi, influenzando positivamente la competitività sul mercato. Fattori che incidono sul prezzo: piano/assenza ascensore, classe energetica e posizione rispetto ai collegamenti. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+        "confidence": "alta",
+        "confidenceScore": 92,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+            "severity": "info"
+          },
+          {
+            "code": "AI_MARKET_FALLBACK",
+            "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+            "severity": "warning"
+          }
+        ],
+        "omiZoneMatch": "zone_specific",
+        "dataCompleteness": 100,
+        "pricePerSqm": 4245
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": "Vorrei una valutazione. Ti do tutti i dati in una volta per un test interno. Citta: Roma. CAP: 00189. Zona: Grottarossa - Saxa Rubra. Indirizzo: Via Montespertoli. Tipologia: Attico. Superficie commerciale: 99 mq. Camere: 2. Bagni: 1. Piano: 3. Ascensore: no. Spazi esterni: Balcone. Posto auto o box: no. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: si. Classe energetica: E. Anno costruzione: 1980. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+roma-montespertoli-ai_market@example.com, telefono 3337701202. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:24\n\nAssistente\n\nPerfetto, grazie! Ho raccolto tutti i dati. Procedo con la valutazione come richiesto.\n\n17:24\n\nSi, corretto. Procedi con la valutazione.\n\n17:24\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:24\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile.\n\n17:24\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:24\n\nAssistente\nVALORE STIMATO\n420.211 €\nRange: 394.998 € – 445.424 € · 4245 €/m²\nAFFIDABILITÀ ALTA · 92\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nAttico ben tenuto con balcone, aria condizionata e riscaldamento autonomo che favoriscono la fruibilità e costituiscono punti di forza; il terzo piano senza ascensore e la classe energetica E sono fattori negativi che possono richiedere sconto in fase di negoziazione. La zona Grottarossa–Saxa Rubra mostra domanda residenziale stabile con leggera crescita per immobili con buoni collegamenti, ma il contesto periferico limita premi di prezzo significativi. Considerare inoltre l'anno di costruzione (1980) per eventuali interventi impiantistici futuri come elemento di valutazione. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.\n\nCoefficiente qualità limitato (raw: 1.019 → clamp: 1.0191). Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).\n\n17:25\n\nAssistente\nVALORE STIMATO\n420.211 €\nRange: 394.998 € – 445.424 € · 4245 €/m²\nAFFIDABILITÀ ALTA · 92\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nProprietà con punti di forza rappresentati dalla tipologia attico, balcone e riscaldamento autonomo che migliorano vivibilità e appeal per famiglie/pendolari; lo stato buono e la presenza di aria condizionata sostengono il valore. Debolezze rilevanti sono il terzo piano senza ascensore e la classe energetica E che penalizzano costi di gestione e accessibilità. Il contesto Grottarossa–Saxa Rubra mostra domanda residenziale stabile con leggera crescita per la vicinanza a collegamenti e servizi, influenzando positivamente la competitività sul mercato. Fattori che incidono sul prezzo: piano/assenza ascensore, classe energetica e posizione rispetto ai collegamenti. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.\n\nCoefficiente qualità limitato (raw: 1.019 → clamp: 1.0191). Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).\n\n17:25\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:25\n\nAssistente\n\nGrazie Luca! Sarai ricontattato a breve da un nostro consulente.\n\n17:25\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:25\n\nAssistente\n\nVuoi scaricare il PDF della valutazione?\n\nScarica PDF\nNo, grazie\n\n17:25\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:25\n\nAssistente\n\nVuoi fare una nuova valutazione?\n\nSì, rifai valutazione\nNo, grazie\n\n17:25\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:25\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-montespertoli-ai_market.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:24:40.029Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:24:46.157Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto, grazie! Ho raccolto tutti i dati. Procedo con la valutazione come richiesto.",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via Montespertoli",
+              "neighborhood": "Grottarossa - Saxa Rubra",
+              "postalCode": "00189",
+              "propertyType": "Attico",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 99,
+              "rooms": 2,
+              "bathrooms": 1,
+              "floor": 3,
+              "hasElevator": false,
+              "outdoorSpace": "Balcone",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "E",
+              "buildYear": 1980,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-montespertoli-ai_market@example.com",
+              "phone": "3337701202"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:24:49.766Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile.",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via Montespertoli",
+              "neighborhood": "Grottarossa - Saxa Rubra",
+              "postalCode": "00189",
+              "propertyType": "Attico",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 99,
+              "rooms": 2,
+              "bathrooms": 1,
+              "floor": 3,
+              "hasElevator": false,
+              "outdoorSpace": "Balcone",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "E",
+              "buildYear": 1980,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-montespertoli-ai_market@example.com",
+              "phone": "3337701202"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:25:24.081Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 394998,
+              "maxPrice": 445424,
+              "estimatedPrice": 420211,
+              "baseOMIValue": 4250,
+              "floorCoefficient": 0.98,
+              "conditionCoefficient": 1.0191,
+              "pureConditionCoefficient": 1,
+              "explanation": "Attico ben tenuto con balcone, aria condizionata e riscaldamento autonomo che favoriscono la fruibilità e costituiscono punti di forza; il terzo piano senza ascensore e la classe energetica E sono fattori negativi che possono richiedere sconto in fase di negoziazione. La zona Grottarossa–Saxa Rubra mostra domanda residenziale stabile con leggera crescita per immobili con buoni collegamenti, ma il contesto periferico limita premi di prezzo significativi. Considerare inoltre l'anno di costruzione (1980) per eventuali interventi impiantistici futuri come elemento di valutazione. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 4245
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:25:25.876Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 394998,
+              "maxPrice": 445424,
+              "estimatedPrice": 420211,
+              "baseOMIValue": 4250,
+              "floorCoefficient": 0.98,
+              "conditionCoefficient": 1.0191,
+              "pureConditionCoefficient": 1,
+              "explanation": "Proprietà con punti di forza rappresentati dalla tipologia attico, balcone e riscaldamento autonomo che migliorano vivibilità e appeal per famiglie/pendolari; lo stato buono e la presenza di aria condizionata sostengono il valore. Debolezze rilevanti sono il terzo piano senza ascensore e la classe energetica E che penalizzano costi di gestione e accessibilità. Il contesto Grottarossa–Saxa Rubra mostra domanda residenziale stabile con leggera crescita per la vicinanza a collegamenti e servizi, influenzando positivamente la competitività sul mercato. Fattori che incidono sul prezzo: piano/assenza ascensore, classe energetica e posizione rispetto ai collegamenti. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 4245
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 200,
+          "at": "2026-04-18T15:25:25.946Z",
+          "body": {
+            "success": true,
+            "leadId": "cmo4ho194000ok1uy527kd5nu",
+            "lead": {
+              "id": "cmo4ho194000ok1uy527kd5nu",
+              "agenziaId": "cmo4acrle0000s7nx2fg87sfh",
+              "nome": "Luca",
+              "cognome": "Testdomus",
+              "email": "luca.testdomus+roma-montespertoli-ai_market@example.com",
+              "telefono": "3337701202",
+              "dataRichiesta": "2026-04-18T15:25:25.720Z",
+              "property": {
+                "id": "cmo4ho194000pk1uyg6kqmjh8",
+                "leadId": "cmo4ho194000ok1uy527kd5nu",
+                "indirizzo": "Via Montespertoli, Grottarossa - Saxa Rubra, Roma, 00189",
+                "citta": "Roma",
+                "cap": "00189",
+                "latitudine": 41.9771196,
+                "longitudine": 12.4392021,
+                "tipo": "Attico",
+                "superficieMq": 99,
+                "piano": 3,
+                "ascensore": false,
+                "stato": "Buono",
+                "quartiere": "Grottarossa - Saxa Rubra",
+                "locali": 2,
+                "bagni": 1,
+                "tipoPiano": null,
+                "spaziEsterni": "Balcone",
+                "postoAuto": false,
+                "riscaldamento": "Autonomo",
+                "ariaCondizionata": true,
+                "classeEnergetica": "E",
+                "annoCostruzione": 1980,
+                "statoOccupazione": "Libero",
+                "dataScadenza": null,
+                "valuation": {
+                  "id": "cmo4ho194000qk1uyi1rzpayx",
+                  "immobileId": "cmo4ho194000pk1uyg6kqmjh8",
+                  "prezzoMinimo": 394998,
+                  "prezzoMassimo": 445424,
+                  "prezzoStimato": 420211,
+                  "valoreOmiBase": 4250,
+                  "coefficientePiano": 0.98,
+                  "coefficienteStato": 1.0191,
+                  "spiegazione": "Attico ben tenuto con balcone, aria condizionata e riscaldamento autonomo che favoriscono la fruibilità e costituiscono punti di forza; il terzo piano senza ascensore e la classe energetica E sono fattori negativi che possono richiedere sconto in fase di negoziazione. La zona Grottarossa–Saxa Rubra mostra domanda residenziale stabile con leggera crescita per immobili con buoni collegamenti, ma il contesto periferico limita premi di prezzo significativi. Considerare inoltre l'anno di costruzione (1980) per eventuali interventi impiantistici futuri come elemento di valutazione. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 99m². Immobile al 3° piano senza ascensore. Stato: Buono. Coefficiente piano: -2%. Coefficiente qualità complessivo: +2%. Classe energetica E: -3%.",
+                  "dataCalcolo": "2026-04-18T15:25:25.720Z",
+                  "confidence": "alta",
+                  "confidenceScore": 92,
+                  "warnings": [
+                    {
+                      "code": "QUALITY_COEF_CAPPED",
+                      "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                      "severity": "info"
+                    },
+                    {
+                      "code": "RANGE_TIGHTENED",
+                      "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                      "severity": "info"
+                    },
+                    {
+                      "code": "AI_MARKET_FALLBACK",
+                      "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                      "severity": "warning"
+                    }
+                  ],
+                  "omiZoneMatch": "zone_specific",
+                  "dataCompleteness": 100,
+                  "pricePerSqm": 4245,
+                  "comparablesData": null
+                }
+              },
+              "conversation": {
+                "id": "cmo4ho194000rk1uyopetwud8",
+                "leadId": "cmo4ho194000ok1uy527kd5nu",
+                "messaggi": [
+                  {
+                    "role": "bot",
+                    "text": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+                    "timestamp": "2026-04-18T15:24:40.015Z"
+                  }
+                ],
+                "createdAt": "2026-04-18T15:25:25.720Z",
+                "updatedAt": "2026-04-18T15:25:25.720Z"
+              }
+            },
+            "valuationFailed": false,
+            "warnings": [
+              {
+                "code": "QUALITY_COEF_CAPPED",
+                "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+                "severity": "info"
+              },
+              {
+                "code": "RANGE_TIGHTENED",
+                "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                "severity": "info"
+              },
+              {
+                "code": "AI_MARKET_FALLBACK",
+                "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                "severity": "warning"
+              }
+            ],
+            "message": "Lead creato con successo"
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:25:27.529Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "hybrid",
+      "widgetLabel": "Ibrido",
+      "propertyId": "roma-san-godenzo",
+      "title": "Trilocale via San Godenzo, Cassia - San Godenzo, Roma",
+      "cityGroup": "Roma",
+      "listingUrl": "https://www.immobiliare.it/annunci/127180621/",
+      "askingPrice": 480000,
+      "askingPricePerSqm": 4800,
+      "startedAt": "2026-04-18T15:25:31.481Z",
+      "endedAt": "2026-04-18T15:26:25.208Z",
+      "valuationMode": "hybrid",
+      "valuation": {
+        "minPrice": 505412,
+        "maxPrice": 569932,
+        "estimatedPrice": 537672,
+        "baseOMIValue": 4250,
+        "floorCoefficient": 1.06,
+        "conditionCoefficient": 1.1935,
+        "pureConditionCoefficient": 1.12,
+        "explanation": "Attico ben posizionato nella zona Cassia con punti di forza rilevanti quali il terrazzo vivibile, il box auto e lo stato ristrutturato che giustificano un premio rispetto al valore OMI; il terzo piano con ascensore è un ulteriore elemento positivo. Fattori che limitano il prezzo includono la classe energetica E e l'edificio degli anni '70, che possono richiedere interventi impiantistici o di efficientamento. Il mercato locale mostra una domanda stabile per tagli familiari e una leggera tendenza alla crescita per immobili ristrutturati con servizi accessori. Nel complesso il profilo è favorevole ma sensibile ai costi di efficientamento energetico e alla qualità delle parti comuni. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.",
+        "confidence": "alta",
+        "confidenceScore": 92,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 1.193 → clamp: 1.1935).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+            "severity": "info"
+          }
+        ],
+        "omiZoneMatch": "zone_specific",
+        "dataCompleteness": 100,
+        "pricePerSqm": 5377
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": "Valuta la tua casa\n\nTi rispondo in pochi secondi\n\nAssistente\n\nCiao, sono DomusBot di Domus Report. In quale città si trova l'immobile?\n\n17:25\n\nVorrei una valutazione. Ti do tutti i dati in una volta per un test interno. Citta: Roma. CAP: 00189. Zona: Cassia - San Godenzo. Indirizzo: Via San Godenzo. Tipologia: Attico. Superficie commerciale: 100 mq. Camere: 2. Bagni: 2. Piano: 3. Ascensore: si. Spazi esterni: Terrazzo. Posto auto o box: si. Stato: Ristrutturato. Riscaldamento: Autonomo. Aria condizionata: si. Classe energetica: E. Anno costruzione: 1975. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+roma-san-godenzo-hybrid@example.com, telefono 3337701203. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:25\n\nAssistente\n\nPerfetto! Procedo con la valutazione del tuo immobile.\n\n17:25\n\nSi, corretto. Procedi con la valutazione.\n\n17:25\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:25\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile!\n\n17:25\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:25\n\nAssistente\nVALORE STIMATO\n537.672 €\nRange: 505.412 € – 569.932 € · 5377 €/m²\nAFFIDABILITÀ ALTA · 92\n\nImmobile ben posizionato in zona Cassia con buona accessibilità e dotazioni apprezzabili (terrazzo, box e ascensore) che aumentano il valore; la ristrutturazione interna e il riscaldamento autonomo sono ulteriori punti di forza. Tra i fattori che influenzano il prezzo rilevanti ci sono la classe energetica E (debolezza, incide sui costi di gestione) e l'età dell'edificio (1975) che può richiedere interventi comuni. Il mercato della zona mostra domanda stabile con leggero trend positivo per proprietà ben mantenute, quindi la stima appare coerente; attento però ai costi di adeguamento energetico che possono ridurre l'attrattiva per alcuni acquirenti. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.\n\nCoefficiente qualità limitato (raw: 1.193 → clamp: 1.1935). Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).\n\n17:26\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:26\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:26\n\nAssistente\nVALORE STIMATO\n537.672 €\nRange: 505.412 € – 569.932 € · 5377 €/m²\nAFFIDABILITÀ ALTA · 92\n\nAttico ben posizionato nella zona Cassia con punti di forza rilevanti quali il terrazzo vivibile, il box auto e lo stato ristrutturato che giustificano un premio rispetto al valore OMI; il terzo piano con ascensore è un ulteriore elemento positivo. Fattori che limitano il prezzo includono la classe energetica E e l'edificio degli anni '70, che possono richiedere interventi impiantistici o di efficientamento. Il mercato locale mostra una domanda stabile per tagli familiari e una leggera tendenza alla crescita per immobili ristrutturati con servizi accessori. Nel complesso il profilo è favorevole ma sensibile ai costi di efficientamento energetico e alla qualità delle parti comuni. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.\n\nCoefficiente qualità limitato (raw: 1.193 → clamp: 1.1935). Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).\n\n17:26\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:26\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:26\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:26\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:26\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-san-godenzo-hybrid.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:25:34.650Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:25:40.083Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo con la valutazione del tuo immobile.",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via San Godenzo",
+              "neighborhood": "Cassia - San Godenzo",
+              "postalCode": "00189",
+              "propertyType": "Attico",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 100,
+              "rooms": 2,
+              "bathrooms": 2,
+              "floor": 3,
+              "hasElevator": true,
+              "outdoorSpace": "Terrazzo",
+              "hasParking": true,
+              "condition": "Ristrutturato",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "E",
+              "buildYear": 1975,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-san-godenzo-hybrid@example.com",
+              "phone": "3337701203"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:25:43.404Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile!",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via San Godenzo",
+              "neighborhood": "Cassia - San Godenzo",
+              "postalCode": "00189",
+              "propertyType": "Attico",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 100,
+              "rooms": 2,
+              "bathrooms": 2,
+              "floor": 3,
+              "hasElevator": true,
+              "outdoorSpace": "Terrazzo",
+              "hasParking": true,
+              "condition": "Ristrutturato",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "E",
+              "buildYear": 1975,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-san-godenzo-hybrid@example.com",
+              "phone": "3337701203"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:26:16.249Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 505412,
+              "maxPrice": 569932,
+              "estimatedPrice": 537672,
+              "baseOMIValue": 4250,
+              "floorCoefficient": 1.06,
+              "conditionCoefficient": 1.1935,
+              "pureConditionCoefficient": 1.12,
+              "explanation": "Immobile ben posizionato in zona Cassia con buona accessibilità e dotazioni apprezzabili (terrazzo, box e ascensore) che aumentano il valore; la ristrutturazione interna e il riscaldamento autonomo sono ulteriori punti di forza. Tra i fattori che influenzano il prezzo rilevanti ci sono la classe energetica E (debolezza, incide sui costi di gestione) e l'età dell'edificio (1975) che può richiedere interventi comuni. Il mercato della zona mostra domanda stabile con leggero trend positivo per proprietà ben mantenute, quindi la stima appare coerente; attento però ai costi di adeguamento energetico che possono ridurre l'attrattiva per alcuni acquirenti. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 1.193 → clamp: 1.1935).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 5377
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:26:17.900Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:26:19.512Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 505412,
+              "maxPrice": 569932,
+              "estimatedPrice": 537672,
+              "baseOMIValue": 4250,
+              "floorCoefficient": 1.06,
+              "conditionCoefficient": 1.1935,
+              "pureConditionCoefficient": 1.12,
+              "explanation": "Attico ben posizionato nella zona Cassia con punti di forza rilevanti quali il terrazzo vivibile, il box auto e lo stato ristrutturato che giustificano un premio rispetto al valore OMI; il terzo piano con ascensore è un ulteriore elemento positivo. Fattori che limitano il prezzo includono la classe energetica E e l'edificio degli anni '70, che possono richiedere interventi impiantistici o di efficientamento. Il mercato locale mostra una domanda stabile per tagli familiari e una leggera tendenza alla crescita per immobili ristrutturati con servizi accessori. Nel complesso il profilo è favorevole ma sensibile ai costi di efficientamento energetico e alla qualità delle parti comuni. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 1.193 → clamp: 1.1935).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 5377
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:26:21.156Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "ai_market",
+      "widgetLabel": "Solo AI",
+      "propertyId": "roma-san-godenzo",
+      "title": "Trilocale via San Godenzo, Cassia - San Godenzo, Roma",
+      "cityGroup": "Roma",
+      "listingUrl": "https://www.immobiliare.it/annunci/127180621/",
+      "askingPrice": 480000,
+      "askingPricePerSqm": 4800,
+      "startedAt": "2026-04-18T15:26:25.270Z",
+      "endedAt": "2026-04-18T15:27:18.956Z",
+      "valuationMode": "ai_market",
+      "valuation": {
+        "minPrice": 505412,
+        "maxPrice": 569932,
+        "estimatedPrice": 537672,
+        "baseOMIValue": 4250,
+        "floorCoefficient": 1.06,
+        "conditionCoefficient": 1.1935,
+        "pureConditionCoefficient": 1.12,
+        "explanation": "Bilancio complessivamente positivo: la posizione residenziale in zona Cassia con terazzo abitabile e box auto, il piano alto con ascensore e lo stato ristrutturato sono fattori che valorizzano l'immobile; la classe energetica E e l'anno di costruzione (1975) limitano però il potenziale prezzo pieno a causa di costi di efficienza e impiantistica. Il mercato locale mostra domanda stabile con lieve tendenza al rialzo per appartamenti ristrutturati e con garage, supportando la posizione di mercato indicata. Punti di forza: terrazzo, box e ristrutturazione; punti di debolezza: classe energetica e possibile necessità di aggiornamento impiantistico. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.",
+        "confidence": "alta",
+        "confidenceScore": 92,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 1.193 → clamp: 1.1935).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+            "severity": "info"
+          },
+          {
+            "code": "AI_MARKET_FALLBACK",
+            "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+            "severity": "warning"
+          }
+        ],
+        "omiZoneMatch": "zone_specific",
+        "dataCompleteness": 100,
+        "pricePerSqm": 5377
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": "ale: 100 mq. Camere: 2. Bagni: 2. Piano: 3. Ascensore: si. Spazi esterni: Terrazzo. Posto auto o box: si. Stato: Ristrutturato. Riscaldamento: Autonomo. Aria condizionata: si. Classe energetica: E. Anno costruzione: 1975. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+roma-san-godenzo-ai_market@example.com, telefono 3337701204. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:26\n\nAssistente\n\nPerfetto! Ho ricevuto tutti i dati e procedo con la valutazione del tuo immobile.\n\n17:26\n\nSi, corretto. Procedi con la valutazione.\n\n17:26\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:26\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile!\n\n17:26\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:26\n\nAssistente\nVALORE STIMATO\n537.672 €\nRange: 505.412 € – 569.932 € · 5377 €/m²\nAFFIDABILITÀ ALTA · 92\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nL'attico beneficia di punti di forza significativi quali il terrazzo vivibile, il box/posto auto e lo stato ristrutturato con riscaldamento autonomo e aria condizionata, che aumentano l'attrattiva commerciale; il piano alto con ascensore è un ulteriore valore aggiunto. Tra le debolezze rilevanti figurano la classe energetica E e l'immobile di epoca 1975 che possono richiedere lavori migliorativi sull'efficienza; la pianta di 100 m² e la dotazione di bagni lo rendono appetibile per coppie o famiglie ma limitano il mercato di nicchia. Il mercato della zona Cassia mostra domanda stabile con lievi segnali di apprezzamento per immobili ben rifiniti, quindi la valutazione risente positivamente della ristrutturazione ma resta sensibile ai costi di efficientamento energetico. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.\n\nCoefficiente qualità limitato (raw: 1.193 → clamp: 1.1935). Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).\n\n17:27\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:27\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:27\n\nAssistente\nVALORE STIMATO\n537.672 €\nRange: 505.412 € – 569.932 € · 5377 €/m²\nAFFIDABILITÀ ALTA · 92\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nBilancio complessivamente positivo: la posizione residenziale in zona Cassia con terazzo abitabile e box auto, il piano alto con ascensore e lo stato ristrutturato sono fattori che valorizzano l'immobile; la classe energetica E e l'anno di costruzione (1975) limitano però il potenziale prezzo pieno a causa di costi di efficienza e impiantistica. Il mercato locale mostra domanda stabile con lieve tendenza al rialzo per appartamenti ristrutturati e con garage, supportando la posizione di mercato indicata. Punti di forza: terrazzo, box e ristrutturazione; punti di debolezza: classe energetica e possibile necessità di aggiornamento impiantistico. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.\n\nCoefficiente qualità limitato (raw: 1.193 → clamp: 1.1935). Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).\n\n17:27\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:27\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:27\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:27\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:27\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-san-godenzo-ai_market.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:26:27.579Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:26:33.689Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Ho ricevuto tutti i dati e procedo con la valutazione del tuo immobile.",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via San Godenzo",
+              "neighborhood": "Cassia - San Godenzo",
+              "postalCode": "00189",
+              "propertyType": "Attico",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 100,
+              "rooms": 2,
+              "bathrooms": 2,
+              "floor": 3,
+              "hasElevator": true,
+              "outdoorSpace": "Terrazzo",
+              "hasParking": true,
+              "condition": "Ristrutturato",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "E",
+              "buildYear": 1975,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-san-godenzo-ai_market@example.com",
+              "phone": "3337701204"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:26:36.735Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile!",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via San Godenzo",
+              "neighborhood": "Cassia - San Godenzo",
+              "postalCode": "00189",
+              "propertyType": "Attico",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 100,
+              "rooms": 2,
+              "bathrooms": 2,
+              "floor": 3,
+              "hasElevator": true,
+              "outdoorSpace": "Terrazzo",
+              "hasParking": true,
+              "condition": "Ristrutturato",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "E",
+              "buildYear": 1975,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-san-godenzo-ai_market@example.com",
+              "phone": "3337701204"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:27:09.834Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 505412,
+              "maxPrice": 569932,
+              "estimatedPrice": 537672,
+              "baseOMIValue": 4250,
+              "floorCoefficient": 1.06,
+              "conditionCoefficient": 1.1935,
+              "pureConditionCoefficient": 1.12,
+              "explanation": "L'attico beneficia di punti di forza significativi quali il terrazzo vivibile, il box/posto auto e lo stato ristrutturato con riscaldamento autonomo e aria condizionata, che aumentano l'attrattiva commerciale; il piano alto con ascensore è un ulteriore valore aggiunto. Tra le debolezze rilevanti figurano la classe energetica E e l'immobile di epoca 1975 che possono richiedere lavori migliorativi sull'efficienza; la pianta di 100 m² e la dotazione di bagni lo rendono appetibile per coppie o famiglie ma limitano il mercato di nicchia. Il mercato della zona Cassia mostra domanda stabile con lievi segnali di apprezzamento per immobili ben rifiniti, quindi la valutazione risente positivamente della ristrutturazione ma resta sensibile ai costi di efficientamento energetico. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 1.193 → clamp: 1.1935).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 5377
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:27:11.486Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:27:12.840Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 505412,
+              "maxPrice": 569932,
+              "estimatedPrice": 537672,
+              "baseOMIValue": 4250,
+              "floorCoefficient": 1.06,
+              "conditionCoefficient": 1.1935,
+              "pureConditionCoefficient": 1.12,
+              "explanation": "Bilancio complessivamente positivo: la posizione residenziale in zona Cassia con terazzo abitabile e box auto, il piano alto con ascensore e lo stato ristrutturato sono fattori che valorizzano l'immobile; la classe energetica E e l'anno di costruzione (1975) limitano però il potenziale prezzo pieno a causa di costi di efficienza e impiantistica. Il mercato locale mostra domanda stabile con lieve tendenza al rialzo per appartamenti ristrutturati e con garage, supportando la posizione di mercato indicata. Punti di forza: terrazzo, box e ristrutturazione; punti di debolezza: classe energetica e possibile necessità di aggiornamento impiantistico. Valutazione basata su dati OMI per Roma (4250€/m²). Superficie: 100m². Immobile al 3° piano con ascensore. Stato: Ristrutturato. Coefficiente piano: +6%. Coefficiente qualità complessivo: +19%. Classe energetica E: -3%. Anno costruzione 1975: -5%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 1.193 → clamp: 1.1935).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 5377
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:27:14.463Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "hybrid",
+      "widgetLabel": "Ibrido",
+      "propertyId": "roma-san-fabiano",
+      "title": "Bilocale via San Fabiano, Gregorio VII - Piccolomini, Roma",
+      "cityGroup": "Roma",
+      "listingUrl": "https://www.immobiliare.it/annunci/128236028/",
+      "askingPrice": 485000,
+      "askingPricePerSqm": 7462,
+      "startedAt": "2026-04-18T15:27:19.015Z",
+      "endedAt": "2026-04-18T15:28:12.424Z",
+      "valuationMode": "hybrid",
+      "valuation": {
+        "minPrice": 212220,
+        "maxPrice": 239312,
+        "estimatedPrice": 225766,
+        "baseOMIValue": 3800,
+        "floorCoefficient": 0.97,
+        "conditionCoefficient": 0.9423,
+        "pureConditionCoefficient": 1,
+        "explanation": "L’appartamento beneficia di una posizione richiesta in zona Gregorio VII/Piccolomini, della presenza di giardino privato, riscaldamento autonomo e aria condizionata che supportano il valore; d’altro canto la classe energetica G e l’edificio del 1965 suggeriscono possibili lavori di riqualificazione e impattano negativamente la commerciabilità. Fattori specifici che influenzano il prezzo sono la classe energetica, il piano (1° con ascensore) e l’extra del giardino che può compensare la metratura contenuta. Il mercato locale mostra una domanda stabile-incrementale per piccoli bilocali ben serviti, ma le prestazioni energetiche restano un elemento critico per la velocità di vendita e il prezzo finale. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.",
+        "confidence": "alta",
+        "confidenceScore": 92,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 0.942 → clamp: 0.9423).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).",
+            "severity": "info"
+          }
+        ],
+        "omiZoneMatch": "zone_specific",
+        "dataCompleteness": 100,
+        "pricePerSqm": 3473
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": "Valuta la tua casa\n\nTi rispondo in pochi secondi\n\nAssistente\n\nCiao, sono DomusBot di Domus Report. In quale città si trova l'immobile?\n\n17:27\n\nVorrei una valutazione. Ti do tutti i dati in una volta per un test interno. Citta: Roma. CAP: 00165. Zona: Gregorio VII - Piccolomini. Indirizzo: Via San Fabiano. Tipologia: Appartamento. Superficie commerciale: 65 mq. Camere: 1. Bagni: 1. Piano: 1. Ascensore: si. Spazi esterni: Giardino. Posto auto o box: no. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: si. Classe energetica: G. Anno costruzione: 1965. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+roma-san-fabiano-hybrid@example.com, telefono 3337701205. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:27\n\nAssistente\n\nPerfetto — ho ricevuto tutti i dati. Procedo con la valutazione come richiesto.\n\n17:27\n\nSi, corretto. Procedi con la valutazione.\n\n17:27\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:27\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile!\n\n17:27\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:27\n\nAssistente\nVALORE STIMATO\n225.766 €\nRange: 212.220 € – 239.312 € · 3473 €/m²\nAFFIDABILITÀ ALTA · 92\n\nAppartamento ben posizionato in zona Gregorio VII/Piccolomini con buona accessibilità e servizi, fattore positivo per la domanda di monolocali/1‑camere; il giardino privato, il riscaldamento autonomo e l’aria condizionata rappresentano punti di forza concreti. Debolezze rilevanti sono la classe energetica G e l’edificio del 1965 che richiedono interventi di efficientamento e manutenzione, impattando sui costi futuri. Il piano primo con ascensore attenua il decremento di valore da piano, mentre il mercato locale mostra domanda stabile con pressioni al rialzo per unità ristrutturate e ben locate vicino al Vaticano. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.\n\nCoefficiente qualità limitato (raw: 0.942 → clamp: 0.9423). Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).\n\n17:28\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:28\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:28\n\nAssistente\nVALORE STIMATO\n225.766 €\nRange: 212.220 € – 239.312 € · 3473 €/m²\nAFFIDABILITÀ ALTA · 92\n\nL’appartamento beneficia di una posizione richiesta in zona Gregorio VII/Piccolomini, della presenza di giardino privato, riscaldamento autonomo e aria condizionata che supportano il valore; d’altro canto la classe energetica G e l’edificio del 1965 suggeriscono possibili lavori di riqualificazione e impattano negativamente la commerciabilità. Fattori specifici che influenzano il prezzo sono la classe energetica, il piano (1° con ascensore) e l’extra del giardino che può compensare la metratura contenuta. Il mercato locale mostra una domanda stabile-incrementale per piccoli bilocali ben serviti, ma le prestazioni energetiche restano un elemento critico per la velocità di vendita e il prezzo finale. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.\n\nCoefficiente qualità limitato (raw: 0.942 → clamp: 0.9423). Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).\n\n17:28\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:28\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:28\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:28\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:28\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-san-fabiano-hybrid.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:27:22.197Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:27:26.879Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto — ho ricevuto tutti i dati. Procedo con la valutazione come richiesto.",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via San Fabiano",
+              "neighborhood": "Gregorio VII - Piccolomini",
+              "postalCode": "00165",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 65,
+              "rooms": 1,
+              "bathrooms": 1,
+              "floor": 1,
+              "hasElevator": true,
+              "outdoorSpace": "Giardino",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "G",
+              "buildYear": 1965,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-san-fabiano-hybrid@example.com",
+              "phone": "3337701205"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:27:30.173Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile!",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via San Fabiano",
+              "neighborhood": "Gregorio VII - Piccolomini",
+              "postalCode": "00165",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 65,
+              "rooms": 1,
+              "bathrooms": 1,
+              "floor": 1,
+              "hasElevator": true,
+              "outdoorSpace": "Giardino",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "G",
+              "buildYear": 1965,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-san-fabiano-hybrid@example.com",
+              "phone": "3337701205"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:28:03.206Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 212220,
+              "maxPrice": 239312,
+              "estimatedPrice": 225766,
+              "baseOMIValue": 3800,
+              "floorCoefficient": 0.97,
+              "conditionCoefficient": 0.9423,
+              "pureConditionCoefficient": 1,
+              "explanation": "Appartamento ben posizionato in zona Gregorio VII/Piccolomini con buona accessibilità e servizi, fattore positivo per la domanda di monolocali/1‑camere; il giardino privato, il riscaldamento autonomo e l’aria condizionata rappresentano punti di forza concreti. Debolezze rilevanti sono la classe energetica G e l’edificio del 1965 che richiedono interventi di efficientamento e manutenzione, impattando sui costi futuri. Il piano primo con ascensore attenua il decremento di valore da piano, mentre il mercato locale mostra domanda stabile con pressioni al rialzo per unità ristrutturate e ben locate vicino al Vaticano. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 0.942 → clamp: 0.9423).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 3473
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:28:04.865Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:28:06.289Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 212220,
+              "maxPrice": 239312,
+              "estimatedPrice": 225766,
+              "baseOMIValue": 3800,
+              "floorCoefficient": 0.97,
+              "conditionCoefficient": 0.9423,
+              "pureConditionCoefficient": 1,
+              "explanation": "L’appartamento beneficia di una posizione richiesta in zona Gregorio VII/Piccolomini, della presenza di giardino privato, riscaldamento autonomo e aria condizionata che supportano il valore; d’altro canto la classe energetica G e l’edificio del 1965 suggeriscono possibili lavori di riqualificazione e impattano negativamente la commerciabilità. Fattori specifici che influenzano il prezzo sono la classe energetica, il piano (1° con ascensore) e l’extra del giardino che può compensare la metratura contenuta. Il mercato locale mostra una domanda stabile-incrementale per piccoli bilocali ben serviti, ma le prestazioni energetiche restano un elemento critico per la velocità di vendita e il prezzo finale. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 0.942 → clamp: 0.9423).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 3473
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:28:07.949Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "ai_market",
+      "widgetLabel": "Solo AI",
+      "propertyId": "roma-san-fabiano",
+      "title": "Bilocale via San Fabiano, Gregorio VII - Piccolomini, Roma",
+      "cityGroup": "Roma",
+      "listingUrl": "https://www.immobiliare.it/annunci/128236028/",
+      "askingPrice": 485000,
+      "askingPricePerSqm": 7462,
+      "startedAt": "2026-04-18T15:28:12.496Z",
+      "endedAt": "2026-04-18T15:29:06.497Z",
+      "valuationMode": "ai_market",
+      "valuation": {
+        "minPrice": 212220,
+        "maxPrice": 239312,
+        "estimatedPrice": 225766,
+        "baseOMIValue": 3800,
+        "floorCoefficient": 0.97,
+        "conditionCoefficient": 0.9423,
+        "pureConditionCoefficient": 1,
+        "explanation": "Appartamento ben posizionato in zona Gregorio VII/Piccolomini con buona domanda residenziale e trend del mercato locale stabile/leggermente positivo; fattori positivi sono il giardino, il riscaldamento autonomo e l'ascensore che aumentano la fruibilità. Debolezze significative sono la classe energetica G e l'edificio datato (anni '60), che aumentano i costi di gestione e potenziali interventi straordinari. La dimensione compatta (65 m², 1 camera) lo rende appetibile per single o coppie ma limita il mercato rispetto a soluzioni familiari. Considerare l'intervento di riqualificazione energetica come leva per valorizzare l'immobile. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.",
+        "confidence": "alta",
+        "confidenceScore": 92,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 0.942 → clamp: 0.9423).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).",
+            "severity": "info"
+          },
+          {
+            "code": "AI_MARKET_FALLBACK",
+            "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+            "severity": "warning"
+          }
+        ],
+        "omiZoneMatch": "zone_specific",
+        "dataCompleteness": 100,
+        "pricePerSqm": 3473
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": " Piccolomini. Indirizzo: Via San Fabiano. Tipologia: Appartamento. Superficie commerciale: 65 mq. Camere: 1. Bagni: 1. Piano: 1. Ascensore: si. Spazi esterni: Giardino. Posto auto o box: no. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: si. Classe energetica: G. Anno costruzione: 1965. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+roma-san-fabiano-ai_market@example.com, telefono 3337701206. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:28\n\nAssistente\n\nPerfetto! Grazie Luca — procedo con la valutazione. Di seguito il riepilogo completo dei dati che mi hai fornito. I dati sono corretti?\n\n17:28\n\nSi, corretto. Procedi con la valutazione.\n\n17:28\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:28\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile!\n\n17:28\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:28\n\nAssistente\nVALORE STIMATO\n225.766 €\nRange: 212.220 € – 239.312 € · 3473 €/m²\nAFFIDABILITÀ ALTA · 92\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nPosizione buona e consolidata (Gregorio VII/Piccolomini) con domanda residenziale stabile e vicinanza ai servizi, fattore che sostiene il valore; il giardino privato, il riscaldamento autonomo e l'aria condizionata sono punti di forza che migliorano l'attrattività. Contro: classe energetica G e immobile degli anni '60 indicano probabili interventi di efficientamento e ristrutturazione che riducono il valore rispetto alla media, mentre il 1° piano pur servito da ascensore comporta un piccolo deprezzamento rispetto ai piani più richiesti. In sintesi, elementi non standard positivi mitigano parzialmente i limiti energetici e d'età, ma rimane indicata una valutazione cauta. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.\n\nCoefficiente qualità limitato (raw: 0.942 → clamp: 0.9423). Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).\n\n17:28\n\nAssistente\nVALORE STIMATO\n225.766 €\nRange: 212.220 € – 239.312 € · 3473 €/m²\nAFFIDABILITÀ ALTA · 92\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nAppartamento ben posizionato in zona Gregorio VII/Piccolomini con buona domanda residenziale e trend del mercato locale stabile/leggermente positivo; fattori positivi sono il giardino, il riscaldamento autonomo e l'ascensore che aumentano la fruibilità. Debolezze significative sono la classe energetica G e l'edificio datato (anni '60), che aumentano i costi di gestione e potenziali interventi straordinari. La dimensione compatta (65 m², 1 camera) lo rende appetibile per single o coppie ma limita il mercato rispetto a soluzioni familiari. Considerare l'intervento di riqualificazione energetica come leva per valorizzare l'immobile. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.\n\nCoefficiente qualità limitato (raw: 0.942 → clamp: 0.9423). Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).\n\n17:29\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:29\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:29\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:29\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:29\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:29\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:29\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-san-fabiano-ai_market.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:28:15.074Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:28:21.028Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Grazie Luca — procedo con la valutazione. Di seguito il riepilogo completo dei dati che mi hai fornito. I dati sono corretti?",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via San Fabiano",
+              "neighborhood": "Gregorio VII - Piccolomini",
+              "postalCode": "00165",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 65,
+              "rooms": 1,
+              "bathrooms": 1,
+              "floor": 1,
+              "hasElevator": true,
+              "outdoorSpace": "Giardino",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "G",
+              "buildYear": 1965,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-san-fabiano-ai_market@example.com",
+              "phone": "3337701206"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:28:24.204Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile!",
+            "extractedData": {
+              "city": "Roma",
+              "address": "Via San Fabiano",
+              "neighborhood": "Gregorio VII - Piccolomini",
+              "postalCode": "00165",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 65,
+              "rooms": 1,
+              "bathrooms": 1,
+              "floor": 1,
+              "hasElevator": true,
+              "outdoorSpace": "Giardino",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": true,
+              "energyClass": "G",
+              "buildYear": 1965,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+roma-san-fabiano-ai_market@example.com",
+              "phone": "3337701206"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:28:59.231Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 212220,
+              "maxPrice": 239312,
+              "estimatedPrice": 225766,
+              "baseOMIValue": 3800,
+              "floorCoefficient": 0.97,
+              "conditionCoefficient": 0.9423,
+              "pureConditionCoefficient": 1,
+              "explanation": "Posizione buona e consolidata (Gregorio VII/Piccolomini) con domanda residenziale stabile e vicinanza ai servizi, fattore che sostiene il valore; il giardino privato, il riscaldamento autonomo e l'aria condizionata sono punti di forza che migliorano l'attrattività. Contro: classe energetica G e immobile degli anni '60 indicano probabili interventi di efficientamento e ristrutturazione che riducono il valore rispetto alla media, mentre il 1° piano pur servito da ascensore comporta un piccolo deprezzamento rispetto ai piani più richiesti. In sintesi, elementi non standard positivi mitigano parzialmente i limiti energetici e d'età, ma rimane indicata una valutazione cauta. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 0.942 → clamp: 0.9423).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 3473
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:29:00.454Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 212220,
+              "maxPrice": 239312,
+              "estimatedPrice": 225766,
+              "baseOMIValue": 3800,
+              "floorCoefficient": 0.97,
+              "conditionCoefficient": 0.9423,
+              "pureConditionCoefficient": 1,
+              "explanation": "Appartamento ben posizionato in zona Gregorio VII/Piccolomini con buona domanda residenziale e trend del mercato locale stabile/leggermente positivo; fattori positivi sono il giardino, il riscaldamento autonomo e l'ascensore che aumentano la fruibilità. Debolezze significative sono la classe energetica G e l'edificio datato (anni '60), che aumentano i costi di gestione e potenziali interventi straordinari. La dimensione compatta (65 m², 1 camera) lo rende appetibile per single o coppie ma limita il mercato rispetto a soluzioni familiari. Considerare l'intervento di riqualificazione energetica come leva per valorizzare l'immobile. Valutazione basata su dati OMI per Roma (3800€/m²). Superficie: 65m². Immobile al 1° piano con ascensore. Stato: Buono. Coefficiente piano: -3%. Coefficiente qualità complessivo: -6%. Classe energetica G: -10%. Anno costruzione 1965: -5%.",
+              "confidence": "alta",
+              "confidenceScore": 92,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 0.942 → clamp: 0.9423).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "zone_specific",
+              "dataCompleteness": 100,
+              "pricePerSqm": 3473
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:29:01.453Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:29:02.205Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "hybrid",
+      "widgetLabel": "Ibrido",
+      "propertyId": "ardea-gerani",
+      "title": "Trilocale via dei Gerani 1, Lido dei Pini di Ardea - Lupetta, Ardea",
+      "cityGroup": "Ardea",
+      "listingUrl": "https://www.immobiliare.it/annunci/123850915/",
+      "askingPrice": 119000,
+      "askingPricePerSqm": 1983,
+      "startedAt": "2026-04-18T15:29:06.573Z",
+      "endedAt": "2026-04-18T15:30:00.529Z",
+      "valuationMode": "hybrid",
+      "valuation": {
+        "minPrice": 61988,
+        "maxPrice": 74250,
+        "estimatedPrice": 68119,
+        "baseOMIValue": 1280,
+        "floorCoefficient": 0.92,
+        "conditionCoefficient": 0.9641,
+        "pureConditionCoefficient": 1,
+        "explanation": "Proprietà con posizione costiera a Lido dei Pini che supporta domanda estiva ma penalizzata dall'assenza di posto auto e dalla classe energetica G; il piano terra senza ascensore riduce ulteriormente l'appetibilità mentre il riscaldamento autonomo e lo stato buono sono elementi positivi. Fattori specifici che influenzano il valore: classe energetica elevata (G), piano terra/assenza posto auto, e ubicazione in una località balneare con domanda stagionale. Il mercato locale mostra domanda stabile ma selettiva per immobili efficienti e con parcheggio, quindi il prezzo è sensibile a migliorie energetiche o all'aggiunta di posti auto privati. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.",
+        "confidence": "media",
+        "confidenceScore": 77,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 0.964 → clamp: 0.9641).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+            "severity": "info"
+          }
+        ],
+        "omiZoneMatch": "city_average",
+        "dataCompleteness": 100,
+        "pricePerSqm": 1135
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": "Valuta la tua casa\n\nTi rispondo in pochi secondi\n\nAssistente\n\nCiao, sono l'assistente di Domus Report. In quale città si trova l'immobile?\n\n17:29\n\nVorrei una valutazione. Ti do tutti i dati in una volta per un test interno. Citta: Ardea. CAP: 00040. Zona: Lido dei Pini di Ardea - Lupetta. Indirizzo: Via dei Gerani 1. Tipologia: Appartamento. Superficie commerciale: 60 mq. Camere: 2. Bagni: 2. Piano: 0. Ascensore: no. Spazi esterni: Nessuno. Posto auto o box: si. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: no. Classe energetica: G. Anno costruzione: 1985. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+ardea-gerani-hybrid@example.com, telefono 3337701207. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:29\n\nAssistente\n\nPerfetto, ho ricevuto tutti i dati. Procedo con il riepilogo completo per la tua conferma finale.\n\n17:29\n\nSi, corretto. Procedi con la valutazione.\n\n17:29\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:29\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile!\n\n17:29\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:29\n\nAssistente\nVALORE STIMATO\n68.119 €\nRange: 61.988 € – 74.250 € · 1135 €/m²\nAFFIDABILITÀ MEDIA · 77\nMedia città (zona non specifica)\n\nAppartamento in buona condizione con riscaldamento autonomo e posizione costiera che tende ad attirare domanda stagionale; tuttavia l'assenza di box/posto auto, la classe energetica G e il piano terra (senza ascensore) comprimono il valore rispetto alla media OMI. Fattori rilevanti: posizione Lido dei Pini (domanda stagionale/stabile), efficienza energetica molto bassa e mancanza di posto auto. Nel complesso la stima appare coerente ma sensibile a interventi di miglioramento energetico o all'aggiunta di parcheggio privato. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.\n\nCoefficiente qualità limitato (raw: 0.964 → clamp: 0.9641). Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).\n\n17:29\n\nAssistente\nVALORE STIMATO\n68.119 €\nRange: 61.988 € – 74.250 € · 1135 €/m²\nAFFIDABILITÀ MEDIA · 77\nMedia città (zona non specifica)\n\nProprietà con posizione costiera a Lido dei Pini che supporta domanda estiva ma penalizzata dall'assenza di posto auto e dalla classe energetica G; il piano terra senza ascensore riduce ulteriormente l'appetibilità mentre il riscaldamento autonomo e lo stato buono sono elementi positivi. Fattori specifici che influenzano il valore: classe energetica elevata (G), piano terra/assenza posto auto, e ubicazione in una località balneare con domanda stagionale. Il mercato locale mostra domanda stabile ma selettiva per immobili efficienti e con parcheggio, quindi il prezzo è sensibile a migliorie energetiche o all'aggiunta di posti auto privati. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.\n\nCoefficiente qualità limitato (raw: 0.964 → clamp: 0.9641). Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).\n\n17:29\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:29\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:29\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:29\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:29\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:29\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:29\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/ardea-gerani-hybrid.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:29:11.615Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, sono l'assistente di Domus Report. In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:29:15.051Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto, ho ricevuto tutti i dati. Procedo con il riepilogo completo per la tua conferma finale.",
+            "extractedData": {
+              "city": "Ardea",
+              "address": "Via dei Gerani 1",
+              "neighborhood": "Lido dei Pini di Ardea - Lupetta",
+              "postalCode": "00040",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 60,
+              "rooms": 2,
+              "bathrooms": 2,
+              "floor": 0,
+              "hasElevator": false,
+              "outdoorSpace": "Nessuno",
+              "hasParking": true,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": false,
+              "energyClass": "G",
+              "buildYear": 1985,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+ardea-gerani-hybrid@example.com",
+              "phone": "3337701207"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:29:18.736Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile!",
+            "extractedData": {
+              "city": "Ardea",
+              "address": "Via dei Gerani 1",
+              "neighborhood": "Lido dei Pini di Ardea - Lupetta",
+              "postalCode": "00040",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 60,
+              "rooms": 2,
+              "bathrooms": 2,
+              "floor": 0,
+              "hasElevator": false,
+              "outdoorSpace": "Nessuno",
+              "hasParking": true,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": false,
+              "energyClass": "G",
+              "buildYear": 1985,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+ardea-gerani-hybrid@example.com",
+              "phone": "3337701207"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:29:53.693Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 61988,
+              "maxPrice": 74250,
+              "estimatedPrice": 68119,
+              "baseOMIValue": 1280,
+              "floorCoefficient": 0.92,
+              "conditionCoefficient": 0.9641,
+              "pureConditionCoefficient": 1,
+              "explanation": "Appartamento in buona condizione con riscaldamento autonomo e posizione costiera che tende ad attirare domanda stagionale; tuttavia l'assenza di box/posto auto, la classe energetica G e il piano terra (senza ascensore) comprimono il valore rispetto alla media OMI. Fattori rilevanti: posizione Lido dei Pini (domanda stagionale/stabile), efficienza energetica molto bassa e mancanza di posto auto. Nel complesso la stima appare coerente ma sensibile a interventi di miglioramento energetico o all'aggiunta di parcheggio privato. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.",
+              "confidence": "media",
+              "confidenceScore": 77,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 0.964 → clamp: 0.9641).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "city_average",
+              "dataCompleteness": 100,
+              "pricePerSqm": 1135
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:29:54.872Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 61988,
+              "maxPrice": 74250,
+              "estimatedPrice": 68119,
+              "baseOMIValue": 1280,
+              "floorCoefficient": 0.92,
+              "conditionCoefficient": 0.9641,
+              "pureConditionCoefficient": 1,
+              "explanation": "Proprietà con posizione costiera a Lido dei Pini che supporta domanda estiva ma penalizzata dall'assenza di posto auto e dalla classe energetica G; il piano terra senza ascensore riduce ulteriormente l'appetibilità mentre il riscaldamento autonomo e lo stato buono sono elementi positivi. Fattori specifici che influenzano il valore: classe energetica elevata (G), piano terra/assenza posto auto, e ubicazione in una località balneare con domanda stagionale. Il mercato locale mostra domanda stabile ma selettiva per immobili efficienti e con parcheggio, quindi il prezzo è sensibile a migliorie energetiche o all'aggiunta di posti auto privati. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.",
+              "confidence": "media",
+              "confidenceScore": 77,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 0.964 → clamp: 0.9641).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "city_average",
+              "dataCompleteness": 100,
+              "pricePerSqm": 1135
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:29:55.344Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:29:56.502Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "ai_market",
+      "widgetLabel": "Solo AI",
+      "propertyId": "ardea-gerani",
+      "title": "Trilocale via dei Gerani 1, Lido dei Pini di Ardea - Lupetta, Ardea",
+      "cityGroup": "Ardea",
+      "listingUrl": "https://www.immobiliare.it/annunci/123850915/",
+      "askingPrice": 119000,
+      "askingPricePerSqm": 1983,
+      "startedAt": "2026-04-18T15:30:00.602Z",
+      "endedAt": "2026-04-18T15:30:55.373Z",
+      "valuationMode": "ai_market",
+      "valuation": {
+        "minPrice": 61988,
+        "maxPrice": 74250,
+        "estimatedPrice": 68119,
+        "baseOMIValue": 1280,
+        "floorCoefficient": 0.92,
+        "conditionCoefficient": 0.9641,
+        "pureConditionCoefficient": 1,
+        "explanation": "Proprietà in posizione costiera (Lido dei Pini/Lupetta) con buona manutenzione e riscaldamento autonomo, fattori che sostengono il valore; la collocazione al piano terra senza ascensore e l'assenza di box/posto auto ne riducono l'attrattività. La classe energetica G è un elemento debole rilevante e può richiedere lavori di efficientamento che incidono sul prezzo; la vicinanza al mare favorisce domanda stagionale ma il mercato locale mostra trend di lieve stabilità/debolezza per strutture non rinnovate. Punti di forza: stato buono e posizione balneare; punti di debolezza: classe energetica, piano terra e mancanza di parcheggio. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.",
+        "confidence": "media",
+        "confidenceScore": 77,
+        "warnings": [
+          {
+            "code": "QUALITY_COEF_CAPPED",
+            "message": "Coefficiente qualità limitato (raw: 0.964 → clamp: 0.9641).",
+            "severity": "info"
+          },
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+            "severity": "info"
+          },
+          {
+            "code": "AI_MARKET_FALLBACK",
+            "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+            "severity": "warning"
+          }
+        ],
+        "omiZoneMatch": "city_average",
+        "dataCompleteness": 100,
+        "pricePerSqm": 1135
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": "i Pini di Ardea - Lupetta. Indirizzo: Via dei Gerani 1. Tipologia: Appartamento. Superficie commerciale: 60 mq. Camere: 2. Bagni: 2. Piano: 0. Ascensore: no. Spazi esterni: Nessuno. Posto auto o box: si. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: no. Classe energetica: G. Anno costruzione: 1985. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+ardea-gerani-ai_market@example.com, telefono 3337701208. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:30\n\nAssistente\n\nPerfetto — grazie per tutti i dettagli, procedo con il recap finale prima di avviare la valutazione. I dati che ho ricevuto sono i seguenti:\n\n17:30\n\nSi, corretto. Procedi con la valutazione.\n\n17:30\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:30\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile!\n\n17:30\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:30\n\nAssistente\nVALORE STIMATO\n68.119 €\nRange: 61.988 € – 74.250 € · 1135 €/m²\nAFFIDABILITÀ MEDIA · 77\nMedia città (zona non specifica)\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nAppartamento ben posizionato in una frazione di mare (Lido dei Pini) che mantiene domanda stagionale, ma il piano terra senza ascensore e l'assenza di box/posto auto penalizzano la commerciabilità. La classe energetica G e l'edificio datato (1985) costituiscono fattori negativi che aumentano i costi di gestione e necessità di interventi, mentre il riscaldamento autonomo è un elemento favorevole per il controllo dei consumi. In sintesi, location costiera e riscaldamento autonomo sono punti di forza; efficienza energetica, assenza di posto auto e posizione al piano terra sono debolezze da considerare nella negoziazione. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.\n\nCoefficiente qualità limitato (raw: 0.964 → clamp: 0.9641). Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).\n\n17:30\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:30\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:30\n\nAssistente\nVALORE STIMATO\n68.119 €\nRange: 61.988 € – 74.250 € · 1135 €/m²\nAFFIDABILITÀ MEDIA · 77\nMedia città (zona non specifica)\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nProprietà in posizione costiera (Lido dei Pini/Lupetta) con buona manutenzione e riscaldamento autonomo, fattori che sostengono il valore; la collocazione al piano terra senza ascensore e l'assenza di box/posto auto ne riducono l'attrattività. La classe energetica G è un elemento debole rilevante e può richiedere lavori di efficientamento che incidono sul prezzo; la vicinanza al mare favorisce domanda stagionale ma il mercato locale mostra trend di lieve stabilità/debolezza per strutture non rinnovate. Punti di forza: stato buono e posizione balneare; punti di debolezza: classe energetica, piano terra e mancanza di parcheggio. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.\n\nCoefficiente qualità limitato (raw: 0.964 → clamp: 0.9641). Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).\n\n17:30\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:30\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:30\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:30\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:30\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/ardea-gerani-ai_market.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:30:03.462Z",
+          "body": {
+            "success": true,
+            "message": "Ciao! Sono DomusBot di Domus Report — in quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:30:10.020Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto — grazie per tutti i dettagli, procedo con il recap finale prima di avviare la valutazione. I dati che ho ricevuto sono i seguenti:",
+            "extractedData": {
+              "city": "Ardea",
+              "address": "Via dei Gerani 1",
+              "neighborhood": "Lido dei Pini di Ardea - Lupetta",
+              "postalCode": "00040",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 60,
+              "rooms": 2,
+              "bathrooms": 2,
+              "floor": 0,
+              "hasElevator": false,
+              "outdoorSpace": "Nessuno",
+              "hasParking": true,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": false,
+              "energyClass": "G",
+              "buildYear": 1985,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+ardea-gerani-ai_market@example.com",
+              "phone": "3337701208"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:30:13.337Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile!",
+            "extractedData": {
+              "city": "Ardea",
+              "address": "Via dei Gerani 1",
+              "neighborhood": "Lido dei Pini di Ardea - Lupetta",
+              "postalCode": "00040",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 60,
+              "rooms": 2,
+              "bathrooms": 2,
+              "floor": 0,
+              "hasElevator": false,
+              "outdoorSpace": "Nessuno",
+              "hasParking": true,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": false,
+              "energyClass": "G",
+              "buildYear": 1985,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+ardea-gerani-ai_market@example.com",
+              "phone": "3337701208"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:30:46.508Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 61988,
+              "maxPrice": 74250,
+              "estimatedPrice": 68119,
+              "baseOMIValue": 1280,
+              "floorCoefficient": 0.92,
+              "conditionCoefficient": 0.9641,
+              "pureConditionCoefficient": 1,
+              "explanation": "Appartamento ben posizionato in una frazione di mare (Lido dei Pini) che mantiene domanda stagionale, ma il piano terra senza ascensore e l'assenza di box/posto auto penalizzano la commerciabilità. La classe energetica G e l'edificio datato (1985) costituiscono fattori negativi che aumentano i costi di gestione e necessità di interventi, mentre il riscaldamento autonomo è un elemento favorevole per il controllo dei consumi. In sintesi, location costiera e riscaldamento autonomo sono punti di forza; efficienza energetica, assenza di posto auto e posizione al piano terra sono debolezze da considerare nella negoziazione. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.",
+              "confidence": "media",
+              "confidenceScore": 77,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 0.964 → clamp: 0.9641).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "city_average",
+              "dataCompleteness": 100,
+              "pricePerSqm": 1135
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:30:48.151Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:30:49.717Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 61988,
+              "maxPrice": 74250,
+              "estimatedPrice": 68119,
+              "baseOMIValue": 1280,
+              "floorCoefficient": 0.92,
+              "conditionCoefficient": 0.9641,
+              "pureConditionCoefficient": 1,
+              "explanation": "Proprietà in posizione costiera (Lido dei Pini/Lupetta) con buona manutenzione e riscaldamento autonomo, fattori che sostengono il valore; la collocazione al piano terra senza ascensore e l'assenza di box/posto auto ne riducono l'attrattività. La classe energetica G è un elemento debole rilevante e può richiedere lavori di efficientamento che incidono sul prezzo; la vicinanza al mare favorisce domanda stagionale ma il mercato locale mostra trend di lieve stabilità/debolezza per strutture non rinnovate. Punti di forza: stato buono e posizione balneare; punti di debolezza: classe energetica, piano terra e mancanza di parcheggio. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 60m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: -4%. Classe energetica G: -10%.",
+              "confidence": "media",
+              "confidenceScore": 77,
+              "warnings": [
+                {
+                  "code": "QUALITY_COEF_CAPPED",
+                  "message": "Coefficiente qualità limitato (raw: 0.964 → clamp: 0.9641).",
+                  "severity": "info"
+                },
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "city_average",
+              "dataCompleteness": 100,
+              "pricePerSqm": 1135
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:30:51.346Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "hybrid",
+      "widgetLabel": "Ibrido",
+      "propertyId": "ardea-diomede",
+      "title": "Trilocale via Diomede 69, Torre Marina - Lido di Tirrenella, Ardea",
+      "cityGroup": "Ardea",
+      "listingUrl": "https://www.immobiliare.it/annunci/125041397/",
+      "askingPrice": 129000,
+      "askingPricePerSqm": 2048,
+      "startedAt": "2026-04-18T15:30:55.434Z",
+      "endedAt": "2026-04-18T15:31:48.103Z",
+      "valuationMode": "hybrid",
+      "valuation": {
+        "minPrice": 72238,
+        "maxPrice": 86526,
+        "estimatedPrice": 79382,
+        "baseOMIValue": 1280,
+        "floorCoefficient": 0.92,
+        "conditionCoefficient": 1.07,
+        "pureConditionCoefficient": 1,
+        "explanation": "L'immobile beneficia di un giardino privato e riscaldamento autonomo, elementi che aumentano appetibilità e fruibilità estiva e invernale; la buona manutenzione riduce i costi di ristrutturazione e sostiene il valore. Fattori limitanti includono il piano terra (senza ascensore) che può ridurre domanda e prezzo rispetto ai piani superiori e l'età dell'edificio che può richiedere interventi impiantistici nel medio termine. La collocazione a Torre Marina/Lido di Tirrenella favorisce domanda stagionale e un mercato locale stabile ma poco dinamico, con pressioni al rialzo limitate rispetto ai centri urbani maggiori. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.",
+        "confidence": "media",
+        "confidenceScore": 72,
+        "warnings": [
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+            "severity": "info"
+          }
+        ],
+        "omiZoneMatch": "city_average",
+        "dataCompleteness": 92,
+        "pricePerSqm": 1260
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": "Valuta la tua casa\n\nTi rispondo in pochi secondi\n\nAssistente\n\nCiao, sono DomusBot di Domus Report. In quale città si trova l'immobile?\n\n17:30\n\nVorrei una valutazione. Ti do tutti i dati in una volta per un test interno. Citta: Ardea. CAP: 00040. Zona: Torre Marina - Lido di Tirrenella. Indirizzo: Via Diomede 69. Tipologia: Appartamento. Superficie commerciale: 63 mq. Camere: 2. Bagni: 1. Piano: 0. Ascensore: no. Spazi esterni: Giardino. Posto auto o box: no. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: no. Classe energetica: Non so. Anno costruzione: 1980. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+ardea-diomede-hybrid@example.com, telefono 3337701209. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:30\n\nAssistente\n\nPerfetto, grazie Luca — ho ricevuto tutti i dati e procedo con la valutazione come richiesto.\n\n17:31\n\nSi, corretto. Procedi con la valutazione.\n\n17:31\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:31\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile!\n\n17:31\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:31\n\nAssistente\nVALORE STIMATO\n79.382 €\nRange: 72.238 € – 86.526 € · 1260 €/m²\nAFFIDABILITÀ MEDIA · 72\nMedia città (zona non specifica)\n\nProprietà ben tenuta con giardino privato e riscaldamento autonomo, fattori che migliorano appetibilità e fruibilità soprattutto per il mercato balneare locale; la posizione a Torre Marina vicino al mare è un elemento positivo ma comporta domanda stagionale. Il piano terra senza ascensore e la superficie contenuta limitano il mercato dei compratori e giustificano uno sconto rispetto a soluzioni sovrastanti; l’età dell’edificio (1980) suggerisce controlli su impianti e isolamento come possibile criticità. Elementi che influenzano il valore: vicinanza al mare, presenza del giardino/riscaldamento autonomo, e posizione al piano terra senza ascensore. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.\n\nZona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).\n\n17:31\n\nAssistente\nVALORE STIMATO\n79.382 €\nRange: 72.238 € – 86.526 € · 1260 €/m²\nAFFIDABILITÀ MEDIA · 72\nMedia città (zona non specifica)\n\nL'immobile beneficia di un giardino privato e riscaldamento autonomo, elementi che aumentano appetibilità e fruibilità estiva e invernale; la buona manutenzione riduce i costi di ristrutturazione e sostiene il valore. Fattori limitanti includono il piano terra (senza ascensore) che può ridurre domanda e prezzo rispetto ai piani superiori e l'età dell'edificio che può richiedere interventi impiantistici nel medio termine. La collocazione a Torre Marina/Lido di Tirrenella favorisce domanda stagionale e un mercato locale stabile ma poco dinamico, con pressioni al rialzo limitate rispetto ai centri urbani maggiori. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.\n\nZona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).\n\n17:31\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:31\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:31\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:31\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:31\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:31\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:31\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/ardea-diomede-hybrid.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:30:58.850Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, sono DomusBot di Domus Report. In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "rooms",
+              "bathrooms",
+              "floor",
+              "hasElevator",
+              "outdoorSpace",
+              "hasParking",
+              "condition",
+              "heatingType",
+              "hasAirConditioning",
+              "energyClass",
+              "buildYear",
+              "occupancyStatus",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:31:02.842Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto, grazie Luca — ho ricevuto tutti i dati e procedo con la valutazione come richiesto.",
+            "extractedData": {
+              "city": "Ardea",
+              "address": "Via Diomede 69",
+              "neighborhood": "Torre Marina - Lido di Tirrenella",
+              "postalCode": "00040",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 63,
+              "rooms": 2,
+              "bathrooms": 1,
+              "floor": 0,
+              "hasElevator": false,
+              "outdoorSpace": "Giardino",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": false,
+              "buildYear": 1980,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+ardea-diomede-hybrid@example.com",
+              "phone": "3337701209"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:31:06.460Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile!",
+            "extractedData": {
+              "city": "Ardea",
+              "address": "Via Diomede 69",
+              "neighborhood": "Torre Marina - Lido di Tirrenella",
+              "postalCode": "00040",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 63,
+              "rooms": 2,
+              "bathrooms": 1,
+              "floor": 0,
+              "hasElevator": false,
+              "outdoorSpace": "Giardino",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": false,
+              "buildYear": 1980,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+ardea-diomede-hybrid@example.com",
+              "phone": "3337701209"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:31:40.683Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 72238,
+              "maxPrice": 86526,
+              "estimatedPrice": 79382,
+              "baseOMIValue": 1280,
+              "floorCoefficient": 0.92,
+              "conditionCoefficient": 1.07,
+              "pureConditionCoefficient": 1,
+              "explanation": "Proprietà ben tenuta con giardino privato e riscaldamento autonomo, fattori che migliorano appetibilità e fruibilità soprattutto per il mercato balneare locale; la posizione a Torre Marina vicino al mare è un elemento positivo ma comporta domanda stagionale. Il piano terra senza ascensore e la superficie contenuta limitano il mercato dei compratori e giustificano uno sconto rispetto a soluzioni sovrastanti; l’età dell’edificio (1980) suggerisce controlli su impianti e isolamento come possibile criticità. Elementi che influenzano il valore: vicinanza al mare, presenza del giardino/riscaldamento autonomo, e posizione al piano terra senza ascensore. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.",
+              "confidence": "media",
+              "confidenceScore": 72,
+              "warnings": [
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "city_average",
+              "dataCompleteness": 92,
+              "pricePerSqm": 1260
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:31:42.321Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:31:42.658Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 72238,
+              "maxPrice": 86526,
+              "estimatedPrice": 79382,
+              "baseOMIValue": 1280,
+              "floorCoefficient": 0.92,
+              "conditionCoefficient": 1.07,
+              "pureConditionCoefficient": 1,
+              "explanation": "L'immobile beneficia di un giardino privato e riscaldamento autonomo, elementi che aumentano appetibilità e fruibilità estiva e invernale; la buona manutenzione riduce i costi di ristrutturazione e sostiene il valore. Fattori limitanti includono il piano terra (senza ascensore) che può ridurre domanda e prezzo rispetto ai piani superiori e l'età dell'edificio che può richiedere interventi impiantistici nel medio termine. La collocazione a Torre Marina/Lido di Tirrenella favorisce domanda stagionale e un mercato locale stabile ma poco dinamico, con pressioni al rialzo limitate rispetto ai centri urbani maggiori. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.",
+              "confidence": "media",
+              "confidenceScore": 72,
+              "warnings": [
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+                  "severity": "info"
+                }
+              ],
+              "omiZoneMatch": "city_average",
+              "dataCompleteness": 92,
+              "pricePerSqm": 1260
+            },
+            "valuationMode": "hybrid",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:31:44.286Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    },
+    {
+      "ok": true,
+      "widget": "ai_market",
+      "widgetLabel": "Solo AI",
+      "propertyId": "ardea-diomede",
+      "title": "Trilocale via Diomede 69, Torre Marina - Lido di Tirrenella, Ardea",
+      "cityGroup": "Ardea",
+      "listingUrl": "https://www.immobiliare.it/annunci/125041397/",
+      "askingPrice": 129000,
+      "askingPricePerSqm": 2048,
+      "startedAt": "2026-04-18T15:31:48.171Z",
+      "endedAt": "2026-04-18T15:32:42.439Z",
+      "valuationMode": "ai_market",
+      "valuation": {
+        "minPrice": 72238,
+        "maxPrice": 86526,
+        "estimatedPrice": 79382,
+        "baseOMIValue": 1280,
+        "floorCoefficient": 0.92,
+        "conditionCoefficient": 1.07,
+        "pureConditionCoefficient": 1,
+        "explanation": "Appartamento con giardino privato e riscaldamento autonomo rappresenta un punto di forza per la abitabilità e la richiesta estiva nella zona balneare di Torre Marina; l'età dell'edificio (1980) in buono stato limita interventi immediati ma può richiedere aggiornamenti impiantistici nel medio termine. Il piano terra senza ascensore penalizza la commerciabilità rispetto a piani più alti, mentre la vicinanza al mare favorisce domanda stagionale e potenziale apprezzamento limitato nei periodi estivi. Trend di mercato locale: domanda stabile con picchi stagionali, crescita contenuta dei prezzi rispetto alle aree urbane vicine. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.",
+        "confidence": "media",
+        "confidenceScore": 72,
+        "warnings": [
+          {
+            "code": "RANGE_TIGHTENED",
+            "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+            "severity": "info"
+          },
+          {
+            "code": "AI_MARKET_FALLBACK",
+            "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+            "severity": "warning"
+          }
+        ],
+        "omiZoneMatch": "city_average",
+        "dataCompleteness": 92,
+        "pricePerSqm": 1260
+      },
+      "comparables": {
+        "enabled": false,
+        "reason": "No results"
+      },
+      "lead": {},
+      "finalTextTail": "Valuta la tua casa\n\nTi rispondo in pochi secondi\n\nAssistente\n\nCiao, benvenuto in Domus Report! In quale città si trova l'immobile?\n\n17:31\n\nVorrei una valutazione. Ti do tutti i dati in una volta per un test interno. Citta: Ardea. CAP: 00040. Zona: Torre Marina - Lido di Tirrenella. Indirizzo: Via Diomede 69. Tipologia: Appartamento. Superficie commerciale: 63 mq. Camere: 2. Bagni: 1. Piano: 0. Ascensore: no. Spazi esterni: Giardino. Posto auto o box: no. Stato: Buono. Riscaldamento: Autonomo. Aria condizionata: no. Classe energetica: Non so. Anno costruzione: 1980. Occupazione: Libero. Contatti test: nome Luca, cognome Testdomus, email luca.testdomus+ardea-diomede-ai_market@example.com, telefono 3337701210. Confermo che i dati sono corretti, puoi procedere con la valutazione.\n\n17:31\n\nAssistente\n\nPerfetto, grazie per tutte le informazioni e per la conferma. Procedo con la valutazione del tuo immobile.\n\n17:31\n\nSi, corretto. Procedi con la valutazione.\n\n17:31\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:31\n\nAssistente\n\nPerfetto! Procedo subito con la valutazione del tuo immobile.\n\n17:32\n\nAssistente\n\nPerfetto! Sto calcolando la valutazione con AI... ⏳\n\n17:32\n\nAssistente\nVALORE STIMATO\n79.382 €\nRange: 72.238 € – 86.526 € · 1260 €/m²\nAFFIDABILITÀ MEDIA · 72\nMedia città (zona non specifica)\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nImmobile con punti di forza nel giardino privato e nel riscaldamento autonomo che aumentano vivibilità e appeal per locazione stagionale; il piano terra senza ascensore e l'età dell'edificio sono elementi che penalizzano il valore unitario. Fattori rilevanti: vicinanza al litorale (domanda stagionale), presenza di spazio esterno privato e la condizione generale in buono stato. Il mercato locale mostra domanda moderata/stagionale per immobili costieri, quindi la valutazione dovrebbe considerare fluttuazioni legate al turismo e alla domanda estiva. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.\n\nZona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).\n\n17:32\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:32\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:32\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:32\n\nAssistente\nVALORE STIMATO\n79.382 €\nRange: 72.238 € – 86.526 € · 1260 €/m²\nAFFIDABILITÀ MEDIA · 72\nMedia città (zona non specifica)\n⚠️\nModalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.\n\nAppartamento con giardino privato e riscaldamento autonomo rappresenta un punto di forza per la abitabilità e la richiesta estiva nella zona balneare di Torre Marina; l'età dell'edificio (1980) in buono stato limita interventi immediati ma può richiedere aggiornamenti impiantistici nel medio termine. Il piano terra senza ascensore penalizza la commerciabilità rispetto a piani più alti, mentre la vicinanza al mare favorisce domanda stagionale e potenziale apprezzamento limitato nei periodi estivi. Trend di mercato locale: domanda stabile con picchi stagionali, crescita contenuta dei prezzi rispetto alle aree urbane vicine. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.\n\nZona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).\n\n17:32\n\nAssistente\n\nSto salvando i tuoi dati... ⏳\n\n17:32\n\nAssistente\n\nSi è verificato un errore: Limite valutazioni mensili raggiunto. Riprova o contattaci direttamente.\n\n17:32\n\nAssistente\n\nVuoi riprovare con una nuova valutazione?\n\nSì, riprova\nNo, grazie\n\n17:32\n\nPowered by DomusReport",
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/ardea-diomede-ai_market.png",
+      "events": [
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:31:50.551Z",
+          "body": {
+            "success": true,
+            "message": "Ciao, benvenuto in Domus Report! In quale città si trova l'immobile?",
+            "extractedData": {},
+            "readyForValuation": false,
+            "missingRequired": [
+              "city",
+              "address",
+              "postalCode",
+              "propertyType",
+              "surfaceSqm",
+              "condition",
+              "firstName",
+              "lastName",
+              "email",
+              "phone"
+            ]
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:31:57.025Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto, grazie per tutte le informazioni e per la conferma. Procedo con la valutazione del tuo immobile.",
+            "extractedData": {
+              "city": "Ardea",
+              "address": "Via Diomede 69",
+              "neighborhood": "Torre Marina - Lido di Tirrenella",
+              "postalCode": "00040",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 63,
+              "rooms": 2,
+              "bathrooms": 1,
+              "floor": 0,
+              "hasElevator": false,
+              "outdoorSpace": "Giardino",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": false,
+              "buildYear": 1980,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+ardea-diomede-ai_market@example.com",
+              "phone": "3337701210"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/chat",
+          "status": 200,
+          "at": "2026-04-18T15:32:01.702Z",
+          "body": {
+            "success": true,
+            "message": "Perfetto! Procedo subito con la valutazione del tuo immobile.",
+            "extractedData": {
+              "city": "Ardea",
+              "address": "Via Diomede 69",
+              "neighborhood": "Torre Marina - Lido di Tirrenella",
+              "postalCode": "00040",
+              "propertyType": "Appartamento",
+              "omiCategory": "Abitazioni civili",
+              "surfaceSqm": 63,
+              "rooms": 2,
+              "bathrooms": 1,
+              "floor": 0,
+              "hasElevator": false,
+              "outdoorSpace": "Giardino",
+              "hasParking": false,
+              "condition": "Buono",
+              "heatingType": "Autonomo",
+              "hasAirConditioning": false,
+              "buildYear": 1980,
+              "occupancyStatus": "Libero",
+              "firstName": "Luca",
+              "lastName": "Testdomus",
+              "email": "luca.testdomus+ardea-diomede-ai_market@example.com",
+              "phone": "3337701210"
+            },
+            "readyForValuation": true,
+            "missingRequired": []
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:32:33.249Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 72238,
+              "maxPrice": 86526,
+              "estimatedPrice": 79382,
+              "baseOMIValue": 1280,
+              "floorCoefficient": 0.92,
+              "conditionCoefficient": 1.07,
+              "pureConditionCoefficient": 1,
+              "explanation": "Immobile con punti di forza nel giardino privato e nel riscaldamento autonomo che aumentano vivibilità e appeal per locazione stagionale; il piano terra senza ascensore e l'età dell'edificio sono elementi che penalizzano il valore unitario. Fattori rilevanti: vicinanza al litorale (domanda stagionale), presenza di spazio esterno privato e la condizione generale in buono stato. Il mercato locale mostra domanda moderata/stagionale per immobili costieri, quindi la valutazione dovrebbe considerare fluttuazioni legate al turismo e alla domanda estiva. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.",
+              "confidence": "media",
+              "confidenceScore": 72,
+              "warnings": [
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "city_average",
+              "dataCompleteness": 92,
+              "pricePerSqm": 1260
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:32:34.888Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/valuation",
+          "status": 200,
+          "at": "2026-04-18T15:32:37.822Z",
+          "body": {
+            "success": true,
+            "valuation": {
+              "minPrice": 72238,
+              "maxPrice": 86526,
+              "estimatedPrice": 79382,
+              "baseOMIValue": 1280,
+              "floorCoefficient": 0.92,
+              "conditionCoefficient": 1.07,
+              "pureConditionCoefficient": 1,
+              "explanation": "Appartamento con giardino privato e riscaldamento autonomo rappresenta un punto di forza per la abitabilità e la richiesta estiva nella zona balneare di Torre Marina; l'età dell'edificio (1980) in buono stato limita interventi immediati ma può richiedere aggiornamenti impiantistici nel medio termine. Il piano terra senza ascensore penalizza la commerciabilità rispetto a piani più alti, mentre la vicinanza al mare favorisce domanda stagionale e potenziale apprezzamento limitato nei periodi estivi. Trend di mercato locale: domanda stabile con picchi stagionali, crescita contenuta dei prezzi rispetto alle aree urbane vicine. Valutazione basata su dati OMI per Ardea (1280€/m²). Superficie: 63m². Immobile al piano terra senza ascensore. Stato: Buono. Coefficiente piano: -8%. Coefficiente qualità complessivo: +7%.",
+              "confidence": "media",
+              "confidenceScore": 72,
+              "warnings": [
+                {
+                  "code": "RANGE_TIGHTENED",
+                  "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+                  "severity": "info"
+                },
+                {
+                  "code": "AI_MARKET_FALLBACK",
+                  "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+                  "severity": "warning"
+                }
+              ],
+              "omiZoneMatch": "city_average",
+              "dataCompleteness": 92,
+              "pricePerSqm": 1260
+            },
+            "valuationMode": "ai_market",
+            "geocoded": true,
+            "ai": {
+              "enabled": true,
+              "confidence": "media"
+            },
+            "comparables": {
+              "enabled": false,
+              "reason": "No results"
+            }
+          }
+        },
+        {
+          "url": "https://domusreport.com/api/leads",
+          "status": 403,
+          "at": "2026-04-18T15:32:39.463Z",
+          "body": {
+            "error": "Limite valutazioni mensili raggiunto",
+            "message": "Limite valutazioni mensili raggiunto (5/5). Acquista valutazioni extra o passa a un piano superiore.",
+            "current": 5,
+            "limit": 5,
+            "extra": 0,
+            "upgradeRequired": true
+          }
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "propertyId": "roma-montespertoli",
+      "widget": "hybrid",
+      "ok": true,
+      "mode": "hybrid",
+      "askingPrice": 259000,
+      "estimated": 420211,
+      "min": 394998,
+      "max": 445424,
+      "pricePerSqm": 4245,
+      "diff": 161211,
+      "diffPct": 62.2,
+      "confidence": "alta",
+      "confidenceScore": 92,
+      "dataCompleteness": 100,
+      "omiZoneMatch": "zone_specific",
+      "warnings": [
+        {
+          "code": "QUALITY_COEF_CAPPED",
+          "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+          "severity": "info"
+        },
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+          "severity": "info"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-montespertoli-hybrid.png"
+    },
+    {
+      "propertyId": "roma-montespertoli",
+      "widget": "ai_market",
+      "ok": true,
+      "mode": "ai_market",
+      "askingPrice": 259000,
+      "estimated": 420211,
+      "min": 394998,
+      "max": 445424,
+      "pricePerSqm": 4245,
+      "diff": 161211,
+      "diffPct": 62.2,
+      "confidence": "alta",
+      "confidenceScore": 92,
+      "dataCompleteness": 100,
+      "omiZoneMatch": "zone_specific",
+      "warnings": [
+        {
+          "code": "QUALITY_COEF_CAPPED",
+          "message": "Coefficiente qualità limitato (raw: 1.019 → clamp: 1.0191).",
+          "severity": "info"
+        },
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+          "severity": "info"
+        },
+        {
+          "code": "AI_MARKET_FALLBACK",
+          "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+          "severity": "warning"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-montespertoli-ai_market.png"
+    },
+    {
+      "propertyId": "roma-san-godenzo",
+      "widget": "hybrid",
+      "ok": true,
+      "mode": "hybrid",
+      "askingPrice": 480000,
+      "estimated": 537672,
+      "min": 505412,
+      "max": 569932,
+      "pricePerSqm": 5377,
+      "diff": 57672,
+      "diffPct": 12,
+      "confidence": "alta",
+      "confidenceScore": 92,
+      "dataCompleteness": 100,
+      "omiZoneMatch": "zone_specific",
+      "warnings": [
+        {
+          "code": "QUALITY_COEF_CAPPED",
+          "message": "Coefficiente qualità limitato (raw: 1.193 → clamp: 1.1935).",
+          "severity": "info"
+        },
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+          "severity": "info"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-san-godenzo-hybrid.png"
+    },
+    {
+      "propertyId": "roma-san-godenzo",
+      "widget": "ai_market",
+      "ok": true,
+      "mode": "ai_market",
+      "askingPrice": 480000,
+      "estimated": 537672,
+      "min": 505412,
+      "max": 569932,
+      "pricePerSqm": 5377,
+      "diff": 57672,
+      "diffPct": 12,
+      "confidence": "alta",
+      "confidenceScore": 92,
+      "dataCompleteness": 100,
+      "omiZoneMatch": "zone_specific",
+      "warnings": [
+        {
+          "code": "QUALITY_COEF_CAPPED",
+          "message": "Coefficiente qualità limitato (raw: 1.193 → clamp: 1.1935).",
+          "severity": "info"
+        },
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Variance OMI elevata (31%): range ristretto a ±6% (confidence alta).",
+          "severity": "info"
+        },
+        {
+          "code": "AI_MARKET_FALLBACK",
+          "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+          "severity": "warning"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-san-godenzo-ai_market.png"
+    },
+    {
+      "propertyId": "roma-san-fabiano",
+      "widget": "hybrid",
+      "ok": true,
+      "mode": "hybrid",
+      "askingPrice": 485000,
+      "estimated": 225766,
+      "min": 212220,
+      "max": 239312,
+      "pricePerSqm": 3473,
+      "diff": -259234,
+      "diffPct": -53.5,
+      "confidence": "alta",
+      "confidenceScore": 92,
+      "dataCompleteness": 100,
+      "omiZoneMatch": "zone_specific",
+      "warnings": [
+        {
+          "code": "QUALITY_COEF_CAPPED",
+          "message": "Coefficiente qualità limitato (raw: 0.942 → clamp: 0.9423).",
+          "severity": "info"
+        },
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).",
+          "severity": "info"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-san-fabiano-hybrid.png"
+    },
+    {
+      "propertyId": "roma-san-fabiano",
+      "widget": "ai_market",
+      "ok": true,
+      "mode": "ai_market",
+      "askingPrice": 485000,
+      "estimated": 225766,
+      "min": 212220,
+      "max": 239312,
+      "pricePerSqm": 3473,
+      "diff": -259234,
+      "diffPct": -53.5,
+      "confidence": "alta",
+      "confidenceScore": 92,
+      "dataCompleteness": 100,
+      "omiZoneMatch": "zone_specific",
+      "warnings": [
+        {
+          "code": "QUALITY_COEF_CAPPED",
+          "message": "Coefficiente qualità limitato (raw: 0.942 → clamp: 0.9423).",
+          "severity": "info"
+        },
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Variance OMI elevata (32%): range ristretto a ±6% (confidence alta).",
+          "severity": "info"
+        },
+        {
+          "code": "AI_MARKET_FALLBACK",
+          "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+          "severity": "warning"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/roma-san-fabiano-ai_market.png"
+    },
+    {
+      "propertyId": "ardea-gerani",
+      "widget": "hybrid",
+      "ok": true,
+      "mode": "hybrid",
+      "askingPrice": 119000,
+      "estimated": 68119,
+      "min": 61988,
+      "max": 74250,
+      "pricePerSqm": 1135,
+      "diff": -50881,
+      "diffPct": -42.8,
+      "confidence": "media",
+      "confidenceScore": 77,
+      "dataCompleteness": 100,
+      "omiZoneMatch": "city_average",
+      "warnings": [
+        {
+          "code": "QUALITY_COEF_CAPPED",
+          "message": "Coefficiente qualità limitato (raw: 0.964 → clamp: 0.9641).",
+          "severity": "info"
+        },
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+          "severity": "info"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/ardea-gerani-hybrid.png"
+    },
+    {
+      "propertyId": "ardea-gerani",
+      "widget": "ai_market",
+      "ok": true,
+      "mode": "ai_market",
+      "askingPrice": 119000,
+      "estimated": 68119,
+      "min": 61988,
+      "max": 74250,
+      "pricePerSqm": 1135,
+      "diff": -50881,
+      "diffPct": -42.8,
+      "confidence": "media",
+      "confidenceScore": 77,
+      "dataCompleteness": 100,
+      "omiZoneMatch": "city_average",
+      "warnings": [
+        {
+          "code": "QUALITY_COEF_CAPPED",
+          "message": "Coefficiente qualità limitato (raw: 0.964 → clamp: 0.9641).",
+          "severity": "info"
+        },
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+          "severity": "info"
+        },
+        {
+          "code": "AI_MARKET_FALLBACK",
+          "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+          "severity": "warning"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/ardea-gerani-ai_market.png"
+    },
+    {
+      "propertyId": "ardea-diomede",
+      "widget": "hybrid",
+      "ok": true,
+      "mode": "hybrid",
+      "askingPrice": 129000,
+      "estimated": 79382,
+      "min": 72238,
+      "max": 86526,
+      "pricePerSqm": 1260,
+      "diff": -49618,
+      "diffPct": -38.5,
+      "confidence": "media",
+      "confidenceScore": 72,
+      "dataCompleteness": 92,
+      "omiZoneMatch": "city_average",
+      "warnings": [
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+          "severity": "info"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/ardea-diomede-hybrid.png"
+    },
+    {
+      "propertyId": "ardea-diomede",
+      "widget": "ai_market",
+      "ok": true,
+      "mode": "ai_market",
+      "askingPrice": 129000,
+      "estimated": 79382,
+      "min": 72238,
+      "max": 86526,
+      "pricePerSqm": 1260,
+      "diff": -49618,
+      "diffPct": -38.5,
+      "confidence": "media",
+      "confidenceScore": 72,
+      "dataCompleteness": 92,
+      "omiZoneMatch": "city_average",
+      "warnings": [
+        {
+          "code": "RANGE_TIGHTENED",
+          "message": "Zona OMI poco specifica (Media città): range ristretto a ±9% (confidence media).",
+          "severity": "info"
+        },
+        {
+          "code": "AI_MARKET_FALLBACK",
+          "message": "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+          "severity": "warning"
+        }
+      ],
+      "screenshot": "/Users/ivanmosetti/Downloads/APP/Domus-Report/output/widget-test/ardea-diomede-ai_market.png"
+    }
+  ]
+}

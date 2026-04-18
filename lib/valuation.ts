@@ -287,20 +287,22 @@ function selectOMICategory(
   if (propertyType === PropertyType.VILLA) return 'Ville e Villini'
 
   if (propertyType === PropertyType.APARTMENT || propertyType === PropertyType.ATTICO) {
-    const energyNorm = energyClass?.toUpperCase() ?? ''
-    // Nota: RENOVATED da solo NON promuove a "signorili" (evita doppio conteggio
-    // con conditionCoefficient=1.12). Serve anche un segnale di "building class"
-    // come energy class alta o anno recente.
-    const isHighQuality =
-      ['A4', 'A3', 'A2', 'A1', 'A+', 'A', 'B'].includes(energyNorm) ||
-      (buildYear !== undefined && buildYear >= 2010) ||
-      condition === PropertyCondition.NEW
+    // "Abitazioni signorili" è una categoria OMI che dipende dalla
+    // classe del BUILDING (zona centrale + prestigio costruttivo), non
+    // dalle caratteristiche dell'immobile singolo. Un classe A costruito
+    // in periferia NON è "signorile". Senza un segnale di zona (che il
+    // motore non ha nel contesto), NON promuoviamo a signorili: serve
+    // essere specificato esplicitamente via `omiCategory`.
+    //
+    // Classificazione conservativa:
+    // - TO_RENOVATE / HABITABLE_OLD / buildYear < 1960 → "economico"
+    // - altrimenti → "civili" (fascia centrale, coprire la maggior parte
+    //   degli immobili italiani)
     const isLowQuality =
       condition === PropertyCondition.TO_RENOVATE ||
       condition === PropertyCondition.HABITABLE_OLD ||
       (buildYear !== undefined && buildYear < 1960)
 
-    if (isHighQuality) return 'Abitazioni signorili'
     if (isLowQuality) return 'Abitazioni di tipo economico'
     return 'Abitazioni civili'
   }
