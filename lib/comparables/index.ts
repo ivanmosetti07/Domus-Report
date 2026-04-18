@@ -174,16 +174,20 @@ export function crossCheckWithOMI(
   else if (absDelta < 25) agreement = "medium"
   else agreement = "weak"
 
-  // Peso del mercato reale: più annunci → più peso
-  // sampleSize=1: peso 0.2 (indicativo ma non dominante)
-  // sampleSize=2: peso 0.3
-  // sampleSize=3-4: peso 0.5
-  // sampleSize>=5: peso 0.6
-  const cmpWeight =
+  // Peso del mercato reale: più annunci → più peso.
+  // Inoltre quando l'agreement è "weak" (OMI e mercato divergono >25%)
+  // diamo più peso ai comparables perché OMI è teorico e spesso sfasato
+  // rispetto al mercato reale. I comparables sono in tempo reale.
+  let cmpWeight =
     comparablesResult.sampleSize >= 5 ? 0.6 :
     comparablesResult.sampleSize >= 3 ? 0.5 :
     comparablesResult.sampleSize >= 2 ? 0.3 :
     0.2
+  if (agreement === "weak" && comparablesResult.sampleSize >= 5) {
+    cmpWeight = 0.85 // disagreement forte con buon campione → quasi tutto mercato
+  } else if (agreement === "weak" && comparablesResult.sampleSize >= 3) {
+    cmpWeight = 0.75
+  }
   const omiWeight = 1 - cmpWeight
   const suggestedPricePerSqm = Math.round(
     omiPricePerSqm * omiWeight + cmpMedian * cmpWeight
