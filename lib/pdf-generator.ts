@@ -39,6 +39,26 @@ interface LeadData {
     coefficienteStato: number
     spiegazione: string
     dataCalcolo: Date
+    confidence?: string | null
+    confidenceScore?: number | null
+    warnings?: Array<{ code: string; message: string; severity: string }> | null
+    omiZoneMatch?: string | null
+    dataCompleteness?: number | null
+    pricePerSqm?: number | null
+    comparablesData?: {
+      provider?: string
+      sampleSize?: number
+      medianPricePerSqm?: number
+      avgPricePerSqm?: number
+      minPricePerSqm?: number
+      maxPricePerSqm?: number
+      items?: Array<any>
+      crossCheck?: {
+        deltaPct?: number
+        agreement?: string
+        suggestedPricePerSqm?: number
+      }
+    } | null
   }
   conversation?: {
     messaggi: any[]
@@ -527,6 +547,126 @@ export async function generateLeadPDF(data: LeadData): Promise<jsPDF> {
 
   yPosition = createStyledTable(doc, yPosition, valuationTableData, primaryColor)
   yPosition += 8
+
+  // --- Affidabilità ---
+  if (data.valuation.confidence) {
+    yPosition = checkPageBreak(doc, yPosition, 18)
+    const confLabel = `Affidabilità valutazione: ${data.valuation.confidence.toUpperCase()}${
+      data.valuation.confidenceScore != null ? ` (score: ${data.valuation.confidenceScore}/100)` : ''
+    }`
+    const confColor: [number, number, number] =
+      data.valuation.confidence === 'alta'
+        ? [22, 163, 74]
+        : data.valuation.confidence === 'bassa'
+          ? [217, 119, 6]
+          : [79, 70, 229]
+    doc.setFillColor(248, 249, 250)
+    doc.roundedRect(MARGIN_LEFT, yPosition, CONTENT_WIDTH, 10, 2, 2, 'F')
+    doc.setFillColor(...confColor)
+    doc.rect(MARGIN_LEFT, yPosition + 1, 2.5, 8, 'F')
+    doc.setFontSize(9)
+    doc.setTextColor(...confColor)
+    doc.setFont('helvetica', 'bold')
+    doc.text(confLabel, MARGIN_LEFT + 7, yPosition + 6.5)
+    if (data.valuation.dataCompleteness != null) {
+      doc.setFont('helvetica', 'normal')
+      doc.setTextColor(...DARK_GRAY)
+      doc.setFontSize(8)
+      doc.text(
+        `Dati immobile: ${data.valuation.dataCompleteness}%`,
+        MARGIN_RIGHT - 5,
+        yPosition + 6.5,
+        { align: 'right' }
+      )
+    }
+    yPosition += 14
+  }
+
+  // --- Avvertenze ---
+  const relevantWarnings = (data.valuation.warnings || []).filter(
+    (w) => w.severity !== 'info'
+  )
+  if (relevantWarnings.length > 0) {
+    yPosition = checkPageBreak(doc, yPosition, 10 + relevantWarnings.length * 8)
+    doc.setFontSize(9)
+    doc.setTextColor(...primaryColor)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Avvertenze', MARGIN_LEFT, yPosition)
+    yPosition += 5
+    doc.setFont('helvetica', 'normal')
+    for (const w of relevantWarnings) {
+      const isError = w.severity === 'error' || w.severity === 'critical'
+      const borderColor: [number, number, number] = isError ? [220, 38, 38] : [217, 119, 6]
+      const lines = doc.splitTextToSize(`• ${w.message}`, CONTENT_WIDTH - 8)
+      const boxH = lines.length * 4 + 4
+      yPosition = checkPageBreak(doc, yPosition, boxH + 3)
+      const bgColor: [number, number, number] = isError ? [254, 226, 226] : [254, 243, 199]
+      doc.setFillColor(...bgColor)
+      doc.roundedRect(MARGIN_LEFT, yPosition, CONTENT_WIDTH, boxH, 2, 2, 'F')
+      doc.setFillColor(...borderColor)
+      doc.rect(MARGIN_LEFT, yPosition + 1, 2, boxH - 2, 'F')
+      doc.setTextColor(...DARK_GRAY)
+      doc.setFontSize(8)
+      doc.text(lines, MARGIN_LEFT + 5, yPosition + 5)
+      yPosition += boxH + 2
+    }
+    yPosition += 4
+  }
+
+  // --- Riscontro mercato reale ---
+  const cmp = data.valuation.comparablesData
+  if (cmp && (cmp.sampleSize ?? 0) >= 2 && cmp.medianPricePerSqm) {
+    yPosition = checkPageBreak(doc, yPosition, 28)
+    doc.setFontSize(9)
+    doc.setTextColor(...primaryColor)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Riscontro mercato reale', MARGIN_LEFT, yPosition)
+    yPosition += 5
+    doc.setFillColor(...LIGHT_GRAY)
+    doc.roundedRect(MARGIN_LEFT, yPosition, CONTENT_WIDTH, 18, 2, 2, 'F')
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8.5)
+    doc.setTextColor(...TEXT_COLOR)
+    doc.text(
+      `Mediana annunci comparabili: ${new Intl.NumberFormat('it-IT').format(Math.round(cmp.medianPricePerSqm))} \u20AC/m\u00B2 (campione di ${cmp.sampleSize})`,
+      MARGIN_LEFT + 5,
+      yPosition + 6
+    )
+    if (cmp.crossCheck?.deltaPct !== undefined) {
+      const deltaColor: [number, number, number] =
+        cmp.crossCheck.agreement === 'strong'
+          ? [22, 163, 74]
+          : cmp.crossCheck.agreement === 'medium'
+            ? [202, 138, 4]
+            : [220, 38, 38]
+      doc.setTextColor(...deltaColor)
+      doc.text(
+        `Scostamento dal valore OMI: ${cmp.crossCheck.deltaPct > 0 ? '+' : ''}${cmp.crossCheck.deltaPct}% (${cmp.crossCheck.agreement ?? 'n/d'})`,
+        MARGIN_LEFT + 5,
+        yPosition + 13
+      )
+    }
+    yPosition += 22
+  }
+
+  // --- Nota zona OMI ---
+  if (data.valuation.omiZoneMatch) {
+    const zoneNotes: Record<string, string> = {
+      cap: 'Zona dedotta dal CAP.',
+      city_average: 'Dati zona generici (media città).',
+      cap_global: 'CAP nazionale (dati generici).',
+      not_found: 'Zona OMI specifica non trovata.',
+    }
+    const zoneNote = zoneNotes[data.valuation.omiZoneMatch]
+    if (zoneNote) {
+      yPosition = checkPageBreak(doc, yPosition, 8)
+      doc.setFontSize(7.5)
+      doc.setTextColor(130, 130, 130)
+      doc.setFont('helvetica', 'italic')
+      doc.text(zoneNote, MARGIN_LEFT, yPosition)
+      yPosition += 6
+    }
+  }
 
   // --- Box spiegazione ---
   yPosition = checkPageBreak(doc, yPosition, 40)

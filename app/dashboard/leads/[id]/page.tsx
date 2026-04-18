@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   ArrowLeft,
@@ -10,6 +11,8 @@ import {
   DollarSign,
   Mail,
   MessageSquare,
+  AlertTriangle,
+  TrendingUp,
 } from "lucide-react"
 import { formatDate, formatCurrency } from "@/lib/utils"
 import { getAuthAgency } from "@/lib/auth"
@@ -332,7 +335,32 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         )}
 
         {/* Card 3: Valuation */}
-        {lead.property?.valuation && (
+        {lead.property?.valuation && (() => {
+          const v = lead.property.valuation
+          const warnings = (v.warnings as Array<{ code: string; message: string; severity: string }> | null) || []
+          const relevantWarnings = warnings.filter((w) => w.severity !== "info")
+          const cmp = (v.comparablesData as any) || null
+          const hasComparables = cmp && cmp.sampleSize >= 2 && cmp.medianPricePerSqm
+          const confVariant =
+            v.confidence === "alta" ? "success" : v.confidence === "bassa" ? "warning" : "default"
+          const zoneLabel =
+            v.omiZoneMatch === "cap"
+              ? "Zona da CAP"
+              : v.omiZoneMatch === "city_average"
+                ? "Media città"
+                : v.omiZoneMatch === "cap_global"
+                  ? "CAP nazionale"
+                  : v.omiZoneMatch === "not_found"
+                    ? "Zona non trovata"
+                    : null
+          const agreementClass =
+            cmp?.crossCheck?.agreement === "strong"
+              ? "text-green-600"
+              : cmp?.crossCheck?.agreement === "medium"
+                ? "text-yellow-600"
+                : "text-red-600"
+
+          return (
           <Card className="border-2 border-primary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -346,8 +374,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                   Range di Valore
                 </label>
                 <p className="text-sm text-foreground-muted mt-1">
-                  {formatCurrency(lead.property.valuation.prezzoMinimo)} -{" "}
-                  {formatCurrency(lead.property.valuation.prezzoMassimo)}
+                  {formatCurrency(v.prezzoMinimo)} - {formatCurrency(v.prezzoMassimo)}
                 </p>
               </div>
 
@@ -356,39 +383,103 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                   Prezzo Stimato
                 </label>
                 <p className="text-3xl font-bold text-primary mt-2">
-                  {formatCurrency(lead.property.valuation.prezzoStimato)}
+                  {formatCurrency(v.prezzoStimato)}
                 </p>
+                {v.pricePerSqm && (
+                  <p className="text-xs text-foreground-muted mt-1">
+                    {new Intl.NumberFormat("it-IT").format(v.pricePerSqm)} €/m²
+                  </p>
+                )}
               </div>
 
-              <div className="space-y-2">
+              {(v.confidence || zoneLabel || v.dataCompleteness !== null) && (
+                <div className="flex flex-wrap gap-2">
+                  {v.confidence && (
+                    <Badge variant={confVariant as any}>
+                      Affidabilità {v.confidence}
+                      {v.confidenceScore !== null && v.confidenceScore !== undefined
+                        ? ` · ${v.confidenceScore}`
+                        : ""}
+                    </Badge>
+                  )}
+                  {zoneLabel && <Badge variant="outline">{zoneLabel}</Badge>}
+                  {v.dataCompleteness !== null &&
+                    v.dataCompleteness !== undefined &&
+                    v.dataCompleteness < 70 && (
+                      <Badge variant="outline">Dati: {v.dataCompleteness}%</Badge>
+                    )}
+                </div>
+              )}
+
+              {hasComparables && (
+                <div className="p-3 bg-surface-2 rounded-lg border border-border">
+                  <div className="flex items-center gap-2 mb-1">
+                    <TrendingUp className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+                      Riscontro mercato reale
+                    </span>
+                  </div>
+                  <p className="text-sm font-medium text-foreground">
+                    {new Intl.NumberFormat("it-IT").format(Math.round(cmp.medianPricePerSqm))} €/m²
+                    <span className="text-foreground-muted font-normal">
+                      {" "}
+                      (mediana su {cmp.sampleSize} annunci)
+                    </span>
+                  </p>
+                  {cmp.crossCheck?.deltaPct !== undefined && (
+                    <p className={`text-xs mt-1 ${agreementClass}`}>
+                      Scostamento OMI: {cmp.crossCheck.deltaPct > 0 ? "+" : ""}
+                      {cmp.crossCheck.deltaPct}% · {cmp.crossCheck.agreement}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {relevantWarnings.length > 0 && (
+                <div className="space-y-2">
+                  {relevantWarnings.map((w, i) => (
+                    <Alert
+                      key={`${w.code}-${i}`}
+                      variant={w.severity === "error" || w.severity === "critical" ? "destructive" : "warning"}
+                      className="py-2 px-3"
+                    >
+                      <AlertTriangle className="w-4 h-4" />
+                      <AlertDescription className="text-xs">{w.message}</AlertDescription>
+                    </Alert>
+                  ))}
+                </div>
+              )}
+
+              <div className="space-y-2 pt-2 border-t border-border">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-foreground-muted">Valore OMI base:</span>
                   <span className="font-medium text-foreground">
-                    {formatCurrency(lead.property.valuation.valoreOmiBase)}/m²
+                    {formatCurrency(v.valoreOmiBase)}/m²
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-foreground-muted">Coeff. piano:</span>
                   <span className="font-medium text-foreground">
-                    {(lead.property.valuation.coefficientePiano * 100).toFixed(0)}%
+                    {(v.coefficientePiano * 100).toFixed(0)}%
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-foreground-muted">Coeff. stato:</span>
                   <span className="font-medium text-foreground">
-                    {(lead.property.valuation.coefficienteStato * 100).toFixed(0)}%
+                    {(v.coefficienteStato * 100).toFixed(0)}%
                   </span>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-border">
                 <p className="text-xs text-foreground-muted">
-                  {lead.property.valuation.spiegazione}
+                  {v.spiegazione}
                 </p>
               </div>
             </CardContent>
           </Card>
-        )}
+          )
+        })()}
       </div>
 
       {/* Status Manager Section */}

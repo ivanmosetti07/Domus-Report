@@ -4,6 +4,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Message as MessageType } from "@/types"
 import { Bot } from "lucide-react"
+import { ValuationResultCard } from "./valuation-result-card"
 
 interface MessageProps {
   message: MessageType
@@ -51,13 +52,23 @@ export function Message({ message, onQuickReply, primaryColor = '#2563eb' }: Mes
           </div>
         )}
 
-        <p style={{
-          fontSize: '15px',
-          lineHeight: '1.5',
-          whiteSpace: 'pre-wrap'
-        }}>
-          {message.text}
-        </p>
+        {message.valuationResult ? (
+          <div style={{ marginTop: '2px' }}>
+            <ValuationResultCard
+              data={message.valuationResult}
+              compact
+              primaryColor={primaryColor}
+            />
+          </div>
+        ) : (
+          <p style={{
+            fontSize: '15px',
+            lineHeight: '1.5',
+            whiteSpace: 'pre-wrap'
+          }}>
+            {message.text}
+          </p>
+        )}
 
         {message.quickReplies && message.quickReplies.length > 0 && (
           <div className="grid grid-cols-2 gap-2 mt-3">

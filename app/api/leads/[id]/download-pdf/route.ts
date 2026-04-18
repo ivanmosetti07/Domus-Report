@@ -87,6 +87,13 @@ export async function GET(
         coefficienteStato: lead.property.valuation.coefficienteStato,
         spiegazione: lead.property.valuation.spiegazione,
         dataCalcolo: lead.property.valuation.dataCalcolo,
+        confidence: lead.property.valuation.confidence ?? null,
+        confidenceScore: lead.property.valuation.confidenceScore ?? null,
+        warnings: (lead.property.valuation.warnings as any) ?? null,
+        omiZoneMatch: lead.property.valuation.omiZoneMatch ?? null,
+        dataCompleteness: lead.property.valuation.dataCompleteness ?? null,
+        pricePerSqm: lead.property.valuation.pricePerSqm ?? null,
+        comparablesData: (lead.property.valuation.comparablesData as any) ?? null,
       },
       conversation: lead.conversation ? {
         messaggi: lead.conversation.messaggi as any[]

@@ -55,6 +55,24 @@ export interface CreateLeadRequest {
   floorCoefficient: number
   conditionCoefficient: number
   explanation: string
+  // Valuation quality (optional — da Sprint 1-4)
+  confidence?: "alta" | "media" | "bassa"
+  confidenceScore?: number
+  warnings?: Array<{ code: string; message: string; severity: "info" | "warning" | "error" | "critical" }>
+  omiZoneMatch?: string
+  dataCompleteness?: number
+  pricePerSqm?: number
+  comparables?: {
+    enabled: boolean
+    provider?: string
+    sampleSize?: number
+    medianPricePerSqm?: number
+    avgPricePerSqm?: number
+    minPricePerSqm?: number
+    maxPricePerSqm?: number
+    items?: Array<any>
+    crossCheck?: any
+  } | null
   // Conversation
   messages: any[]
 }
@@ -496,6 +514,24 @@ export async function POST(request: NextRequest) {
                 coefficientePiano: body.floorCoefficient,
                 coefficienteStato: body.conditionCoefficient,
                 spiegazione: body.explanation,
+                confidence: body.confidence ?? undefined,
+                confidenceScore: body.confidenceScore ?? undefined,
+                warnings: body.warnings ? (body.warnings as any) : undefined,
+                omiZoneMatch: body.omiZoneMatch ?? undefined,
+                dataCompleteness: body.dataCompleteness ?? undefined,
+                pricePerSqm: body.pricePerSqm ?? undefined,
+                comparablesData: body.comparables?.enabled
+                  ? ({
+                      provider: body.comparables.provider,
+                      sampleSize: body.comparables.sampleSize,
+                      medianPricePerSqm: body.comparables.medianPricePerSqm,
+                      avgPricePerSqm: body.comparables.avgPricePerSqm,
+                      minPricePerSqm: body.comparables.minPricePerSqm,
+                      maxPricePerSqm: body.comparables.maxPricePerSqm,
+                      items: body.comparables.items,
+                      crossCheck: body.comparables.crossCheck,
+                    } as any)
+                  : undefined,
               },
             },
           },

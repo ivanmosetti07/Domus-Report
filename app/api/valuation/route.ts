@@ -1,49 +1,122 @@
 import { NextRequest, NextResponse } from "next/server"
-import { calculateValuation, ValuationInput } from "@/lib/valuation"
+import { calculateValuation, ValuationInput, ValuationResult } from "@/lib/valuation"
 import { geocodeAddress } from "@/lib/geocoding"
 import { generateAIValuationAnalysis, PropertyValuationData } from "@/lib/openai"
 import { inferCity } from "@/lib/postal-code"
+import {
+  searchComparables,
+  crossCheckWithOMI,
+  isComparablesEnabled,
+  type ComparablesResult,
+  type CrossCheckResult,
+} from "@/lib/comparables"
 
 // IMPORTANTE: Non usare Edge Runtime perché il sistema OMI legge dal filesystem (CSV)
 // export const runtime = "edge"
 
-// Extended input type per includere dati aggiuntivi non usati nel calcolo OMI
-// (energyClass, buildYear, hasParking, outdoorSpace, heatingType sono già in ValuationInput)
 interface ExtendedValuationInput extends ValuationInput {
-  rooms?: number
-  bathrooms?: number
   hasAirConditioning?: boolean
-  useAI?: boolean // Flag per abilitare/disabilitare analisi AI
+  useAI?: boolean
+  useComparables?: boolean // Abilita cross-check con comparables reali
+}
+
+/**
+ * Applica il cross-check con i comparables reali: ricalcola min/max/estimated
+ * con una media pesata tra OMI e il mercato reale.
+ *
+ * I comparables riflettono mediamente immobili di qualità "Buono-Ristrutturato",
+ * quindi adattiamo il risultato alla SOLA condition pura (rispetto alla baseline
+ * di mercato 1.05 = media Buono-Ristrutturato). Gli altri fattori (energy, anno,
+ * extras, occupancy, rooms/bathrooms) sono già embedded nei prezzi di annuncio,
+ * quindi NON vanno moltiplicati di nuovo (bug_008).
+ *
+ * Inoltre il floorCoefficient va applicato sul €/mq dei comparables perché
+ * i comparables non stratificano per piano (bug_006).
+ */
+function applyComparablesRefinement(
+  valuation: ValuationResult,
+  comparables: ComparablesResult,
+  crossCheck: CrossCheckResult,
+  surfaceSqm: number
+): ValuationResult {
+  if (!crossCheck.shouldAdjust || comparables.sampleSize < 2) return valuation
+
+  // Media mercato "standard": assumiamo pureConditionCoefficient ~1.05 (Buono→Ristrutturato)
+  const marketQualityBaseline = 1.05
+  // bug_008: usare la condition PURA, non il composite (che include energy/year/extras/...)
+  const thisQuality = valuation.pureConditionCoefficient || 1.0
+  const qualityAdjustment = thisQuality / marketQualityBaseline
+
+  // bug_006: i comparables non stratificano per piano → applicare floorCoefficient
+  const floorCoef = valuation.floorCoefficient || 1.0
+  const combinedAdjustment = qualityAdjustment * floorCoef
+
+  // Prezzo suggerito (€/mq) dal cross-check, aggiustato per la qualità e il piano
+  const adjustedPPS = Math.round(crossCheck.suggestedPricePerSqm * combinedAdjustment)
+
+  const refinedEstimated = Math.round(adjustedPPS * surfaceSqm)
+
+  // Range derivato dai min/max dei comparables (più realistico dell'OMI teorico)
+  const refinedMin = Math.round(comparables.minPricePerSqm * combinedAdjustment * surfaceSqm)
+  const refinedMax = Math.round(comparables.maxPricePerSqm * combinedAdjustment * surfaceSqm)
+
+  // Warnings + eventuale flag di confidence downgrade
+  const updatedWarnings = [...valuation.warnings]
+  for (const w of crossCheck.warnings) {
+    updatedWarnings.push({
+      code: "COMPARABLES_DIVERGE",
+      message: w,
+      severity: crossCheck.agreement === "weak" ? "warning" : "info",
+    })
+  }
+
+  // Ri-calcolo confidence: se agreement è strong → bonus, se weak → malus
+  let newScore = valuation.confidenceScore
+  if (crossCheck.agreement === "strong") newScore = Math.min(100, newScore + 10)
+  else if (crossCheck.agreement === "weak") newScore = Math.max(0, newScore - 15)
+  const newLevel: ValuationResult["confidence"] =
+    newScore >= 80 ? "alta" : newScore >= 60 ? "media" : "bassa"
+
+  return {
+    ...valuation,
+    estimatedPrice: refinedEstimated,
+    minPrice: Math.min(refinedMin, refinedEstimated),
+    maxPrice: Math.max(refinedMax, refinedEstimated),
+    pricePerSqm: adjustedPPS,
+    confidence: newLevel,
+    confidenceScore: newScore,
+    warnings: updatedWarnings,
+    explanation:
+      valuation.explanation +
+      ` Raffinato con ${comparables.sampleSize} annunci reali: mercato a ${Math.round(
+        comparables.medianPricePerSqm
+      )}€/m² (delta OMI ${crossCheck.deltaPct > 0 ? "+" : ""}${crossCheck.deltaPct}%).`,
+  }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as ExtendedValuationInput
 
-    // MIGLIORA ESTRAZIONE CITTÀ: deduce città da CAP, indirizzo o quartiere
+    // Deduce città da CAP/indirizzo
     const inferredCity = inferCity({
       city: body.city,
       postalCode: body.postalCode,
       address: body.address,
-      neighborhood: body.neighborhood
+      neighborhood: body.neighborhood,
     })
-
-    // Usa la città dedotta se disponibile
     if (inferredCity) {
-      console.log('[Valuation API] Città dedotta:', {
+      console.log("[Valuation API] Città dedotta:", {
         original: body.city,
         inferred: inferredCity,
-        postalCode: body.postalCode
+        postalCode: body.postalCode,
       })
       body.city = inferredCity
     }
 
     // Validate required fields
     if (!body.address || !body.city || !body.propertyType || !body.surfaceSqm || !body.condition) {
-      return NextResponse.json(
-        { error: "Campi obbligatori mancanti" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Campi obbligatori mancanti" }, { status: 400 })
     }
 
     // Validate surface range
@@ -54,28 +127,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Try to geocode if coordinates not provided
+    // Geocoding
     let geocodeData = null
     if (!body.latitude || !body.longitude) {
       try {
-        // IMPORTANTE: Passa la città al geocoding per evitare ambiguità
-        // (es. "via Cammarata" esiste sia a Roma che a Siracusa)
-        const fullAddress = `${body.address}, ${body.city}${body.postalCode ? ', ' + body.postalCode : ''}`
+        const fullAddress = `${body.address}, ${body.city}${body.postalCode ? ", " + body.postalCode : ""}`
         geocodeData = await geocodeAddress(fullAddress)
-
         if (geocodeData) {
           body.latitude = geocodeData.latitude
           body.longitude = geocodeData.longitude
-
-          // Aggiorna CAP dal geocoding se non era ancora disponibile
           if (!body.postalCode && geocodeData.postalCode) {
             body.postalCode = geocodeData.postalCode
           }
-
-          // Dopo il geocoding rivaluta la città con tutti i dati aggiornati.
-          // Il CAP è più specifico della città digitata dall'utente:
-          // es. "Roma" con CAP 00071 (Pomezia) → deve usare OMI di Pomezia.
-          // Questo previene valutazioni gonfiate/errate per comuni della provincia.
           const cityAfterGeocode = inferCity({
             city: body.city,
             postalCode: body.postalCode,
@@ -83,18 +146,15 @@ export async function POST(request: NextRequest) {
             neighborhood: body.neighborhood,
           })
           if (cityAfterGeocode && cityAfterGeocode !== body.city) {
-            console.log('[Valuation API] Città corretta dopo geocoding via CAP:', {
+            console.log("[Valuation API] Città corretta dopo geocoding via CAP:", {
               prima: body.city,
               dopo: cityAfterGeocode,
               cap: body.postalCode,
             })
             body.city = cityAfterGeocode
           }
-
-          // Fallback finale: se inferCity non ha corretto (CAP non nel mapping),
-          // usa la città restituta dal geocoding (basata su coordinate = precisa)
           if (geocodeData.city && geocodeData.city.toLowerCase() !== body.city.toLowerCase()) {
-            console.log('[Valuation API] Città corretta via coordinate geocoding:', {
+            console.log("[Valuation API] Città corretta via coordinate geocoding:", {
               prima: body.city,
               dopo: geocodeData.city,
             })
@@ -109,16 +169,20 @@ export async function POST(request: NextRequest) {
     // Calculate base valuation (OMI + coefficients)
     const baseValuation = await calculateValuation(body)
 
-    // Verifica che la valutazione base sia valida
-    if (!baseValuation.estimatedPrice || baseValuation.estimatedPrice <= 0) {
-      console.error("Invalid base valuation:", baseValuation)
-      return NextResponse.json(
-        { error: "Errore nel calcolo della valutazione base" },
-        { status: 500 }
-      )
+    // Se OMI non trovato, ritorna risultato "low-confidence" esplicito invece di errore
+    if (baseValuation.omiZoneMatch === "not_found" || baseValuation.estimatedPrice <= 0) {
+      return NextResponse.json({
+        success: false,
+        valuation: baseValuation,
+        error: "Dati OMI non disponibili per questa zona. Contatta un professionista per una stima affidabile.",
+        geocoded: geocodeData !== null,
+      }, { status: 200 }) // 200 perché ritorniamo comunque dati strutturati
     }
 
-    // Prepara dati per l'analisi AI
+    // AI analysis + Comparables in parallelo (due chiamate lente)
+    const useAI = body.useAI !== false
+    const useComparables = body.useComparables !== false && isComparablesEnabled()
+
     const aiInput: PropertyValuationData = {
       address: body.address,
       city: body.city,
@@ -138,7 +202,6 @@ export async function POST(request: NextRequest) {
       hasAirConditioning: body.hasAirConditioning,
       energyClass: body.energyClass,
       buildYear: body.buildYear,
-      // Dati valutazione base
       baseOMIValue: baseValuation.baseOMIValue,
       estimatedPrice: baseValuation.estimatedPrice,
       minPrice: baseValuation.minPrice,
@@ -147,43 +210,74 @@ export async function POST(request: NextRequest) {
       conditionCoefficient: baseValuation.conditionCoefficient,
     }
 
-    // Genera analisi AI (usa OpenAI se disponibile, altrimenti fallback)
-    // Di default abilitata, può essere disabilitata con useAI: false
-    const useAI = body.useAI !== false
-    let aiAnalysis = null
+    const aiPromise = useAI
+      ? generateAIValuationAnalysis(aiInput).catch((err) => {
+          console.warn("AI analysis failed:", err)
+          return null
+        })
+      : Promise.resolve(null)
 
-    if (useAI) {
-      try {
-        aiAnalysis = await generateAIValuationAnalysis(aiInput)
-      } catch (error) {
-        console.warn("AI analysis failed, using base valuation only:", error)
-      }
+    const comparablesPromise = useComparables
+      ? searchComparables({
+          city: body.city,
+          neighborhood: body.neighborhood,
+          postalCode: body.postalCode,
+          propertyType: body.propertyType,
+          surfaceSqm: body.surfaceSqm,
+          condition: body.condition,
+          rooms: body.rooms,
+        }).catch((err) => {
+          console.warn("Comparables search failed:", err)
+          return null
+        })
+      : Promise.resolve(null)
+
+    const [aiAnalysis, comparablesResult] = await Promise.all([aiPromise, comparablesPromise])
+
+    // Applica cross-check se abbiamo comparables validi
+    let finalValuation = { ...baseValuation }
+    let crossCheck: CrossCheckResult | null = null
+
+    if (comparablesResult && comparablesResult.sampleSize >= 2) {
+      crossCheck = crossCheckWithOMI(baseValuation.pricePerSqm, comparablesResult)
+      finalValuation = applyComparablesRefinement(
+        finalValuation,
+        comparablesResult,
+        crossCheck,
+        body.surfaceSqm
+      )
     }
 
-    // L'AI fornisce solo la spiegazione testuale, NON modifica i prezzi.
-    // I prezzi devono rimanere matematicamente coerenti:
-    // prezzoStimato = superficie × valoreOmiBase × coefficientePiano × coefficienteStato
-    let finalValuation = { ...baseValuation }
+    // AI fornisce solo testo analitico (NON modifica i prezzi, che sono data-driven)
     if (aiAnalysis) {
-      finalValuation.explanation = aiAnalysis.analysis
+      finalValuation.explanation = aiAnalysis.analysis + " " + (finalValuation.explanation || "")
     }
 
     return NextResponse.json({
       success: true,
       valuation: finalValuation,
       geocoded: geocodeData !== null,
-      ai: aiAnalysis ? {
-        enabled: true,
-        confidence: aiAnalysis.confidence,
-        adjustmentFactor: aiAnalysis.adjustmentFactor,
-      } : {
-        enabled: false,
-        reason: "AI analysis not available or disabled"
-      }
+      ai: aiAnalysis
+        ? { enabled: true, confidence: aiAnalysis.confidence }
+        : { enabled: false, reason: "AI analysis not available or disabled" },
+      comparables: comparablesResult
+        ? {
+            enabled: true,
+            provider: comparablesResult.provider,
+            sampleSize: comparablesResult.sampleSize,
+            medianPricePerSqm: comparablesResult.medianPricePerSqm,
+            avgPricePerSqm: comparablesResult.avgPricePerSqm,
+            minPricePerSqm: comparablesResult.minPricePerSqm,
+            maxPricePerSqm: comparablesResult.maxPricePerSqm,
+            items: comparablesResult.comparables,
+            crossCheck: crossCheck || null,
+            warnings: comparablesResult.warnings,
+            executionTimeMs: comparablesResult.executionTimeMs,
+          }
+        : { enabled: false, reason: useComparables ? "No results" : "Disabled" },
     })
   } catch (error) {
     console.error("Valuation API error:", error)
-
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Errore interno del server",

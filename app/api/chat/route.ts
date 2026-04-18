@@ -86,7 +86,7 @@ DEVI chiedere TUTTI i seguenti dati, in ordine, SENZA SALTARE nessuna domanda:
 9. Ascensore (SOLO se hai chiesto piano)
 10. Spazi esterni (Nessuno/Balcone/Terrazzo/Giardino) - OBBLIGATORIO
 11. Box/Posto auto (Sì/No) - OBBLIGATORIO
-12. Stato immobile (Nuovo/Ristrutturato/Buono/Da ristrutturare) - OBBLIGATORIO
+12. Stato immobile (Nuovo/Ristrutturato/Parzialmente ristrutturato/Buono/Vecchio ma abitabile/Da ristrutturare) - OBBLIGATORIO
 13. Riscaldamento (Autonomo/Centralizzato/Assente) - OBBLIGATORIO
 14. Aria condizionata (Sì/No) - OBBLIGATORIO
 15. Classe energetica (A-G/Non so) - OBBLIGATORIO
@@ -167,7 +167,7 @@ Rispondi SEMPRE in JSON con questa struttura:
     "hasElevator": true/false se menzionato,
     "outdoorSpace": "Nessuno|Balcone|Terrazzo|Giardino",
     "hasParking": true/false se menzionato,
-    "condition": "Nuovo|Ristrutturato|Buono|Da ristrutturare",
+    "condition": "Nuovo|Ristrutturato|Parzialmente ristrutturato|Buono|Vecchio ma abitabile|Da ristrutturare",
     "heatingType": "Autonomo|Centralizzato|Assente",
     "hasAirConditioning": true/false se menzionato,
     "energyClass": "A|B|C|D|E|F|G|Non so",
@@ -185,7 +185,9 @@ Rispondi SEMPRE in JSON con questa struttura:
 IMPORTANTE - VALORI ESATTI:
 - propertyType DEVE essere uno di: "Appartamento", "Attico", "Villa", "Ufficio", "Negozio", "Box", "Terreno", "Altro"
 - omiCategory DEVE essere uno di: "Abitazioni signorili", "Abitazioni civili", "Abitazioni economiche", "Ville e villini"
-- condition DEVE essere uno di: "Nuovo", "Ristrutturato", "Buono", "Da ristrutturare"
+- condition DEVE essere uno di: "Nuovo", "Ristrutturato", "Parzialmente ristrutturato", "Buono", "Vecchio ma abitabile", "Da ristrutturare"
+  - "Parzialmente ristrutturato" = solo cucina/bagno rifatti, impianti parziali
+  - "Vecchio ma abitabile" = abitabile senza interventi ma datato (impianti vecchi)
 - outdoorSpace DEVE essere uno di: "Nessuno", "Balcone", "Terrazzo", "Giardino"
 - heatingType DEVE essere uno di: "Autonomo", "Centralizzato", "Assente"
 - occupancyStatus DEVE essere uno di: "Libero", "Occupato"
@@ -382,17 +384,30 @@ const PROPERTY_TYPE_MAP: Record<string, string> = {
 const CONDITION_MAP: Record<string, string> = {
   "NEW": "Nuovo",
   "RENOVATED": "Ristrutturato",
+  "PARTIALLY_RENOVATED": "Parzialmente ristrutturato",
   "GOOD": "Buono",
+  "HABITABLE_OLD": "Vecchio ma abitabile",
   "TO_RENOVATE": "Da ristrutturare",
   // Valori già corretti
   "Nuovo": "Nuovo",
   "Ristrutturato": "Ristrutturato",
+  "Parzialmente ristrutturato": "Parzialmente ristrutturato",
   "Buono": "Buono",
+  "Vecchio ma abitabile": "Vecchio ma abitabile",
   "Da ristrutturare": "Da ristrutturare",
   // Varianti comuni
   "buono": "Buono",
   "nuovo": "Nuovo",
   "ristrutturato": "Ristrutturato",
+  "parzialmente ristrutturato": "Parzialmente ristrutturato",
+  "parz. ristrutturato": "Parzialmente ristrutturato",
+  "parzialmente": "Parzialmente ristrutturato",
+  "solo cucina rifatta": "Parzialmente ristrutturato",
+  "solo bagno rifatto": "Parzialmente ristrutturato",
+  "bagno e cucina rifatti": "Parzialmente ristrutturato",
+  "vecchio ma abitabile": "Vecchio ma abitabile",
+  "vecchio": "Vecchio ma abitabile",
+  "datato": "Vecchio ma abitabile",
   "da ristrutturare": "Da ristrutturare",
   "Buono stato": "Buono"
 }
@@ -477,7 +492,7 @@ function getNextQuestion(data: CollectedData): string {
     return "C'è un box o posto auto?"
   }
   if (!data.condition) {
-    return "In che stato è l'immobile? (Nuovo, Ristrutturato, Buono, Da ristrutturare)"
+    return "In che stato è l'immobile? (Nuovo, Ristrutturato, Parzialmente ristrutturato, Buono, Vecchio ma abitabile, Da ristrutturare)"
   }
   if (!data.heatingType) {
     return "Che tipo di riscaldamento ha? (Autonomo, Centralizzato, Assente)"

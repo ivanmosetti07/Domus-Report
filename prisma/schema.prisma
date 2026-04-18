@@ -101,6 +101,13 @@ model Valuation {
   coefficienteStato Float    @map("coefficiente_stato")
   spiegazione       String
   dataCalcolo       DateTime @default(now()) @map("data_calcolo")
+  confidence        String?  @default("media")
+  confidenceScore   Int?     @map("confidence_score")
+  warnings          Json?
+  omiZoneMatch      String?  @map("omi_zone_match")
+  dataCompleteness  Int?     @map("data_completeness")
+  pricePerSqm       Int?     @map("price_per_sqm")
+  comparablesData   Json?    @map("comparables_data")
   property          Property @relation(fields: [immobileId], references: [id], onDelete: Cascade)
 
   @@index([immobileId])

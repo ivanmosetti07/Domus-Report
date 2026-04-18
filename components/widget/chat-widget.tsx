@@ -154,6 +154,22 @@ interface ValuationResult {
   floorCoefficient: number
   conditionCoefficient: number
   explanation: string
+  pricePerSqm?: number
+  confidence?: "alta" | "media" | "bassa"
+  confidenceScore?: number
+  warnings?: Array<{ code: string; message: string; severity: "info" | "warning" | "error" | "critical" }>
+  omiZoneMatch?: string
+  dataCompleteness?: number
+  comparables?: {
+    provider?: string
+    sampleSize?: number
+    medianPricePerSqm?: number
+    avgPricePerSqm?: number
+    minPricePerSqm?: number
+    maxPricePerSqm?: number
+    items?: Array<any>
+    crossCheck?: any
+  } | null
 }
 
 export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose, onDemoComplete, theme = {} }: ChatWidgetProps) {
@@ -918,6 +934,19 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         throw new Error("Dati di valutazione non validi")
       }
 
+      const comparablesBlock = data.comparables && data.comparables.enabled
+        ? {
+            provider: data.comparables.provider,
+            sampleSize: data.comparables.sampleSize,
+            medianPricePerSqm: data.comparables.medianPricePerSqm,
+            avgPricePerSqm: data.comparables.avgPricePerSqm,
+            minPricePerSqm: data.comparables.minPricePerSqm,
+            maxPricePerSqm: data.comparables.maxPricePerSqm,
+            items: data.comparables.items,
+            crossCheck: data.comparables.crossCheck,
+          }
+        : null
+
       const result: ValuationResult = {
         minPrice: data.valuation.minPrice,
         maxPrice: data.valuation.maxPrice,
@@ -926,6 +955,13 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         floorCoefficient: data.valuation.floorCoefficient,
         conditionCoefficient: data.valuation.conditionCoefficient,
         explanation: data.valuation.explanation,
+        pricePerSqm: data.valuation.pricePerSqm,
+        confidence: data.valuation.confidence,
+        confidenceScore: data.valuation.confidenceScore,
+        warnings: data.valuation.warnings,
+        omiZoneMatch: data.valuation.omiZoneMatch,
+        dataCompleteness: data.valuation.dataCompleteness,
+        comparables: comparablesBlock,
       }
 
       setValuation(result)
@@ -1068,12 +1104,28 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       surface: collectedDataRef.current.surfaceSqm || 0,
     })
 
-    // Add valuation as special message
+    // Add valuation as special message (render via ValuationResultCard)
     const valuationMessage: MessageType = {
       id: `msg_${Date.now()}`,
       role: "bot",
-      text: `🏠 Ecco la valutazione!\n\nRange: ${formatCurrency(result.minPrice)} - ${formatCurrency(result.maxPrice)}\n\n💰 Stima: ${formatCurrency(result.estimatedPrice)}\n\n${result.explanation}`,
-      timestamp: new Date()
+      text: `🏠 Ecco la valutazione!\nRange: ${formatCurrency(result.minPrice)} - ${formatCurrency(result.maxPrice)}\nStima: ${formatCurrency(result.estimatedPrice)}\n${result.explanation}`,
+      timestamp: new Date(),
+      valuationResult: {
+        minPrice: result.minPrice,
+        maxPrice: result.maxPrice,
+        estimatedPrice: result.estimatedPrice,
+        omiBaseValue: result.baseOMIValue,
+        floorCoefficient: result.floorCoefficient,
+        conditionCoefficient: result.conditionCoefficient,
+        explanation: result.explanation,
+        pricePerSqm: result.pricePerSqm,
+        confidence: result.confidence,
+        confidenceScore: result.confidenceScore,
+        warnings: result.warnings,
+        omiZoneMatch: result.omiZoneMatch,
+        dataCompleteness: result.dataCompleteness,
+        comparables: result.comparables || null,
+      }
     }
     setMessages(prev => [...prev, valuationMessage])
 
@@ -1247,6 +1299,16 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             floorCoefficient: finalValuation?.floorCoefficient || 1.0,
             conditionCoefficient: finalValuation?.conditionCoefficient || 1.0,
             explanation: finalValuation?.explanation || "",
+            // Nuovi campi qualità valutazione (Sprint 1-4)
+            confidence: finalValuation?.confidence,
+            confidenceScore: finalValuation?.confidenceScore,
+            warnings: finalValuation?.warnings,
+            omiZoneMatch: finalValuation?.omiZoneMatch,
+            dataCompleteness: finalValuation?.dataCompleteness,
+            pricePerSqm: finalValuation?.pricePerSqm,
+            comparables: finalValuation?.comparables
+              ? { enabled: true, ...finalValuation.comparables }
+              : null,
           }
 
       // Save lead to database with timeout

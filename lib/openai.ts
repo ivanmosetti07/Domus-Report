@@ -243,7 +243,9 @@ function getConditionLabel(condition: PropertyCondition): string {
   const labels: Record<PropertyCondition, string> = {
     [PropertyCondition.NEW]: "Nuovo/Mai abitato",
     [PropertyCondition.RENOVATED]: "Ristrutturato",
+    [PropertyCondition.PARTIALLY_RENOVATED]: "Parzialmente ristrutturato",
     [PropertyCondition.GOOD]: "Buono stato",
+    [PropertyCondition.HABITABLE_OLD]: "Vecchio ma abitabile",
     [PropertyCondition.TO_RENOVATE]: "Da ristrutturare"
   }
   return labels[condition] || "N/D"

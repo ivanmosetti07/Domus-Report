@@ -52,7 +52,9 @@ export enum PropertyType {
 export enum PropertyCondition {
   NEW = "Nuovo",
   RENOVATED = "Ristrutturato",
+  PARTIALLY_RENOVATED = "Parzialmente ristrutturato",
   GOOD = "Buono",
+  HABITABLE_OLD = "Vecchio ma abitabile",
   TO_RENOVATE = "Da ristrutturare"
 }
 
@@ -107,6 +109,65 @@ export interface Valuation {
   conditionCoefficient: number
   explanation: string
   calculatedAt: Date
+  confidence?: "alta" | "media" | "bassa"
+  confidenceScore?: number
+  warnings?: ValuationWarning[]
+  omiZoneMatch?: string
+  dataCompleteness?: number
+  pricePerSqm?: number
+  comparablesData?: ComparablesSummary | null
+}
+
+export interface ValuationWarning {
+  code: string
+  message: string
+  severity: "info" | "warning" | "error" | "critical"
+}
+
+export interface ComparablesSummary {
+  provider?: string
+  sampleSize?: number
+  medianPricePerSqm?: number
+  avgPricePerSqm?: number
+  minPricePerSqm?: number
+  maxPricePerSqm?: number
+  items?: Array<{
+    title?: string
+    url?: string
+    source?: string
+    price?: number
+    surfaceSqm?: number
+    pricePerSqm?: number
+    rooms?: number
+    condition?: string
+    neighborhood?: string
+  }>
+  crossCheck?: {
+    omiPricePerSqm?: number
+    comparablesMedianPricePerSqm?: number
+    deltaPct?: number
+    agreement?: "strong" | "medium" | "weak"
+    suggestedPricePerSqm?: number
+    shouldAdjust?: boolean
+    warnings?: string[]
+  }
+}
+
+export interface ValuationResultPayload {
+  minPrice: number
+  maxPrice: number
+  estimatedPrice: number
+  omiBaseValue: number
+  floorCoefficient: number
+  conditionCoefficient: number
+  explanation: string
+  pricePerSqm?: number
+  confidence?: "alta" | "media" | "bassa"
+  confidenceScore?: number
+  warnings?: ValuationWarning[]
+  omiZoneMatch?: string
+  dataCompleteness?: number
+  comparables?: ComparablesSummary | null
 }
 
 export interface Conversation {
@@ -121,6 +182,7 @@ export interface Message {
   text: string
   timestamp: Date
   quickReplies?: QuickReply[]
+  valuationResult?: ValuationResultPayload
 }
 
 export interface QuickReply {
