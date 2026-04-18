@@ -165,7 +165,9 @@ export function calculateConditionCoefficient(
   const coefficients: Record<PropertyCondition, number> = {
     [PropertyCondition.NEW]: 1.25,
     [PropertyCondition.RENOVATED]: 1.12,
-    [PropertyCondition.PARTIALLY_RENOVATED]: 1.06,
+    // "Parzialmente ristrutturato" in Italia tipicamente = cucina/bagni rifatti
+    // ma impianti elettrici, finestre e pavimenti vecchi → no premium reale
+    [PropertyCondition.PARTIALLY_RENOVATED]: 1.00,
     [PropertyCondition.GOOD]: 1.0,
     [PropertyCondition.HABITABLE_OLD]: 0.74,
     [PropertyCondition.TO_RENOVATE]: 0.64,
@@ -200,8 +202,13 @@ export function calculateBuildYearCoefficient(buildYear?: number): number {
   if (buildYear >= 2015) return 1.05
   if (buildYear >= 2000) return 1.02
   if (buildYear >= 1980) return 1.00
-  if (buildYear >= 1960) return 0.97
-  return 0.94
+  if (buildYear >= 1960) return 0.95
+  // Immobili pre-1960: malus reale nel mercato italiano -12% (impianti
+  // vecchi, assenza isolamento, spesso richiedono ristrutturazione
+  // complessiva). 0.94 era troppo tenue.
+  if (buildYear >= 1930) return 0.88
+  // Pre-1930: storici, ma anche molto obsoleti (a meno di vincolo artistico)
+  return 0.82
 }
 
 export function calculateExtrasCoefficient(

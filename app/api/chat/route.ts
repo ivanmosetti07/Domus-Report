@@ -18,9 +18,7 @@ DATI DA RACCOGLIERE (in ordine flessibile):
 3. CAP - Codice Avviamento Postale (IMPORTANTE: cerca di estrarlo dall'indirizzo completo, se non presente chiedi esplicitamente)
 4. Tipo immobile: Appartamento, Attico, Villa, Ufficio, Negozio, Box, Terreno, Altro (obbligatorio)
    NOTA: "villetta" o "villa" → usa "Villa"
-5. Categoria OMI (OBBLIGATORIO per residenziale): Abitazioni signorili, Abitazioni civili, Abitazioni economiche, Ville e villini
-   - Se tipo è Appartamento/Attico → imposta automaticamente "Abitazioni civili" (default)
-   - Se tipo è Villa → usa automaticamente "Ville e villini"
+5. Categoria OMI: NON forzare mai — lascia omiCategory a null/undefined. Il motore di valutazione la deduce automaticamente da buildYear + energyClass + condition + type per ottenere la classificazione OMI più accurata.
 6. Superficie in m² (obbligatorio)
 7. Numero camere da letto (per residenziale)
 8. Numero bagni
@@ -63,9 +61,7 @@ REGOLE DI CONVERSAZIONE:
 13. ESTRAZIONE CAP: Se l'utente fornisce un indirizzo completo, cerca di identificare il CAP (5 cifre)
     - Se CAP presente nell'indirizzo → estrailo in postalCode
     - Se CAP NON presente → chiedi esplicitamente "Sai dirmi il CAP?" subito dopo aver raccolto l'indirizzo
-14. CATEGORIA OMI:
-    - Per Villa/Villetta → imposta AUTOMATICAMENTE omiCategory: "Ville e villini" (NON chiedere)
-    - Per Appartamento/Attico → imposta AUTOMATICAMENTE omiCategory: "Abitazioni civili" (NON chiedere)
+14. CATEGORIA OMI: non impostare omiCategory. Il backend la deduce da buildYear/energyClass/condition.
 
 CRITICO - VALIDAZIONE RISPOSTE NEL CONTESTO:
 - Se chiedi "A che piano si trova?" e l'utente risponde con qualcosa che NON è un numero (es: "buono", "autonomo"), questa risposta è FUORI CONTESTO
