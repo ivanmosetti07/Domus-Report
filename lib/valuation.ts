@@ -500,10 +500,16 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
   )
   const omiCategory = input.omiCategory || autoCategory
 
-  // Sprint 3: zone mapper intelligente da indirizzo/quartiere
+  // Sprint 3: zone mapper intelligente.
+  // Priorità: prima proviamo a mappare neighborhood+address verso un codice
+  // OMI noto (es. "Degli Eroi" → "B14"). Se il mapper non riconosce, ricade
+  // sul neighborhood raw (che però non matcha nei lookup CSV: serve per
+  // traccia log). Questo evita che nomi come "Degli Eroi" o "Tor San Lorenzo
+  // Lido" bypassino il mapper e vengano usati come codice zona inesistente.
+  const searchText = [input.neighborhood, input.address].filter(Boolean).join(" ")
   const resolvedZone =
+    resolveZoneFromAddress(input.city, searchText, input.postalCode) ||
     input.neighborhood ||
-    resolveZoneFromAddress(input.city, input.address, input.postalCode) ||
     undefined
 
   // Tentativo 1: con categoria specifica + zona risolta
