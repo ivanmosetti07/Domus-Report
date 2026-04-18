@@ -467,7 +467,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     const welcomeMessage: MessageType = {
       id: `msg_${Date.now()}`,
       role: "bot",
-      text: `Ciao! 👋 Sono l'Agente Immobiliare AI di ${agencyName}, il tuo assistente per la valutazione immobiliare. In quale città si trova il tuo immobile?`,
+      text: `Ciao! Sono l'Agente Immobiliare AI di ${agencyName}, il tuo assistente per la valutazione immobiliare. In quale città si trova il tuo immobile?`,
       timestamp: new Date()
     }
     setMessages([welcomeMessage])
@@ -481,7 +481,7 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     const welcomeMessage: MessageType = {
       id: `msg_${Date.now()}`,
       role: "bot",
-      text: `Ciao! 👋 Sono l'assistente immobiliare di ${agencyName}. Ti farò alcune domande per calcolare il valore del tuo immobile.\n\n${firstStep.question}`,
+      text: `Ciao! Sono l'assistente immobiliare di ${agencyName}. Ti farò alcune domande per calcolare il valore del tuo immobile.\n\n${firstStep.question}`,
       timestamp: new Date()
     }
     setMessages([welcomeMessage])
