@@ -225,6 +225,56 @@ export function getOMIValueByZone(
         anno: latest.anno,
       }
     }
+
+    // 2b. Se il CAP esiste ma la categoria non è disponibile per quel CAP,
+    // cerchiamo lo stesso CAP con QUALSIASI categoria residenziale e applichiamo
+    // un fattore di aggiustamento. Meglio restare sulla zona specifica con un
+    // adjustment approssimato, che cadere nella media città (troppo generica).
+    if (categoria) {
+      const capAnyCategory = allData.filter(record =>
+        matchesCaseInsensitive(record.citta, cittaNormalized) &&
+        record.cap === cap &&
+        record.tipoImmobile === tipoImmobile
+      )
+      if (capAnyCategory.length > 0) {
+        // Preferisci "Abitazioni civili" come baseline se disponibile
+        const civili = capAnyCategory.filter(r =>
+          matchesCaseInsensitive(r.categoria, "Abitazioni civili")
+        )
+        const baseline = civili.length > 0 ? civili : capAnyCategory
+        baseline.sort((a, b) => {
+          if (a.anno !== b.anno) return b.anno - a.anno
+          return b.semestre - a.semestre
+        })
+        const base = baseline[0]
+        const cat = categoria.toLowerCase()
+        // Ratio empirici rispetto a "Abitazioni civili" (baseline 1.0)
+        let ratio = 1.0
+        if (cat.includes("signorili")) ratio = 1.15
+        else if (cat.includes("economic")) ratio = 0.88
+        // Se base è già signorili (fallback), converti a civili prima di applicare ratio
+        const baseIsSignorili = base.categoria.toLowerCase().includes("signorili")
+        const baseIsEconomico = base.categoria.toLowerCase().includes("economic")
+        let normalizationFactor = 1.0
+        if (baseIsSignorili) normalizationFactor = 1 / 1.15
+        else if (baseIsEconomico) normalizationFactor = 1 / 0.88
+        const adjMin = Math.round(base.valoreMinMq * normalizationFactor * ratio)
+        const adjMax = Math.round(base.valoreMaxMq * normalizationFactor * ratio)
+        const adjMed = Math.round(base.valoreMedioMq * normalizationFactor * ratio)
+        logger.info("OMI category not available for CAP, adjusted from sibling category", {
+          cap, requested: categoria, base: base.categoria, ratio: ratio * normalizationFactor,
+        })
+        return {
+          valoreMinMq: adjMin,
+          valoreMaxMq: adjMax,
+          valoreMedioMq: adjMed,
+          zona: base.zona,
+          fonte: `OMI (${base.zona}, categoria adattata da ${base.categoria})`,
+          semestre: base.semestre,
+          anno: base.anno,
+        }
+      }
+    }
   }
 
   // 3. Fallback: MEDIA CITTÀ (con categoria se fornita)

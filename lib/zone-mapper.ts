@@ -107,8 +107,9 @@ const QUARTIERI_BY_CITY: Record<string, QuartiereMap> = {
     "pigneto": ["C13"],
     "prenestino": ["C13"],
     "tor pignattara": ["C13"],
-    "centocelle": ["C14"],
-    "alessandrino": ["C14"],
+    "centocelle": ["B29"],       // verified CSV CAP 00155
+    "alessandrino": ["B29"],     // verified CSV CAP 00155
+    "tor tre teste": ["B29"],
     "tuscolana": ["C10"],
     "collatino": ["C14"],
     "montesacro": ["C15"],

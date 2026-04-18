@@ -13,6 +13,7 @@ import type {
   ComparablesResult,
   CrossCheckResult,
 } from "./types"
+import type { ValuationResult } from "../valuation"
 import { OpenAIComparablesProvider } from "./openai"
 import { createLogger } from "../logger"
 
@@ -164,5 +165,77 @@ export function crossCheckWithOMI(
     suggestedPricePerSqm,
     shouldAdjust: agreement !== "strong",
     warnings,
+  }
+}
+
+// ============================================================================
+// REFINEMENT: applica il cross-check a un ValuationResult
+// ============================================================================
+
+/**
+ * Applica il cross-check con i comparables reali: ricalcola min/max/estimated
+ * con una media pesata tra OMI e il mercato reale.
+ *
+ * I comparables riflettono mediamente immobili di qualità "Buono-Ristrutturato",
+ * quindi adattiamo il risultato alla SOLA condition pura (rispetto alla baseline
+ * di mercato 1.05 = media Buono-Ristrutturato). Gli altri fattori (energy, anno,
+ * extras, occupancy, rooms/bathrooms) sono già embedded nei prezzi di annuncio,
+ * quindi NON vanno moltiplicati di nuovo (bug_008).
+ *
+ * Inoltre il floorCoefficient va applicato sul €/mq dei comparables perché
+ * i comparables non stratificano per piano (bug_006).
+ */
+export function applyComparablesRefinement(
+  valuation: ValuationResult,
+  comparables: ComparablesResult,
+  crossCheck: CrossCheckResult,
+  surfaceSqm: number
+): ValuationResult {
+  if (!crossCheck.shouldAdjust || comparables.sampleSize < 2) return valuation
+
+  const marketQualityBaseline = 1.05
+  const thisQuality = valuation.pureConditionCoefficient || 1.0
+  const qualityAdjustment = thisQuality / marketQualityBaseline
+  const floorCoef = valuation.floorCoefficient || 1.0
+  const combinedAdjustment = qualityAdjustment * floorCoef
+
+  const adjustedPPS = Math.round(crossCheck.suggestedPricePerSqm * combinedAdjustment)
+  const refinedEstimated = Math.round(adjustedPPS * surfaceSqm)
+  const refinedMin = Math.round(
+    comparables.minPricePerSqm * combinedAdjustment * surfaceSqm
+  )
+  const refinedMax = Math.round(
+    comparables.maxPricePerSqm * combinedAdjustment * surfaceSqm
+  )
+
+  const updatedWarnings = [...valuation.warnings]
+  for (const w of crossCheck.warnings) {
+    updatedWarnings.push({
+      code: "COMPARABLES_DIVERGE",
+      message: w,
+      severity: crossCheck.agreement === "weak" ? "warning" : "info",
+    })
+  }
+
+  let newScore = valuation.confidenceScore
+  if (crossCheck.agreement === "strong") newScore = Math.min(100, newScore + 10)
+  else if (crossCheck.agreement === "weak") newScore = Math.max(0, newScore - 15)
+  const newLevel: ValuationResult["confidence"] =
+    newScore >= 80 ? "alta" : newScore >= 60 ? "media" : "bassa"
+
+  return {
+    ...valuation,
+    estimatedPrice: refinedEstimated,
+    minPrice: Math.min(refinedMin, refinedEstimated),
+    maxPrice: Math.max(refinedMax, refinedEstimated),
+    pricePerSqm: adjustedPPS,
+    confidence: newLevel,
+    confidenceScore: newScore,
+    warnings: updatedWarnings,
+    explanation:
+      valuation.explanation +
+      ` Raffinato con ${comparables.sampleSize} annunci reali: mercato a ${Math.round(
+        comparables.medianPricePerSqm
+      )}€/m² (delta OMI ${crossCheck.deltaPct > 0 ? "+" : ""}${crossCheck.deltaPct}%).`,
   }
 }

@@ -14,8 +14,9 @@ import {
 import { geocodeAddress } from "@/lib/geocoding"
 import { incrementValuationCount, checkValuationLimit } from "@/lib/subscription-limits"
 import { inferCity, getCityFromPostalCode } from "@/lib/postal-code"
-import { sendEmail, formatEmailAddress } from "@/lib/email"
+import { sendEmail } from "@/lib/email"
 import { generateNewLeadNotificationHTML, generateNewLeadNotificationText } from "@/lib/email-templates"
+import { recordLeadSubmission } from "@/lib/lead-audit"
 
 export interface CreateLeadRequest {
   widgetId: string
@@ -77,515 +78,412 @@ export interface CreateLeadRequest {
   messages: any[]
 }
 
+type ValuationWarning = { code: string; message: string; severity: "info" | "warning" | "error" | "critical" }
+
 export async function POST(request: NextRequest) {
+  const clientIP = getClientIP(request)
+  let body: Partial<CreateLeadRequest> = {}
+
   try {
-    // Rate limiting check
-    const clientIP = getClientIP(request)
+    // Parse body subito per avere contesto negli errori (non blocca audit)
+    try {
+      body = (await request.json()) as CreateLeadRequest
+    } catch {
+      await recordLeadSubmission({
+        ipAddress: clientIP,
+        status: "failed",
+        errorCode: "INVALID_JSON",
+        errorMessage: "Body non valido JSON",
+        httpStatus: 400,
+      })
+      return NextResponse.json({ error: "Body non valido" }, { status: 400 })
+    }
+
+    // Helper: reject + log
+    const reject = async (
+      httpStatus: number,
+      errorCode: string,
+      errorMessage: string
+    ): Promise<NextResponse> => {
+      await recordLeadSubmission({
+        widgetId: body.widgetId,
+        email: body.email,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        ipAddress: clientIP,
+        status: "failed",
+        errorCode,
+        errorMessage,
+        httpStatus,
+        bodySnapshot: body as Record<string, unknown>,
+      })
+      return NextResponse.json({ error: errorMessage }, { status: httpStatus })
+    }
+
+    // ============ HARD GUARDS (bloccanti: impossibile procedere) ============
+
+    // Rate limiting
     const rateLimitResult = checkRateLimit(
       clientIP,
-      process.env.NODE_ENV === 'production' ? 100 : 10000, // Limite alto in development
+      process.env.NODE_ENV === "production" ? 100 : 10000,
       24 * 60 * 60 * 1000
     )
-
     if (!rateLimitResult.allowed) {
-      console.log('[POST /api/leads] Rate limit exceeded:', { clientIP, resetAt: rateLimitResult.resetAt })
-      return NextResponse.json(
-        {
-          error: "Limite di richieste giornaliere raggiunto. Riprova domani.",
-          resetAt: rateLimitResult.resetAt,
-        },
-        { status: 429 }
-      )
+      return reject(429, "RATE_LIMIT", "Limite di richieste giornaliere raggiunto. Riprova domani.")
     }
 
-    const body = (await request.json()) as CreateLeadRequest
-
-    // Logging per debug - PHONE TRACKING
-    console.log('[POST /api/leads] 🔍 PHONE DEBUG - Received request:', {
-      widgetId: body.widgetId,
-      email: body.email,
-      phone: body.phone,
-      phoneType: typeof body.phone,
-      phoneLength: body.phone?.length,
-      phoneRaw: JSON.stringify(body.phone),
-      hasPhone: !!body.phone,
-      timestamp: new Date().toISOString()
-    })
-
-    // Validate required fields - Widget ID
+    // Widget ID
     if (!body.widgetId || typeof body.widgetId !== "string") {
-      return NextResponse.json(
-        { error: "Widget ID è obbligatorio" },
-        { status: 400 }
-      )
+      return reject(400, "WIDGET_ID_MISSING", "Widget ID è obbligatorio")
     }
 
-    // Sanitize and validate lead data
+    // Email (obbligatoria per contatto)
     const emailValidation = validateEmail(body.email || "")
     if (!emailValidation.valid) {
-      return NextResponse.json(
-        { error: emailValidation.error },
-        { status: 400 }
-      )
+      return reject(400, "EMAIL_INVALID", emailValidation.error || "Email non valida")
     }
 
+    // Nome/Cognome (obbligatori per contatto)
     const firstNameValidation = validateName(body.firstName || "", "Nome")
     if (!firstNameValidation.valid) {
-      return NextResponse.json(
-        { error: firstNameValidation.error },
-        { status: 400 }
-      )
+      return reject(400, "FIRSTNAME_INVALID", firstNameValidation.error || "Nome non valido")
     }
 
     const lastNameValidation = validateName(body.lastName || "", "Cognome")
     if (!lastNameValidation.valid) {
-      return NextResponse.json(
-        { error: lastNameValidation.error },
-        { status: 400 }
-      )
+      return reject(400, "LASTNAME_INVALID", lastNameValidation.error || "Cognome non valido")
     }
 
+    // ============ SOFT WARNINGS (raccolte, non bloccanti) ============
+    const softWarnings: ValuationWarning[] = []
+
+    // Telefono: se malformato, salviamo null + warning (invece di rifiutare)
     const phoneValidation = validatePhone(body.phone)
-
-    console.log('[POST /api/leads] 📞 PHONE VALIDATION RESULT:', {
-      input: body.phone,
-      inputType: typeof body.phone,
-      sanitized: phoneValidation.sanitized,
-      sanitizedType: typeof phoneValidation.sanitized,
-      valid: phoneValidation.valid,
-      willSaveAsNull: phoneValidation.sanitized === null,
-      error: phoneValidation.error || 'none'
-    })
-
-    // CRITICAL FIX: Phone is optional - only reject if phone was provided AND is invalid
-    // If phone is null/undefined/empty, that's OK (valid: true, sanitized: null)
-    // Only reject if user provided a phone number that doesn't match Italian format
-    if (!phoneValidation.valid) {
-      console.log('[POST /api/leads] ❌ PHONE VALIDATION FAILED - Rejecting request because invalid format')
-      return NextResponse.json(
-        { error: phoneValidation.error },
-        { status: 400 }
-      )
-    }
-
-    // Log warning if phone was provided but will be saved as null
-    if (body.phone && phoneValidation.sanitized === null) {
-      console.warn('[POST /api/leads] ⚠️ WARNING: Phone was provided but sanitized to null:', {
-        original: body.phone,
-        willSaveAsNull: true
+    let finalPhone: string | null = null
+    if (phoneValidation.valid) {
+      finalPhone = phoneValidation.sanitized ?? null
+    } else {
+      softWarnings.push({
+        code: "PHONE_MALFORMED",
+        message: `Telefono non valido scartato: "${body.phone}"`,
+        severity: "warning",
       })
     }
 
-    // IMPORTANTE: L'indirizzo serve SOLO per PDF e database, NON per la valutazione OMI
-    // La valutazione OMI si basa esclusivamente su: CAP + città + superficie + caratteristiche immobile
-    // Il geocoding serve SOLO per ottenere coordinate opzionali (mappa) - NON è bloccante se città+CAP sono corretti
-    const addressInput = sanitizeString(body.address || "")
-
+    // Indirizzo: obbligatorio minimo, ma se mancante salviamo con placeholder
+    let addressInput = sanitizeString(body.address || "")
     if (!addressInput) {
-      return NextResponse.json(
-        { error: "Indirizzo è obbligatorio" },
-        { status: 400 }
-      )
+      softWarnings.push({
+        code: "ADDRESS_MISSING",
+        message: "Indirizzo non fornito dall'utente.",
+        severity: "warning",
+      })
+      addressInput = body.city ? `(indirizzo non specificato) ${body.city}` : "(indirizzo non specificato)"
     }
 
-    // STEP 1: Verifica affidabilità dati utente PRIMA del geocoding
-    // Se città+CAP sono coerenti, i dati sono sufficienti per la valutazione OMI
-    // Deduce la città corretta dal CAP se fornito
+    // Superficie: se fuori range, salviamo come-è + warning (invece di 400)
+    let finalSurface = Number(body.surfaceSqm) || 0
+    if (finalSurface <= 0) {
+      softWarnings.push({
+        code: "SURFACE_MISSING",
+        message: "Superficie non indicata o 0.",
+        severity: "warning",
+      })
+      finalSurface = 0
+    } else {
+      const surfaceValidation = validateSurface(finalSurface)
+      if (!surfaceValidation.valid) {
+        softWarnings.push({
+          code: "SURFACE_OUT_OF_RANGE",
+          message: surfaceValidation.error || "Superficie fuori range.",
+          severity: "warning",
+        })
+      } else {
+        finalSurface = surfaceValidation.value
+      }
+    }
+
+    // Piano: se fornito e invalido, scartalo + warning
+    let finalFloor: number | undefined = undefined
+    if (body.floor !== undefined && body.floor !== null) {
+      const floorValidation = validateFloor(body.floor)
+      if (floorValidation.valid) {
+        finalFloor = body.floor
+      } else {
+        softWarnings.push({
+          code: "FLOOR_INVALID",
+          message: floorValidation.error || "Piano non valido.",
+          severity: "warning",
+        })
+      }
+    }
+
+    // Tipo immobile: se invalido, default APARTMENT + warning
+    let finalType: PropertyType = PropertyType.APARTMENT
+    if (body.type && Object.values(PropertyType).includes(body.type)) {
+      finalType = body.type
+    } else if (body.type) {
+      softWarnings.push({
+        code: "TYPE_INVALID",
+        message: `Tipo immobile "${body.type}" non valido, usato APARTMENT.`,
+        severity: "warning",
+      })
+    }
+
+    // Stato immobile: se invalido, default GOOD + warning
+    let finalCondition: PropertyCondition = PropertyCondition.GOOD
+    if (body.condition && Object.values(PropertyCondition).includes(body.condition)) {
+      finalCondition = body.condition
+    } else if (body.condition) {
+      softWarnings.push({
+        code: "CONDITION_INVALID",
+        message: `Stato "${body.condition}" non valido, usato GOOD.`,
+        severity: "warning",
+      })
+    }
+
+    // ============ GEOCODING NON BLOCCANTE ============
     const inferredCity = inferCity({
       city: body.city,
       postalCode: body.postalCode,
       address: body.address,
-      neighborhood: body.neighborhood
+      neighborhood: body.neighborhood,
     })
 
-    // Verifica se i dati dell'utente sono affidabili:
-    // 1. L'utente ha fornito CAP
-    // 2. Il CAP esiste nel database
-    // 3. La città dedotta dal CAP CORRISPONDE alla città fornita dall'utente (case-insensitive)
     const cityFromCAP = body.postalCode ? getCityFromPostalCode(body.postalCode) : null
-
-    // Debug dettagliato per capire perché userDataReliable potrebbe essere false
-    console.log('[POST /api/leads] UserDataReliable debug:', {
-      hasCity: !!body.city,
-      cityValue: body.city,
-      cityType: typeof body.city,
-      hasPostalCode: !!body.postalCode,
-      postalCodeValue: body.postalCode,
-      postalCodeType: typeof body.postalCode,
-      hasCityFromCAP: !!cityFromCAP,
-      cityFromCAPValue: cityFromCAP,
-      normalizedUserCity: body.city?.toLowerCase().trim(),
-      normalizedCAPCity: cityFromCAP?.toLowerCase().trim(),
-      citiesMatch: body.city && cityFromCAP ? body.city.toLowerCase().trim() === cityFromCAP.toLowerCase().trim() : false
-    })
-
-    const userDataReliable = body.city &&
-      body.postalCode &&
-      cityFromCAP &&
+    const userDataReliable =
+      !!body.city &&
+      !!body.postalCode &&
+      !!cityFromCAP &&
       body.city.toLowerCase().trim() === cityFromCAP.toLowerCase().trim()
 
-    console.log('[POST /api/leads] User data reliability check:', {
-      userCity: body.city,
-      userPostalCode: body.postalCode,
-      cityFromCAP,
-      inferredCity,
-      userDataReliable
-    })
+    let geocodeResult: Awaited<ReturnType<typeof geocodeAddress>> | null = null
 
-    // STEP 2: Geocoding con fallback intelligente
-    // Se i dati utente sono affidabili ma il geocoding fallisce, usa coordinate della città
-    let geocodeResult = null
+    const geocodingQuery =
+      body.city && body.postalCode
+        ? `${addressInput}, ${body.city}, ${body.postalCode}`
+        : body.city
+          ? `${addressInput}, ${body.city}`
+          : addressInput
 
-    // Tentativo 1: Geocodifica indirizzo completo con città+CAP
-    let geocodingQuery = addressInput
-    if (body.city && body.postalCode) {
-      // Geocodifica con città e CAP per maggiore precisione
-      geocodingQuery = `${addressInput}, ${body.city}, ${body.postalCode}`
-      console.log('[POST /api/leads] Geocoding attempt 1 (full address+city+CAP):', geocodingQuery)
-    } else if (body.city) {
-      // Se abbiamo solo città (senza CAP), usala comunque
-      geocodingQuery = `${addressInput}, ${body.city}`
-      console.log('[POST /api/leads] Geocoding attempt 1 (address+city):', geocodingQuery)
-    } else {
-      console.log('[POST /api/leads] Geocoding attempt 1 (address only):', geocodingQuery)
+    try {
+      geocodeResult = await geocodeAddress(geocodingQuery)
+    } catch (err) {
+      console.warn("[POST /api/leads] Geocoding error:", err)
     }
 
-    geocodeResult = await geocodeAddress(geocodingQuery)
-
-    // Tentativo 2: Se fallisce e dati utente sono affidabili, geocodifica solo la città
     if (!geocodeResult && userDataReliable && body.city) {
-      console.log('[POST /api/leads] Geocoding attempt 1 failed. Trying with city only:', body.city)
-      geocodeResult = await geocodeAddress(body.city)
-      if (geocodeResult) {
-        console.log('[POST /api/leads] ✅ Geocoding succeeded with city fallback')
+      try {
+        geocodeResult = await geocodeAddress(body.city)
+      } catch (err) {
+        console.warn("[POST /api/leads] Geocoding city fallback error:", err)
       }
     }
 
-    // STEP 3: Gestione fallimento geocoding
-    // IMPORTANTE: Il geocoding NON è bloccante quando città+CAP sono corretti
-    // perché la valutazione OMI si basa su città+CAP, NON sull'indirizzo specifico
+    // Se anche questo fallisce: NON blocchiamo. Salviamo senza coordinate.
     if (!geocodeResult) {
-      if (userDataReliable) {
-        // ✅ Dati città+CAP corretti → PROCEDI anche senza coordinate
-        // L'indirizzo verrà salvato come fornito dall'utente (per PDF/database)
-        // La valutazione OMI funzionerà normalmente con città+CAP
-        console.log('[POST /api/leads] ⚠️ Geocoding failed but user data is reliable (city+CAP valid).')
-        console.log('[POST /api/leads] ✅ Proceeding without coordinates - valuation will work with city+CAP')
-
-        // Crea un geocodeResult fittizio con i dati utente
-        geocodeResult = {
-          address: addressInput,
-          city: inferredCity || body.city || '',
-          neighborhood: body.neighborhood,
-          postalCode: body.postalCode,
-          latitude: 0, // Coordinate nulle - verranno salvate come null
-          longitude: 0,
-          formattedAddress: `${addressInput}, ${inferredCity || body.city}, ${body.postalCode || ''}`
-        }
-      } else {
-        // ❌ Dati città+CAP NON corretti E geocoding fallito → BLOCCA
-        // In questo caso il geocoding è necessario per validare l'indirizzo
-        console.log('[POST /api/leads] ❌ Geocoding failed and user data not reliable (city+CAP invalid or missing).')
-        console.log('[POST /api/leads] ❌ Cannot proceed - need either valid city+CAP or successful geocoding')
-        return NextResponse.json(
-          { error: "Indirizzo non trovato. Verifica che sia corretto e riprova." },
-          { status: 400 }
-        )
-      }
+      softWarnings.push({
+        code: "GEOCODING_FAILED",
+        message: "Indirizzo non geolocalizzato. Coordinate mappa non disponibili.",
+        severity: "warning",
+      })
+      geocodeResult = {
+        address: addressInput,
+        city: inferredCity || body.city || "",
+        neighborhood: body.neighborhood,
+        postalCode: body.postalCode,
+        latitude: 0,
+        longitude: 0,
+        formattedAddress: `${addressInput}${body.city ? ", " + body.city : ""}`,
+      } as NonNullable<typeof geocodeResult>
     }
 
-    console.log('[POST /api/leads] Geocoding result:', {
-      city: geocodeResult.city,
-      hasCoordinates: !!(geocodeResult.latitude && geocodeResult.longitude),
-      coordinates: { lat: geocodeResult.latitude, lon: geocodeResult.longitude }
-    })
-
-    // Costruisci indirizzo formattato in base all'affidabilità dei dati
-    let finalAddress: string
-    if (userDataReliable) {
-      // Dati utente affidabili: costruisci indirizzo con i dati forniti dall'utente
-      const addressParts = [
-        body.address,
-        body.neighborhood,
-        body.city,
-        body.postalCode
-      ].filter(Boolean)
-      finalAddress = addressParts.join(', ')
-      console.log('[POST /api/leads] Using user-provided data for address:', finalAddress)
-    } else {
-      // Dati utente non affidabili: usa geocoding se disponibile, altrimenti dati utente
-      finalAddress = geocodeResult.formattedAddress || addressInput
-      console.log('[POST /api/leads] Using geocoded address:', finalAddress)
-    }
-
-    const finalCity = userDataReliable ? (inferredCity || body.city) : (geocodeResult.city || body.city)
+    // Indirizzo finale
+    const finalAddress = userDataReliable
+      ? [body.address, body.neighborhood, body.city, body.postalCode].filter(Boolean).join(", ")
+      : geocodeResult.formattedAddress || addressInput
+    const finalCity = userDataReliable
+      ? inferredCity || body.city || ""
+      : geocodeResult.city || body.city || ""
     const finalPostalCode = body.postalCode || geocodeResult.postalCode
     const finalNeighborhood = body.neighborhood || geocodeResult.neighborhood
+    const finalLatitude =
+      geocodeResult.latitude && geocodeResult.latitude !== 0 ? geocodeResult.latitude : null
+    const finalLongitude =
+      geocodeResult.longitude && geocodeResult.longitude !== 0 ? geocodeResult.longitude : null
 
-    // Gestisci coordinate: se sono 0, 0 (fallback fittizio), salvale come null
-    const finalLatitude = (geocodeResult.latitude && geocodeResult.latitude !== 0) ? geocodeResult.latitude : null
-    const finalLongitude = (geocodeResult.longitude && geocodeResult.longitude !== 0) ? geocodeResult.longitude : null
-
-    console.log('[POST /api/leads] Final address data:', {
-      address: finalAddress,
-      city: finalCity,
-      postalCode: finalPostalCode,
-      neighborhood: finalNeighborhood,
-      coordinates: finalLatitude && finalLongitude ? `${finalLatitude}, ${finalLongitude}` : 'null (no coordinates)'
-    })
-
-    const surfaceValidation = validateSurface(body.surfaceSqm || 0)
-    if (!surfaceValidation.valid) {
-      return NextResponse.json(
-        { error: surfaceValidation.error },
-        { status: 400 }
-      )
-    }
-
-    // Validate floor if provided
-    if (body.floor !== undefined && body.floor !== null) {
-      const floorValidation = validateFloor(body.floor)
-      if (!floorValidation.valid) {
-        return NextResponse.json(
-          { error: floorValidation.error },
-          { status: 400 }
-        )
-      }
-    }
-
-    // Validate property type and condition
-    if (!Object.values(PropertyType).includes(body.type)) {
-      return NextResponse.json(
-        { error: "Tipo immobile non valido" },
-        { status: 400 }
-      )
-    }
-
-    if (!Object.values(PropertyCondition).includes(body.condition)) {
-      return NextResponse.json(
-        { error: "Stato immobile non valido" },
-        { status: 400 }
-      )
-    }
-
-    // Validate valuation data
-    if (!body.minPrice || !body.maxPrice || !body.estimatedPrice) {
-      return NextResponse.json(
-        { error: "Dati valutazione obbligatori: prezzi min/max/stimato" },
-        { status: 400 }
-      )
-    }
-
-    if (body.minPrice < 0 || body.maxPrice < 0 || body.estimatedPrice < 0) {
-      return NextResponse.json(
-        { error: "Prezzi devono essere positivi" },
-        { status: 400 }
-      )
-    }
-
-    if (body.minPrice > body.maxPrice) {
-      return NextResponse.json(
-        { error: "Prezzo minimo non può essere maggiore del massimo" },
-        { status: 400 }
-      )
-    }
-
-    // Find agency by widgetId
-    // Prima cerca nel nuovo sistema multi-widget (WidgetConfig)
+    // ============ AGENCY RESOLUTION ============
     const widgetConfig = await prisma.widgetConfig.findUnique({
       where: { widgetId: body.widgetId },
       include: { agency: true },
     })
-
     let agency = widgetConfig?.agency || null
-
-    // Fallback: cerca nel vecchio sistema (campo widgetId diretto in Agency)
     if (!agency) {
-      const legacyAgency = await prisma.agency.findUnique({
-        where: { widgetId: body.widgetId },
-      })
-      agency = legacyAgency
+      agency = await prisma.agency.findUnique({ where: { widgetId: body.widgetId } })
     }
-
     if (!agency) {
-      return NextResponse.json(
-        { error: "Widget non valido" },
-        { status: 404 }
-      )
+      return reject(404, "WIDGET_NOT_FOUND", "Widget non valido")
     }
-
     if (!agency.attiva) {
-      console.log('[POST /api/leads] Agency not active:', { agencyId: agency.id })
-      return NextResponse.json(
-        { error: "Agenzia non attiva" },
-        { status: 403 }
-      )
+      return reject(403, "AGENCY_INACTIVE", "Agenzia non attiva")
     }
-
-    // Verifica che il widget sia attivo (solo per nuovi widget)
     if (widgetConfig && !widgetConfig.isActive) {
-      console.log('[POST /api/leads] Widget not active:', { widgetId: body.widgetId })
-      return NextResponse.json(
-        { error: "Widget non attivo" },
-        { status: 403 }
-      )
+      return reject(403, "WIDGET_INACTIVE", "Widget non attivo")
     }
 
-    // Verifica limite valutazioni mensili
+    // Limite valutazioni mensili (bloccante per agenzia)
     const valuationLimit = await checkValuationLimit(agency.id)
     if (!valuationLimit.allowed) {
-      console.log('[POST /api/leads] Valuation limit reached:', {
+      await recordLeadSubmission({
+        widgetId: body.widgetId,
         agencyId: agency.id,
-        current: valuationLimit.current,
-        limit: valuationLimit.limit,
-        extra: valuationLimit.extra
+        email: body.email,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        ipAddress: clientIP,
+        status: "failed",
+        errorCode: "VALUATION_LIMIT_REACHED",
+        errorMessage: valuationLimit.message || "Limite valutazioni mensili raggiunto",
+        httpStatus: 403,
+        bodySnapshot: body as Record<string, unknown>,
       })
       return NextResponse.json(
         {
           error: "Limite valutazioni mensili raggiunto",
-          message: valuationLimit.message || "Hai esaurito le valutazioni disponibili per questo mese. Acquista valutazioni extra o passa a un piano superiore per continuare.",
+          message: valuationLimit.message,
           current: valuationLimit.current,
           limit: valuationLimit.limit,
           extra: valuationLimit.extra,
-          upgradeRequired: true
+          upgradeRequired: true,
         },
         { status: 403 }
       )
     }
 
-    console.log('[POST /api/leads] Creating lead for agency:', { agencyId: agency.id, agencyName: agency.nome })
+    // ============ VALUATION OPZIONALE ============
+    // Se i prezzi sono 0/mancanti/invalidi, salviamo comunque il lead con
+    // una Valuation placeholder marcata VALUATION_FAILED.
+    const hasPrices =
+      body.minPrice &&
+      body.maxPrice &&
+      body.estimatedPrice &&
+      body.minPrice > 0 &&
+      body.maxPrice > 0 &&
+      body.estimatedPrice > 0 &&
+      body.minPrice <= body.maxPrice
 
-    // Log dettagliato dei dati PRIMA della creazione
-    console.log('[POST /api/leads] Data that will be saved to database:', {
-      telefono: phoneValidation.sanitized,
-      telefonoType: typeof phoneValidation.sanitized,
-      telefonoIsNull: phoneValidation.sanitized === null,
-      telefonoIsEmptyString: phoneValidation.sanitized === "",
-      telefonoValue: JSON.stringify(phoneValidation.sanitized),
-      finalAddress,
-      finalCity,
-      finalPostalCode,
-      finalNeighborhood,
-      finalLatitude,
-      finalLongitude,
-      addressSource: userDataReliable ? 'USER_DATA' : 'GEOCODING'
-    })
+    const valuationWarnings: ValuationWarning[] = Array.isArray(body.warnings)
+      ? [...body.warnings, ...softWarnings]
+      : [...softWarnings]
 
-    // Create lead with related data in a transaction
-    // Prisma nested create operations are automatically wrapped in a transaction
-    // If any operation fails, all changes are rolled back
-    const lead = await prisma.lead.create({
-      data: {
-        agenziaId: agency.id,
-        nome: firstNameValidation.sanitized,
-        cognome: lastNameValidation.sanitized,
-        email: emailValidation.sanitized,
-        telefono: phoneValidation.sanitized,
-        property: {
-          create: {
-            indirizzo: finalAddress,
-            citta: finalCity,
-            quartiere: finalNeighborhood,
-            cap: finalPostalCode,
-            latitudine: finalLatitude,
-            longitudine: finalLongitude,
-            tipo: body.type,
-            superficieMq: surfaceValidation.value,
-            locali: body.rooms,
-            bagni: body.bathrooms,
-            piano: body.floor,
-            ascensore: body.hasElevator,
-            tipoPiano: body.floorType,
-            spaziEsterni: body.outdoorSpace,
-            postoAuto: body.hasParking,
-            stato: body.condition,
-            riscaldamento: body.heatingType,
-            ariaCondizionata: body.hasAirConditioning,
-            classeEnergetica: body.energyClass,
-            annoCostruzione: body.buildYear,
-            statoOccupazione: body.occupancyStatus,
-            dataScadenza: body.occupancyEndDate ? sanitizeString(body.occupancyEndDate) : undefined,
-            valuation: {
-              create: {
-                prezzoMinimo: body.minPrice,
-                prezzoMassimo: body.maxPrice,
-                prezzoStimato: body.estimatedPrice,
-                valoreOmiBase: body.baseOMIValue,
-                coefficientePiano: body.floorCoefficient,
-                coefficienteStato: body.conditionCoefficient,
-                spiegazione: body.explanation,
-                confidence: body.confidence ?? undefined,
-                confidenceScore: body.confidenceScore ?? undefined,
-                warnings: body.warnings ? (body.warnings as any) : undefined,
-                omiZoneMatch: body.omiZoneMatch ?? undefined,
-                dataCompleteness: body.dataCompleteness ?? undefined,
-                pricePerSqm: body.pricePerSqm ?? undefined,
-                comparablesData: body.comparables?.enabled
-                  ? ({
-                      provider: body.comparables.provider,
-                      sampleSize: body.comparables.sampleSize,
-                      medianPricePerSqm: body.comparables.medianPricePerSqm,
-                      avgPricePerSqm: body.comparables.avgPricePerSqm,
-                      minPricePerSqm: body.comparables.minPricePerSqm,
-                      maxPricePerSqm: body.comparables.maxPricePerSqm,
-                      items: body.comparables.items,
-                      crossCheck: body.comparables.crossCheck,
-                    } as any)
-                  : undefined,
-              },
-            },
-          },
-        },
-        conversation: {
-          create: {
-            messaggi: body.messages,
-          },
-        },
-      },
-      include: {
-        property: {
-          include: {
-            valuation: true,
-          },
-        },
-        conversation: true,
-      },
-    })
-
-    console.log('[POST /api/leads] ✅ Lead created successfully:', {
-      leadId: lead.id,
-      agencyId: agency.id,
-      email: body.email,
-      savedTelefono: lead.telefono,
-      savedTelefonoType: typeof lead.telefono,
-      savedTelefonoIsNull: lead.telefono === null,
-      savedTelefonoValue: JSON.stringify(lead.telefono),
-      timestamp: new Date().toISOString()
-    })
-
-    // CRITICAL CHECK: Verify phone was actually saved
-    if (body.phone && !lead.telefono) {
-      console.error('[POST /api/leads] 🚨 CRITICAL BUG: Phone was provided but NOT saved to database!', {
-        providedPhone: body.phone,
-        validatedPhone: phoneValidation.sanitized,
-        savedPhone: lead.telefono
+    if (!hasPrices) {
+      valuationWarnings.push({
+        code: "VALUATION_FAILED",
+        message:
+          "La valutazione automatica non è andata a buon fine. Il lead è stato comunque salvato per follow-up manuale.",
+        severity: "critical",
       })
     }
 
-    // Incrementa il contatore delle valutazioni usate questo mese
-    await incrementValuationCount(agency.id)
-    console.log('[POST /api/leads] Valuation count incremented for agency:', { agencyId: agency.id })
+    const valuationData = {
+      prezzoMinimo: hasPrices ? body.minPrice! : 0,
+      prezzoMassimo: hasPrices ? body.maxPrice! : 0,
+      prezzoStimato: hasPrices ? body.estimatedPrice! : 0,
+      valoreOmiBase: hasPrices ? body.baseOMIValue || 0 : 0,
+      coefficientePiano: body.floorCoefficient || 1.0,
+      coefficienteStato: body.conditionCoefficient || 1.0,
+      spiegazione:
+        body.explanation ||
+        (hasPrices ? "" : "Valutazione automatica non riuscita - richiede follow-up manuale"),
+      confidence: body.confidence ?? (hasPrices ? undefined : "bassa"),
+      confidenceScore: body.confidenceScore ?? undefined,
+      warnings: valuationWarnings.length > 0 ? (valuationWarnings as any) : undefined,
+      omiZoneMatch: body.omiZoneMatch ?? (hasPrices ? undefined : "not_found"),
+      dataCompleteness: body.dataCompleteness ?? undefined,
+      pricePerSqm: body.pricePerSqm ?? undefined,
+      comparablesData: body.comparables?.enabled
+        ? ({
+            provider: body.comparables.provider,
+            sampleSize: body.comparables.sampleSize,
+            medianPricePerSqm: body.comparables.medianPricePerSqm,
+            avgPricePerSqm: body.comparables.avgPricePerSqm,
+            minPricePerSqm: body.comparables.minPricePerSqm,
+            maxPricePerSqm: body.comparables.maxPricePerSqm,
+            items: body.comparables.items,
+            crossCheck: body.comparables.crossCheck,
+          } as any)
+        : undefined,
+    }
 
-    // Invia notifica email all'agenzia — Attendiamo l'invio per evitare terminazione precoce su Vercel
+    // ============ CREATE LEAD ============
+    let lead
+    try {
+      lead = await prisma.lead.create({
+        data: {
+          agenziaId: agency.id,
+          nome: firstNameValidation.sanitized,
+          cognome: lastNameValidation.sanitized,
+          email: emailValidation.sanitized,
+          telefono: finalPhone,
+          property: {
+            create: {
+              indirizzo: finalAddress,
+              citta: finalCity,
+              quartiere: finalNeighborhood,
+              cap: finalPostalCode,
+              latitudine: finalLatitude,
+              longitudine: finalLongitude,
+              tipo: finalType,
+              superficieMq: finalSurface,
+              locali: body.rooms,
+              bagni: body.bathrooms,
+              piano: finalFloor,
+              ascensore: body.hasElevator,
+              tipoPiano: body.floorType,
+              spaziEsterni: body.outdoorSpace,
+              postoAuto: body.hasParking,
+              stato: finalCondition,
+              riscaldamento: body.heatingType,
+              ariaCondizionata: body.hasAirConditioning,
+              classeEnergetica: body.energyClass,
+              annoCostruzione: body.buildYear,
+              statoOccupazione: body.occupancyStatus,
+              dataScadenza: body.occupancyEndDate ? sanitizeString(body.occupancyEndDate) : undefined,
+              valuation: { create: valuationData },
+            },
+          },
+          conversation: {
+            create: { messaggi: body.messages || [] },
+          },
+        },
+        include: {
+          property: { include: { valuation: true } },
+          conversation: true,
+        },
+      })
+    } catch (dbError) {
+      const msg = dbError instanceof Error ? dbError.message : String(dbError)
+      console.error("[POST /api/leads] DB error:", msg)
+      return reject(500, "DB_ERROR", `Errore DB: ${msg.slice(0, 200)}`)
+    }
+
+    // Incrementa counter solo se valutazione riuscita (non contiamo quelle fallite)
+    if (hasPrices) {
+      try {
+        await incrementValuationCount(agency.id)
+      } catch (err) {
+        console.warn("[POST /api/leads] incrementValuationCount failed:", err)
+      }
+    }
+
+    // Notifica email (non bloccante)
     if (agency.email && process.env.SMTP_HOST) {
       try {
-        const agencyId = agency.id
-        const settings = await prisma.agencySetting.findUnique({ where: { agencyId } })
-        const shouldNotify = !settings || (settings.notificationsEmail && settings.emailOnNewLead)
-
+        const settings = await prisma.agencySetting.findUnique({ where: { agencyId: agency.id } })
+        const shouldNotify =
+          !settings || (settings.notificationsEmail && settings.emailOnNewLead)
         if (shouldNotify) {
-          console.log('[POST /api/leads] Sending lead notification email to agency:', agency.email)
-          const appUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://domusreport.com'
+          const appUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "https://domusreport.com"
           const dashboardUrl = `${appUrl}/dashboard/leads/${lead.id}`
           const notifData = {
             agencyName: agency.nome,
@@ -593,43 +491,67 @@ export async function POST(request: NextRequest) {
             leadEmail: lead.email,
             leadPhone: lead.telefono,
             propertyAddress: lead.property?.indirizzo ?? finalAddress,
-            propertyCity: lead.property?.citta ?? finalCity ?? '',
-            propertySurface: lead.property?.superficieMq ?? body.surfaceSqm,
-            estimatedPrice: lead.property?.valuation?.prezzoStimato ?? body.estimatedPrice,
+            propertyCity: lead.property?.citta ?? finalCity,
+            propertySurface: lead.property?.superficieMq ?? finalSurface,
+            estimatedPrice: lead.property?.valuation?.prezzoStimato ?? 0,
             dashboardUrl,
           }
           await sendEmail({
             from: `"Domus Report" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
             to: agency.email,
-            subject: `Nuovo Lead: ${lead.nome} ${lead.cognome} - ${notifData.propertyCity}`,
+            subject: `Nuovo Lead: ${lead.nome} ${lead.cognome} - ${notifData.propertyCity}${!hasPrices ? " [valutazione fallita]" : ""}`,
             html: generateNewLeadNotificationHTML(notifData),
             text: generateNewLeadNotificationText(notifData),
           })
         }
       } catch (err) {
-        console.error('[POST /api/leads] Failed to send lead notification email:', err)
-        // Non blocchiamo la risposta se l'invio email fallisce, ma abbiamo loggato l'errore
+        console.error("[POST /api/leads] Email notification failed:", err)
       }
     }
+
+    // Audit log success
+    await recordLeadSubmission({
+      widgetId: body.widgetId,
+      agencyId: agency.id,
+      email: body.email,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      ipAddress: clientIP,
+      status: "success",
+      errorCode: hasPrices ? null : "VALUATION_FAILED_BUT_SAVED",
+      errorMessage: hasPrices ? null : "Lead salvato senza valutazione automatica",
+      savedLeadId: lead.id,
+      httpStatus: 200,
+      bodySnapshot: body as Record<string, unknown>,
+    })
 
     return NextResponse.json({
       success: true,
       leadId: lead.id,
-      lead: lead, // Include full lead object for widget tracking
-      message: "Lead creato con successo",
+      lead,
+      valuationFailed: !hasPrices,
+      warnings: valuationWarnings,
+      message: hasPrices
+        ? "Lead creato con successo"
+        : "Lead salvato senza valutazione. Un operatore ricontatterà il cliente.",
     })
   } catch (error) {
-    console.error('[POST /api/leads] Error creating lead:', {
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString()
+    console.error("[POST /api/leads] Unhandled error:", error)
+    const msg = error instanceof Error ? error.message : String(error)
+    await recordLeadSubmission({
+      widgetId: body.widgetId,
+      email: body.email,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      ipAddress: clientIP,
+      status: "failed",
+      errorCode: "UNHANDLED_ERROR",
+      errorMessage: msg,
+      httpStatus: 500,
+      bodySnapshot: body as Record<string, unknown>,
     })
-
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Errore interno del server",
-        success: false,
-      },
+      { error: msg || "Errore interno del server", success: false },
       { status: 500 }
     )
   }
@@ -641,60 +563,36 @@ export async function GET(request: NextRequest) {
     const widgetId = searchParams.get("widgetId")
 
     if (!widgetId) {
-      return NextResponse.json(
-        { error: "Widget ID is required" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Widget ID is required" }, { status: 400 })
     }
 
-    // Find agency
-    // Prima cerca nel nuovo sistema multi-widget (WidgetConfig)
     const widgetConfig = await prisma.widgetConfig.findUnique({
       where: { widgetId },
       include: { agency: true },
     })
 
     let agency = widgetConfig?.agency || null
-
-    // Fallback: cerca nel vecchio sistema (campo widgetId diretto in Agency)
     if (!agency) {
-      const legacyAgency = await prisma.agency.findUnique({
-        where: { widgetId },
-      })
-      agency = legacyAgency
+      agency = await prisma.agency.findUnique({ where: { widgetId } })
     }
 
     if (!agency) {
       return NextResponse.json({ error: "Widget non trovato" }, { status: 404 })
     }
 
-    // Fetch leads with statuses
     const leads = await prisma.lead.findMany({
       where: { agenziaId: agency.id },
       include: {
-        property: {
-          include: {
-            valuation: true,
-          },
-        },
+        property: { include: { valuation: true } },
         conversation: true,
-        statuses: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-        },
+        statuses: { orderBy: { createdAt: "desc" }, take: 1 },
       },
-      orderBy: {
-        dataRichiesta: "desc",
-      },
+      orderBy: { dataRichiesta: "desc" },
     })
 
-    return NextResponse.json({
-      success: true,
-      leads: leads,
-    })
+    return NextResponse.json({ success: true, leads })
   } catch (error) {
     console.error("Error fetching leads:", error)
-
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Errore interno del server",

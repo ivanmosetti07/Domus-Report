@@ -155,13 +155,17 @@ export function calculateFloorCoefficient(
 export function calculateConditionCoefficient(
   condition: PropertyCondition
 ): number {
+  // Coefficienti calibrati per riflettere anche il costo implicito di ristrutturazione
+  // che il mercato sconta (~800-1000€/mq per TO_RENOVATE completa, ~400€/mq per
+  // HABITABLE_OLD). Valori precedenti erano troppo conservativi e sovrastimavano
+  // gli immobili da ristrutturare (vedi lead #cmnq5jp3w000sos3fpeez3gd5).
   const coefficients: Record<PropertyCondition, number> = {
     [PropertyCondition.NEW]: 1.25,
     [PropertyCondition.RENOVATED]: 1.12,
-    [PropertyCondition.PARTIALLY_RENOVATED]: 1.06, // nuovo
+    [PropertyCondition.PARTIALLY_RENOVATED]: 1.06,
     [PropertyCondition.GOOD]: 1.0,
-    [PropertyCondition.HABITABLE_OLD]: 0.92, // nuovo
-    [PropertyCondition.TO_RENOVATE]: 0.82,
+    [PropertyCondition.HABITABLE_OLD]: 0.86,
+    [PropertyCondition.TO_RENOVATE]: 0.72,
   }
   return coefficients[condition] ?? 1.0
 }
@@ -532,7 +536,7 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
     occupancyCoefficient
 
   const qualityCoefficient = parseFloat(
-    Math.max(0.60, Math.min(1.40, rawQuality)).toFixed(4)
+    Math.max(0.55, Math.min(1.40, rawQuality)).toFixed(4)
   )
 
   if (rawQuality !== qualityCoefficient) {
@@ -596,16 +600,41 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
   else if (omiAdvanced.zona === "Media CAP") zoneMatch = "cap_global"
   else if (omiAdvanced.fonte?.includes("CAP") && resolvedZone === undefined) zoneMatch = "cap"
 
-  // Sprint 1.2: range dinamico basato su min/max OMI reali (non più ±10% fisso)
+  // Sprint 1.2 + fix range: stretto quando la zona è poco specifica o la
+  // variance OMI è anormalmente elevata.
   const estimatedPrice = Math.round(
     baseOMIValue * input.surfaceSqm * floorCoefficient * qualityCoefficient
   )
-  const minPrice = Math.round(
-    minOMI * input.surfaceSqm * floorCoefficient * qualityCoefficient
-  )
-  const maxPrice = Math.round(
-    maxOMI * input.surfaceSqm * floorCoefficient * qualityCoefficient
-  )
+
+  const rawOmiVariancePct = baseOMIValue > 0
+    ? ((maxOMI - minOMI) / baseOMIValue) * 100
+    : 0
+
+  const isGenericZone = zoneMatch === "city_average" || zoneMatch === "cap_global"
+  const VARIANCE_THRESHOLD = 25 // % oltre il quale consideriamo il range OMI troppo ampio
+  const shouldTightenRange = isGenericZone || rawOmiVariancePct > VARIANCE_THRESHOLD
+
+  let minPrice: number
+  let maxPrice: number
+  if (shouldTightenRange) {
+    const TIGHT_RANGE = 0.10 // ±10% dalla stima centrale
+    minPrice = Math.round(estimatedPrice * (1 - TIGHT_RANGE))
+    maxPrice = Math.round(estimatedPrice * (1 + TIGHT_RANGE))
+    warnings.push({
+      code: "RANGE_TIGHTENED",
+      message: isGenericZone
+        ? `Zona OMI poco specifica (${omiAdvanced.zona}): range ristretto a ±10% per maggiore realismo.`
+        : `Variance OMI elevata (${Math.round(rawOmiVariancePct)}%): range ristretto a ±10%.`,
+      severity: "info",
+    })
+  } else {
+    minPrice = Math.round(
+      minOMI * input.surfaceSqm * floorCoefficient * qualityCoefficient
+    )
+    maxPrice = Math.round(
+      maxOMI * input.surfaceSqm * floorCoefficient * qualityCoefficient
+    )
+  }
 
   const pricePerSqm = estimatedPrice / input.surfaceSqm
 
@@ -613,10 +642,8 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
   const sanityWarnings = runSanityChecks(input, estimatedPrice, pricePerSqm)
   warnings.push(...sanityWarnings)
 
-  // Sprint 2.2: confidence data-driven
-  const omiVariancePct = baseOMIValue > 0
-    ? ((maxOMI - minOMI) / baseOMIValue) * 100
-    : 0
+  // Sprint 2.2: confidence data-driven (usa la variance OMI raw originale)
+  const omiVariancePct = rawOmiVariancePct
   const completeness = calculateDataCompleteness(input)
   const confidence = calculateConfidence(input, completeness, zoneMatch, omiVariancePct)
 

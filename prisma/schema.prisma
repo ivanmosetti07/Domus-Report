@@ -126,6 +126,29 @@ model Conversation {
   @@map("conversations")
 }
 
+model LeadSubmissionAttempt {
+  id             String   @id @default(cuid())
+  widgetId       String?  @map("widget_id")
+  agencyId       String?  @map("agency_id")
+  email          String?
+  firstName      String?  @map("first_name")
+  lastName       String?  @map("last_name")
+  status         String // "success" | "failed"
+  errorCode      String?  @map("error_code") // es. VALIDATION_FAILED, VALUATION_REJECTED, DB_ERROR
+  errorMessage   String?  @map("error_message")
+  savedLeadId    String?  @map("saved_lead_id")
+  httpStatus     Int?     @map("http_status")
+  ipAddress      String?  @map("ip_address")
+  bodySnapshot   Json?    @map("body_snapshot") // payload originale (per debug)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([status])
+  @@index([email])
+  @@index([widgetId])
+  @@index([createdAt])
+  @@map("lead_submission_attempts")
+}
+
 model DemoLead {
   id                  String   @id @default(cuid())
   nome                String

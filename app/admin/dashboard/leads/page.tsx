@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Search, ChevronLeft, ChevronRight, TestTube, Building2 } from "lucide-react"
+import Link from "next/link"
+import { Search, ChevronLeft, ChevronRight, TestTube, Building2, AlertTriangle, RefreshCw, Loader2 } from "lucide-react"
 
 interface Lead {
   id: string
@@ -69,6 +70,35 @@ export default function AdminLeadsPage() {
     setSearch("")
   }
 
+  const [recalculatingId, setRecalculatingId] = React.useState<string | null>(null)
+  const [recalcMessage, setRecalcMessage] = React.useState<string>("")
+
+  const handleRecalculate = async (leadId: string) => {
+    setRecalculatingId(leadId)
+    setRecalcMessage("")
+    try {
+      const res = await fetch(`/api/admin/leads/${leadId}/recalculate`, { method: "POST" })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Errore ricalcolo")
+      const prev = data.previous?.prezzoStimato ?? 0
+      const curr = data.current?.prezzoStimato ?? 0
+      const delta = prev > 0 ? ((curr - prev) / prev) * 100 : 0
+      const cmpInfo = data.comparables?.enabled
+        ? ` · ${data.comparables.sampleSize} comparables (delta OMI ${data.comparables.crossCheck?.deltaPct ?? 0}%)`
+        : ""
+      setRecalcMessage(
+        `Ricalcolato: €${prev.toLocaleString("it-IT")} → €${curr.toLocaleString("it-IT")} (${delta > 0 ? "+" : ""}${delta.toFixed(1)}%)${cmpInfo}`
+      )
+      setTimeout(() => setRecalcMessage(""), 6000)
+      fetchLeads()
+    } catch (err) {
+      setRecalcMessage(`Errore: ${err instanceof Error ? err.message : String(err)}`)
+      setTimeout(() => setRecalcMessage(""), 6000)
+    } finally {
+      setRecalculatingId(null)
+    }
+  }
+
   const renderTable = () => (
     <Card>
       <CardContent className="p-0">
@@ -81,20 +111,21 @@ export default function AdminLeadsPage() {
                 <th className="text-left p-4 text-sm font-medium text-foreground-muted">Immobile</th>
                 <th className="text-left p-4 text-sm font-medium text-foreground-muted">Stima</th>
                 <th className="text-left p-4 text-sm font-medium text-foreground-muted">Data</th>
+                <th className="text-left p-4 text-sm font-medium text-foreground-muted"></th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 [...Array(5)].map((_, i) => (
                   <tr key={i} className="border-b border-border">
-                    <td colSpan={5} className="p-4">
+                    <td colSpan={6} className="p-4">
                       <div className="h-5 bg-surface-2 rounded animate-pulse" />
                     </td>
                   </tr>
                 ))
               ) : leads.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-foreground-muted">
+                  <td colSpan={6} className="p-8 text-center text-foreground-muted">
                     {scope === "domus"
                       ? "Nessun lead dai widget interni. Condividi un widget Domus Report per riceverli qui."
                       : "Nessun lead dalle agenzie iscritte."}
@@ -125,6 +156,21 @@ export default function AdminLeadsPage() {
                     <td className="p-4 text-sm text-foreground-muted">
                       {new Date(lead.dataRichiesta).toLocaleDateString("it-IT")}
                     </td>
+                    <td className="p-4 text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRecalculate(lead.id)}
+                        disabled={recalculatingId === lead.id}
+                        title="Ricalcola con motore attuale + comparables reali"
+                      >
+                        {recalculatingId === lead.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -150,7 +196,22 @@ export default function AdminLeadsPage() {
 
   return (
     <div className="page-stack">
-      <PageHeader title="Tutti i Lead" subtitle={`${total} lead nel tab corrente`} />
+      <div className="flex items-start justify-between gap-4">
+        <PageHeader title="Tutti i Lead" subtitle={`${total} lead nel tab corrente`} />
+        <Link
+          href="/admin/dashboard/leads/attempts"
+          className="inline-flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground whitespace-nowrap mt-2"
+        >
+          <AlertTriangle className="w-4 h-4" />
+          Tentativi falliti
+        </Link>
+      </div>
+
+      {recalcMessage && (
+        <div className="rounded-xl border border-primary/40 bg-primary/10 p-3 text-sm text-primary">
+          {recalcMessage}
+        </div>
+      )}
 
       <Tabs value={scope} onValueChange={handleTabChange}>
         <TabsList>

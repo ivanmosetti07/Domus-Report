@@ -7,6 +7,7 @@ import {
   searchComparables,
   crossCheckWithOMI,
   isComparablesEnabled,
+  applyComparablesRefinement,
   type ComparablesResult,
   type CrossCheckResult,
 } from "@/lib/comparables"
@@ -20,79 +21,8 @@ interface ExtendedValuationInput extends ValuationInput {
   useComparables?: boolean // Abilita cross-check con comparables reali
 }
 
-/**
- * Applica il cross-check con i comparables reali: ricalcola min/max/estimated
- * con una media pesata tra OMI e il mercato reale.
- *
- * I comparables riflettono mediamente immobili di qualità "Buono-Ristrutturato",
- * quindi adattiamo il risultato alla SOLA condition pura (rispetto alla baseline
- * di mercato 1.05 = media Buono-Ristrutturato). Gli altri fattori (energy, anno,
- * extras, occupancy, rooms/bathrooms) sono già embedded nei prezzi di annuncio,
- * quindi NON vanno moltiplicati di nuovo (bug_008).
- *
- * Inoltre il floorCoefficient va applicato sul €/mq dei comparables perché
- * i comparables non stratificano per piano (bug_006).
- */
-function applyComparablesRefinement(
-  valuation: ValuationResult,
-  comparables: ComparablesResult,
-  crossCheck: CrossCheckResult,
-  surfaceSqm: number
-): ValuationResult {
-  if (!crossCheck.shouldAdjust || comparables.sampleSize < 2) return valuation
-
-  // Media mercato "standard": assumiamo pureConditionCoefficient ~1.05 (Buono→Ristrutturato)
-  const marketQualityBaseline = 1.05
-  // bug_008: usare la condition PURA, non il composite (che include energy/year/extras/...)
-  const thisQuality = valuation.pureConditionCoefficient || 1.0
-  const qualityAdjustment = thisQuality / marketQualityBaseline
-
-  // bug_006: i comparables non stratificano per piano → applicare floorCoefficient
-  const floorCoef = valuation.floorCoefficient || 1.0
-  const combinedAdjustment = qualityAdjustment * floorCoef
-
-  // Prezzo suggerito (€/mq) dal cross-check, aggiustato per la qualità e il piano
-  const adjustedPPS = Math.round(crossCheck.suggestedPricePerSqm * combinedAdjustment)
-
-  const refinedEstimated = Math.round(adjustedPPS * surfaceSqm)
-
-  // Range derivato dai min/max dei comparables (più realistico dell'OMI teorico)
-  const refinedMin = Math.round(comparables.minPricePerSqm * combinedAdjustment * surfaceSqm)
-  const refinedMax = Math.round(comparables.maxPricePerSqm * combinedAdjustment * surfaceSqm)
-
-  // Warnings + eventuale flag di confidence downgrade
-  const updatedWarnings = [...valuation.warnings]
-  for (const w of crossCheck.warnings) {
-    updatedWarnings.push({
-      code: "COMPARABLES_DIVERGE",
-      message: w,
-      severity: crossCheck.agreement === "weak" ? "warning" : "info",
-    })
-  }
-
-  // Ri-calcolo confidence: se agreement è strong → bonus, se weak → malus
-  let newScore = valuation.confidenceScore
-  if (crossCheck.agreement === "strong") newScore = Math.min(100, newScore + 10)
-  else if (crossCheck.agreement === "weak") newScore = Math.max(0, newScore - 15)
-  const newLevel: ValuationResult["confidence"] =
-    newScore >= 80 ? "alta" : newScore >= 60 ? "media" : "bassa"
-
-  return {
-    ...valuation,
-    estimatedPrice: refinedEstimated,
-    minPrice: Math.min(refinedMin, refinedEstimated),
-    maxPrice: Math.max(refinedMax, refinedEstimated),
-    pricePerSqm: adjustedPPS,
-    confidence: newLevel,
-    confidenceScore: newScore,
-    warnings: updatedWarnings,
-    explanation:
-      valuation.explanation +
-      ` Raffinato con ${comparables.sampleSize} annunci reali: mercato a ${Math.round(
-        comparables.medianPricePerSqm
-      )}€/m² (delta OMI ${crossCheck.deltaPct > 0 ? "+" : ""}${crossCheck.deltaPct}%).`,
-  }
-}
+// applyComparablesRefinement ora è esportata da lib/comparables per essere
+// riusata anche da script di batch update.
 
 export async function POST(request: NextRequest) {
   try {
