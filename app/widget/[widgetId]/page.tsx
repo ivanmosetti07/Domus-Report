@@ -1,6 +1,7 @@
 "use client"
 
-import { WidgetTrigger, WidgetThemeConfig } from "@/components/widget/widget-trigger"
+import { ChatWidget, WidgetThemeConfig } from "@/components/widget/chat-widget"
+import { WidgetTrigger } from "@/components/widget/widget-trigger"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -156,9 +157,23 @@ export default function WidgetEmbedPage() {
     valuationMode: config.valuationMode,
   }
 
-  // Determina il mode: usa la configurazione salvata, non il parametro URL
-  // Il parametro embedMode è solo per compatibilità con l'iframe interno
+  const isBubbleEmbed = embedMode === 'bubble'
+
+  // Determina il mode: usa la configurazione salvata quando la pagina viene aperta
+  // direttamente. Negli embed bubble, il launcher vive già nella pagina padre.
   const widgetMode = config.mode || 'bubble'
+
+  const handleBubbleEmbedClose = () => {
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        {
+          type: 'DOMUS_WIDGET_CLOSE',
+          widgetId,
+        },
+        '*'
+      )
+    }
+  }
 
   return (
     <div
@@ -170,12 +185,22 @@ export default function WidgetEmbedPage() {
         flexDirection: 'column'
       }}
     >
-      <WidgetTrigger
-        widgetId={widgetId}
-        isDemo={false}
-        theme={theme}
-        mode={widgetMode}
-      />
+      {isBubbleEmbed ? (
+        <ChatWidget
+          widgetId={widgetId}
+          mode="bubble"
+          isDemo={false}
+          onClose={handleBubbleEmbedClose}
+          theme={theme}
+        />
+      ) : (
+        <WidgetTrigger
+          widgetId={widgetId}
+          isDemo={false}
+          theme={theme}
+          mode={widgetMode}
+        />
+      )}
     </div>
   )
 }

@@ -106,7 +106,7 @@
 
     var iframe = document.createElement('iframe');
     iframe.id = 'domusreport-iframe-' + widgetId;
-    iframe.src = WIDGET_HOST + '/widget/' + widgetId;
+    iframe.src = WIDGET_HOST + '/widget/' + widgetId + '?embed=bubble';
     iframe.style.cssText = [
       'position:fixed',
       posStyle,
