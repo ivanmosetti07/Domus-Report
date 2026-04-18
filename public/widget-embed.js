@@ -20,11 +20,12 @@
   }
 
   // Previeni caricamenti multipli
-  if (window.DomusReportWidgetLoaded) {
+  if (window.DomusReportWidgetLoaded || window['__domusreport_' + widgetId]) {
     console.warn('DomusReport Widget: già caricato');
     return;
   }
   window.DomusReportWidgetLoaded = true;
+  window['__domusreport_' + widgetId] = true;
 
   // Determina base URL (produzione o sviluppo)
   const baseUrl = src.includes('localhost')
@@ -279,6 +280,7 @@
 
     // Listen per chiusura widget
     window.addEventListener('message', function(event) {
+      if (!iframe || event.source !== iframe.contentWindow) return;
       if (event.data.type === 'CLOSE_WIDGET' || event.data.type === 'DOMUS_WIDGET_CLOSE') {
         if (iframe) {
           iframe.style.display = 'none';

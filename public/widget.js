@@ -22,8 +22,9 @@
   }
 
   // Previeni caricamenti doppi
-  if (window['__domusreport_' + widgetId]) return;
+  if (window.DomusReportWidgetLoaded || window['__domusreport_' + widgetId]) return;
   window['__domusreport_' + widgetId] = true;
+  window.DomusReportWidgetLoaded = true;
 
   console.log('[DomusReport] Init widget:', widgetId, 'host:', WIDGET_HOST);
 
@@ -128,7 +129,7 @@
     iframe.onload = function () {
       setTimeout(function () {
         try {
-          iframe.contentWindow.postMessage({ type: 'DOMUS_WIDGET_OPEN_COMMAND' }, WIDGET_HOST);
+          iframe.contentWindow.postMessage({ type: 'DOMUS_WIDGET_OPEN_COMMAND' }, '*');
         } catch (e) {}
       }, 100);
     };
@@ -153,7 +154,7 @@
       if (iframeLoaded) {
         setTimeout(function () {
           try {
-            iframe.contentWindow.postMessage({ type: 'DOMUS_WIDGET_OPEN_COMMAND' }, WIDGET_HOST);
+            iframe.contentWindow.postMessage({ type: 'DOMUS_WIDGET_OPEN_COMMAND' }, '*');
           } catch (e) {}
         }, 50);
       }
@@ -169,7 +170,7 @@
 
     // Ascolta messaggi dall'iframe
     window.addEventListener('message', function (event) {
-      if (event.origin !== WIDGET_HOST) return;
+      if (!iframe || event.source !== iframe.contentWindow) return;
       var data = event.data;
       if (!data) return;
 
@@ -253,6 +254,9 @@
       destroy: function () {
         btn.remove();
         iframe.remove();
+        if (poweredBy) poweredBy.remove();
+        delete window['__domusreport_' + widgetId];
+        delete window.DomusReportWidgetLoaded;
         delete window.DomusReportWidget[widgetId];
       }
     };

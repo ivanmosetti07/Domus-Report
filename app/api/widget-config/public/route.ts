@@ -1,6 +1,29 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+function corsJson(body: unknown, init?: ResponseInit) {
+  return NextResponse.json(body, {
+    ...init,
+    headers: {
+      ...corsHeaders,
+      ...(init?.headers || {}),
+    },
+  })
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  })
+}
+
 // GET /api/widget-config/public?widgetId=xxx - Fetch widget config pubblicamente
 // Questa API è pubblica e non richiede autenticazione
 // Viene usata dal widget embed per caricare la configurazione
@@ -10,7 +33,7 @@ export async function GET(request: Request) {
     const widgetId = searchParams.get('widgetId')
 
     if (!widgetId) {
-      return NextResponse.json(
+      return corsJson(
         { error: 'widgetId richiesto' },
         { status: 400 }
       )
@@ -47,7 +70,7 @@ export async function GET(request: Request) {
         valuationMode: 'hybrid',
         agencyName: 'DomusReport Demo',
       }
-      return NextResponse.json({ widgetConfig: demoConfig })
+      return corsJson({ widgetConfig: demoConfig })
     }
 
     // Cerca widget config per widgetId pubblico
@@ -90,14 +113,14 @@ export async function GET(request: Request) {
     })
 
     if (!widgetConfig) {
-      return NextResponse.json(
+      return corsJson(
         { error: 'Widget non trovato' },
         { status: 404 }
       )
     }
 
     if (!widgetConfig.isActive) {
-      return NextResponse.json(
+      return corsJson(
         { error: 'Widget non attivo' },
         { status: 404 }
       )
@@ -118,9 +141,9 @@ export async function GET(request: Request) {
       agencyName: agency?.nome || 'DomusReport',
     }
 
-    return NextResponse.json({ widgetConfig: responseConfig })
+    return corsJson({ widgetConfig: responseConfig })
   } catch (error) {
     console.error('Errore GET widget-config/public:', error)
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 })
+    return corsJson({ error: 'Errore server' }, { status: 500 })
   }
 }
