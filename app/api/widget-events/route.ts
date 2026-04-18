@@ -10,6 +10,8 @@ const eventTypes = [
   "VALUATION_VIEW",
   "CONTACT_FORM_START",
   "CONTACT_FORM_SUBMIT",
+  "PDF_DOWNLOAD",
+  "RESET",
 ] as const
 
 // Validation schema

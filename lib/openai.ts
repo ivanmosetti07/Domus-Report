@@ -103,8 +103,9 @@ Rispondi in formato JSON:
 }`
           }
         ],
-        // GPT-5: usa max_completion_tokens, no temperature custom
-        max_completion_tokens: 500,
+        // GPT-5: usa max_completion_tokens, no temperature custom.
+        // Budget alto per dare spazio al reasoning interno.
+        max_completion_tokens: 1500,
         response_format: { type: "json_object" }
       }),
     })

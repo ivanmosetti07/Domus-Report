@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { Message } from "@/types"
 import { DEFAULT_OPENAI_MODEL } from "@/lib/openai-config"
 
-export const runtime = "edge"
+// Runtime Node.js: GPT-5 è più lento dei modelli precedenti (reasoning model),
+// l'edge runtime con timeout max ~25s causava 504. Serverless Node permette
+// maxDuration fino a 60s (Pro) / 300s (Enterprise).
+export const runtime = "nodejs"
+export const maxDuration = 60
 
 // System prompt per il chatbot immobiliare AI conversazionale
 // IMPORTANTE: I valori degli enum devono essere ESATTAMENTE in italiano come definiti nel database
@@ -771,7 +775,10 @@ export async function POST(request: NextRequest) {
         messages: openAIMessages,
         // GPT-5 richiede max_completion_tokens (max_tokens deprecato) e
         // non supporta temperature custom (usa default 1).
-        max_completion_tokens: 800,
+        // Budget alto perché parte dei token viene usata per il reasoning
+        // interno: se il limite è troppo basso, la risposta testuale arriva
+        // vuota o troncata.
+        max_completion_tokens: 2000,
         response_format: { type: "json_object" },
       }),
     })
