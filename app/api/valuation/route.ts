@@ -232,29 +232,39 @@ export async function POST(request: NextRequest) {
     let crossCheck: CrossCheckResult | null = null
 
     if (valuationMode === "ai_market") {
-      // Modalità "solo AI + mercato": ricostruiamo la valutazione da zero
-      // usando esclusivamente i comparables, ignorando l'OMI.
+      // Modalità "solo AI + mercato": tenta di ricostruire la valutazione
+      // dai comparables reali. Se non trova annunci via web, fa graceful
+      // fallback sull'OMI invece di lasciare l'utente senza valutazione.
       if (!comparablesResult || comparablesResult.sampleSize < 1) {
-        return NextResponse.json({
-          success: false,
-          error:
-            "Modalità 'solo AI + mercato' selezionata, ma nessun annuncio simile trovato via web. Prova con la modalità 'Ibrido' o 'Solo OMI'.",
-          geocoded: geocodeData !== null,
-          valuationMode,
-        }, { status: 200 })
+        console.warn(
+          "[Valuation] ai_market mode: no comparables found, falling back to OMI baseline"
+        )
+        finalValuation = {
+          ...baseValuation,
+          warnings: [
+            ...baseValuation.warnings,
+            {
+              code: "AI_MARKET_FALLBACK",
+              message:
+                "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali.",
+              severity: "warning",
+            },
+          ],
+        }
+      } else {
+        // Serve recuperare i coefficienti senza passare per l'OMI
+        const floorCoef = calculateFloorCoefficient(
+          body.floor, body.hasElevator, body.propertyType
+        )
+        const pureConditionCoef = calculateConditionCoefficient(body.condition)
+        finalValuation = buildValuationFromComparables(
+          comparablesResult,
+          body.surfaceSqm,
+          floorCoef,
+          pureConditionCoef,
+          baseValuation.conditionCoefficient
+        )
       }
-      // Serve recuperare i coefficienti senza passare per l'OMI
-      const floorCoef = calculateFloorCoefficient(
-        body.floor, body.hasElevator, body.propertyType
-      )
-      const pureConditionCoef = calculateConditionCoefficient(body.condition)
-      finalValuation = buildValuationFromComparables(
-        comparablesResult,
-        body.surfaceSqm,
-        floorCoef,
-        pureConditionCoef,
-        baseValuation.conditionCoefficient // composite (se OMI è stato calcolato)
-      )
     } else if (valuationMode === "hybrid") {
       // Hybrid (default): OMI + refinement con comparables (≥1 con peso ridotto)
       if (comparablesResult && comparablesResult.sampleSize >= 1) {
