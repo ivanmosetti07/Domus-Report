@@ -458,21 +458,53 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
     }
   }, [])
 
-  // Initialize conversation - ora usa AI
-  const initializeConversation = () => {
+  // Initialize conversation - long mode: chiede all'AI il primo messaggio
+  // (così l'AI ha il contesto completo della conversazione che sta creando).
+  // Fallback locale se la chiamata AI fallisce, così il widget non resta vuoto.
+  const initializeConversation = async () => {
     if (questionMode === 'short') {
       initializeShortMode()
       return
     }
-    const welcomeMessage: MessageType = {
-      id: `msg_${Date.now()}`,
-      role: "bot",
-      text: `Ciao! Sono l'Agente Immobiliare AI di ${agencyName}, il tuo assistente per la valutazione immobiliare. In quale città si trova il tuo immobile?`,
-      timestamp: new Date()
-    }
-    setMessages([welcomeMessage])
     setConversationMode("chatting")
     setIsInitialized(true)
+    setIsTyping(true)
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [],
+          collectedData: {},
+          widgetId,
+          agencyName,
+          isInitialTurn: true,
+        }),
+      })
+      if (!response.ok) throw new Error("init chat failed")
+      const data = await response.json()
+      const firstText = (typeof data.message === "string" && data.message.trim())
+        || `Ciao! Sono l'assistente immobiliare di ${agencyName}. In quale città si trova il tuo immobile?`
+      const welcomeMessage: MessageType = {
+        id: `msg_${Date.now()}`,
+        role: "bot",
+        text: firstText,
+        timestamp: new Date(),
+      }
+      setMessages([welcomeMessage])
+    } catch (err) {
+      console.warn("[ChatWidget] init AI failed, using fallback welcome:", err)
+      const welcomeMessage: MessageType = {
+        id: `msg_${Date.now()}`,
+        role: "bot",
+        text: `Ciao! Sono l'assistente immobiliare di ${agencyName}. In quale città si trova il tuo immobile?`,
+        timestamp: new Date(),
+      }
+      setMessages([welcomeMessage])
+    } finally {
+      setIsTyping(false)
+    }
   }
 
   // Initialize short mode conversation
@@ -722,7 +754,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         body: JSON.stringify({
           messages: recentMessages,
           collectedData,
-          widgetId
+          widgetId,
+          agencyName,
         })
       })
 

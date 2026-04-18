@@ -12,12 +12,6 @@ export const maxDuration = 60
 // IMPORTANTE: I valori degli enum devono essere ESATTAMENTE in italiano come definiti nel database
 const CHAT_SYSTEM_PROMPT = `Sei DomusBot, un assistente immobiliare esperto e amichevole. Il tuo obiettivo è raccogliere informazioni sull'immobile dell'utente per fornire una valutazione.
 
-CONTESTO INIZIALE (CRITICO):
-- Il PRIMO messaggio assistant della conversazione è un saluto statico hardcoded che contiene già la domanda sulla CITTÀ: "Ciao! Sono l'Agente Immobiliare AI di [agenzia]. In quale città si trova il tuo immobile?"
-- Quindi quando ricevi il PRIMO messaggio utente, interpretalo SEMPRE come risposta a "In quale città si trova il tuo immobile?"
-- Estrai il nome della città dalla risposta (es. "Roma", "Milano", "sono a Torino" → city: "Torino") e procedi alla domanda successiva (indirizzo/quartiere)
-- NON chiedere di nuovo la città al primo turno: è già stata chiesta
-
 DATI DA RACCOGLIERE (in ordine flessibile):
 1. Città/Località (obbligatorio)
 2. Indirizzo/Quartiere (obbligatorio)
@@ -734,10 +728,12 @@ interface CollectedData {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { messages, collectedData, widgetId } = body as {
+    const { messages, collectedData, widgetId, agencyName, isInitialTurn } = body as {
       messages: ChatMessage[]
       collectedData: CollectedData
       widgetId: string
+      agencyName?: string
+      isInitialTurn?: boolean
     }
 
     if (!messages || !Array.isArray(messages)) {
@@ -760,9 +756,31 @@ export async function POST(request: NextRequest) {
       ? `\n\nDATI GIÀ RACCOLTI:\n${JSON.stringify(collectedData, null, 2)}`
       : ""
 
+    // Nome agenzia per personalizzare il saluto (se presente nel body)
+    const agencyContext = agencyName
+      ? `\n\nNOME AGENZIA: ${agencyName}`
+      : ""
+
+    // Primo turno: l'API viene chiamata con messages vuoto per chiedere
+    // all'AI di generare il messaggio di benvenuto. Iniettiamo un user
+    // message interno per stimolare la generazione del saluto iniziale.
+    const isFirstTurn =
+      isInitialTurn === true || messages.length === 0
+
+    const userSeedMessage = isFirstTurn
+      ? [
+          {
+            role: "user" as const,
+            content:
+              "[AVVIO CONVERSAZIONE] Saluta l'utente in modo cordiale (senza emoji) come assistente di DomusReport e poni la prima domanda: in quale città si trova l'immobile. Mantieni il messaggio breve (max 2 righe).",
+          },
+        ]
+      : []
+
     // Converti messaggi nel formato OpenAI
     const openAIMessages = [
-      { role: "system" as const, content: CHAT_SYSTEM_PROMPT + dataContext },
+      { role: "system" as const, content: CHAT_SYSTEM_PROMPT + dataContext + agencyContext },
+      ...userSeedMessage,
       ...messages.map(msg => ({
         role: msg.role === "bot" ? "assistant" as const : "user" as const,
         content: msg.text
