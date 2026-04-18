@@ -546,53 +546,126 @@ interface ContactValidationResult {
   invalidField?: 'firstName' | 'lastName' | 'email' | 'phone'
 }
 
-// Funzione per validare i dati di contatto appena inseriti
-function validateContactData(newData: CollectedData, previousData: CollectedData): ContactValidationResult {
-  // Valida solo i campi appena inseriti (presenti in newData ma non in previousData)
+// Keyword tipiche dei dati immobile che NON dovrebbero mai finire in firstName/lastName
+// (usate per scartare estrazioni spurie dell'AI).
+const PROPERTY_KEYWORDS = [
+  "letto", "bagn", "camera", "camere", "cucina", "salone", "sala", "studio",
+  "tinello", "ingresso", "terrazzo", "balcone", "giardino", "box", "auto",
+  "piano", "ascensor", "cantina", "soffitt", "mansard", "mq", "m²",
+  "ristrutturat", "nuov", "buono", "vecchio",
+]
 
-  // Validazione Nome (minimo 2 caratteri)
+function looksLikeRealName(value: string): boolean {
+  const v = value.trim().toLowerCase()
+  if (v.length < 2) return false
+  // Solo numeri/punteggiatura → non è un nome
+  if (!/[a-zàèéìòù]/i.test(v)) return false
+  // Contiene keyword immobiliari → spurio
+  for (const kw of PROPERTY_KEYWORDS) {
+    if (v.includes(kw)) return false
+  }
+  return true
+}
+
+// Determina se la conversazione è nella fase di raccolta contatti
+// (ultimo messaggio bot chiedeva nome/cognome/email/telefono).
+function isInContactCollectionPhase(
+  messages: ChatMessage[],
+  field: "firstName" | "lastName" | "email" | "phone"
+): boolean {
+  // Ultimo messaggio bot (cerca dall'ultimo verso l'indietro)
+  let lastBotText = ""
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].role === "bot") {
+      lastBotText = messages[i].text.toLowerCase()
+      break
+    }
+  }
+  if (!lastBotText) return false
+  if (field === "firstName") {
+    return /come ti chiami|il tuo nome|tuo nome/i.test(lastBotText)
+  }
+  if (field === "lastName") {
+    return /cognome/i.test(lastBotText)
+  }
+  if (field === "email") {
+    return /e[\-\s]?mail/i.test(lastBotText)
+  }
+  if (field === "phone") {
+    return /telefono|cellulare|numero/i.test(lastBotText)
+  }
+  return false
+}
+
+// Funzione per validare i dati di contatto appena inseriti.
+// Restituisce errore visibile all'utente SOLO se siamo effettivamente nella
+// fase di raccolta contatti (per evitare falsi positivi quando l'AI estrae
+// erroneamente firstName/ecc. da risposte sui dati immobile).
+function validateContactData(
+  newData: CollectedData,
+  previousData: CollectedData,
+  messages: ChatMessage[]
+): ContactValidationResult {
+  // Validazione Nome
   if (newData.firstName !== undefined && !previousData.firstName) {
-    if (!newData.firstName || newData.firstName.trim().length < 2) {
+    const raw = (newData.firstName ?? "").toString()
+    if (!looksLikeRealName(raw)) {
+      // Dato spurio: rimuovi silenziosamente senza bloccare la chat
+      return { isValid: false, invalidField: "firstName" }
+    }
+    if (raw.trim().length < 2 && isInContactCollectionPhase(messages, "firstName")) {
       return {
         isValid: false,
         errorMessage: "Il nome deve avere almeno 2 caratteri! Riscrivi il tuo nome.",
-        invalidField: 'firstName'
+        invalidField: "firstName",
       }
     }
   }
 
-  // Validazione Cognome (minimo 2 caratteri)
+  // Validazione Cognome
   if (newData.lastName !== undefined && !previousData.lastName) {
-    if (!newData.lastName || newData.lastName.trim().length < 2) {
+    const raw = (newData.lastName ?? "").toString()
+    if (!looksLikeRealName(raw)) {
+      return { isValid: false, invalidField: "lastName" }
+    }
+    if (raw.trim().length < 2 && isInContactCollectionPhase(messages, "lastName")) {
       return {
         isValid: false,
         errorMessage: "Il cognome deve avere almeno 2 caratteri! Riscrivi il tuo cognome.",
-        invalidField: 'lastName'
+        invalidField: "lastName",
       }
     }
   }
 
-  // Validazione Email (formato valido)
+  // Validazione Email (formato valido) — solo se in contact collection
   if (newData.email !== undefined && !previousData.email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!newData.email || !emailRegex.test(newData.email.trim())) {
-      return {
-        isValid: false,
-        errorMessage: "L'email inserita non è valida! Inserisci un'email corretta (es: nome@esempio.com).",
-        invalidField: 'email'
+      if (isInContactCollectionPhase(messages, "email")) {
+        return {
+          isValid: false,
+          errorMessage:
+            "L'email inserita non è valida! Inserisci un'email corretta (es: nome@esempio.com).",
+          invalidField: "email",
+        }
       }
+      return { isValid: false, invalidField: "email" } // rimuovi silenziosamente
     }
   }
 
   // Validazione Telefono (minimo 6 cifre)
   if (newData.phone !== undefined && !previousData.phone) {
-    const phoneDigits = (newData.phone || '').replace(/\D/g, '')
+    const phoneDigits = (newData.phone || "").replace(/\D/g, "")
     if (phoneDigits.length < 6) {
-      return {
-        isValid: false,
-        errorMessage: "Il numero di telefono deve avere almeno 6 cifre! Riscrivi il tuo numero di telefono.",
-        invalidField: 'phone'
+      if (isInContactCollectionPhase(messages, "phone")) {
+        return {
+          isValid: false,
+          errorMessage:
+            "Il numero di telefono deve avere almeno 6 cifre! Riscrivi il tuo numero di telefono.",
+          invalidField: "phone",
+        }
       }
+      return { isValid: false, invalidField: "phone" } // rimuovi silenziosamente
     }
   }
 
@@ -857,24 +930,31 @@ export async function POST(request: NextRequest) {
       normalizedData = interpretNumericResponse(lastUserMessage, lastBotMessage, collectedData, normalizedData)
     }
 
-    // VALIDAZIONE DATI DI CONTATTO: Se un dato di contatto è invalido, rimuovilo e mostra errore
-    const contactValidation = validateContactData(normalizedData, collectedData)
+    // VALIDAZIONE DATI DI CONTATTO: Se un dato di contatto è invalido, rimuovilo.
+    // Mostra errore visibile all'utente SOLO se siamo effettivamente in fase di
+    // raccolta contatti; altrimenti scarta silenziosamente l'estrazione spuria
+    // e lascia che l'AI continui con la domanda successiva.
+    const contactValidation = validateContactData(normalizedData, collectedData, messages)
     if (!contactValidation.isValid && contactValidation.invalidField) {
       console.warn("[Chat API] Invalid contact data:", {
         field: contactValidation.invalidField,
         value: normalizedData[contactValidation.invalidField],
-        error: contactValidation.errorMessage
+        error: contactValidation.errorMessage,
+        willReturnError: !!contactValidation.errorMessage,
       })
-      // Rimuovi il dato invalido
+      // Rimuovi il dato invalido/spurio
       delete normalizedData[contactValidation.invalidField]
-      // Restituisci subito l'errore
-      return NextResponse.json({
-        success: true,
-        message: contactValidation.errorMessage,
-        extractedData: normalizedData,
-        readyForValuation: false,
-        missingRequired: parsed.missingRequired || []
-      })
+      // Se abbiamo un messaggio d'errore user-visible, restituiscilo
+      if (contactValidation.errorMessage) {
+        return NextResponse.json({
+          success: true,
+          message: contactValidation.errorMessage,
+          extractedData: normalizedData,
+          readyForValuation: false,
+          missingRequired: parsed.missingRequired || []
+        })
+      }
+      // Altrimenti: dato spurio già rimosso, continua il flusso normale
     }
 
     // VALIDAZIONE CRITICA: Verifica che i contatti siano presenti prima di permettere readyForValuation
