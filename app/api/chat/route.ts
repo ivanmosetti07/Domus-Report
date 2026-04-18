@@ -771,14 +771,23 @@ export async function POST(request: NextRequest) {
         messages: openAIMessages,
         temperature: 0.7,
         max_tokens: 800,
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
       }),
     })
 
     if (!response.ok) {
-      const error = await response.json()
-      console.error("OpenAI API error:", error)
-      throw new Error(error.error?.message || "Errore API OpenAI")
+      const errorText = await response.text()
+      let errorJson: any = null
+      try { errorJson = JSON.parse(errorText) } catch {}
+      console.error("[Chat API] OpenAI error:", {
+        status: response.status,
+        model: DEFAULT_OPENAI_MODEL,
+        error: errorJson || errorText.slice(0, 500),
+      })
+      const message =
+        errorJson?.error?.message ||
+        `OpenAI ${response.status}: ${errorText.slice(0, 200)}`
+      throw new Error(message)
     }
 
     const result = await response.json()

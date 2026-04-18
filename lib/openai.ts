@@ -110,9 +110,15 @@ Rispondi in formato JSON:
     })
 
     if (!response.ok) {
-      const error = await response.json()
-      console.error("OpenAI API error:", error)
-      throw new Error(error.error?.message || "Errore API OpenAI")
+      const errorText = await response.text()
+      let errorJson: any = null
+      try { errorJson = JSON.parse(errorText) } catch {}
+      console.error("[OpenAI valuation] API error:", {
+        status: response.status,
+        model: DEFAULT_OPENAI_MODEL,
+        error: errorJson || errorText.slice(0, 300),
+      })
+      throw new Error(errorJson?.error?.message || `OpenAI ${response.status}`)
     }
 
     const result = await response.json()
