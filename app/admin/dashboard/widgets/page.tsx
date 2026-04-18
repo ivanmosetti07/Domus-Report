@@ -192,23 +192,28 @@ export default function AdminWidgetsPage() {
 
   const handleSaveWidget = async (data: Record<string, unknown>) => {
     const isEdit = !!selectedWidget
-    if (isEdit) {
-      await fetch(`/api/admin/widgets/${selectedWidget.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-      showMsg("Widget aggiornato")
-    } else {
-      await fetch("/api/admin/widgets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, agencyId: createAgencyId }),
-      })
-      showMsg("Widget creato")
+    try {
+      const res = isEdit
+        ? await fetch(`/api/admin/widgets/${selectedWidget.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+        : await fetch("/api/admin/widgets", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...data, agencyId: createAgencyId }),
+          })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || `HTTP ${res.status}`)
+      }
+      showMsg(isEdit ? "Widget aggiornato" : "Widget creato")
+      setConfigModalOpen(false)
+      fetchWidgets()
+    } catch (err) {
+      showMsg(`Errore: ${err instanceof Error ? err.message : String(err)}`)
     }
-    setConfigModalOpen(false)
-    fetchWidgets()
   }
 
   const domusWidgets = widgets.filter(isDomusReportWidget)

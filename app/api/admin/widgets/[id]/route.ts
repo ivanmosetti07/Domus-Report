@@ -68,14 +68,60 @@ export async function PATCH(
     })
   }
 
-  const { agencyId: _a, ...updates } = body
+  // Whitelist esplicita dei campi aggiornabili. Previene errori Prisma
+  // quando il client manda campi read-only (id, widgetId, createdAt, ecc)
+  // o relazioni (agency, agencyName dal pubblico).
+  const allowedFields = [
+    "name",
+    "mode",
+    "isActive",
+    "isDefault",
+    "themeName",
+    "primaryColor",
+    "secondaryColor",
+    "backgroundColor",
+    "textColor",
+    "fontFamily",
+    "borderRadius",
+    "buttonStyle",
+    "bubblePosition",
+    "bubbleIcon",
+    "showBadge",
+    "bubbleAnimation",
+    "inlineHeight",
+    "showHeader",
+    "showBorder",
+    "customCss",
+    "logoUrl",
+    "sendButtonColor",
+    "sendButtonIconColor",
+    "questionMode",
+    "valuationMode",
+  ] as const
 
-  const widget = await prisma.widgetConfig.update({
-    where: { id },
-    data: updates,
-  })
+  const updates: Record<string, unknown> = {}
+  for (const key of allowedFields) {
+    if (key in body && body[key] !== undefined) {
+      updates[key] = body[key]
+    }
+  }
 
-  return NextResponse.json({ success: true, widget })
+  try {
+    const widget = await prisma.widgetConfig.update({
+      where: { id },
+      data: updates,
+    })
+    return NextResponse.json({ success: true, widget })
+  } catch (err) {
+    console.error("[PATCH /api/admin/widgets/:id] DB error:", err)
+    return NextResponse.json(
+      {
+        error: err instanceof Error ? err.message : "Errore aggiornamento widget",
+        fieldsAttempted: Object.keys(updates),
+      },
+      { status: 500 }
+    )
+  }
 }
 
 // DELETE /api/admin/widgets/[id]
