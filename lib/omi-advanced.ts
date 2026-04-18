@@ -248,10 +248,13 @@ export function getOMIValueByZone(
         })
         const base = baseline[0]
         const cat = categoria.toLowerCase()
-        // Ratio empirici rispetto a "Abitazioni civili" (baseline 1.0)
+        // Ratio empirici rispetto a "Abitazioni civili" (baseline 1.0).
+        // Calibrati su feedback di mercato per zone periferiche romane: il
+        // divario reale "civili vs economiche" è più ampio di 12% perché le
+        // economiche sono spesso immobili vetusti in cattivo stato commerciale.
         let ratio = 1.0
         if (cat.includes("signorili")) ratio = 1.15
-        else if (cat.includes("economic")) ratio = 0.88
+        else if (cat.includes("economic")) ratio = 0.80
         // Se base è già signorili (fallback), converti a civili prima di applicare ratio
         const baseIsSignorili = base.categoria.toLowerCase().includes("signorili")
         const baseIsEconomico = base.categoria.toLowerCase().includes("economic")

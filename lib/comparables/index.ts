@@ -121,7 +121,7 @@ export function crossCheckWithOMI(
 ): CrossCheckResult {
   const cmpMedian = comparablesResult.medianPricePerSqm
 
-  if (!omiPricePerSqm || !cmpMedian || comparablesResult.sampleSize < 2) {
+  if (!omiPricePerSqm || !cmpMedian || comparablesResult.sampleSize < 1) {
     return {
       omiPricePerSqm,
       comparablesMedianPricePerSqm: cmpMedian,
@@ -129,7 +129,7 @@ export function crossCheckWithOMI(
       agreement: "weak",
       suggestedPricePerSqm: omiPricePerSqm,
       shouldAdjust: false,
-      warnings: ["Dati comparables insufficienti per cross-check significativo."],
+      warnings: ["Nessun comparable disponibile per cross-check."],
     }
   }
 
@@ -141,21 +141,38 @@ export function crossCheckWithOMI(
   else if (absDelta < 25) agreement = "medium"
   else agreement = "weak"
 
+  // Peso del mercato reale: più annunci → più peso
+  // sampleSize=1: peso 0.2 (indicativo ma non dominante)
+  // sampleSize=2: peso 0.3
+  // sampleSize=3-4: peso 0.5
+  // sampleSize>=5: peso 0.6
   const cmpWeight =
     comparablesResult.sampleSize >= 5 ? 0.6 :
     comparablesResult.sampleSize >= 3 ? 0.5 :
-    0.3
+    comparablesResult.sampleSize >= 2 ? 0.3 :
+    0.2
   const omiWeight = 1 - cmpWeight
   const suggestedPricePerSqm = Math.round(
     omiPricePerSqm * omiWeight + cmpMedian * cmpWeight
   )
 
   const warnings: string[] = []
+  if (comparablesResult.sampleSize === 1) {
+    warnings.push(
+      `Un solo comparable disponibile: valore di mercato indicativo (peso ${cmpWeight * 100}%).`
+    )
+  }
   if (agreement === "weak") {
     warnings.push(
       `OMI e mercato reale divergono del ${Math.round(absDelta)}% (OMI: ${Math.round(omiPricePerSqm)}€/m², mercato: ${Math.round(cmpMedian)}€/m²). Valutazione a bassa confidenza.`
     )
   }
+
+  // Con sampleSize=1 aggiustiamo solo se delta significativo per evitare swing da outlier singolo
+  const shouldAdjust =
+    comparablesResult.sampleSize >= 2
+      ? agreement !== "strong"
+      : agreement !== "strong" && absDelta >= 15
 
   return {
     omiPricePerSqm,
@@ -163,7 +180,7 @@ export function crossCheckWithOMI(
     deltaPct: Math.round(deltaPct * 10) / 10,
     agreement,
     suggestedPricePerSqm,
-    shouldAdjust: agreement !== "strong",
+    shouldAdjust,
     warnings,
   }
 }
@@ -191,7 +208,7 @@ export function applyComparablesRefinement(
   crossCheck: CrossCheckResult,
   surfaceSqm: number
 ): ValuationResult {
-  if (!crossCheck.shouldAdjust || comparables.sampleSize < 2) return valuation
+  if (!crossCheck.shouldAdjust || comparables.sampleSize < 1) return valuation
 
   const marketQualityBaseline = 1.05
   const thisQuality = valuation.pureConditionCoefficient || 1.0
@@ -201,12 +218,22 @@ export function applyComparablesRefinement(
 
   const adjustedPPS = Math.round(crossCheck.suggestedPricePerSqm * combinedAdjustment)
   const refinedEstimated = Math.round(adjustedPPS * surfaceSqm)
-  const refinedMin = Math.round(
-    comparables.minPricePerSqm * combinedAdjustment * surfaceSqm
-  )
-  const refinedMax = Math.round(
-    comparables.maxPricePerSqm * combinedAdjustment * surfaceSqm
-  )
+
+  // Con un solo annuncio il range derivato dai comparables collassa (min=max).
+  // Usiamo comunque un range stretto ±10% dalla stima centrale per coerenza.
+  let refinedMin: number
+  let refinedMax: number
+  if (comparables.sampleSize < 2) {
+    refinedMin = Math.round(refinedEstimated * 0.9)
+    refinedMax = Math.round(refinedEstimated * 1.1)
+  } else {
+    refinedMin = Math.round(
+      comparables.minPricePerSqm * combinedAdjustment * surfaceSqm
+    )
+    refinedMax = Math.round(
+      comparables.maxPricePerSqm * combinedAdjustment * surfaceSqm
+    )
+  }
 
   const updatedWarnings = [...valuation.warnings]
   for (const w of crossCheck.warnings) {

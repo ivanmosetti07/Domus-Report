@@ -155,17 +155,20 @@ export function calculateFloorCoefficient(
 export function calculateConditionCoefficient(
   condition: PropertyCondition
 ): number {
-  // Coefficienti calibrati per riflettere anche il costo implicito di ristrutturazione
-  // che il mercato sconta (~800-1000€/mq per TO_RENOVATE completa, ~400€/mq per
-  // HABITABLE_OLD). Valori precedenti erano troppo conservativi e sovrastimavano
-  // gli immobili da ristrutturare (vedi lead #cmnq5jp3w000sos3fpeez3gd5).
+  // Coefficienti calibrati su feedback di valutazioni reali di mercato.
+  // Per immobili "da ristrutturare" il mercato applica uno sconto molto piu'
+  // aggressivo rispetto ai valori OMI (costo ristrutturazione totale ~1000€/mq
+  // + rischio imprevisti + malus commerciale su immobili datati).
+  //
+  // Calibrazione: lead iva@live.it (attico Alessandrino 180mq "parzialmente
+  // da ristrutturare", target mercato €540-590k = ~3000-3280€/mq).
   const coefficients: Record<PropertyCondition, number> = {
     [PropertyCondition.NEW]: 1.25,
     [PropertyCondition.RENOVATED]: 1.12,
     [PropertyCondition.PARTIALLY_RENOVATED]: 1.06,
     [PropertyCondition.GOOD]: 1.0,
-    [PropertyCondition.HABITABLE_OLD]: 0.86,
-    [PropertyCondition.TO_RENOVATE]: 0.72,
+    [PropertyCondition.HABITABLE_OLD]: 0.74,
+    [PropertyCondition.TO_RENOVATE]: 0.64,
   }
   return coefficients[condition] ?? 1.0
 }
@@ -209,15 +212,20 @@ export function calculateExtrasCoefficient(
   let adjustment = 0
   if (hasParking) adjustment += 0.04
   if (outdoorSpace) {
-    const outdoor = outdoorSpace.toUpperCase()
-    if (outdoor === 'GARDEN') adjustment += 0.07
-    else if (outdoor === 'ROOF_TERRACE') adjustment += 0.06
-    else if (outdoor === 'TERRACE') adjustment += 0.05
-    else if (outdoor === 'BALCONY') adjustment += 0.02
+    // Normalizza rimuovendo accenti e convertendo a uppercase (supporta IT + EN)
+    const outdoor = outdoorSpace
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+    if (outdoor === 'GARDEN' || outdoor === 'GIARDINO') adjustment += 0.07
+    else if (outdoor === 'ROOF_TERRACE' || outdoor === 'ATTICO CON TERRAZZO' || outdoor === 'LASTRICO SOLARE') adjustment += 0.06
+    else if (outdoor === 'TERRACE' || outdoor === 'TERRAZZO' || outdoor === 'TERRAZZA') adjustment += 0.05
+    else if (outdoor === 'BALCONY' || outdoor === 'BALCONE' || outdoor === 'BALCONI') adjustment += 0.02
   }
   if (heatingType) {
-    const heating = heatingType.toUpperCase()
-    if (heating === 'NONE' || heating === 'ABSENT') adjustment -= 0.04
+    const heating = heatingType.toUpperCase().trim()
+    if (heating === 'NONE' || heating === 'ABSENT' || heating === 'ASSENTE' || heating === 'NESSUNO') adjustment -= 0.04
   }
   return Math.max(0.90, Math.min(1.20, 1 + adjustment))
 }
@@ -601,7 +609,8 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
   else if (omiAdvanced.fonte?.includes("CAP") && resolvedZone === undefined) zoneMatch = "cap"
 
   // Sprint 1.2 + fix range: stretto quando la zona è poco specifica o la
-  // variance OMI è anormalmente elevata.
+  // variance OMI è anormalmente elevata. La larghezza finale del range dipende
+  // dalla confidence (calcolata qui per permettere adjustment dinamico).
   const estimatedPrice = Math.round(
     baseOMIValue * input.surfaceSqm * floorCoefficient * qualityCoefficient
   )
@@ -611,20 +620,33 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
     : 0
 
   const isGenericZone = zoneMatch === "city_average" || zoneMatch === "cap_global"
-  const VARIANCE_THRESHOLD = 25 // % oltre il quale consideriamo il range OMI troppo ampio
+  const VARIANCE_THRESHOLD = 25
+
+  // Sprint 2.2: confidence calcolata PRIMA del range così possiamo stringerlo
+  // proporzionalmente all'affidabilità.
+  const completeness = calculateDataCompleteness(input)
+  const confidence = calculateConfidence(input, completeness, zoneMatch, rawOmiVariancePct)
+
   const shouldTightenRange = isGenericZone || rawOmiVariancePct > VARIANCE_THRESHOLD
 
   let minPrice: number
   let maxPrice: number
   if (shouldTightenRange) {
-    const TIGHT_RANGE = 0.10 // ±10% dalla stima centrale
-    minPrice = Math.round(estimatedPrice * (1 - TIGHT_RANGE))
-    maxPrice = Math.round(estimatedPrice * (1 + TIGHT_RANGE))
+    // Range dinamico in base a confidence:
+    // - alta  → ±6%  (stima precisa, meno incertezza)
+    // - media → ±9%
+    // - bassa → ±12% (più incertezza, range più ampio)
+    const tightRange =
+      confidence.level === "alta" ? 0.06 :
+      confidence.level === "bassa" ? 0.12 :
+      0.09
+    minPrice = Math.round(estimatedPrice * (1 - tightRange))
+    maxPrice = Math.round(estimatedPrice * (1 + tightRange))
     warnings.push({
       code: "RANGE_TIGHTENED",
       message: isGenericZone
-        ? `Zona OMI poco specifica (${omiAdvanced.zona}): range ristretto a ±10% per maggiore realismo.`
-        : `Variance OMI elevata (${Math.round(rawOmiVariancePct)}%): range ristretto a ±10%.`,
+        ? `Zona OMI poco specifica (${omiAdvanced.zona}): range ristretto a ±${Math.round(tightRange * 100)}% (confidence ${confidence.level}).`
+        : `Variance OMI elevata (${Math.round(rawOmiVariancePct)}%): range ristretto a ±${Math.round(tightRange * 100)}% (confidence ${confidence.level}).`,
       severity: "info",
     })
   } else {
@@ -642,10 +664,8 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
   const sanityWarnings = runSanityChecks(input, estimatedPrice, pricePerSqm)
   warnings.push(...sanityWarnings)
 
-  // Sprint 2.2: confidence data-driven (usa la variance OMI raw originale)
+  // alias per retro-compatibilità con logger qui sotto
   const omiVariancePct = rawOmiVariancePct
-  const completeness = calculateDataCompleteness(input)
-  const confidence = calculateConfidence(input, completeness, zoneMatch, omiVariancePct)
 
   logger.info("Valuation calculated", {
     city: input.city,

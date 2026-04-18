@@ -11,6 +11,12 @@ import {
   type ComparablesResult,
   type CrossCheckResult,
 } from "@/lib/comparables"
+import {
+  normalizeCondition,
+  normalizeOutdoorSpace,
+  normalizeHeating,
+  normalizePropertyType,
+} from "@/lib/normalize-property"
 
 // IMPORTANTE: Non usare Edge Runtime perché il sistema OMI legge dal filesystem (CSV)
 // export const runtime = "edge"
@@ -27,6 +33,18 @@ interface ExtendedValuationInput extends ValuationInput {
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as ExtendedValuationInput
+
+    // Safety net: normalizza campi enum-like in caso arrivino varianti non canoniche
+    // (AI output, campi legacy, typo). Se presenti e riconosciuti, sostituiamo con
+    // il valore enum valido. Fallback al valore originale se non riconosciuto.
+    const normCondition = normalizeCondition(body.condition as string | undefined)
+    if (normCondition) body.condition = normCondition
+    const normType = normalizePropertyType(body.propertyType as string | undefined)
+    if (normType) body.propertyType = normType
+    const normOutdoor = normalizeOutdoorSpace(body.outdoorSpace as string | undefined)
+    if (normOutdoor) body.outdoorSpace = normOutdoor
+    const normHeating = normalizeHeating(body.heatingType as string | undefined)
+    if (normHeating) body.heatingType = normHeating
 
     // Deduce città da CAP/indirizzo
     const inferredCity = inferCity({

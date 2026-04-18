@@ -9,6 +9,12 @@ import { X, Send, Building2, Loader2, RotateCcw } from "lucide-react"
 import { Message as MessageType, PropertyType, PropertyCondition } from "@/types"
 import { formatCurrency } from "@/lib/utils"
 import { inferCity } from "@/lib/postal-code"
+import {
+  normalizeCondition,
+  normalizeOutdoorSpace,
+  normalizeHeating,
+  normalizePropertyType,
+} from "@/lib/normalize-property"
 import * as gtag from "@/lib/gtag"
 
 export interface WidgetThemeConfig {
@@ -870,9 +876,14 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
 
       // Invia TUTTI i dati raccolti per un'analisi AI più accurata
-      // L'AI popola propertyType, ma per compatibilità controlliamo anche type
-      const propertyType = currentData.propertyType || currentData.type || PropertyType.APARTMENT
-      const condition = currentData.condition || PropertyCondition.GOOD
+      // Normalizzazione centralizzata: mappa varianti italiane/AI verso enum validi.
+      const propertyType =
+        normalizePropertyType(currentData.propertyType || currentData.type) ||
+        PropertyType.APARTMENT
+      const condition =
+        normalizeCondition(currentData.condition) || PropertyCondition.GOOD
+      const normalizedOutdoor = normalizeOutdoorSpace(currentData.outdoorSpace)
+      const normalizedHeating = normalizeHeating(currentData.heatingType)
 
       // MIGLIORA ESTRAZIONE CITTÀ: usa inferCity per dedurre la città da CAP, indirizzo o quartiere
       const inferredCity = inferCity({
@@ -910,8 +921,8 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           rooms: currentData.rooms,
           bathrooms: currentData.bathrooms,
           hasParking: currentData.hasParking,
-          outdoorSpace: currentData.outdoorSpace,
-          heatingType: currentData.heatingType,
+          outdoorSpace: normalizedOutdoor ?? currentData.outdoorSpace,
+          heatingType: normalizedHeating ?? currentData.heatingType,
           hasAirConditioning: currentData.hasAirConditioning,
           energyClass: currentData.energyClass,
           buildYear: currentData.buildYear,
@@ -1045,16 +1056,16 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
             city: fallbackInferredCity || errorData.city || "",
             neighborhood: errorData.neighborhood,
             postalCode: errorData.postalCode,
-            type: errorData.propertyType || errorData.type || PropertyType.APARTMENT,
+            type: normalizePropertyType(errorData.propertyType || errorData.type) || PropertyType.APARTMENT,
             surfaceSqm: errorData.surfaceSqm || 0,
             rooms: errorData.rooms,
             bathrooms: errorData.bathrooms,
             floor: errorData.floor,
             hasElevator: errorData.hasElevator,
-            outdoorSpace: errorData.outdoorSpace,
+            outdoorSpace: normalizeOutdoorSpace(errorData.outdoorSpace) ?? errorData.outdoorSpace,
             hasParking: errorData.hasParking,
-            condition: errorData.condition || PropertyCondition.GOOD,
-            heatingType: errorData.heatingType,
+            condition: normalizeCondition(errorData.condition) || PropertyCondition.GOOD,
+            heatingType: normalizeHeating(errorData.heatingType) ?? errorData.heatingType,
             hasAirConditioning: errorData.hasAirConditioning,
             energyClass: errorData.energyClass && !errorData.energyClass.toLowerCase().includes('non')
               ? errorData.energyClass : undefined,
@@ -1257,19 +1268,17 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
         city: inferredCity || currentData.city,
         neighborhood: currentData.neighborhood,
         postalCode: currentData.postalCode, // CRITICO: Include CAP per validazione città/geocoding
-        type: Object.values(PropertyType).includes((currentData.propertyType || currentData.type) as PropertyType)
-          ? (currentData.propertyType || currentData.type)
-          : PropertyType.APARTMENT,
+        type: normalizePropertyType(currentData.propertyType || currentData.type) || PropertyType.APARTMENT,
         surfaceSqm: currentData.surfaceSqm || 80,
         rooms: currentData.rooms,
         bathrooms: currentData.bathrooms,
         floor: currentData.floor,
         hasElevator: currentData.hasElevator,
         floorType: currentData.floorType,
-        outdoorSpace: currentData.outdoorSpace,
+        outdoorSpace: normalizeOutdoorSpace(currentData.outdoorSpace) ?? currentData.outdoorSpace,
         hasParking: currentData.hasParking,
-        condition: currentData.condition || PropertyCondition.GOOD,
-        heatingType: currentData.heatingType,
+        condition: normalizeCondition(currentData.condition) || PropertyCondition.GOOD,
+        heatingType: normalizeHeating(currentData.heatingType) ?? currentData.heatingType,
         hasAirConditioning: currentData.hasAirConditioning,
         energyClass: currentData.energyClass && !currentData.energyClass.toLowerCase().includes('non') ? currentData.energyClass : undefined,
         buildYear: typeof currentData.buildYear === 'number' ? currentData.buildYear :
