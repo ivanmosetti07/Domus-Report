@@ -137,8 +137,40 @@ export async function searchComparables(
 }
 
 // ============================================================================
-// CROSS-CHECK OMI vs COMPARABLES (diagnostico, non modifica prezzi)
+// CROSS-CHECK OMI vs COMPARABLES (con "soft nudge" di mercato)
 // ============================================================================
+
+/**
+ * Calcola il "nudge" di mercato da applicare al prezzo OMI.
+ *
+ * Policy (v2.1): quando un numero sufficiente di annunci reali concorda su
+ * una divergenza dall'OMI, applichiamo una correzione PARZIALE verso il
+ * mercato. Non sostituiamo il prezzo OMI (che resta la fonte ufficiale),
+ * ma lo "inclinciamo" verso il mercato in modo proporzionale e cappato.
+ *
+ * Regole:
+ *   - sampleSize < 3         → nessun nudge (troppo rumore)
+ *   - agreement "strong"     → nessun nudge (delta < 10%, OMI già accurato)
+ *   - agreement "medium"     → nudge = deltaPct × 0.25, cappato a ±15%
+ *   - agreement "weak"       → nudge = deltaPct × 0.40, cappato a ±20%
+ *
+ * Esempi pratici:
+ *   - Bologna centro: 5 annunci, +33% delta → nudge = +33% × 0.40 = +13.2%
+ *   - Roma Prati:     3 annunci, +23% delta → nudge = +23% × 0.25 = +5.7%
+ *   - Roma Centocelle: 4 annunci, -9%  delta → strong → nudge = 0
+ */
+function computeMarketNudgePct(
+  deltaPct: number,
+  agreement: "strong" | "medium" | "weak",
+  sampleSize: number
+): number {
+  if (sampleSize < 3) return 0
+  if (agreement === "strong") return 0
+  const factor = agreement === "weak" ? 0.40 : 0.25
+  const cap = agreement === "weak" ? 0.20 : 0.15
+  const rawNudge = (deltaPct / 100) * factor
+  return Math.max(-cap, Math.min(cap, rawNudge))
+}
 
 export function crossCheckWithOMI(
   omiPricePerSqm: number,
@@ -166,19 +198,35 @@ export function crossCheckWithOMI(
   else if (absDelta < 25) agreement = "medium"
   else agreement = "weak"
 
+  const nudgePct = computeMarketNudgePct(deltaPct, agreement, comparablesResult.sampleSize)
+  const suggestedPricePerSqm = Math.round(omiPricePerSqm * (1 + nudgePct))
+  const shouldAdjust = nudgePct !== 0
+
   const warnings: string[] = []
   if (comparablesResult.sampleSize === 1) {
     warnings.push(
-      `Un solo comparable disponibile (${Math.round(cmpMedian)}€/m²): segnale indicativo.`
+      `Un solo comparable disponibile (${Math.round(cmpMedian)}€/m²): segnale indicativo, nessuna correzione applicata.`
+    )
+  } else if (comparablesResult.sampleSize === 2) {
+    warnings.push(
+      `Solo 2 annunci di mercato trovati (mediana ${Math.round(cmpMedian)}€/m²): segnale debole, nessuna correzione applicata (serve sampleSize ≥ 3).`
     )
   }
-  if (agreement === "weak") {
+  if (agreement === "weak" && !shouldAdjust) {
     warnings.push(
       `OMI e mercato reale divergono del ${Math.round(absDelta)}% (OMI: ${Math.round(
         omiPricePerSqm
-      )}€/m², mercato: ${Math.round(
-        cmpMedian
-      )}€/m²). La valutazione resta basata su OMI ufficiale; considera il mercato come riferimento aggiuntivo.`
+      )}€/m², mercato: ${Math.round(cmpMedian)}€/m²). Campione insufficiente per correzione automatica.`
+    )
+  }
+  if (shouldAdjust) {
+    const signLabel = nudgePct > 0 ? "+" : ""
+    warnings.push(
+      `Mercato reale a ${Math.round(cmpMedian)}€/m² vs OMI ${Math.round(
+        omiPricePerSqm
+      )}€/m² (delta ${deltaPct > 0 ? "+" : ""}${Math.round(deltaPct)}%, ${
+        comparablesResult.sampleSize
+      } annunci): applicata correzione ${signLabel}${(nudgePct * 100).toFixed(1)}% verso il mercato.`
     )
   }
 
@@ -187,27 +235,26 @@ export function crossCheckWithOMI(
     comparablesMedianPricePerSqm: cmpMedian,
     deltaPct: Math.round(deltaPct * 10) / 10,
     agreement,
-    // Nel v2 "suggested" resta informativo ma non viene applicato:
-    // lasciamo il peso 100% OMI per coerenza con la nuova policy.
-    suggestedPricePerSqm: omiPricePerSqm,
-    shouldAdjust: false,
+    suggestedPricePerSqm,
+    shouldAdjust,
     warnings,
   }
 }
 
 // ============================================================================
-// REFINEMENT (v2: solo warning, non modifica prezzi)
+// REFINEMENT (v2.1: "soft nudge" di mercato)
 // ============================================================================
 
 /**
- * v2 "Warning-only refinement".
+ * v2.1 "Soft nudge refinement".
  *
- * Il motore additivo tiene il prezzo ancorato all'OMI ufficiale. I comparables
- * servono solo come sanity check: se il mercato diverge dall'OMI oltre il 25%,
- * aggiungiamo un warning visibile nel report ma NON modifichiamo min/max/
- * estimated. Questo rende il prezzo stabile, trasparente e difendibile.
+ * Quando `crossCheck.shouldAdjust` è true (≥3 annunci concordi con divergenza
+ * media/forte dall'OMI), applichiamo una correzione PARZIALE al prezzo verso
+ * il mercato reale. Il nudge è cappato a ±15% (medium) o ±20% (weak) — mai
+ * sostituisce il prezzo OMI, lo inclina verso il mercato.
  *
- * La firma resta invariata rispetto a v1 per retrocompatibilità.
+ * In caso contrario (0-2 annunci, oppure agreement strong), il prezzo resta
+ * ancorato all'OMI (policy warning-only).
  */
 export function applyComparablesRefinement(
   valuation: ValuationResult,
@@ -220,28 +267,55 @@ export function applyComparablesRefinement(
   const updatedWarnings = [...valuation.warnings]
   for (const w of crossCheck.warnings) {
     updatedWarnings.push({
-      code: "MARKET_CROSSCHECK",
+      code: crossCheck.shouldAdjust ? "MARKET_NUDGE_APPLIED" : "MARKET_CROSSCHECK",
       message: w,
       severity: crossCheck.agreement === "weak" ? "warning" : "info",
     })
   }
 
-  // Confidence: boost se strong agreement, malus se weak (ma prezzo invariato)
+  // Confidence: boost se strong agreement, malus se weak e non abbiamo nudgato
   let newScore = valuation.confidenceScore
   if (crossCheck.agreement === "strong" && comparables.sampleSize >= 2) {
     newScore = Math.min(100, newScore + 10)
-  } else if (crossCheck.agreement === "weak") {
+  } else if (crossCheck.agreement === "weak" && !crossCheck.shouldAdjust) {
     newScore = Math.max(0, newScore - 10)
+  } else if (crossCheck.shouldAdjust) {
+    // Nudge applicato: confidence resta com'è (non penalizziamo, abbiamo corretto)
+    newScore = Math.min(100, newScore + 5)
   }
   const newLevel: ValuationResult["confidence"] =
     newScore >= 80 ? "alta" : newScore >= 60 ? "media" : "bassa"
 
-  const suffix = ` Mercato locale: ${comparables.sampleSize} annunci a ${Math.round(
-    comparables.medianPricePerSqm
-  )}€/m² (delta OMI ${crossCheck.deltaPct > 0 ? "+" : ""}${crossCheck.deltaPct}%).`
+  // Calcolo nudge da applicare al prezzo (0 se shouldAdjust=false)
+  let nudgePct = 0
+  if (crossCheck.shouldAdjust && crossCheck.omiPricePerSqm > 0) {
+    nudgePct =
+      (crossCheck.suggestedPricePerSqm - crossCheck.omiPricePerSqm) /
+      crossCheck.omiPricePerSqm
+  }
+
+  const newEstimatedPrice = Math.round(valuation.estimatedPrice * (1 + nudgePct))
+  const newMinPrice = Math.round(valuation.minPrice * (1 + nudgePct))
+  const newMaxPrice = Math.round(valuation.maxPrice * (1 + nudgePct))
+  const newPricePerSqm = Math.round(valuation.pricePerSqm * (1 + nudgePct))
+
+  const nudgeLabel = nudgePct === 0
+    ? ""
+    : ` Nudge di mercato: ${nudgePct > 0 ? "+" : ""}${(nudgePct * 100).toFixed(1)}% (${
+        comparables.sampleSize
+      } annunci a ${Math.round(comparables.medianPricePerSqm)}€/m², agreement ${crossCheck.agreement}).`
+
+  const suffix = nudgeLabel ||
+    ` Mercato locale: ${comparables.sampleSize} annunci a ${Math.round(
+      comparables.medianPricePerSqm
+    )}€/m² (delta OMI ${crossCheck.deltaPct > 0 ? "+" : ""}${crossCheck.deltaPct}%, nessun nudge).`
 
   return {
     ...valuation,
+    estimatedPrice: newEstimatedPrice,
+    minPrice: newMinPrice,
+    maxPrice: newMaxPrice,
+    pricePerSqm: newPricePerSqm,
     confidence: newLevel,
     confidenceScore: newScore,
     warnings: updatedWarnings,
