@@ -93,17 +93,18 @@ runScenario('SCENARIO H — sampleSize=6, +50% weak (Napoli-like) → 60% factor
 console.log('\n' + '='.repeat(70))
 console.log('LOCATION PREMIUM tests')
 console.log('='.repeat(70))
+// v2.4: cap globale premium +5%. Tutti i valori rivisti al ribasso.
 const premiumCases: Array<[string, string | undefined, string, number]> = [
-  ['Napoli', 'Vomero', 'Via Cilea', 0.20],
-  ['Napoli', 'Chiaia', 'Riviera di Chiaia', 0.25],
-  ['Roma', 'Prati', 'Via Cola di Rienzo', 0.15],
-  ['Roma', 'Parioli', 'Viale Bruno Buozzi', 0.22],
-  ['Milano', 'Brera', 'Via Brera', 0.25],
-  ['Milano', 'Duomo', 'Corso Italia', 0.25],
+  ['Napoli', 'Vomero', 'Via Cilea', 0.05],
+  ['Napoli', 'Chiaia', 'Riviera di Chiaia', 0.05],
+  ['Roma', 'Prati', 'Via Cola di Rienzo', 0.05],
+  ['Roma', 'Parioli', 'Viale Bruno Buozzi', 0.05],
+  ['Milano', 'Brera', 'Via Brera', 0.05],
+  ['Milano', 'Duomo', 'Corso Italia', 0.05],
   ['Roma', 'Statuario', 'Via Squillace', 0],
-  ['Torino', 'Crocetta', 'Via Rosselli', 0.05], // v2.3: ridotto da 0.15 a 0.05 (mercato reale sotto OMI)
-  ['Firenze', 'Centro Storico', 'Via del Corso', 0.20],
-  ['Ardea', 'Marina di Ardea', 'Lungomare degli Ardeatini', 0.12], // match "lungomare degli ardeatini"
+  ['Torino', 'Crocetta', 'Via Rosselli', 0.03],
+  ['Firenze', 'Centro Storico', 'Via del Corso', 0.05],
+  ['Ardea', 'Marina di Ardea', 'Lungomare degli Ardeatini', 0.05],
 ]
 for (const [city, nh, addr, expected] of premiumCases) {
   const { bonus, matchedKey } = locationPremium(city, nh, addr)

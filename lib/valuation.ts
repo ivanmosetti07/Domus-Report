@@ -179,107 +179,110 @@ export function extrasAdjustment(hasParking?: boolean, outdoorSpace?: string): n
  * Bonus moltiplicativo sul baseOMI per quartieri/zone "premium" dove l'OMI
  * ufficiale è sistematicamente sottostimato rispetto al mercato reale.
  *
- * Es.: OMI per Vomero Napoli è €2.200-2.425/mq, mercato reale €4.500-7.000/mq
- * → l'OMI cattura 30-50% del vero valore. Applichiamo un premium per colmare.
+ * Policy v2.4: cap globale a +5%. Il motivo è che il **nudge di mercato**
+ * (comparables OpenAI) ora fa il lavoro principale di allineare il prezzo
+ * al mercato reale. Il premium serve solo come "seed" conservativo per
+ * le zone storicamente premium, non per sostituire il mercato.
  *
- * Il premium si applica MOLTIPLICATIVAMENTE al baseOMI (fuori dal cap ±30%
- * degli adjustments additivi), quindi agisce come "correzione della fonte",
- * non come "adjustment della qualità immobile".
+ * Prima (v2.2/v2.3): premium 5-28%. Problema: in alcune zone (es. Crocetta
+ * Torino) l'OMI pre-premium era già sopra mercato; il premium accentuava
+ * la sovrastima.
  *
- * Lista conservativa basata su osservazioni di mercato (ordine alfabetico per città).
+ * Ora (v2.4):
+ *   - Zone top-premium (Vomero, Brera, Chiaia, Parioli...) → +5%
+ *   - Zone premium secondarie → +3-4%
+ *   - Zone di pregio marginale → +2-3%
+ * Poi il nudge comparables (−22% a +48% a seconda del campione) aggiusta.
  */
 const PREMIUM_ZONES: Record<string, Record<string, number>> = {
   ardea: {
-    // Lungomare e frontemare: mercato turistico +10-12% sopra OMI E4-E7
-    "lungomare": 0.10,
-    "lungomare degli ardeatini": 0.12,
-    "fronte mare": 0.10,
-    "marina di ardea": 0.08,
-    "tor san lorenzo": 0.08,
+    "lungomare": 0.04,
+    "lungomare degli ardeatini": 0.05,
+    "fronte mare": 0.04,
+    "marina di ardea": 0.03,
+    "tor san lorenzo": 0.03,
   },
   bologna: {
-    "centro storico": 0.15,
-    "santo stefano": 0.18,
-    "galvani": 0.18,
-    "san felice": 0.15,
-    "murri": 0.12,
+    "centro storico": 0.05,
+    "santo stefano": 0.05,
+    "galvani": 0.05,
+    "san felice": 0.05,
+    "murri": 0.04,
   },
   firenze: {
-    "centro storico": 0.20,
-    "duomo": 0.22,
-    "santa croce": 0.20,
-    "san lorenzo": 0.18,
-    "oltrarno": 0.15,
-    "san frediano": 0.15,
-    "campo di marte": 0.10,
-    "le cure": 0.10,
+    "centro storico": 0.05,
+    "duomo": 0.05,
+    "santa croce": 0.05,
+    "san lorenzo": 0.05,
+    "oltrarno": 0.05,
+    "san frediano": 0.05,
+    "campo di marte": 0.03,
+    "le cure": 0.03,
   },
   genova: {
-    "albaro": 0.15,
-    "carignano": 0.12,
-    "foce": 0.10,
-    "quarto": 0.10,
+    "albaro": 0.05,
+    "carignano": 0.04,
+    "foce": 0.03,
+    "quarto": 0.03,
   },
   milano: {
-    brera: 0.25,
-    duomo: 0.25,
-    "quadrilatero": 0.28,
-    "montenapoleone": 0.28,
-    "san babila": 0.22,
-    "porta nuova": 0.20,
-    "porta romana": 0.15,
-    "porta venezia": 0.18,
-    "garibaldi": 0.18,
-    "citylife": 0.20,
-    "city life": 0.20,
-    "tre torri": 0.20,
-    magenta: 0.18,
-    "sant'ambrogio": 0.15,
-    "sant ambrogio": 0.15,
-    navigli: 0.15,
-    isola: 0.12,
+    brera: 0.05,
+    duomo: 0.05,
+    "quadrilatero": 0.05,
+    "montenapoleone": 0.05,
+    "san babila": 0.05,
+    "porta nuova": 0.05,
+    "porta romana": 0.05,
+    "porta venezia": 0.05,
+    "garibaldi": 0.05,
+    "citylife": 0.05,
+    "city life": 0.05,
+    "tre torri": 0.05,
+    magenta: 0.05,
+    "sant'ambrogio": 0.05,
+    "sant ambrogio": 0.05,
+    navigli: 0.05,
+    isola: 0.04,
   },
   napoli: {
-    chiaia: 0.25,
-    posillipo: 0.25,
-    vomero: 0.20,
-    arenella: 0.15,
-    "san ferdinando": 0.18,
-    "mergellina": 0.20,
+    chiaia: 0.05,
+    posillipo: 0.05,
+    vomero: 0.05,
+    arenella: 0.05,
+    "san ferdinando": 0.05,
+    "mergellina": 0.05,
   },
   roma: {
-    prati: 0.15,
-    "della vittoria": 0.12,
-    "degli eroi": 0.12,
-    parioli: 0.22,
-    pinciano: 0.20,
-    trieste: 0.15,
-    salario: 0.12,
-    "coppede": 0.20,
-    coppedè: 0.20,
-    flaminio: 0.15,
-    trastevere: 0.18,
-    "centro storico": 0.20,
-    "campo marzio": 0.22,
-    "piazza navona": 0.22,
-    pantheon: 0.22,
-    "piazza di spagna": 0.25,
-    monti: 0.12,
-    aventino: 0.18,
-    "san saba": 0.12,
-    "villa borghese": 0.18,
-    "lungomare": 0.10, // Ostia/Ardea
-    "fronte mare": 0.10,
-    "marina di": 0.08,
+    prati: 0.05,
+    "della vittoria": 0.04,
+    "degli eroi": 0.04,
+    parioli: 0.05,
+    pinciano: 0.05,
+    trieste: 0.05,
+    salario: 0.04,
+    "coppede": 0.05,
+    coppedè: 0.05,
+    flaminio: 0.05,
+    trastevere: 0.05,
+    "centro storico": 0.05,
+    "campo marzio": 0.05,
+    "piazza navona": 0.05,
+    pantheon: 0.05,
+    "piazza di spagna": 0.05,
+    monti: 0.04,
+    aventino: 0.05,
+    "san saba": 0.04,
+    "villa borghese": 0.05,
+    "lungomare": 0.04,
+    "fronte mare": 0.04,
+    "marina di": 0.03,
   },
   torino: {
-    // Crocetta: OMI ufficiale è sopra mercato reale (test 2026-04 mostrava
-    // mercato €2446/mq vs OMI pre-premium €3366/mq). Premium ridotto da 15 a 5%.
-    crocetta: 0.05,
-    "san salvario": 0.08,
-    "cit turin": 0.08,
-    "borgo po": 0.08,
-    "gran madre": 0.06,
+    crocetta: 0.03,
+    "san salvario": 0.03,
+    "cit turin": 0.03,
+    "borgo po": 0.03,
+    "gran madre": 0.03,
   },
 }
 
