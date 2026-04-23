@@ -1,9 +1,10 @@
 import { crossCheckWithOMI, applyComparablesRefinement } from '../lib/comparables'
 import type { ComparablesResult } from '../lib/comparables'
-import { calculateValuationLocal } from '../lib/valuation'
+import { calculateValuationLocal, locationPremium } from '../lib/valuation'
 import { PropertyType, PropertyCondition } from '../types'
 
-// Base valuation (Bologna Centro)
+// Base valuation (Bologna Centro) usata come immobile di riferimento per
+// testare il nudge isolato dal resto della pipeline.
 const base = calculateValuationLocal({
   address: 'Via Farini 10',
   city: 'Bologna',
@@ -19,13 +20,18 @@ const base = calculateValuationLocal({
   outdoorSpace: 'Balcone',
 })
 
-console.log('BASE valuation Bologna 60mq ristrutturato:')
+console.log('='.repeat(70))
+console.log('BASE valuation Bologna 60mq ristrutturato (post location-premium)')
+console.log('='.repeat(70))
 console.log('  estimatedPrice:', base.estimatedPrice, '(', base.pricePerSqm, '€/mq)')
+console.log('  baseOMIValue:  ', base.baseOMIValue, '€/mq')
+const basePremium = locationPremium('Bologna', 'Centro Storico', 'Via Farini 10')
+console.log('  premium check: ', basePremium.bonus * 100 + '% matched:', basePremium.matchedKey)
 
 function buildFakeComparables(sampleSize: number, medianPPS: number): ComparablesResult {
   return {
     comparables: Array.from({ length: sampleSize }, (_, i) => ({
-      title: `annuncio #${i+1}`,
+      title: `annuncio #${i + 1}`,
       source: 'idealista.it',
       price: Math.round(medianPPS * 55),
       surfaceSqm: 55,
@@ -42,43 +48,66 @@ function buildFakeComparables(sampleSize: number, medianPPS: number): Comparable
   }
 }
 
-// Scenario A: 5 annunci +33% sopra OMI (weak agreement) → nudge atteso +13.2%
-console.log('\n=== Scenario A: 5 annunci +33% (weak) ===')
-const cmpA = buildFakeComparables(5, Math.round(base.pricePerSqm * 1.33))
-const ccA = crossCheckWithOMI(base.pricePerSqm, cmpA)
-console.log('delta:', ccA.deltaPct + '%', '· agreement:', ccA.agreement, '· shouldAdjust:', ccA.shouldAdjust)
-console.log('suggested:', ccA.suggestedPricePerSqm, 'vs OMI:', ccA.omiPricePerSqm, '→ nudge', (((ccA.suggestedPricePerSqm - ccA.omiPricePerSqm) / ccA.omiPricePerSqm) * 100).toFixed(1) + '%')
-const refinedA = applyComparablesRefinement(base, cmpA, ccA, 60)
-console.log('prezzo prima:', base.estimatedPrice, '→ dopo nudge:', refinedA.estimatedPrice, '(delta', ((refinedA.estimatedPrice / base.estimatedPrice - 1) * 100).toFixed(1) + '%)')
-console.log('explanation tail:', refinedA.explanation.slice(-180))
+function runScenario(
+  label: string,
+  sampleSize: number,
+  deltaPct: number,
+  expectedNudgePct: number | null
+) {
+  console.log('\n' + '-'.repeat(70))
+  console.log(label)
+  console.log('-'.repeat(70))
+  const medianPPS = Math.round(base.pricePerSqm * (1 + deltaPct / 100))
+  const cmp = buildFakeComparables(sampleSize, medianPPS)
+  const cc = crossCheckWithOMI(base.pricePerSqm, cmp)
+  const refined = applyComparablesRefinement(base, cmp, cc, 60)
+  const appliedNudge = ((refined.estimatedPrice / base.estimatedPrice - 1) * 100)
+  console.log(
+    `  sampleSize=${sampleSize} · delta=${deltaPct > 0 ? '+' : ''}${deltaPct}% · agreement=${cc.agreement} · shouldAdjust=${cc.shouldAdjust}`
+  )
+  console.log(`  prezzo OMI:    €${base.estimatedPrice.toLocaleString('it-IT')}`)
+  console.log(
+    `  prezzo dopo:   €${refined.estimatedPrice.toLocaleString('it-IT')} (nudge ${
+      appliedNudge >= 0 ? '+' : ''
+    }${appliedNudge.toFixed(1)}%)`
+  )
+  if (expectedNudgePct !== null) {
+    const tolerance = 0.5
+    const ok = Math.abs(appliedNudge - expectedNudgePct) < tolerance
+    console.log(`  atteso nudge:  ${expectedNudgePct >= 0 ? '+' : ''}${expectedNudgePct}% → ${ok ? '✅ PASS' : '❌ FAIL'}`)
+  }
+}
 
-// Scenario B: 3 annunci +20% (medium) → nudge atteso +5%
-console.log('\n=== Scenario B: 3 annunci +20% (medium) ===')
-const cmpB = buildFakeComparables(3, Math.round(base.pricePerSqm * 1.20))
-const ccB = crossCheckWithOMI(base.pricePerSqm, cmpB)
-console.log('delta:', ccB.deltaPct + '%', '· agreement:', ccB.agreement, '· shouldAdjust:', ccB.shouldAdjust)
-const refinedB = applyComparablesRefinement(base, cmpB, ccB, 60)
-console.log('prezzo prima:', base.estimatedPrice, '→ dopo nudge:', refinedB.estimatedPrice, '(delta', ((refinedB.estimatedPrice / base.estimatedPrice - 1) * 100).toFixed(1) + '%)')
+// Scenari v2.2
+runScenario('SCENARIO A — sampleSize=5, +33% weak → 60% factor, cap 40% non scatta', 5, 33, 19.8)
+runScenario('SCENARIO B — sampleSize=3, +20% medium → 25% factor, cap 15%', 3, 20, 5.0)
+runScenario('SCENARIO C — sampleSize=2, +33% weak → 20% factor, cap 12%', 2, 33, 6.6)
+runScenario('SCENARIO D — sampleSize=4, -9% strong → nessun nudge', 4, -9, 0)
+runScenario('SCENARIO E — sampleSize=5, +80% weak → 60% factor, cap 40% scatta', 5, 80, 40)
+runScenario('SCENARIO F — sampleSize=1, qualunque delta → nessun nudge', 1, 50, 0)
+runScenario('SCENARIO G — sampleSize=2, +121% weak (Vomero-like) → cap 12%', 2, 121, 12)
+runScenario('SCENARIO H — sampleSize=6, +50% weak (Napoli-like) → 60% factor, cap 40% non scatta', 6, 50, 30)
 
-// Scenario C: 2 annunci +33% → sampleSize<3, nessun nudge
-console.log('\n=== Scenario C: 2 annunci +33% (sampleSize < 3) ===')
-const cmpC = buildFakeComparables(2, Math.round(base.pricePerSqm * 1.33))
-const ccC = crossCheckWithOMI(base.pricePerSqm, cmpC)
-console.log('delta:', ccC.deltaPct + '%', '· agreement:', ccC.agreement, '· shouldAdjust:', ccC.shouldAdjust)
-const refinedC = applyComparablesRefinement(base, cmpC, ccC, 60)
-console.log('prezzo prima:', base.estimatedPrice, '→ dopo:', refinedC.estimatedPrice, '(INVARIATO:', base.estimatedPrice === refinedC.estimatedPrice, ')')
-
-// Scenario D: 4 annunci -9% (strong) → nessun nudge
-console.log('\n=== Scenario D: 4 annunci -9% (strong) ===')
-const cmpD = buildFakeComparables(4, Math.round(base.pricePerSqm * 0.91))
-const ccD = crossCheckWithOMI(base.pricePerSqm, cmpD)
-console.log('delta:', ccD.deltaPct + '%', '· agreement:', ccD.agreement, '· shouldAdjust:', ccD.shouldAdjust)
-const refinedD = applyComparablesRefinement(base, cmpD, ccD, 60)
-console.log('prezzo prima:', base.estimatedPrice, '→ dopo:', refinedD.estimatedPrice, '(INVARIATO:', base.estimatedPrice === refinedD.estimatedPrice, ')')
-
-// Scenario E: 5 annunci +60% (weak enormous) → cap +20%
-console.log('\n=== Scenario E: 5 annunci +60% (weak extreme) → cap ±20% ===')
-const cmpE = buildFakeComparables(5, Math.round(base.pricePerSqm * 1.60))
-const ccE = crossCheckWithOMI(base.pricePerSqm, cmpE)
-console.log('delta:', ccE.deltaPct + '%', '· agreement:', ccE.agreement)
-console.log('suggested:', ccE.suggestedPricePerSqm, 'vs OMI:', ccE.omiPricePerSqm, '→ nudge', (((ccE.suggestedPricePerSqm - ccE.omiPricePerSqm) / ccE.omiPricePerSqm) * 100).toFixed(1) + '% (atteso: cap +20%)')
+// Location premium unit tests
+console.log('\n' + '='.repeat(70))
+console.log('LOCATION PREMIUM tests')
+console.log('='.repeat(70))
+const premiumCases: Array<[string, string | undefined, string, number]> = [
+  ['Napoli', 'Vomero', 'Via Cilea', 0.20],
+  ['Napoli', 'Chiaia', 'Riviera di Chiaia', 0.25],
+  ['Roma', 'Prati', 'Via Cola di Rienzo', 0.15],
+  ['Roma', 'Parioli', 'Viale Bruno Buozzi', 0.22],
+  ['Milano', 'Brera', 'Via Brera', 0.25],
+  ['Milano', 'Duomo', 'Corso Italia', 0.25],
+  ['Roma', 'Statuario', 'Via Squillace', 0],
+  ['Torino', 'Crocetta', 'Via Rosselli', 0.15],
+  ['Firenze', 'Centro Storico', 'Via del Corso', 0.20],
+  ['Ardea', 'Marina di Ardea', 'Lungomare degli Ardeatini', 0.12], // match "lungomare degli ardeatini"
+]
+for (const [city, nh, addr, expected] of premiumCases) {
+  const { bonus, matchedKey } = locationPremium(city, nh, addr)
+  const ok = Math.abs(bonus - expected) < 0.001
+  console.log(
+    `  ${city} / ${nh} / ${addr}: ${(bonus * 100).toFixed(0)}% (key=${matchedKey ?? '-'}) · atteso ${(expected * 100).toFixed(0)}% → ${ok ? '✅' : '❌'}`
+  )
+}

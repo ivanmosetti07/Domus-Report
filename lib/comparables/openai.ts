@@ -23,17 +23,37 @@ const DEFAULT_MODEL = COMPARABLES_MODEL
 function buildPrompt(query: ComparablesQuery): string {
   const parts: string[] = []
   parts.push(
-    `Cerca sul web annunci di VENDITA immobiliare su portali italiani (immobiliare.it, casa.it, idealista.it) con queste caratteristiche:`
+    `Cerca sul web annunci di VENDITA immobiliare su portali italiani (immobiliare.it, casa.it, idealista.it, subito.it, wikicasa.it, gohome.it) con queste caratteristiche:`
   )
   parts.push(`- Tipo: ${query.propertyType}`)
   parts.push(`- Città: ${query.city}`)
-  if (query.neighborhood) parts.push(`- Quartiere: ${query.neighborhood}`)
-  if (query.postalCode) parts.push(`- CAP: ${query.postalCode}`)
+  if (query.neighborhood) {
+    parts.push(
+      `- Zona preferita: ${query.neighborhood} (ma accetta anche quartieri ADIACENTI se servono più annunci)`
+    )
+  }
+  if (query.postalCode) {
+    parts.push(
+      `- CAP: ${query.postalCode} (se trovi pochi annunci, estendi ai CAP limitrofi della stessa zona urbana)`
+    )
+  }
+  // v2.2: allargato da ±25% a ±50% per avere più campione (più annunci = nudge più affidabile)
   parts.push(
-    `- Superficie: circa ${query.surfaceSqm} m² (±25%: da ${Math.round(query.surfaceSqm * 0.75)} a ${Math.round(query.surfaceSqm * 1.25)} m²)`
+    `- Superficie: circa ${query.surfaceSqm} m² (accetta ±50%: da ${Math.round(
+      query.surfaceSqm * 0.5
+    )} a ${Math.round(query.surfaceSqm * 1.5)} m²)`
   )
-  if (query.rooms) parts.push(`- Locali: circa ${query.rooms}`)
-  if (query.condition) parts.push(`- Stato: ${query.condition}`)
+  if (query.rooms) parts.push(`- Locali: ${query.rooms - 1} / ${query.rooms} / ${query.rooms + 1} locali accettati`)
+  if (query.condition) {
+    parts.push(
+      `- Stato: ${query.condition} (accetta anche stati simili: Ristrutturato ↔ Buono, Nuovo ↔ Ristrutturato)`
+    )
+  }
+  parts.push("")
+  parts.push(`OBIETTIVO: trovare almeno ${Math.min(query.maxResults || 8, 8)} annunci reali (non inventare).`)
+  parts.push(
+    `Priorità: (1) stessa zona/CAP; (2) superficie simile; (3) stato simile. Se la zona target ha pochi annunci, ampliare geograficamente prima di scartare annunci.`
+  )
   parts.push("")
   parts.push(
     `Restituisci ESCLUSIVAMENTE un JSON valido (nessun testo prima/dopo) con questa struttura:`
@@ -54,7 +74,7 @@ function buildPrompt(query: ComparablesQuery): string {
   ],
   "warnings": []
 }`)
-  parts.push(`Cerca fino a ${query.maxResults || 8} annunci. Non inventare: se non trovi, array vuoto.`)
+  parts.push(`Cerca fino a ${query.maxResults || 8} annunci. Se davvero non ne trovi in zona dopo aver ampliato il raggio, ritorna array vuoto.`)
   return parts.join("\n")
 }
 

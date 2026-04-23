@@ -172,6 +172,155 @@ export function extrasAdjustment(hasParking?: boolean, outdoorSpace?: string): n
 }
 
 // ============================================================================
+// LOCATION PREMIUM (v2.2)
+// ============================================================================
+
+/**
+ * Bonus moltiplicativo sul baseOMI per quartieri/zone "premium" dove l'OMI
+ * ufficiale è sistematicamente sottostimato rispetto al mercato reale.
+ *
+ * Es.: OMI per Vomero Napoli è €2.200-2.425/mq, mercato reale €4.500-7.000/mq
+ * → l'OMI cattura 30-50% del vero valore. Applichiamo un premium per colmare.
+ *
+ * Il premium si applica MOLTIPLICATIVAMENTE al baseOMI (fuori dal cap ±30%
+ * degli adjustments additivi), quindi agisce come "correzione della fonte",
+ * non come "adjustment della qualità immobile".
+ *
+ * Lista conservativa basata su osservazioni di mercato (ordine alfabetico per città).
+ */
+const PREMIUM_ZONES: Record<string, Record<string, number>> = {
+  ardea: {
+    // Lungomare e frontemare: mercato turistico +10-12% sopra OMI E4-E7
+    "lungomare": 0.10,
+    "lungomare degli ardeatini": 0.12,
+    "fronte mare": 0.10,
+    "marina di ardea": 0.08,
+    "tor san lorenzo": 0.08,
+  },
+  bologna: {
+    "centro storico": 0.15,
+    "santo stefano": 0.18,
+    "galvani": 0.18,
+    "san felice": 0.15,
+    "murri": 0.12,
+  },
+  firenze: {
+    "centro storico": 0.20,
+    "duomo": 0.22,
+    "santa croce": 0.20,
+    "san lorenzo": 0.18,
+    "oltrarno": 0.15,
+    "san frediano": 0.15,
+    "campo di marte": 0.10,
+    "le cure": 0.10,
+  },
+  genova: {
+    "albaro": 0.15,
+    "carignano": 0.12,
+    "foce": 0.10,
+    "quarto": 0.10,
+  },
+  milano: {
+    brera: 0.25,
+    duomo: 0.25,
+    "quadrilatero": 0.28,
+    "montenapoleone": 0.28,
+    "san babila": 0.22,
+    "porta nuova": 0.20,
+    "porta romana": 0.15,
+    "porta venezia": 0.18,
+    "garibaldi": 0.18,
+    "citylife": 0.20,
+    "city life": 0.20,
+    "tre torri": 0.20,
+    magenta: 0.18,
+    "sant'ambrogio": 0.15,
+    "sant ambrogio": 0.15,
+    navigli: 0.15,
+    isola: 0.12,
+  },
+  napoli: {
+    chiaia: 0.25,
+    posillipo: 0.25,
+    vomero: 0.20,
+    arenella: 0.15,
+    "san ferdinando": 0.18,
+    "mergellina": 0.20,
+  },
+  roma: {
+    prati: 0.15,
+    "della vittoria": 0.12,
+    "degli eroi": 0.12,
+    parioli: 0.22,
+    pinciano: 0.20,
+    trieste: 0.15,
+    salario: 0.12,
+    "coppede": 0.20,
+    coppedè: 0.20,
+    flaminio: 0.15,
+    trastevere: 0.18,
+    "centro storico": 0.20,
+    "campo marzio": 0.22,
+    "piazza navona": 0.22,
+    pantheon: 0.22,
+    "piazza di spagna": 0.25,
+    monti: 0.12,
+    aventino: 0.18,
+    "san saba": 0.12,
+    "villa borghese": 0.18,
+    "lungomare": 0.10, // Ostia/Ardea
+    "fronte mare": 0.10,
+    "marina di": 0.08,
+  },
+  torino: {
+    crocetta: 0.15,
+    "san salvario": 0.10,
+    "cit turin": 0.10,
+    "borgo po": 0.10,
+    "gran madre": 0.08,
+  },
+}
+
+/** Normalizza una stringa per il matching (lowercase, no accenti, trim). */
+function normalizeForMatch(s: string): string {
+  return s
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+}
+
+/**
+ * Cerca un "location premium" da applicare come bonus al baseOMI.
+ * Ritorna 0 se nessun match. Max 0.28 (Milano Quadrilatero).
+ *
+ * Priorità: (1) match su neighborhood esatto; (2) match nell'address; (3) 0.
+ */
+export function locationPremium(
+  city?: string,
+  neighborhood?: string,
+  address?: string
+): { bonus: number; matchedKey?: string } {
+  if (!city) return { bonus: 0 }
+  const cityKey = normalizeForMatch(city)
+  const cityZones = PREMIUM_ZONES[cityKey]
+  if (!cityZones) return { bonus: 0 }
+
+  const keys = Object.keys(cityZones).sort((a, b) => b.length - a.length)
+  const nh = neighborhood ? normalizeForMatch(neighborhood) : ""
+  const addr = address ? normalizeForMatch(address) : ""
+  const haystack = `${nh} ${addr}`.trim()
+  if (!haystack) return { bonus: 0 }
+
+  for (const key of keys) {
+    if (haystack.includes(key)) {
+      return { bonus: cityZones[key], matchedKey: key }
+    }
+  }
+  return { bonus: 0 }
+}
+
+// ============================================================================
 // LEGACY API (retrocompatibilità con route.ts, recalculate, test scripts)
 // ============================================================================
 
@@ -512,9 +661,34 @@ export function calculateValuationLocal(input: ValuationInput): ValuationResult 
   }
 
   // OMI disponibile → calcolo prezzo
-  const baseOMIValue = omiAdvanced.valoreMedioMq
-  const minOMI = omiAdvanced.valoreMinMq
-  const maxOMI = omiAdvanced.valoreMaxMq
+  // v2.2: applichiamo il "location premium" moltiplicativo sul baseOMI per
+  // zone dove l'OMI ufficiale è strutturalmente sottostimato (es. Vomero
+  // Napoli, Parioli Roma, Brera Milano). Il premium è FUORI dal cap ±30%
+  // degli adjustments additivi, perché corregge la FONTE OMI, non la qualità
+  // dell'immobile.
+  const premium = locationPremium(input.city, input.neighborhood, input.address)
+  const premiumFactor = 1 + premium.bonus
+
+  const baseOMIValue = Math.round(omiAdvanced.valoreMedioMq * premiumFactor)
+  const minOMI = Math.round(omiAdvanced.valoreMinMq * premiumFactor)
+  const maxOMI = Math.round(omiAdvanced.valoreMaxMq * premiumFactor)
+
+  if (premium.bonus > 0) {
+    warnings.push({
+      code: "LOCATION_PREMIUM_APPLIED",
+      message: `Zona premium "${premium.matchedKey}" riconosciuta: OMI ufficiale +${(
+        premium.bonus * 100
+      ).toFixed(0)}% (da ${omiAdvanced.valoreMedioMq}€/m² a ${baseOMIValue}€/m²).`,
+      severity: "info",
+    })
+    logger.info("Location premium applied", {
+      city: input.city,
+      matchedKey: premium.matchedKey,
+      bonus: premium.bonus,
+      omiBefore: omiAdvanced.valoreMedioMq,
+      omiAfter: baseOMIValue,
+    })
+  }
 
   let zoneMatch: ValuationResult["omiZoneMatch"] = "zone_specific"
   if (omiAdvanced.zona === "Media città") zoneMatch = "city_average"

@@ -143,31 +143,49 @@ export async function searchComparables(
 /**
  * Calcola il "nudge" di mercato da applicare al prezzo OMI.
  *
- * Policy (v2.1): quando un numero sufficiente di annunci reali concorda su
- * una divergenza dall'OMI, applichiamo una correzione PARZIALE verso il
- * mercato. Non sostituiamo il prezzo OMI (che resta la fonte ufficiale),
- * ma lo "inclinciamo" verso il mercato in modo proporzionale e cappato.
+ * Policy (v2.2): quando gli annunci reali concordano su una divergenza
+ * dall'OMI, applichiamo una correzione verso il mercato. La strength della
+ * correzione scala con il sampleSize:
+ *   - sampleSize < 2  → nessun nudge (troppo rumore)
+ *   - sampleSize = 2  → factor dimezzato, cap ridotto (segnale debole)
+ *   - sampleSize 3-4  → factor standard (policy v2.1)
+ *   - sampleSize ≥ 5  → INVERSIONE PESO: 60% mercato / 40% OMI quando weak
  *
- * Regole:
- *   - sampleSize < 3         → nessun nudge (troppo rumore)
- *   - agreement "strong"     → nessun nudge (delta < 10%, OMI già accurato)
- *   - agreement "medium"     → nudge = deltaPct × 0.25, cappato a ±15%
- *   - agreement "weak"       → nudge = deltaPct × 0.40, cappato a ±20%
+ * Per "strong agreement" (delta <10%) non applichiamo mai nudge, qualsiasi
+ * sampleSize: OMI è già allineato.
  *
- * Esempi pratici:
- *   - Bologna centro: 5 annunci, +33% delta → nudge = +33% × 0.40 = +13.2%
- *   - Roma Prati:     3 annunci, +23% delta → nudge = +23% × 0.25 = +5.7%
- *   - Roma Centocelle: 4 annunci, -9%  delta → strong → nudge = 0
+ * Esempi:
+ *   - Vomero Cilea (2 annunci, +121% weak)  → nudge +0.20 × 121 = +24% → cap +12%
+ *   - Bologna centro (5 annunci, +33% weak) → nudge +0.60 × 33 = +20% → cap +40% non scatta
+ *   - Prati (3 annunci, +23% medium)        → nudge +0.25 × 23 = +5.7%
+ *   - Centocelle (4 annunci, -9% strong)    → nudge = 0 (OMI già in linea)
  */
 function computeMarketNudgePct(
   deltaPct: number,
   agreement: "strong" | "medium" | "weak",
   sampleSize: number
 ): number {
-  if (sampleSize < 3) return 0
+  if (sampleSize < 2) return 0
   if (agreement === "strong") return 0
-  const factor = agreement === "weak" ? 0.40 : 0.25
-  const cap = agreement === "weak" ? 0.20 : 0.15
+
+  let factor: number
+  let cap: number
+
+  if (sampleSize >= 5) {
+    // Inversione peso: con 5+ annunci concordi ci fidiamo del mercato.
+    // weak: 60% verso mercato (cap 40%). medium: 45% verso mercato (cap 30%).
+    factor = agreement === "weak" ? 0.60 : 0.45
+    cap = agreement === "weak" ? 0.40 : 0.30
+  } else if (sampleSize >= 3) {
+    // Policy v2.1 invariata.
+    factor = agreement === "weak" ? 0.40 : 0.25
+    cap = agreement === "weak" ? 0.20 : 0.15
+  } else {
+    // sampleSize == 2: factor dimezzato, cap ridotto (segnale debole ma non zero).
+    factor = agreement === "weak" ? 0.20 : 0.12
+    cap = agreement === "weak" ? 0.12 : 0.08
+  }
+
   const rawNudge = (deltaPct / 100) * factor
   return Math.max(-cap, Math.min(cap, rawNudge))
 }
@@ -206,10 +224,6 @@ export function crossCheckWithOMI(
   if (comparablesResult.sampleSize === 1) {
     warnings.push(
       `Un solo comparable disponibile (${Math.round(cmpMedian)}€/m²): segnale indicativo, nessuna correzione applicata.`
-    )
-  } else if (comparablesResult.sampleSize === 2) {
-    warnings.push(
-      `Solo 2 annunci di mercato trovati (mediana ${Math.round(cmpMedian)}€/m²): segnale debole, nessuna correzione applicata (serve sampleSize ≥ 3).`
     )
   }
   if (agreement === "weak" && !shouldAdjust) {
