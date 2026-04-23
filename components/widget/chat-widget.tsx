@@ -965,9 +965,10 @@ export function ChatWidget({ widgetId, mode = 'bubble', isDemo = false, onClose,
           hasAirConditioning: currentData.hasAirConditioning,
           energyClass: currentData.energyClass,
           buildYear: currentData.buildYear,
-          // Abilita analisi AI
+          // Motore unificato: OMI ufficiale + comparables + analisi AI
           useAI: true,
-          // Modalità di valutazione configurata lato admin per il widget
+          useComparables: true,
+          // Campo legacy mantenuto solo per retrocompatibilità client/server
           valuationMode,
         }),
         signal: controller.signal,

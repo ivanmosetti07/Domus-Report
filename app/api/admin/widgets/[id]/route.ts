@@ -53,10 +53,6 @@ export async function PATCH(
     body.customCss = sanitizeCSS(body.customCss)
   }
 
-  if (body.valuationMode && !["hybrid", "omi", "ai_market"].includes(body.valuationMode)) {
-    return NextResponse.json({ error: "valuationMode non valido" }, { status: 400 })
-  }
-
   // Se imposta isDefault, rimuovi default dagli altri della stessa agenzia
   if (body.isDefault === true) {
     await prisma.widgetConfig.updateMany({
@@ -105,6 +101,9 @@ export async function PATCH(
       updates[key] = body[key]
     }
   }
+
+  // Motore unificato: normalizza tutti i widget alla modalità legacy "hybrid".
+  updates.valuationMode = "hybrid"
 
   try {
     const widget = await prisma.widgetConfig.update({

@@ -138,6 +138,7 @@ export async function GET(request: Request) {
     const { agency, ...configWithoutAgency } = widgetConfig
     const responseConfig = {
       ...configWithoutAgency,
+      valuationMode: 'hybrid',
       agencyName: agency?.nome || 'DomusReport',
     }
 

@@ -96,13 +96,13 @@ async function main() {
   console.log(`  Range:         €${valuation.minPrice.toLocaleString('it-IT')} – €${valuation.maxPrice.toLocaleString('it-IT')}`)
   console.log(`  Confidence:    ${valuation.confidence} (${valuation.confidenceScore}/100)`)
 
-  // ============ COMPARABLES (OpenAI web_search_preview) ============
+  // ============ COMPARABLES (OpenAI web_search) ============
   let comparablesResult = null
   let crossCheck = null
   const wantComparables = !skipComparables && isComparablesEnabled()
 
   if (wantComparables) {
-    console.log('\n🌐 Ricerca comparables reali via OpenAI web_search_preview...')
+    console.log('\n🌐 Ricerca comparables reali via OpenAI web_search...')
     try {
       const result = await searchComparables({
         city: p.citta,

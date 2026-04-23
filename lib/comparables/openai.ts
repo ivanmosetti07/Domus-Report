@@ -1,9 +1,9 @@
 /**
  * OpenAI-based Comparables Provider
- * Fallback provider: usa OpenAI Responses API con web_search tool
+ * Usa OpenAI Responses API con il tool web_search
  * per cercare annunci immobiliari reali.
  *
- * Richiede modello con tool browsing (es. gpt-4o con web_search).
+ * Richiede un modello compatibile con web search nella Responses API.
  */
 
 import type {
@@ -113,7 +113,18 @@ export class OpenAIComparablesProvider implements ComparablesProvider {
 
     const body = {
       model: DEFAULT_MODEL,
-      tools: [{ type: "web_search_preview" }],
+      tools: [
+        {
+          type: "web_search",
+          user_location: {
+            type: "approximate",
+            country: "IT",
+            city: query.city,
+            timezone: "Europe/Rome",
+          },
+        },
+      ],
+      tool_choice: "auto",
       input: buildPrompt(query),
     }
 

@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
-import { calculateValuation, ValuationInput, ValuationResult, ValuationWarning } from "@/lib/valuation"
+import {
+  calculateValuation,
+  ValuationInput,
+  ValuationResult,
+} from "@/lib/valuation"
 import { geocodeAddress } from "@/lib/geocoding"
 import { generateAIValuationAnalysis, PropertyValuationData } from "@/lib/openai"
 import { inferCity } from "@/lib/postal-code"
@@ -8,14 +12,9 @@ import {
   crossCheckWithOMI,
   isComparablesEnabled,
   applyComparablesRefinement,
-  buildValuationFromComparables,
   type ComparablesResult,
   type CrossCheckResult,
 } from "@/lib/comparables"
-import {
-  calculateFloorCoefficient,
-  calculateConditionCoefficient,
-} from "@/lib/valuation"
 import {
   normalizeCondition,
   normalizeOutdoorSpace,
@@ -24,46 +23,35 @@ import {
 } from "@/lib/normalize-property"
 
 // IMPORTANTE: Non usare Edge Runtime perché il sistema OMI legge dal filesystem (CSV)
-// export const runtime = "edge"
-
-// reasoning_effort "high" per l'analisi finale + eventuale web search
-// comparables può richiedere 30-60s. maxDuration 90s dà margine.
+// AI + Comparables in parallelo: maxDuration 90s copre tutti i casi peggiori.
 export const maxDuration = 90
 
+/**
+ * Valuation API v2 — "Additivo Trasparente"
+ *
+ * Logica unica (niente più modalità hybrid/omi/ai_market):
+ * 1. Geocoding → città corretta
+ * 2. Motore additivo v2: baseOMI × sqm × (1 + totalAdj)
+ * 3. AI analysis + Comparables in parallelo (entrambi con timeout)
+ * 4. Comparables applicati come SOLO warning (se divergenza >25%)
+ * 5. AI fornisce solo testo analitico
+ *
+ * Il campo `valuationMode` nel body è ancora accettato per retrocompatibilità
+ * con la UI widget-config, ma viene ignorato lato server.
+ */
 interface ExtendedValuationInput extends ValuationInput {
   hasAirConditioning?: boolean
   useAI?: boolean
-  useComparables?: boolean // Abilita cross-check con comparables reali
-  valuationMode?: "hybrid" | "omi" | "ai_market" // Modalità motore (default: hybrid)
+  useComparables?: boolean
+  /** @deprecated Ignorato lato server in v2. Mantenuto per retrocompat UI. */
+  valuationMode?: "hybrid" | "omi" | "ai_market"
 }
-
-function capConfidence(
-  valuation: ValuationResult,
-  maxScore: number,
-  warning: ValuationWarning
-): ValuationResult {
-  const confidenceScore = Math.min(valuation.confidenceScore, maxScore)
-  const confidence: ValuationResult["confidence"] =
-    confidenceScore >= 80 ? "alta" : confidenceScore >= 60 ? "media" : "bassa"
-
-  return {
-    ...valuation,
-    confidence,
-    confidenceScore,
-    warnings: [...valuation.warnings, warning],
-  }
-}
-
-// applyComparablesRefinement ora è esportata da lib/comparables per essere
-// riusata anche da script di batch update.
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as ExtendedValuationInput
 
-    // Safety net: normalizza campi enum-like in caso arrivino varianti non canoniche
-    // (AI output, campi legacy, typo). Se presenti e riconosciuti, sostituiamo con
-    // il valore enum valido. Fallback al valore originale se non riconosciuto.
+    // Normalizza enum-like in ingresso
     const normCondition = normalizeCondition(body.condition as string | undefined)
     if (normCondition) body.condition = normCondition
     const normType = normalizePropertyType(body.propertyType as string | undefined)
@@ -89,12 +77,10 @@ export async function POST(request: NextRequest) {
       body.city = inferredCity
     }
 
-    // Validate required fields
+    // Validazione
     if (!body.address || !body.city || !body.propertyType || !body.surfaceSqm || !body.condition) {
       return NextResponse.json({ error: "Campi obbligatori mancanti" }, { status: 400 })
     }
-
-    // Validate surface range
     if (body.surfaceSqm < 10 || body.surfaceSqm > 2000) {
       return NextResponse.json(
         { error: "Superficie deve essere tra 10 e 2000 m²" },
@@ -141,37 +127,27 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Modalità di valutazione (hybrid default)
-    const valuationMode: "hybrid" | "omi" | "ai_market" =
-      body.valuationMode && ["hybrid", "omi", "ai_market"].includes(body.valuationMode)
-        ? body.valuationMode
-        : "hybrid"
-
-    // Calculate base valuation (OMI + coefficients) — serve sempre in hybrid/omi,
-    // e come fallback in ai_market se i comparables non sono disponibili.
+    // Calcolo baseline OMI + additive adjustments
     const baseValuation = await calculateValuation(body)
 
-    // In modalità OMI o HYBRID: se OMI non trovato → errore (come prima)
-    // In modalità AI_MARKET: continua comunque, proveremo con comparables
-    if (
-      valuationMode !== "ai_market" &&
-      (baseValuation.omiZoneMatch === "not_found" || baseValuation.estimatedPrice <= 0)
-    ) {
-      return NextResponse.json({
-        success: false,
-        valuation: baseValuation,
-        error: "Dati OMI non disponibili per questa zona. Contatta un professionista per una stima affidabile.",
-        geocoded: geocodeData !== null,
-      }, { status: 200 })
+    // Se OMI non trovato → errore esplicito (l'utente deve contattare un professionista)
+    if (baseValuation.omiZoneMatch === "not_found" || baseValuation.estimatedPrice <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          valuation: baseValuation,
+          error:
+            "Dati OMI non disponibili per questa zona. Contatta un professionista per una stima affidabile.",
+          geocoded: geocodeData !== null,
+        },
+        { status: 200 }
+      )
     }
 
-    // AI analysis + Comparables in parallelo (due chiamate lente)
-    const useAI = body.useAI !== false
-    // Comparables abilitati in hybrid e ai_market, disabilitati in modalità omi
-    const useComparables =
-      valuationMode !== "omi" &&
-      body.useComparables !== false &&
-      isComparablesEnabled()
+    // Motore unificato: usiamo sempre AI + comparables quando disponibili.
+    // I flag nel body restano solo per retrocompatibilità, ma sono ignorati.
+    const useAI = true
+    const useComparables = isComparablesEnabled()
 
     const aiInput: PropertyValuationData = {
       address: body.address,
@@ -200,10 +176,8 @@ export async function POST(request: NextRequest) {
       conditionCoefficient: baseValuation.conditionCoefficient,
     }
 
-    // Helper per timeout individuale: se una chiamata esterna supera il
-    // tempo massimo accettabile, la risolviamo con null invece di bloccare
-    // tutto il flusso. Così l'utente riceve sempre una valutazione OMI
-    // anche se AI analysis o comparables sono lente/giù.
+    // Helper timeout: se una chiamata esterna supera il tempo max, risolve con null.
+    // Così l'utente riceve sempre la valutazione OMI anche se AI o comparables sono lenti/giù.
     function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T | null> {
       return new Promise((resolve) => {
         const timer = setTimeout(() => {
@@ -221,13 +195,10 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // AI analysis con timeout 20s (reasoning_effort=low dovrebbe stare sotto 10s)
     const aiPromise: Promise<Awaited<ReturnType<typeof generateAIValuationAnalysis>> | null> = useAI
       ? withTimeout(generateAIValuationAnalysis(aiInput), 20_000, "AI analysis")
       : Promise.resolve(null)
 
-    // Comparables con timeout 55s (Brave search ~5-10s + LLM parsing ~5s,
-    // oppure OpenAI web_search_preview ~30-45s come fallback)
     const comparablesPromise: Promise<ComparablesResult | null> = useComparables
       ? withTimeout(
           searchComparables({
@@ -246,89 +217,40 @@ export async function POST(request: NextRequest) {
 
     const [aiAnalysis, comparablesResult] = await Promise.all([aiPromise, comparablesPromise])
 
-    let finalValuation = { ...baseValuation }
+    // Motore v2: il prezzo è SEMPRE quello additivo (OMI-ancorato).
+    // I comparables diventano solo warning / boost di confidence.
+    let finalValuation: ValuationResult = { ...baseValuation }
     let crossCheck: CrossCheckResult | null = null
-    let effectiveValuationMode: string = valuationMode
 
-    if (valuationMode === "ai_market") {
-      // Modalità "solo AI + mercato": tenta di ricostruire la valutazione
-      // dai comparables reali. Se non trova annunci via web, fa graceful
-      // fallback sull'OMI invece di lasciare l'utente senza valutazione.
-      if (!comparablesResult || comparablesResult.sampleSize < 1) {
-        console.warn(
-          "[Valuation] ai_market mode: no comparables found, falling back to OMI baseline"
-        )
-        finalValuation = capConfidence(baseValuation, 45, {
-          code: "AI_MARKET_FALLBACK",
-          message:
-            "Modalità 'solo AI + mercato' richiesta ma nessun annuncio reale trovato. Valutazione basata su dati OMI ufficiali con bassa confidenza.",
-          severity: "warning",
-        })
-        effectiveValuationMode = "omi_fallback"
-      } else {
-        // Serve recuperare i coefficienti senza passare per l'OMI
-        const floorCoef = calculateFloorCoefficient(
-          body.floor, body.hasElevator, body.propertyType
-        )
-        const pureConditionCoef = calculateConditionCoefficient(body.condition)
-        finalValuation = buildValuationFromComparables(
-          comparablesResult,
-          body.surfaceSqm,
-          floorCoef,
-          pureConditionCoef,
-          baseValuation.conditionCoefficient
-        )
-      }
-    } else if (valuationMode === "hybrid") {
-      // Hybrid (default): OMI + refinement con comparables (≥1 con peso ridotto)
-      if (comparablesResult && comparablesResult.sampleSize >= 1) {
-        crossCheck = crossCheckWithOMI(baseValuation.pricePerSqm, comparablesResult)
-        finalValuation = applyComparablesRefinement(
-          finalValuation,
-          comparablesResult,
-          crossCheck,
-          body.surfaceSqm
-        )
-      } else {
-        const confidenceCap = baseValuation.omiZoneMatch === "city_average" ||
-          baseValuation.omiZoneMatch === "cap_global"
-          ? 55
-          : 70
-        finalValuation = capConfidence(finalValuation, confidenceCap, {
-          code: "NO_MARKET_COMPARABLES",
-          message:
-            "Nessun annuncio comparabile reale disponibile: stima basata solo su dati OMI, con confidenza ridotta.",
-          severity: "warning",
-        })
-        effectiveValuationMode = "omi_only"
-      }
-    }
-    // valuationMode === "omi": nessun refinement, finalValuation = baseValuation
-
-    // G5: downgrade confidence quando i comparables NON sono stati trovati.
-    // Senza verifica mercato reale, non possiamo dire "alta" anche con zone_specific:
-    // la stima è solo OMI teorico, potenzialmente fuori dalla realtà di ±50%.
-    const hasMarketVerification =
-      comparablesResult && comparablesResult.sampleSize >= 2
-    if (!hasMarketVerification && finalValuation.confidence === "alta") {
-      finalValuation = {
-        ...finalValuation,
-        confidence: "media",
-        confidenceScore: Math.min(finalValuation.confidenceScore, 70),
-        warnings: [
-          ...finalValuation.warnings,
-          {
-            code: "NO_MARKET_VERIFICATION",
-            message: comparablesResult && comparablesResult.sampleSize === 1
-              ? "Solo 1 annuncio di mercato trovato: verifica limitata, confidence abbassata."
-              : "Nessun annuncio di mercato trovato per il cross-check: valutazione basata solo su OMI teorico.",
-            severity: "warning",
-          },
-        ],
+    if (comparablesResult && comparablesResult.sampleSize >= 1) {
+      crossCheck = crossCheckWithOMI(baseValuation.pricePerSqm, comparablesResult)
+      finalValuation = applyComparablesRefinement(
+        finalValuation,
+        comparablesResult,
+        crossCheck,
+        body.surfaceSqm
+      )
+    } else {
+      // Nessun comparable → cap confidence a "media" se era "alta"
+      if (finalValuation.confidence === "alta") {
+        finalValuation = {
+          ...finalValuation,
+          confidence: "media",
+          confidenceScore: Math.min(finalValuation.confidenceScore, 70),
+          warnings: [
+            ...finalValuation.warnings,
+            {
+              code: "NO_MARKET_VERIFICATION",
+              message:
+                "Nessun annuncio di mercato trovato per il cross-check: valutazione basata solo su OMI teorico.",
+              severity: "warning",
+            },
+          ],
+        }
       }
     }
 
-    // AI fornisce solo testo analitico (NON modifica i prezzi, che sono data-driven)
+    // AI fornisce solo testo analitico (NON modifica prezzi, che sono OMI-ancorati)
     if (aiAnalysis) {
       finalValuation.explanation = aiAnalysis.analysis + " " + (finalValuation.explanation || "")
     }
@@ -336,8 +258,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       valuation: finalValuation,
-      valuationMode,
-      effectiveValuationMode,
+      // Manteniamo questi campi per retrocompatibilità con il client, ma in v2
+      // l'engine è sempre lo stesso (additivo + comparables come warning).
+      valuationMode: "hybrid",
+      effectiveValuationMode: "omi_plus_comparables_v2",
       geocoded: geocodeData !== null,
       ai: aiAnalysis
         ? { enabled: true, confidence: aiAnalysis.confidence }

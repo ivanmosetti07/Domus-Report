@@ -5,7 +5,7 @@
  * velocità e costo contenuto. Qualità sufficiente per:
  *   - chat conversazionale (app/api/chat/route.ts)
  *   - analisi testuale valutazione (lib/openai.ts)
- *   - ricerca comparables via web_search_preview (lib/comparables/openai.ts)
+ *   - ricerca comparables via web_search (lib/comparables/openai.ts)
  *
  * Motivo della scelta: gpt-5 flagship è un reasoning model molto lento
  * (>20s per turno), inadatto alla UX di una chat widget. gpt-5-mini ha
@@ -16,16 +16,13 @@
  * strutturati (come la nostra chat di qualificazione immobile).
  */
 
-export const DEFAULT_OPENAI_MODEL = "gpt-5-mini"
+export const DEFAULT_OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5-mini"
 
-// Per la ricerca comparables usiamo gpt-4o: il tool web_search_preview
-// sulla Responses API è documentato e testato con gpt-4o, non con gpt-5-mini
-// (dove ritornava sempre 0 annunci). gpt-4o-mini è il compromesso
-// velocità/costo dopo che si è verificato il supporto al tool.
-export const COMPARABLES_MODEL = "gpt-4o"
+// Per la ricerca comparables usiamo un modello compatibile con web search
+// nella Responses API. Manteniamo gpt-4o come default per stabilità.
+export const COMPARABLES_MODEL = process.env.OPENAI_COMPARABLES_MODEL || "gpt-4o"
 
-// Modello leggero per parsing/estrazione da testo web (Brave Search snippets).
-// Richiede solo JSON output strutturato, no reasoning.
+// Legacy: mantenuto solo per compatibilità con script o riferimenti storici.
 export const PARSING_MODEL = "gpt-4o-mini"
 
 /**
