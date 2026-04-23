@@ -83,7 +83,8 @@ runScenario('SCENARIO A — sampleSize=5, +33% weak → 60% factor, cap 40% non 
 runScenario('SCENARIO B — sampleSize=3, +20% medium → 25% factor, cap 15%', 3, 20, 5.0)
 runScenario('SCENARIO C — sampleSize=2, +33% weak → 20% factor, cap 12%', 2, 33, 6.6)
 runScenario('SCENARIO D — sampleSize=4, -9% strong → nessun nudge', 4, -9, 0)
-runScenario('SCENARIO E — sampleSize=5, +80% weak → 60% factor, cap 40% scatta', 5, 80, 40)
+runScenario('SCENARIO E — sampleSize=5, +80% weak → 60% factor, cap 50% scatta (48% < cap)', 5, 80, 48)
+runScenario('SCENARIO E2 — sampleSize=5, +100% weak → 60% factor (60%) → cap 50% scatta', 5, 100, 50)
 runScenario('SCENARIO F — sampleSize=1, qualunque delta → nessun nudge', 1, 50, 0)
 runScenario('SCENARIO G — sampleSize=2, +121% weak (Vomero-like) → cap 12%', 2, 121, 12)
 runScenario('SCENARIO H — sampleSize=6, +50% weak (Napoli-like) → 60% factor, cap 40% non scatta', 6, 50, 30)
@@ -100,7 +101,7 @@ const premiumCases: Array<[string, string | undefined, string, number]> = [
   ['Milano', 'Brera', 'Via Brera', 0.25],
   ['Milano', 'Duomo', 'Corso Italia', 0.25],
   ['Roma', 'Statuario', 'Via Squillace', 0],
-  ['Torino', 'Crocetta', 'Via Rosselli', 0.15],
+  ['Torino', 'Crocetta', 'Via Rosselli', 0.05], // v2.3: ridotto da 0.15 a 0.05 (mercato reale sotto OMI)
   ['Firenze', 'Centro Storico', 'Via del Corso', 0.20],
   ['Ardea', 'Marina di Ardea', 'Lungomare degli Ardeatini', 0.12], // match "lungomare degli ardeatini"
 ]

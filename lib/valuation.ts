@@ -273,11 +273,13 @@ const PREMIUM_ZONES: Record<string, Record<string, number>> = {
     "marina di": 0.08,
   },
   torino: {
-    crocetta: 0.15,
-    "san salvario": 0.10,
-    "cit turin": 0.10,
-    "borgo po": 0.10,
-    "gran madre": 0.08,
+    // Crocetta: OMI ufficiale è sopra mercato reale (test 2026-04 mostrava
+    // mercato €2446/mq vs OMI pre-premium €3366/mq). Premium ridotto da 15 a 5%.
+    crocetta: 0.05,
+    "san salvario": 0.08,
+    "cit turin": 0.08,
+    "borgo po": 0.08,
+    "gran madre": 0.06,
   },
 }
 

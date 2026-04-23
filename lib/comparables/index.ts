@@ -143,20 +143,22 @@ export async function searchComparables(
 /**
  * Calcola il "nudge" di mercato da applicare al prezzo OMI.
  *
- * Policy (v2.2): quando gli annunci reali concordano su una divergenza
+ * Policy (v2.3): quando gli annunci reali concordano su una divergenza
  * dall'OMI, applichiamo una correzione verso il mercato. La strength della
  * correzione scala con il sampleSize:
  *   - sampleSize < 2  → nessun nudge (troppo rumore)
  *   - sampleSize = 2  → factor dimezzato, cap ridotto (segnale debole)
  *   - sampleSize 3-4  → factor standard (policy v2.1)
- *   - sampleSize ≥ 5  → INVERSIONE PESO: 60% mercato / 40% OMI quando weak
+ *   - sampleSize ≥ 5  → INVERSIONE PESO: 60% mercato / 40% OMI quando weak,
+ *                        cap 50% (era 40% in v2.2) per catturare divergenze estreme
  *
  * Per "strong agreement" (delta <10%) non applichiamo mai nudge, qualsiasi
  * sampleSize: OMI è già allineato.
  *
  * Esempi:
  *   - Vomero Cilea (2 annunci, +121% weak)  → nudge +0.20 × 121 = +24% → cap +12%
- *   - Bologna centro (5 annunci, +33% weak) → nudge +0.60 × 33 = +20% → cap +40% non scatta
+ *   - Bologna centro (5 annunci, +33% weak) → nudge +0.60 × 33 = +20% → no cap
+ *   - Napoli Vomero (6 annunci, +80% weak)  → nudge +0.60 × 80 = +48% → cap +50%
  *   - Prati (3 annunci, +23% medium)        → nudge +0.25 × 23 = +5.7%
  *   - Centocelle (4 annunci, -9% strong)    → nudge = 0 (OMI già in linea)
  */
@@ -173,9 +175,11 @@ function computeMarketNudgePct(
 
   if (sampleSize >= 5) {
     // Inversione peso: con 5+ annunci concordi ci fidiamo del mercato.
-    // weak: 60% verso mercato (cap 40%). medium: 45% verso mercato (cap 30%).
+    // weak: 60% verso mercato, cap 50% (alzato da 40% in v2.3 per catturare
+    // divergenze estreme tipo Napoli Vomero dove OMI è strutturalmente sotto
+    // del 60-80%). medium: 45% verso mercato, cap 30%.
     factor = agreement === "weak" ? 0.60 : 0.45
-    cap = agreement === "weak" ? 0.40 : 0.30
+    cap = agreement === "weak" ? 0.50 : 0.30
   } else if (sampleSize >= 3) {
     // Policy v2.1 invariata.
     factor = agreement === "weak" ? 0.40 : 0.25
